@@ -11,6 +11,16 @@ class ModelCrud extends CI_Model {
        return $this->db->get_where($table,$where); 
     }
 
+    public function getLikes($table, $likes)
+    {
+        return $this->db->like($likes)->get($table);
+    }
+
+    public function getLikesWithOr($table, $likes)
+    {
+        return $this->db->like($likes)->or_like($likes)->get($table);
+    }
+
     public function insert($table, $data)
     {
         return $this->db->insert($table, $data);

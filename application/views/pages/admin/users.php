@@ -14,7 +14,7 @@
             <!-- CONTENT -->
             <div class="col-sm-12">
 				<div class="card-box table-responsive">
-					<table id="table-users" class="table table-bordered table-condensed dt-responsive nowrap" cellspacing="0" width="100%">
+					<table id="table-users" class="table table-condensed dt-responsive nowrap" cellspacing="0" width="100%">
 						<thead>
 							<tr>
 								<th>Photo</th>
@@ -36,6 +36,7 @@
     </div>
     </div>
 </div>
+
 <script>
 	$(function() {
 		var tableUsers = $("#table-users").DataTable({

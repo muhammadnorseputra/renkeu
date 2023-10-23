@@ -72,7 +72,7 @@
                     </ul>
                 </li>
                 <li><a href="<?= base_url('app/users') ?>"><i class="fa fa-users"></i> Users</a></li>
-                <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Messages</a></li>
+                <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Notify</a></li>
             </ul>
         </div>
         <?php endif; ?>

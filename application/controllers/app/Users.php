@@ -49,6 +49,32 @@ class Users extends CI_Controller {
 		$this->load->view('layout/app', $data);
 	}
 
+    public function getAll()
+    {
+        $q = $this->input->post('q');
+
+        
+        if(!isset($q) || $q === "") {
+            echo json_encode([['id' => 0,  'text' => 'Silahkan ketikan username atau nama pengguna']]);
+            return false;
+        }
+
+        $db = $this->crud->getLikesWithOr('t_users', ['username' => $q, 'nama' => $q]);
+        $all = [];
+        if($db->num_rows() > 0):
+            foreach($db->result() as $row):
+                $data['id'] = $row->id;
+                $data['text'] = $row->nama." (".$row->username.")";
+                $data['picture'] = $row->pic;
+                $data['job'] = $row->jobdesk;
+                $all[] = $data;
+            endforeach;
+        else:
+            $all[] = ['id' => 0,  'text' => 'Maaf, user tidak ditemukan.'];
+        endif;
+        echo json_encode($all);
+    }   
+
 	public function role($id)
     {
         $row = $this->users->profile_id(encrypt_url($id))->row();
