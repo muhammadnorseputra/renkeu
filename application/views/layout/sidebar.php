@@ -1,8 +1,12 @@
 <div class="left_col scroll-view">
     <div class="navbar nav_title" style="border-bottom: 1px solid #666; padding-left: 13px;">
         <a href="<?= base_url('/') ?>" class="site_title">
+        <?php if(getSetting('APPLogo') != ''): ?>
             <img src="<?= base_url('template/assets/logo.png') ?>" width="25" alt="Logo Application"> 
-            <span>Emonev - App</span>
+        <?php endif; ?>
+        <?php if(getSetting('APPName') != ''): ?>
+            <span><?= getSetting('APPName') ?> - App</span>
+        <?php endif; ?>
         </a>
     </div>
 
@@ -28,32 +32,17 @@
         <div class="menu_section">
             <h3>NAVIGASI</h3>
             <ul class="nav side-menu">
-            <li><a href="<?= base_url('app/dashboard') ?>"><i class="fa fa-home"></i> Beranda</a></li>
-                <li>
-                    <a>
-                        <i class="fa fa-sitemap"></i> Multilevel Menu <span class="fa fa-chevron-down"></span>
-                    </a>
-                    <ul class="nav child_menu">
-                        <li><a href="#level1_1">Level One</a><li>
-                        <li>
-                            <a>Level Two<span class="fa fa-chevron-down"></span></a>
-                            <ul class="nav child_menu">
-                                <li><a href="level2.html">Level Two</a></li>
-                                <li><a href="#level2_1">Level Two_1</a></li>
-                                <li><a href="#level2_2">Level Two_2</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#level1_2">Level Tree</a>
-                        </li>
-                    </ul>
-                </li>
+                <li><a href="<?= base_url('app/dashboard') ?>"><i class="fa fa-home"></i> Beranda</a></li>
+                <?php if(privilages('priv_programs')): ?>
+                    <li><a href="<?= base_url('app/programs') ?>"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
+                <?php endif; ?>
             </ul>
         </div>
         <?php if($this->session->userdata('role') === 'SUPER_ADMIN'): ?>
         <div class="menu_section">
             <h3>MASTER DATA</h3>
             <ul class="nav side-menu">
-                <li>
+                <!-- <li>
                     <a>
                         <i class="fa fa-sitemap"></i> Multilevel Menu <span class="fa fa-chevron-down"></span>
                     </a>
@@ -70,9 +59,13 @@
                         <li><a href="#level1_2">Level Tree</a>
                         </li>
                     </ul>
-                </li>
+                </li> -->
+                <?php if(privilages('priv_users')): ?>
                 <li><a href="<?= base_url('app/users') ?>"><i class="fa fa-users"></i> Users</a></li>
+                <?php endif; ?>
+                <?php if(privilages('priv_notify')): ?>
                 <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Notify</a></li>
+                <?php endif; ?>
             </ul>
         </div>
         <?php endif; ?>
@@ -82,7 +75,7 @@
 
     <!-- /menu footer buttons -->
     <div class="sidebar-footer hidden-small">
-        <a data-toggle="tooltip" data-placement="top" title="Settings">
+        <a href="<?= base_url('/app/settings') ?>" data-toggle="tooltip" data-placement="top" title="Settings">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
         </a>
         <a id="btnFullScreen" href="#" data-toggle="tooltip" data-placement="top" title="FullScreen">

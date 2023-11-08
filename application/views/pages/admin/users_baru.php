@@ -5,7 +5,7 @@
 </div>
 <div class="row">
     <div class="col-xl-8">
-        <div class="card">
+        <div class="card rounded-0">
             <div class="card-header">
                 <h4 class="title font-weight-bold">New User</h4>
             </div>
@@ -20,7 +20,7 @@
                                 <label class="custom-file-label" for="customFile">Choose file</label>
                             </div>
                         </div>
-                        <span class="help-block">*) File Format gambar JPG/JPEG/PNG</span>
+                        <span class="help-block">File Format gambar JPG/JPEG/PNG</span>
                     </div>
                     <div class="col-lg-6">
                         <div class="form-group">
@@ -28,11 +28,26 @@
                         <input type="text" name="nama" id="input-nama" class="form-control">
                         </div>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                        <label class="form-control-label" for="input-nip">NIP/NIK <span class="text-danger">*</span></label>
+                        <input type="text" name="nip" id="input-nip" class="form-control">
+                        </div>
                     </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                        <label class="form-control-label" for="input-nohp">No. Handphone <span class="text-danger">*</span></label>
+                        <input type="text" name="nohp" id="input-nohp" class="form-control">
+                        <span class="help-block"> Masukan nomor hp hanya angka, contoh: 08215181****</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="row bg-light py-4 mb-3">
                     <div class="col-lg-6">
                         <div class="form-group">
-                        <label class="form-control-label" for="input-username">Username <span class="text-danger">*</span></label>
+                        <label class="form-control-label" for="input-username">Username<span class="text-danger">*</span></label>
                         <input type="text" name="username" id="input-username" class="form-control">
                         </div>
                     </div>

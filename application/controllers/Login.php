@@ -80,12 +80,12 @@ class Login extends CI_Controller {
         $password = trim($this->security->xss_clean($this->input->post('pwd', true)));
 
         $pwd = sha1($password);
-        $where = array(
-            'username' => $username,
-            'password' => $pwd,
-            // 'is_block' => 'N'
-        );
-        $cek = $this->auth->cek_login('t_users', $where);
+        // $where = array(
+        //     'username' => $username,
+        //     'password' => $pwd,
+        //     // 'is_block' => 'N'
+        // );
+        $cek = $this->auth->cek_login('t_users', $username, $pwd);
         if ($cek->num_rows() > 0) {
             foreach ($cek->result() as $key) {
                 $row = $key;
@@ -93,6 +93,9 @@ class Login extends CI_Controller {
             $data_session = array(
                 'user_id' => encrypt_url($row->id),
                 'user_name' => $username,
+                'part' => $row->fid_part, // Bidang / Bagian
+                'nip' => $row->nip,
+                'nohp' => $row->nohp,
                 'nama' => $row->nama,
                 'pic' => $row->pic,
                 'role' => $row->role,

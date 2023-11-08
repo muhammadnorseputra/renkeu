@@ -15,7 +15,7 @@
     
     <!-- Style -->
     <link rel="stylesheet" type="text/css" href="<?= base_url('template/login/css/style.css') ?>">
-
+    <link rel="stylesheet" type="text/css" href="<?= base_url('template/custom-js/jquery-form-validator/form-validator/theme-default.css') ?>">
     <title><?= $title ?></title>
   </head>
   <body>
@@ -28,11 +28,11 @@
         <!-- <div class="col-md-6">
           <img src="<?= base_url('template/login/images/undraw_remotely_2j6y.svg') ?>" alt="Image" class="img-fluid">
         </div> -->
-        <div class="col-md-8 offset-md-2 contents">
+        <div class="col-md-10 offset-md-1 contents">
           <div class="row justify-content-center">
             <div class="col-md-8">
               <div class="mb-4 text-center">
-              <img style="margin:15px auto;" src="<?= base_url('template/assets/picture_akun/'.$this->session->userdata('pic')) ?>" width="50" alt="<?= $this->session->userdata('user_name'); ?>"> 
+              <img style="margin:15px auto;" class="rounded-circle" src="<?= base_url('template/assets/picture_akun/'.$this->session->userdata('pic')) ?>" width="50" alt="<?= $this->session->userdata('user_name'); ?>"> 
               <h3>Welcome back, <?= $this->session->userdata('nama'); ?></h3>
               <p class="mb-4 text-secondary">Silahkan login kembali, dengan mengisi password anda.</p>
             </div>
@@ -55,7 +55,7 @@
               <button type="submit" role="button" class="btn btn-block btn-primary">Masuk</button>
               <?= form_close(); ?>
               <p class="text-center mt-4" style="font-size: small">
-                &copy; <?= date('Y') ?> Badan Kepegawaian dan Pengembangan Sumber Daya Manusia <br/> App Version. 1.0
+                &copy; <?= date('Y') ?> <?= getSetting('copyright') ?> <br/> <?= getSetting('version_app') ?>
               </p>
             </div>
           </div>

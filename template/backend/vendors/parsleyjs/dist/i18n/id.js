@@ -2,28 +2,28 @@
 // Load this after Parsley
 
 Parsley.addMessages('id', {
-  defaultMessage: "tidak valid",
+  defaultMessage: "Tidak valid",
   type: {
-    email:        "email tidak valid",
-    url:          "url tidak valid",
-    number:       "nomor tidak valid",
-    integer:      "integer tidak valid",
-    digits:       "harus berupa digit",
-    alphanum:     "harus berupa alphanumeric"
+    email:        "Email tidak valid",
+    url:          "Url tidak valid",
+    number:       "Nomor tidak valid",
+    integer:      "Integer tidak valid",
+    digits:       "Harus berupa digit",
+    alphanum:     "Harus berupa alphanumeric"
   },
-  notblank:       "tidak boleh kosong",
-  required:       "tidak boleh kosong",
-  pattern:        "tidak valid",
-  min:            "harus lebih besar atau sama dengan %s.",
-  max:            "harus lebih kecil atau sama dengan %s.",
-  range:          "harus dalam rentang %s dan %s.",
-  minlength:      "terlalu pendek, minimal %s karakter atau lebih.",
-  maxlength:      "terlalu panjang, maksimal %s karakter atau kurang.",
-  length:         "panjang karakter harus dalam rentang %s dan %s",
-  mincheck:       "pilih minimal %s pilihan",
-  maxcheck:       "pilih maksimal %s pilihan",
-  check:          "pilih antar %s dan %s pilihan",
-  equalto:        "harus sama"
+  notblank:       "Bagian ini tidak boleh kosong !",
+  required:       "Bagian ini tidak boleh kosong !",
+  pattern:        "Tidak valid",
+  min:            "Harus lebih besar atau sama dengan %s.",
+  max:            "Harus lebih kecil atau sama dengan %s.",
+  range:          "Harus dalam rentang %s dan %s.",
+  minlength:      "Terlalu pendek, minimal %s karakter atau lebih.",
+  maxlength:      "Terlalu panjang, maksimal %s karakter atau kurang.",
+  length:         "Panjang karakter harus dalam rentang %s dan %s",
+  mincheck:       "Pilih minimal %s pilihan",
+  maxcheck:       "Pilih maksimal %s pilihan",
+  check:          "Pilih antar %s dan %s pilihan",
+  equalto:        "Harus sama dengan bagian %s"
 });
 
 Parsley.setLocale('id');

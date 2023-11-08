@@ -27,7 +27,7 @@ class Inbox extends CI_Controller {
 	public function index()
 	{
         $data = [
-			'title' => 'Inboxs - Emonev App',
+			'title' => 'Inboxs',
             'content' => 'pages/inbox',
         ];
 		$this->load->view('layout/app', $data);

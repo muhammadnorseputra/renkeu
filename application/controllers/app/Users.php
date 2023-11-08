@@ -31,7 +31,7 @@ class Users extends CI_Controller {
 	public function index()
 	{	
         $data = [
-			'title' => 'Users - Emonev App',
+			'title' => 'Users',
             'content' => 'pages/admin/users',
 			'autoload_js' => [
 				'template/backend/vendors/datatables.net/js/jquery.dataTables.min.js',
@@ -63,6 +63,11 @@ class Users extends CI_Controller {
         $all = [];
         if($db->num_rows() > 0):
             foreach($db->result() as $row):
+                
+                if($row->username === $this->session->userdata('user_name')) {
+                    $data['disabled'] = true;
+                }
+
                 $data['id'] = $row->id;
                 $data['text'] = $row->nama." (".$row->username.")";
                 $data['picture'] = $row->pic;
@@ -211,9 +216,9 @@ class Users extends CI_Controller {
 
             $this->load->library('upload', $config); 
             if(!$this->upload->do_upload('photo'))  
-                {  
-                    $msg = ['valid' => false, 'pesan' => $this->upload->display_errors()];  
-                } 
+            {  
+                $msg = ['valid' => false, 'pesan' => $this->upload->display_errors()];  
+            } 
             else {
                 $data = array('upload_data' => $this->upload->data());
                 $image= $data['upload_data']['file_name'];
@@ -287,7 +292,10 @@ class Users extends CI_Controller {
             $data = [
                 'fid_user' => $uid,
                 'priv_default' => !empty($p['priv_default']) ? $p['priv_default'] : "N",
-                'priv_users' => !empty($p['priv_users']) ? $p['priv_users'] : "N"
+                'priv_users' => !empty($p['priv_users']) ? $p['priv_users'] : "N",
+                'priv_settings' => !empty($p['priv_settings']) ? $p['priv_settings'] : "N",
+                'priv_notify' => !empty($p['priv_notify']) ? $p['priv_notify'] : "N",
+                'priv_programs' => !empty($p['priv_programs']) ? $p['priv_programs'] : "N"
             ];
             $tbl = 't_privilages';
             $cek_privilage = $this->users->get_privilages_count($tbl,$uid);
@@ -313,6 +321,7 @@ class Users extends CI_Controller {
     public function update_profile($uid)
     {
         $profile = $this->users->profile_id($uid);
+        $parts = $this->crud->get('ref_parts');
         if($profile->num_rows() === 0) {
             redirect(base_url('/app/users'));
             return false;
@@ -324,9 +333,11 @@ class Users extends CI_Controller {
             'uid' => $uid,
             'user' => $profile->row(),
             'user_id' => $user_id,
+            'parts' => $parts,
             'autoload_js' => [
                 'template/custom-js/blockUI/jquery.blockUI.js',
-                'template/custom-js/blockUI/default.js'
+                'template/custom-js/blockUI/default.js',
+                'template/backend/vendors/parsleyjs/dist/parsley.min.js',
             ]
         ];
         $this->load->view('layout/app', $data); 
@@ -362,7 +373,7 @@ class Users extends CI_Controller {
                  $data = array('upload_data' => $this->upload->data());
                  $image= $data['upload_data']['file_name'];
 
-                 $userdata = ['nama' => $nama, 'role' => $role, 'pic' => $image, 'jobdesk' => $p['jobdesk']]; 
+                 $userdata = ['nama' => $nama, 'fid_part' => $p['part'], 'nip' => $p['nip'], 'nohp' => $p['nohp'], 'role' => $role, 'pic' => $image, 'jobdesk' => $p['jobdesk']]; 
                  
                  $result = $this->users->update($userdata,$whr);
                   
@@ -374,7 +385,7 @@ class Users extends CI_Controller {
                  }
              } 
         } else {
-            $userdata = ['nama' => $nama, 'role' => $role, 'jobdesk' => $p['jobdesk']];
+            $userdata = ['nama' => $nama, 'fid_part' => $p['part'], 'nip' => $p['nip'], 'nohp' => $p['nohp'], 'role' => $role, 'jobdesk' => $p['jobdesk']];
             $result= $this->users->update($userdata,$whr);
             if($result)
              {

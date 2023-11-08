@@ -32,6 +32,12 @@ class ModelCrud extends CI_Model {
         return $this->db->update($table, $data);
     }
 
+    public function updateAll($table, $data)
+    {
+        // $this->db->where_in('key', $whr);
+        return $this->db->update_batch($table, $data, 'key');
+    }
+
     public function deleteWhere($table, $where) 
     {
         $this->db->where($where);

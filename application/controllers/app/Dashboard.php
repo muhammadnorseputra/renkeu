@@ -22,12 +22,16 @@ class Dashboard extends CI_Controller {
     {
         parent::__construct();
         cek_session();
+		//  CEK USER PRIVILAGES 
+        if(!privilages('priv_default')):
+            return show_404();
+        endif;
     }
 	
 	public function index()
 	{
         $data = [
-			'title' => 'Dashboard - Emonev App',
+			'title' => 'Dashboard',
             'content' => 'pages/dashboard',
         ];
 		$this->load->view('layout/app', $data);

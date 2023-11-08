@@ -22,6 +22,10 @@ class Account extends CI_Controller {
     {
         parent::__construct();
         cek_session();
+        //  CEK USER PRIVILAGES 
+        if(!privilages('priv_default')):
+            return show_404();
+        endif;
     }
 	
 	public function index()
@@ -33,8 +37,11 @@ class Account extends CI_Controller {
             'content' => 'pages/account',
 			'detail' => $this->users->profile_id($uid)->row(),
             'autoload_js' => [
+                'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/backend/vendors/parsleyjs/dist/i18n/id.js',
+                'template/backend/vendors/parsleyjs/dist/i18n/id.extra.js',
                 'template/custom-js/blockUI/jquery.blockUI.js',
-                'template/custom-js/blockUI/default.js'
+                'template/custom-js/blockUI/default.js',
             ]
         ];
 		$this->load->view('layout/app', $data);
