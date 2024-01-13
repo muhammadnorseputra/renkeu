@@ -13,6 +13,10 @@ if (!function_exists('cekValue')) {
 		return $jd;
 	}
 }
+
+function get_only_numbers($string){
+    return preg_replace("/[^0-9]/", "", $string);
+}
 //RUN SCRIPT
 // $this->load->helper('nominal');
 // echo nominal('300000');

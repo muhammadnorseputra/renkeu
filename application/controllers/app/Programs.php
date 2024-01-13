@@ -36,7 +36,8 @@ class Programs extends CI_Controller {
             'autoload_js' => [
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
-                'template/custom-js/list.min.js'
+                'template/custom-js/list.min.js',
+                'template/backend/vendors/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js'
 			],
 			'autoload_css' => [
                 'template/backend/vendors/select2/dist/css/select2.min.css'
@@ -181,7 +182,18 @@ class Programs extends CI_Controller {
             
             $html = '<div id="listSubKegiatan"><div class="row">'.$search.$pagging.$btnAdd."</div>";
             $html .= '<table class="table table-condensed table-hover">';
-            $html .= '<thead><tr><th class="text-center">No</th><th>Kode</th><th>Judul</th><th>Hapus</th></tr></thead>';
+            $html .= '<thead>
+                            <tr>
+                                <th class="text-center">No</th>
+                                <th>Kode</th>
+                                <th>Judul</th>
+                                <th class="text-right">Pagu Awal</th>
+                                <th class="text-right">Realisasi</th>
+                                <th class="text-right">Pagu Akhir</th>
+                                <th>Hapus</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>';
             $html .= '<tbody class="list">';
             $no=1;
             foreach($db->result() as $r):
@@ -189,14 +201,26 @@ class Programs extends CI_Controller {
                     <td class="text-center">
                         '.$no.'
                     </td>
-                    <td>
+                    <td class="kode">
                         '.$r->kode.'
                     </td>
                     <td class="nama">
                         '.strtoupper($r->nama).'
                     </td>
+                    <td class="nominal text-right">
+                        Rp. '.nominal($r->total_pagu_before).'
+                    </td>
+                    <td class="nominal text-right">
+                        Rp. '.nominal($r->total_pagu_realisasi).'
+                    </td>
+                    <td class="nominal text-right">
+                        Rp. '.nominal($r->total_pagu_after).'
+                    </td>
                     <td width="5%" class="text-center">
                         <button onclick="Hapus('.$r->id.',\''.base_url('app/programs/hapus/ref_sub_kegiatans').'\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+                    </td>
+                    <td width="5%" class="text-center">
+                        <a href="'.base_url('app/programs/ubah/'.$r->id.'/ref_sub_kegiatans').'" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
                     </td>
                 </tr>';
                 $no++;
@@ -423,9 +447,30 @@ class Programs extends CI_Controller {
         echo json_encode($row);
     }
 
-    public function ubah($tbl)
+    public function detailv2($tbl, $id)
     {
-        
+        $db = $this->crud->getWhere($tbl, ['id' => $id]);
+        $row = $db->row();
+        return $row;
+    }
+
+    public function ubah($id,$tbl)
+    {
+        $detail = $this->detailv2($tbl,$id);
+        $data = [
+			'title' => $detail->nama,
+            'content' => 'pages/admin/'.$tbl,
+            'data' => $detail,
+            'autoload_js' => [
+                'template/backend/vendors/select2/dist/js/select2.full.min.js',
+                'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/backend/vendors/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js'
+			],
+			'autoload_css' => [
+                'template/backend/vendors/select2/dist/css/select2.min.css'
+			]
+        ];
+		$this->load->view('layout/app', $data);
     }
 
     public function update($tbl)

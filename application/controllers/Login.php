@@ -93,6 +93,7 @@ class Login extends CI_Controller {
             $data_session = array(
                 'user_id' => encrypt_url($row->id),
                 'user_name' => $username,
+                'unor' => $row->fid_unor,
                 'part' => $row->fid_part, // Bidang / Bagian
                 'nip' => $row->nip,
                 'nohp' => $row->nohp,
@@ -122,7 +123,7 @@ class Login extends CI_Controller {
         $this->db->update('t_users', ['check_out' => date('Y-m-d H:i:s')], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
         $this->session->sess_destroy();
-        redirect(base_url('/'.$redirectTo));
+        redirect(base_url('/login'.$redirectTo));
     }
 
     public function lockScreenAction()
@@ -132,6 +133,6 @@ class Login extends CI_Controller {
         $data = array('user_id','csrf_token');
         $this->db->update('t_users', ['check_out' => date('Y-m-d H:i:s')], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
-        redirect(base_url('/'.$redirectTo));
+        redirect(base_url('/login'.$redirectTo));
     }
 }

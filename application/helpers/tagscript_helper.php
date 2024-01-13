@@ -38,3 +38,14 @@ if ( ! function_exists('tagscript')) {
         return $script;
     }
 }
+if ( ! function_exists('isActive')) {
+    function isActive($path)
+    {
+        $CI =& get_instance();
+        $segment = $CI->uri->segment(2);
+        if($path === $segment) 
+        {
+            return 'active';
+        }
+    }
+}

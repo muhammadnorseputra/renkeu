@@ -56,7 +56,14 @@ $route['lockscreen'] = 'login/lockscreen';
 // ! Users
 $route['app/users/u/(:any)'] = 'app/users/update_profile/$1';
 
+// ! Landingpage
+$route['frontend/about'] = 'welcome/page/about';
+$route['frontend/featured'] = 'welcome/page/featured';
+$route['frontend/screenshot'] = 'welcome/page/screenshot';
+$route['frontend/team'] = 'welcome/page/team';
+$route['frontend/contact'] = 'welcome/page/contact';
+
 // ! Default
-$route['default_controller'] = 'login';
+$route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

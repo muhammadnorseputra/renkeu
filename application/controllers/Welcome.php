@@ -20,6 +20,40 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('welcome_message');
+		$data = [
+			'content' => 'frontend/home'
+		];
+		$this->load->view('landingpage', $data);
+	}
+
+	public function page($path)
+	{
+		if($path === 'about') {
+			$data = [
+				'content' => 'frontend/about'
+			];
+		} elseif($path === 'featured') {
+			$data = [
+				'content' => 'frontend/featured'
+			];
+		} elseif($path === 'screenshot') {
+			$data = [
+				'content' => 'frontend/screenshot'
+			];
+		} elseif($path === 'team') {
+			$data = [
+				'content' => 'frontend/team'
+			];
+		} elseif($path === 'contact') {
+			$data = [
+				'content' => 'frontend/contact'
+			];
+		} else {
+			$data = [
+				'content' => 'errors'
+			];
+		}
+
+		return $this->load->view('landingpage', $data);
 	}
 }

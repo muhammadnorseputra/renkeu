@@ -35,7 +35,18 @@
                 <li><a href="<?= base_url('app/dashboard') ?>"><i class="fa fa-home"></i> Beranda</a></li>
                 <?php if(privilages('priv_programs')): ?>
                     <li><a href="<?= base_url('app/programs') ?>"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
-                <?php endif; ?>
+                    <li><a href="<?= base_url('app/arsip') ?>"><i class="fa fa-archive"></i> Arsip</a></li>
+                    <?php endif; ?>
+                <li>
+                    <a>
+                        <i class="fa fa-money"></i> Anggaran <span class="fa fa-chevron-down"></span>
+                    </a>
+                    <ul class="nav child_menu">
+                        <li><a href="#level1_1">Target</a><li>
+                        <li><a href="#level1_1">Kinerja</a><li>
+                        <li><a href="<?= base_url('app/spj') ?>">SPJ</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
         <?php if($this->session->userdata('role') === 'SUPER_ADMIN'): ?>

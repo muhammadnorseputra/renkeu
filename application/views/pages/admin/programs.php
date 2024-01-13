@@ -291,11 +291,20 @@
                     <label for="subkegiatan">Nama Sub Kegiatan <span class="text-danger">*</span></label>
                     <input type="text" name="subkegiatan" class="form-control" required data-parsley-trigger="keyup">
                 </div>
+                <!-- <div class="form-group">
+                    <label for="total_pagu">Total Pagu Anggaran <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text rounded-0" id="basic-addon1">Rp.</span>
+                        </div>
+                        <input type="text" name="total_pagu" id="total_pagu" class="form-control" required data-parsley-trigger="keyup" data-parsley-errors-container="#help-block-total-pagu">
+                    </div>
+                    <div id="help-block-total-pagu"></div>
+                </div> -->
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
             </div>
-
         </div>
         <?= form_close(); ?>
     </div>
@@ -454,7 +463,7 @@
         })
         var option = {
             valueNames: ['nama'],
-            searchColumns: ['nama'],
+            searchColumns: ['nama','kode'],
             page: 8,
             pagination: [{
                 item: "<li class='page-item rounded-0'><a class='page page-link rounded-0' href='#'></a></li>"
@@ -466,6 +475,7 @@
 <script>
     $(function() {
         
+
         // section edit modal
         var MODAL_UNOR = $(".modal-unor"),
         LIST_UNOR = MODAL_UNOR.find(".listUnor"),
@@ -489,7 +499,18 @@
 
         var MODAL_SUBKEGIATAN = $(".modal-subkegiatan"),
         FORM_SUBKEGIATAN = MODAL_SUBKEGIATAN.find("form#formSubKegiatan");
- 
+        
+        // $(":input").inputmask();
+        let total_pagu = MODAL_SUBKEGIATAN.find('input[name="total_pagu"]');
+        $(total_pagu).inputmask("decimal",{
+            radixPoint:",", 
+            groupSeparator: ",", 
+            digits: 2,
+            autoGroup: true,
+            rightAlign: false,
+            prefix: ''
+        });
+        
         // select Unit Organisasi
         $('select[name="unor"]').select2({
 			placeholder: 'Pilih Unor',
@@ -619,7 +640,7 @@
                     data += `<tr>
                                 <td valign="middle" class="">${r.text.toUpperCase()}</td>
                                 <td width="5%"><button type="button" onclick="Hapus(${r.id},'${_uri}/app/programs/hapus/ref_unors')" class="btn btn-danger btn-danger m-0"><i class="fa fa-trash"></i></button></td>
-                                <td width="5%"><button onclick="Edit(${r.id},'${_uri}/app/programs/detail/ref_unors','.modal-unor-edit')" type="button" class="btn btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+                                <td width="5%"><button onclick="Edit('${_uri}/app/programs/detail/ref_unors','.modal-unor-edit')" type="button" class="btn btn-light m-0"><i class="fa fa-pencil"></i></button></td>
                             </tr>`;
                 })
                 LIST_UNOR.html(`
@@ -830,5 +851,5 @@
         }
     }
 
-    
+    // Mangatse :)
 </script>

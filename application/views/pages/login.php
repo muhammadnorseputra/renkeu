@@ -60,7 +60,6 @@
               <div class="form-group last mb-4">
                 <label for="pwd">Password</label>
                 <input type="password" name="pwd" autocomplete="off" id="pwd" class="form-control" data-sanitize="trim" data-validation="required">
-                
               </div>
               
               <div class="d-flex mb-5 align-items-center">
