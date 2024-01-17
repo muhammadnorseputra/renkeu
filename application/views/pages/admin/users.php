@@ -22,8 +22,6 @@
 								<th>Role</th>
 								<th>Is Block</th>
 								<th>Is Restricted</th>
-								<th>Check In</th>
-								<th>Check Out</th>
 								<th>Aksi</th>
 							</tr>
 						</thead>
@@ -62,12 +60,12 @@
 				"type": "POST"
 			},
 			"columnDefs": [{
-				"targets": [0,1,2,3,4,5,6],
+				"targets": [0,1,2,3,4],
 				"orderable": false,
 				"className": "text-left"
 			},
 			{
-				"targets": [7],
+				"targets": [5],
 				"orderable": false,
 				"className": "text-center"
 			}],

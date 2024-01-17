@@ -143,8 +143,8 @@ class Users extends CI_Controller {
                         </div>';
             $is_block = $r->is_block == 'Y' ? '<i class="fa fa-check-circle text-success"></i>' : '<i class="fa fa-close text-danger"></i>';
             $is_restrected = $r->is_restricted == 'Y' ? '<i class="fa fa-check-circle text-success"></i>' : '<i class="fa fa-close text-danger"></i>';
-            $check_in = '<span class="text-sm">'.jamServer($r->check_in).' | '.TanggalIndo($r->check_in).'</span>';
-            $check_out = '<span class="text-sm">'.jamServer($r->check_out).' | '.TanggalIndo($r->check_out).'</span>';
+            // $check_in = '<span class="text-sm">'.jamServer($r->check_in).' | '.TanggalIndo($r->check_in).'</span>';
+            // $check_out = '<span class="text-sm">'.jamServer($r->check_out).' | '.TanggalIndo($r->check_out).'</span>';
 
             $no++;
             $row = array();
@@ -153,8 +153,6 @@ class Users extends CI_Controller {
             $row[] = $this->role($r->id);
             $row[] = $is_block;
             $row[] = $is_restrected;
-            $row[] = $check_in;
-            $row[] = $check_out;
             $row[] = $button;
 
             $data[] = $row;
@@ -226,6 +224,8 @@ class Users extends CI_Controller {
                     'pic' => $image,
                     'nama' => $p['nama'],
                     'username' => $p['username'],
+                    'nip' => $p['nip'],
+                    'nohp' => $p['nohp'],
                     'password' => sha1($p['pwd']),
                     'jobdesk' => $p['jobdesk'],
                     'role' => $p['role'],
@@ -295,7 +295,10 @@ class Users extends CI_Controller {
                 'priv_users' => !empty($p['priv_users']) ? $p['priv_users'] : "N",
                 'priv_settings' => !empty($p['priv_settings']) ? $p['priv_settings'] : "N",
                 'priv_notify' => !empty($p['priv_notify']) ? $p['priv_notify'] : "N",
-                'priv_programs' => !empty($p['priv_programs']) ? $p['priv_programs'] : "N"
+                'priv_programs' => !empty($p['priv_programs']) ? $p['priv_programs'] : "N",
+                'priv_verifikasi' => !empty($p['priv_verifikasi']) ? $p['priv_verifikasi'] : "N",
+                'priv_approve' => !empty($p['priv_approve']) ? $p['priv_approve'] : "N",
+                'priv_riwayat_spj' => !empty($p['priv_riwayat_spj']) ? $p['priv_riwayat_spj'] : "N",
             ];
             $tbl = 't_privilages';
             $cek_privilage = $this->users->get_privilages_count($tbl,$uid);
@@ -322,6 +325,8 @@ class Users extends CI_Controller {
     {
         $profile = $this->users->profile_id($uid);
         $parts = $this->crud->get('ref_parts');
+        $unors = $this->crud->get('ref_unors');
+
         if($profile->num_rows() === 0) {
             redirect(base_url('/app/users'));
             return false;
@@ -334,6 +339,7 @@ class Users extends CI_Controller {
             'user' => $profile->row(),
             'user_id' => $user_id,
             'parts' => $parts,
+            'unors' => $unors,
             'autoload_js' => [
                 'template/custom-js/blockUI/jquery.blockUI.js',
                 'template/custom-js/blockUI/default.js',
@@ -373,7 +379,17 @@ class Users extends CI_Controller {
                  $data = array('upload_data' => $this->upload->data());
                  $image= $data['upload_data']['file_name'];
 
-                 $userdata = ['nama' => $nama, 'fid_part' => $p['part'], 'nip' => $p['nip'], 'nohp' => $p['nohp'], 'role' => $role, 'pic' => $image, 'jobdesk' => $p['jobdesk']]; 
+                 $userdata = [
+                    'nama' => $nama, 
+                    'fid_unor' => $p['unor'],
+                    'fid_part' => $p['part'], 
+                    'nip' => $p['nip'], 
+                    'nohp' => $p['nohp'], 
+                    'role' => $role, 
+                    'pic' => $image, 
+                    'jobdesk' => $p['jobdesk'],
+                    'is_block' => 'N'
+                ]; 
                  
                  $result = $this->users->update($userdata,$whr);
                   
@@ -385,7 +401,16 @@ class Users extends CI_Controller {
                  }
              } 
         } else {
-            $userdata = ['nama' => $nama, 'fid_part' => $p['part'], 'nip' => $p['nip'], 'nohp' => $p['nohp'], 'role' => $role, 'jobdesk' => $p['jobdesk']];
+            $userdata = [
+                'nama' => $nama, 
+                'fid_unor' => $p['unor'],
+                'fid_part' => $p['part'], 
+                'nip' => $p['nip'], 
+                'nohp' => $p['nohp'], 
+                'role' => $role, 
+                'jobdesk' => $p['jobdesk'],
+                'is_block' => 'N'
+            ];
             $result= $this->users->update($userdata,$whr);
             if($result)
              {

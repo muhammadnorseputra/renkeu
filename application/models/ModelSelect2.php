@@ -9,12 +9,9 @@ class ModelSelect2 extends CI_Model {
             $this->db->like('kode', $search);
             $this->db->or_like('nama', $search);
         }
-        if(!empty($refPart)){
             $this->db->where('fid_part', $refPart);
-        }
-        if(!empty($refId)){
             $this->db->where('fid_program', $refId);
-        }
+
             $q = $this->db->get();
         return $q;
     }
@@ -28,6 +25,20 @@ class ModelSelect2 extends CI_Model {
         }
         $this->db->where('fid_kegiatan', $refId);
         $q = $this->db->get();
+        return $q;
+    }
+    public function getUraian($kegiatanId, $subKegiatanId, $search)
+    {
+        $this->db->select('id, kode, nama');
+        $this->db->from('ref_uraians');
+        if(!empty($search)) {
+            $this->db->like('kode', $search);
+            $this->db->or_like('nama', $search);
+        }
+            $this->db->where('fid_kegiatan', $kegiatanId);
+            $this->db->where('fid_sub_kegiatan', $subKegiatanId);
+
+            $q = $this->db->get();
         return $q;
     }
 }

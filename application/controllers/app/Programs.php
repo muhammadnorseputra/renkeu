@@ -106,7 +106,7 @@ class Programs extends CI_Controller {
                 <td class="text-center">
                     '.$no.'
                 </td>
-                <td>
+                <td class="nama">
                     '.$r->nama.'
                 </td>
                 <td width="5%" class="text-center">
@@ -149,7 +149,7 @@ class Programs extends CI_Controller {
                 <td>
                     '.$r->kode.'
                 </td>
-                <td valign="middle">
+                <td valign="middle" class="nama">
                     '.strtoupper($r->nama).'
                 </td>
                 <td width="5%" class="text-center">

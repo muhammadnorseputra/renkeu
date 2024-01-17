@@ -29,6 +29,9 @@
 					$priv_settings = !empty($cek_priv->priv_settings) && $cek_priv->priv_settings  == 'Y' ? 'checked' : '';
 					$priv_notify = !empty($cek_priv->priv_notify) && $cek_priv->priv_notify  == 'Y' ? 'checked' : '';
 					$priv_programs = !empty($cek_priv->priv_programs) && $cek_priv->priv_programs  == 'Y' ? 'checked' : '';
+					$priv_verifikasi = !empty($cek_priv->priv_verifikasi) && $cek_priv->priv_verifikasi  == 'Y' ? 'checked' : '';
+					$priv_approve = !empty($cek_priv->priv_approve) && $cek_priv->priv_approve  == 'Y' ? 'checked' : '';
+					$priv_riwayat_spj = !empty($cek_priv->priv_riwayat_spj) && $cek_priv->priv_riwayat_spj  == 'Y' ? 'checked' : '';
 				?>
                   <?= form_open(base_url('app/users/privilages_update'), ['id' => 'f_privilage'], ['f_type' => 'privilage', 'uid' => encrypt_url($uid)]); ?>
                     <table class="table table-bordered table-condensed">
@@ -62,20 +65,32 @@
                         <tr>
                           <th>#</th>
                           <th>Priv Programs</th>
+                          <th>Priv Approve</th>
+                          <th>Priv Verifikasi</th>
+                          <th>Priv Riwayat SPJ</th>
                         </tr>
                       </thead>
                       <tbody class="text-center">
                       <tr>
                           <th scope="row">Pilih</th>
                           <td>
-                          <input type="checkbox" name="priv_programs" value="Y" class="js-switch" <?= $priv_programs ?> />
+                            <input type="checkbox" name="priv_programs" value="Y" class="js-switch" <?= $priv_programs ?> />
                           </td>
-                        </tr>
+                          <td>
+                            <input type="checkbox" name="priv_approve" value="Y" class="js-switch" <?= $priv_approve ?> />
+                          </td>
+                          <td>
+                            <input type="checkbox" name="priv_verifikasi" value="Y" class="js-switch" <?= $priv_verifikasi ?> />
+                          </td>
+                          <td>
+                            <input type="checkbox" name="priv_riwayat_spj" value="Y" class="js-switch" <?= $priv_riwayat_spj ?> />
+                          </td>
+                      </tr>
                       </tbody>
                     </table>
                     <div class="divider-dashed"></div>
                     <button type="submit" role="button" class="btn btn-success rounded-0">Perbaharui</button>
-                    <button type="button" role="button" onclick="window.location.href='<?= base_url('app/users') ?>'" class="btn btn-danger rounded-0">Batal</button>
+                    <button type="button" role="button" onclick="window.location.href='<?= base_url('app/users') ?>'" class="btn btn-danger rounded-0">Kembali</button>
                 <?= form_close(); ?>
                   </div>
                 </div>

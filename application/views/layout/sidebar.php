@@ -35,7 +35,6 @@
                 <li><a href="<?= base_url('app/dashboard') ?>"><i class="fa fa-home"></i> Beranda</a></li>
                 <?php if(privilages('priv_programs')): ?>
                     <li><a href="<?= base_url('app/programs') ?>"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
-                    <li><a href="<?= base_url('app/arsip') ?>"><i class="fa fa-archive"></i> Arsip</a></li>
                     <?php endif; ?>
                 <li>
                     <a>

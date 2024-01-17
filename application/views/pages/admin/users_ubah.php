@@ -38,6 +38,17 @@
                         <input required data-parsley-trigger="focusout" type="text" name="nama" id="input-nama" class="form-control" value="<?= $user->nama ?>">
                     </div>
                     <div class="row form-group">
+                        <label for="pilih-unor">Unor (SKPD) <span class="text-danger">*</span></label>
+                        <select class="form-control" name="unor" id="pilih-unor" required data-parsley-trigger="change">
+                            <option value="">Pilih Unor</option>
+                            <?php  
+                                foreach($unors->result() as $unor):
+                            ?>
+                            <option value="<?= $unor->id ?>" <?= ($unor->id === $user->fid_unor) ? 'selected' : ''; ?>><?= $unor->nama ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="row form-group">
                         <label for="pilih-part">Badan / Bidang / Bagian <span class="text-danger">*</span></label>
                         <select class="form-control" name="part" id="pilih-part" required data-parsley-trigger="change">
                             <option value="">Pilih Part</option>
