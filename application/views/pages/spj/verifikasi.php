@@ -194,10 +194,10 @@
                                     <label for="is_realisasi"><b>Status Realisasi :</b></label>
                                     <select name="is_realisasi" id="is_realisasi" class="form-control rounded-0" required>
                                         <option value="">Status Realisasi</option>
-                                        <option value="LS">LS</option>
-                                        <option value="UP">UP</option>
-                                        <option value="GU">GU</option>
-                                        <option value="TU">TU</option>
+                                        <option value="LS" <?= $detail->is_realisasi === 'LS' ? 'selected' : '' ?>>LS</option>
+                                        <option value="UP" <?= $detail->is_realisasi === 'UP' ? 'selected' : '' ?>>UP</option>
+                                        <option value="GU" <?= $detail->is_realisasi === 'GU' ? 'selected' : '' ?>>GU</option>
+                                        <option value="TU" <?= $detail->is_realisasi === 'TU' ? 'selected' : '' ?>>TU</option>
                                     </select>
                                 </div>
                             </div>

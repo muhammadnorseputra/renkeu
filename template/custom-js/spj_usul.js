@@ -40,17 +40,19 @@ $("form#step-1").on("submit", function (e) {
 		data = _.serialize();
 	if (_.parsley().isValid()) {
 
-		$.blockUI({ message: `<img src="${_uri}/template/assets/loader/motion-blur.svg">` });
-		$.post(
-			action,
-			data,
-			function (res) {
-				if (res.code === 200) {
-					window.location.replace(res.redirect);
-				}
-			},
-			"json"
-		);
+		$.blockUI({ message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`, css: {backgroundColor: 'transparent', borderColor: 'transparent'} });
+		setTimeout(function() {
+			$.post(
+				action,
+				data,
+				function (res) {
+					if (res.code === 200) {
+						window.location.replace(res.redirect);
+					}
+				},
+				"json"
+				);
+			}, 2000)
 	}
 });
 
@@ -62,8 +64,8 @@ $("form#step-2").on("submit", function (e) {
 	let msg = 'Apakah anda yakin akan mengirim usulan tersebut ?';
 	if (_.parsley().isValid()) {
 		if(confirm(msg)) {
-
-		$.blockUI({ message: `<img src="${_uri}/template/assets/loader/motion-blur.svg">` });
+			$.blockUI({ message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`, css: {backgroundColor: 'transparent', borderColor: 'transparent'} });
+			setTimeout(function() {
 			$.post(
 				action,
 				data,
@@ -74,6 +76,7 @@ $("form#step-2").on("submit", function (e) {
 				},
 				"json"
 				);
+			}, 2000)
 			return false
 		}
 	}

@@ -223,7 +223,7 @@ class Spj extends CI_Controller {
         if($input['status'] == 'MS') {
             $update = [
                 'nomor_pembukuan' => $input['nomor'],
-                'tanggal_pembukuan' => $input['tanggal'],
+                'tanggal_pembukuan' => formatToSQL($input['tanggal']),
                 'is_status' => 'VERIFIKASI_ADMIN',
                 'is_realisasi' => $input['is_realisasi'],
                 'catatan' => '',
@@ -307,6 +307,7 @@ class Spj extends CI_Controller {
             'jumlah' => $detailUsul->jumlah,
             'uraian' => $detailUsul->uraian,
             'is_status' => $is_status === 'SELESAI' ? 'APPROVE' : $detailUsul->is_status,
+            'is_realisasi' => $detail->is_realisasi,
             'catatan' => $detailUsul->catatan,
             'approve_by' => $is_status === 'SELESAI' ? $this->session->userdata('user_name') : $detailUsul->approve_by,
             'approve_at' => $is_status === 'SELESAI' ? date('Y-m-d H:i:s') : $detailUsul->approve_at,
@@ -400,7 +401,7 @@ class Spj extends CI_Controller {
                 'template/backend/vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js',
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
-                'template/backend/template/custom-js/blockUI/jquery.blockUI.js',
+                'template/custom-js/blockUI/jquery.blockUI.js',
                 'template/custom-js/spj_usul.js',
                 'template/custom-js/rupiah.js',
             ],

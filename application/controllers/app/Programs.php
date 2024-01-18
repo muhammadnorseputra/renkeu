@@ -90,21 +90,32 @@ class Programs extends CI_Controller {
     {
         $db = $this->crud->get('ref_programs');
         
-        $btnAdd = '<div class="col-3 col-md-3">
-            <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 pull-right rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
+        $btnAdd = '<div>
+            <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
+            </div>
         ';
         $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
         
         $html = '<div id="listProgram"><div class="row">'.$search.$pagging.$btnAdd."</div>";
         $html .= '<table class="table table-condensed table-hover">';
-        $html .= '<thead><tr><th class="text-center">No</th><th>Judul</th><th>Hapus</th></tr></thead>';
+        $html .= '<thead>
+                    <tr>
+                        <th class="text-center">No</th>
+                        <th>Kode</th>
+                        <th>Judul</th>
+                        <th>Hapus</th>
+                    </tr>
+                    </thead>';
         $html .= '<tbody class="list">';
         $no=1;
         foreach($db->result() as $r):
             $html .= '<tr>
                 <td class="text-center">
                     '.$no.'
+                </td>
+                <td class="kode">
+                    '.$r->kode.'
                 </td>
                 <td class="nama">
                     '.$r->nama.'
@@ -130,8 +141,8 @@ class Programs extends CI_Controller {
     public function kegiatan()
     {
         $db = $this->db->order_by('kode', 'asc')->get('ref_kegiatans');
-        $btnAdd = '<div class="col-3 col-md-3">
-            <button data-toggle="modal" data-target=".modal-kegiatan" class="btn btn-primary mt-3 pull-right rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
+        $btnAdd = '<div>
+            <button data-toggle="modal" data-target=".modal-kegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
         ';
         $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
@@ -174,8 +185,8 @@ class Programs extends CI_Controller {
     {
         
             $db = $this->db->order_by('kode', 'asc')->get('ref_sub_kegiatans');
-            $btnAdd = '<div class="col-12 col-md-3">
-                <button data-toggle="modal" data-target=".modal-subkegiatan" class="btn btn-primary mt-3 pull-right rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
+            $btnAdd = '<div>
+                <button data-toggle="modal" data-target=".modal-subkegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
             ';
             $search = '<div class="col-6 col-md-3">Pencarian <input type="text" class="fuzzy-search form-control" /></div>';
             $pagging = '<div class="col-6 col-md-6">Halaman <ul class="pagination"></ul></div>';
@@ -187,9 +198,6 @@ class Programs extends CI_Controller {
                                 <th class="text-center">No</th>
                                 <th>Kode</th>
                                 <th>Judul</th>
-                                <th class="text-right">Pagu Awal</th>
-                                <th class="text-right">Realisasi</th>
-                                <th class="text-right">Pagu Akhir</th>
                                 <th>Hapus</th>
                                 <th>Edit</th>
                             </tr>
@@ -206,15 +214,6 @@ class Programs extends CI_Controller {
                     </td>
                     <td class="nama">
                         '.strtoupper($r->nama).'
-                    </td>
-                    <td class="nominal text-right">
-                        Rp. '.nominal($r->total_pagu_before).'
-                    </td>
-                    <td class="nominal text-right">
-                        Rp. '.nominal($r->total_pagu_realisasi).'
-                    </td>
-                    <td class="nominal text-right">
-                        Rp. '.nominal($r->total_pagu_after).'
                     </td>
                     <td width="5%" class="text-center">
                         <button onclick="Hapus('.$r->id.',\''.base_url('app/programs/hapus/ref_sub_kegiatans').'\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
@@ -236,6 +235,46 @@ class Programs extends CI_Controller {
     
             echo json_encode($data);
         
+    }
+
+    public function uraian()
+    {
+        $db = $this->db->order_by('kode', 'asc')->get('ref_uraians');
+        $btnAdd = '<div>
+            <button data-toggle="modal" data-target=".modal-uraian" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
+        ';
+        $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
+        $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
+        
+        $html = '<div id="listKegiatan"><div class="row">'.$search.$pagging.$btnAdd."</div>";
+        $html .= '<table class="table table-condensed table-hover">';
+        $html .= '<thead><tr><th class="text-center">No</th><th>Kode</th><th>Judul</th><th>Hapus</th></tr></thead>';
+        $html .= '<tbody class="list">';
+        $no=1;
+        foreach($db->result() as $r):
+            $html .= '<tr>
+                <td class="text-center">
+                    '.$no.'
+                </td>
+                <td>
+                    '.$r->kode.'
+                </td>
+                <td valign="middle" class="nama">
+                    '.strtoupper($r->nama).'
+                </td>
+            </tr>';
+            $no++;
+        endforeach;
+        $html .= '</tbody>';
+        $html .= '</table></div>';
+        
+        if($db->num_rows() > 0):
+            $data = ['result' => $html, 'msg' => $db->num_rows().' Data Ditemukan', 'code' => 200];
+        else:
+            $data = ['result' => $btnAdd, 'msg' => 'Data <b>Uraian</b> Tidak Ditemukan', 'code' => 404];
+        endif;
+
+        echo json_encode($data);
     }
 
     public function getUnor() 
@@ -280,6 +319,16 @@ class Programs extends CI_Controller {
         $all = [];
         if($db->num_rows() > 0):
             foreach($db->result() as $row):
+                if($this->session->userdata('role') !== 'ADMIN' && $this->session->userdata('role') !== 'SUPER_ADMIN' && $this->session->userdata('role') !== 'VERIFICATOR') {
+                    if($this->session->userdata('part') !== $row->id) {
+                        $data['disabled'] = true;
+                        $data['selected'] = false;
+                    } else {
+                        $data['disabled'] = false;
+                        $data['selected'] = true;
+                    }
+                }
+                
                 $data['id'] = $row->id;
                 $data['text'] = $row->id." - ".$row->nama;
                 $all[] = $data;
@@ -299,7 +348,7 @@ class Programs extends CI_Controller {
         if($db->num_rows() > 0):
             foreach($db->result() as $row):
                 $data['id'] = $row->id;
-                $data['text'] = $row->id." - ".$row->nama;
+                $data['text'] = $row->kode." - ".$row->nama;
                 $all[] = $data;
             endforeach;
         else:
@@ -406,6 +455,7 @@ class Programs extends CI_Controller {
             $p = $this->input->post();
             $data = [
                 'fid_unor' => $p['unor'],
+                'kode' => $p['kode_program'],
                 'nama' => $p['program']
             ];
             $db = $this->crud->insert('ref_programs', $data);
@@ -428,6 +478,26 @@ class Programs extends CI_Controller {
                 'nama' => $p['subkegiatan']
             ];
             $db = $this->crud->insert('ref_sub_kegiatans', $data);
+            if($db) 
+            {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+            return false;
+        }
+
+        if($type === 'uraian')
+        {
+            $p = $this->input->post();
+            $data = [
+                'fid_kegiatan' => $p['kegiatan'],
+                'fid_sub_kegiatan' => $p['subkegiatan'],
+                'kode' => $p['kode_uraian'],
+                'nama' => $p['nama_uraian']
+            ];
+            $db = $this->crud->insert('ref_uraians', $data);
             if($db) 
             {
                 $msg = 200;
@@ -552,6 +622,39 @@ class Programs extends CI_Controller {
         if($form === 'namaprogram') {
             $kode = $this->input->post('program');
             $db = $this->crud->getWhere('ref_programs', ['nama' => $kode]);
+            if($db->num_rows() > 0) {
+                $this->output->set_status_header('400');
+            } else {
+                $this->output->set_status_header('200');
+            }
+            return false;
+        }
+
+        if($form === 'kodeprogram') {
+            $kode = $this->input->post('kode_program');
+            $db = $this->crud->getWhere('ref_programs', ['kode' => $kode]);
+            if($db->num_rows() > 0) {
+                $this->output->set_status_header('400');
+            } else {
+                $this->output->set_status_header('200');
+            }
+            return false;
+        }
+
+        if($form === 'namauraian') {
+            $kode = $this->input->post('nama_uraian');
+            $db = $this->crud->getWhere('ref_uraians', ['nama' => $kode]);
+            if($db->num_rows() > 0) {
+                $this->output->set_status_header('400');
+            } else {
+                $this->output->set_status_header('200');
+            }
+            return false;
+        }
+
+        if($form === 'kodeuraian') {
+            $kode = $this->input->post('kode_uraian');
+            $db = $this->crud->getWhere('ref_uraians', ['kode' => $kode]);
             if($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
             } else {

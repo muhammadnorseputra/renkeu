@@ -66,3 +66,7 @@ function indoSQL($date) {
 
     return $tahun . '-' . bulanindoSQL($bulan) . '-' . $hari;
 }
+
+function formatToSQL($date) {
+    return date("Y-m-d", strtotime($date));
+}

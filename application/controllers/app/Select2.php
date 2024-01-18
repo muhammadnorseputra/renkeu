@@ -50,7 +50,7 @@ class Select2 extends CI_Controller {
         $db = $this->select->getSubKegiatan($refId, $search)->result();
         $data = array();
         foreach ($db as $sub) {
-            $data[] = array("id" => $sub->id, "text" => strtoupper($sub->nama), "kode" => $sub->kode);
+            $data[] = array("id" => $sub->id, "text" => $sub->kode." - ".strtoupper($sub->nama), "kode" => $sub->kode);
         }
         echo json_encode($data);
 	}
