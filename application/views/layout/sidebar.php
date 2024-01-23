@@ -18,7 +18,7 @@
             <img src="<?= base_url('template/assets/picture_akun/'.$this->session->userdata('pic')) ?>" alt="<?= $this->session->userdata('user_name'); ?>" class="img-circle profile_img">
         </div>
         <div class="profile_info">
-            <span>Welcome,</span>
+            <!-- <span>Welcome,</span> -->
             <h2><?= ucwords($this->session->userdata('nama')); ?></h2>
             <p>(<?= strtolower($this->session->userdata('user_name')); ?>)</p>
         </div>
@@ -35,15 +35,15 @@
                 <li><a href="<?= base_url('app/dashboard') ?>"><i class="fa fa-home"></i> Beranda</a></li>
                 <?php if(privilages('priv_programs')): ?>
                     <li><a href="<?= base_url('app/programs') ?>"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
-                    <?php endif; ?>
+                <?php endif; ?>
+                    <li><a href="<?= base_url('app/spj') ?>"><i class="fa fa-book"></i> SPJ</a></li>
                 <li>
                     <a>
-                        <i class="fa fa-money"></i> Anggaran <span class="fa fa-chevron-down"></span>
+                        <i class="fa fa-money"></i> Target <span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu">
-                        <li><a href="#level1_1">Target</a><li>
-                        <li><a href="#level1_1">Kinerja</a><li>
-                        <li><a href="<?= base_url('app/spj') ?>">SPJ</a></li>
+                        <li><a href="<?= base_url('app/target') ?>">Anggaran & Kinerja</a></li>
+                        <li><a href="#level1_1">Realisasi</a></li>
                     </ul>
                 </li>
             </ul>

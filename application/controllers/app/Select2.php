@@ -37,8 +37,8 @@ class Select2 extends CI_Controller {
         $refPart = $this->input->post('refPart');
         $db = $this->select->getKegiatan($refPart, $refId, $search)->result();
         $data = array();
-        foreach ($db as $sub) {
-            $data[] = array("id" => $sub->id, "text" => strtoupper($sub->nama), "kode" => $sub->kode);
+        foreach ($db as $kegiatan) {
+            $data[] = array("id" => $kegiatan->id, "text" => $kegiatan->kode." - ".$kegiatan->nama, "kode" => $kegiatan->kode);
         }
         echo json_encode($data);
 	}
@@ -50,7 +50,7 @@ class Select2 extends CI_Controller {
         $db = $this->select->getSubKegiatan($refId, $search)->result();
         $data = array();
         foreach ($db as $sub) {
-            $data[] = array("id" => $sub->id, "text" => $sub->kode." - ".strtoupper($sub->nama), "kode" => $sub->kode);
+            $data[] = array("id" => $sub->id, "text" => $sub->kode." - ".$sub->nama, "kode" => $sub->kode);
         }
         echo json_encode($data);
 	}
@@ -63,7 +63,7 @@ class Select2 extends CI_Controller {
         $db = $this->select->getUraian($kegiatanId, $subKegiatanId, $search)->result();
         $data = array();
         foreach ($db as $u) {
-            $data[] = array("id" => $u->id, "text" => strtoupper($u->nama), "kode" => $u->kode);
+            $data[] = array("id" => $u->id, "text" => $u->kode." - ".$u->nama, "kode" => $u->kode);
         }
         echo json_encode($data);
     }

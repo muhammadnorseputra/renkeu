@@ -14,11 +14,12 @@
             <!-- CONTENT -->
             <div class="col-sm-12">
 				<div class="card-box table-responsive">
-					<table id="table-users" class="table table-condensed dt-responsive nowrap" cellspacing="0" width="100%">
+					<table id="table-users" class="table table-hover table-condensed dt-responsive nowrap" cellspacing="0" width="100%">
 						<thead>
 							<tr>
 								<th>Photo</th>
 								<th>Nama</th>
+								<th>Username</th>
 								<th>Role</th>
 								<th>Is Block</th>
 								<th>Is Restricted</th>
@@ -60,12 +61,17 @@
 				"type": "POST"
 			},
 			"columnDefs": [{
-				"targets": [0,1,2,3,4],
+				"targets": [0,1,2,4,5],
 				"orderable": false,
 				"className": "text-left"
 			},
 			{
-				"targets": [5],
+				"targets": [3],
+				"orderable": true,
+				"className": "text-left"
+			},
+			{
+				"targets": [6],
 				"orderable": false,
 				"className": "text-center"
 			}],

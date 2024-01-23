@@ -30,7 +30,7 @@ $("#wizard").smartWizard({
 });
 
 function nextStep(path) {
-	return window.location.href = path;
+	return (window.location.href = path);
 }
 
 $("form#step-1").on("submit", function (e) {
@@ -39,9 +39,11 @@ $("form#step-1").on("submit", function (e) {
 		action = _.attr("action"),
 		data = _.serialize();
 	if (_.parsley().isValid()) {
-
-		$.blockUI({ message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`, css: {backgroundColor: 'transparent', borderColor: 'transparent'} });
-		setTimeout(function() {
+		$.blockUI({
+			message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+			css: { backgroundColor: "transparent", borderColor: "transparent" },
+		});
+		setTimeout(function () {
 			$.post(
 				action,
 				data,
@@ -51,8 +53,8 @@ $("form#step-1").on("submit", function (e) {
 					}
 				},
 				"json"
-				);
-			}, 2000)
+			);
+		}, 2000);
 	}
 });
 
@@ -61,23 +63,26 @@ $("form#step-2").on("submit", function (e) {
 	let _ = $(this),
 		action = _.attr("action"),
 		data = _.serialize();
-	let msg = 'Apakah anda yakin akan mengirim usulan tersebut ?';
+	let msg = "Apakah anda yakin akan mengirim usulan tersebut ?";
 	if (_.parsley().isValid()) {
-		if(confirm(msg)) {
-			$.blockUI({ message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`, css: {backgroundColor: 'transparent', borderColor: 'transparent'} });
-			setTimeout(function() {
-			$.post(
-				action,
-				data,
-				function (res) {
-					if (res.code === 200) {
-						window.location.replace(res.redirect);
-					}
-				},
-				"json"
+		if (confirm(msg)) {
+			$.blockUI({
+				message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+				css: { backgroundColor: "transparent", borderColor: "transparent" },
+			});
+			setTimeout(function () {
+				$.post(
+					action,
+					data,
+					function (res) {
+						if (res.code === 200) {
+							window.location.replace(res.redirect);
+						}
+					},
+					"json"
 				);
-			}, 2000)
-			return false
+			}, 2000);
+			return false;
 		}
 	}
 });
@@ -99,7 +104,8 @@ $("form#formCariKode").on("submit", function (e) {
 				$formStep.find('input[name="ref_program"]').val(res.program_id);
 				$formStep.find('input[name="ref_kegiatan"]').val(res.kegiatan_id);
 				$formStep.find('input[name="ref_subkegiatan"]').val(res.subkegiatan_id);
-				$modal.modal('hide')
+				$formStep.find('input[name="ref_uraian"]').val(res.uraian_id);
+				$modal.modal("hide");
 			},
 			"json"
 		);
@@ -118,13 +124,14 @@ function formatResults(res) {
 }
 
 $(function () {
-	$("select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan']").select2({
+	$(
+		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan']"
+	).select2({
 		width: "100%",
 		dropdownParent: $("#modelSearchKode"),
 	});
 
 	$("select[name='bulan'],select[name='tahun']").select2();
-
 
 	let $modal = $("#modelSearchKode");
 
@@ -153,11 +160,14 @@ $(function () {
 				},
 				cache: false,
 			},
-			templateResult: formatResults,
+			// templateResult: formatResults,
 			// templateSelection: formatResults
 		});
 	}
-	select2Kegiatan($modal.find('select[name="program"]').val(), $modal.find('select[name="part"]').val());
+	select2Kegiatan(
+		$modal.find('select[name="program"]').val(),
+		$modal.find('select[name="part"]').val()
+	);
 	$("select[name='part'],select[name='program']").on("change", function () {
 		$("select[name='kegiatan']").val("").trigger("change");
 		var id_program = $("select[name='program']").val();
@@ -188,7 +198,7 @@ $(function () {
 				},
 				cache: false,
 			},
-			templateResult: formatResults,
+			// templateResult: formatResults,
 			// templateSelection: formatResults
 		});
 	}
@@ -223,22 +233,18 @@ $(function () {
 				},
 				cache: false,
 			},
-			templateResult: formatResults,
+			// templateResult: formatResults,
 			// templateSelection: formatResults
 		});
 	}
 
-	$("select[name='kegiatan'],select[name='sub_kegiatan']").on("change", function () {
-		// let id = $(this).val();
-		var kegiatanId = $("select[name='kegiatan']").val();
-		var subKegiatanId = $("select[name='sub_kegiatan']").val();
-		select2UraianKegiatan(kegiatanId, subKegiatanId);
-	});
-});
-
-/* Tanpa Rupiah */
-var tanpa_rupiah = document.getElementById('jumlah');
-tanpa_rupiah.addEventListener('keyup', function(e)
-{
-	tanpa_rupiah.value = formatRupiah(this.value);
+	$("select[name='kegiatan'],select[name='sub_kegiatan']").on(
+		"change",
+		function () {
+			// let id = $(this).val();
+			var kegiatanId = $("select[name='kegiatan']").val();
+			var subKegiatanId = $("select[name='sub_kegiatan']").val();
+			select2UraianKegiatan(kegiatanId, subKegiatanId);
+		}
+	);
 });

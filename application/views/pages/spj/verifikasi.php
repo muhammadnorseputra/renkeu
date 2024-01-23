@@ -23,7 +23,7 @@
                 <td>
                     Bidang / Bagian
                 </td>
-                <td rowspan="2">
+                <td rowspan="1">
 
                 </td>
                 <td>
@@ -33,6 +33,9 @@
             <tr>
                 <td>
                     Program
+                </td>
+                <td class="text-right">
+                    <?= $detail->kode_program ?>
                 </td>
                 <td>
                     <?= $detail->nama_program ?>
@@ -217,7 +220,7 @@
                          <?php  
                             $tms_keterangan = $detail->is_status == 'TMS' ? $detail->catatan : '';
                          ?>
-                        <textarea name="catatan" id="catatan" cols="5" rows="2" class="form-control" placeholder="Masukan keterangan TMS"> <?= $tms_keterangan ?></textarea>
+                        <textarea name="catatan" id="catatan" cols="5" rows="2" class="form-control" placeholder="Masukan keterangan TMS"><?= $tms_keterangan ?></textarea>
                         <button type="submit" class="btn btn-danger rounded-0 mt-2"><i class="fa fa-save mr-2"></i> Proses</button>
                         <?= 
                         form_close();
@@ -233,7 +236,7 @@
                         <?php  
                             $btl_keterangan = $detail->is_status == 'BTL' ? $detail->catatan : '';
                         ?>
-                        <textarea name="catatan" id="catatan" cols="5" rows="2" class="form-control" placeholder="Masukan keterangan BTL"> <?= $btl_keterangan ?></textarea>
+                        <textarea name="catatan" id="catatan" cols="5" rows="2" class="form-control" placeholder="Masukan keterangan BTL"><?= $btl_keterangan ?></textarea>
                         <button type="submit" class="btn btn-danger rounded-0 mt-2"><i class="fa fa-save mr-2"></i> Proses</button>
                         <?= 
                         form_close();

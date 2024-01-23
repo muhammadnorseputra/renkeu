@@ -4,7 +4,7 @@ class ModelUsers extends CI_Model {
 	// set table
 	protected $table = 't_users';
 	//set column field database for datatable orderable
-	protected $column_order = array(null, 'nama',null,null,null,null,null);
+	protected $column_order = array(null, null,null,'role',null,null,null);
 	//set column field database for datatable searchable 
 	protected $column_search = array('nama');
 	// default order 
@@ -82,6 +82,9 @@ class ModelUsers extends CI_Model {
 	public function profile_username($user_name)
 	{
 		return $this->db->get_where('t_users', ['username' => $user_name]);
+	}
+	public function part_detail($partId) {
+		return $this->db->get_where('ref_parts', ['id' => $partId])->row()->nama;
 	}
     public function update($data,$whr)
 	{

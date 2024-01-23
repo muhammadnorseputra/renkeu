@@ -53,6 +53,8 @@ class Account extends CI_Controller {
         $profile = $this->users->profile_id($user_id)->row();
         $user_nama = $profile->username;
         $nama= $this->input->post('nama');
+        $nip= $this->input->post('nip');
+        $nohp= $this->input->post('nohp');
         $whr = ['id' => decrypt_url($user_id)]; 
         $path = './template/assets/picture_akun';
         if(!empty($_FILES["file"]["name"]))  
@@ -75,7 +77,7 @@ class Account extends CI_Controller {
                  $data = array('upload_data' => $this->upload->data());
                  $image= $data['upload_data']['file_name'];
 
-                 $userdata = ['nama' => $nama, 'pic' => $image]; 
+                 $userdata = ['nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'pic' => $image]; 
                  
                  $result= $this->users->update($userdata,$whr);
                   
@@ -86,10 +88,10 @@ class Account extends CI_Controller {
                     $msg = ['valid' => false, 'pesan' => 'Update profil gagal', 'redirectTo' => false];
                  }
              } 
-        } elseif(($nama == $profile->nama) && (empty($_FILES["file"]["name"]))) {
+        } elseif(($nama == $profile->nama) && ($nip == $profile->nip) && ($nohp == $profile->nohp) && (empty($_FILES["file"]["name"]))) {
             $msg = ['valid' => false, 'pesan' => 'Tidak ada perubahan', 'redirectTo' => false];
         } else {
-            $userdata = ['nama' => $nama];
+            $userdata = ['nama' => $nama, 'nip' => $nip, 'nohp' => $nohp,];
             $result= $this->users->update($userdata,$whr);
             if($result)
              {

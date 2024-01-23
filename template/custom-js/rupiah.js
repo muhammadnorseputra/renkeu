@@ -15,3 +15,9 @@ function formatRupiah(angka, prefix)
     rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
     return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
 }
+
+/* Tanpa Rupiah */
+var tanpa_rupiah = document.getElementById("jumlah");
+tanpa_rupiah.addEventListener("keyup", function (e) {
+	tanpa_rupiah.value = formatRupiah(this.value);
+});

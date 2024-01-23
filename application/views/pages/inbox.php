@@ -1,31 +1,31 @@
 <div class="row">
     <div class="col-md-12">
-    <div class="x_panel">
-        <div class="x_title">
-        <h2>Inboxs User</h2>
-        <ul class="nav navbar-right panel_toolbox">
-            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-            </li>
-        </ul>
-        <div class="clearfix"></div>
-        </div>
-        <div class="x_content">
-        <div class="row">
-            <div class="col-sm-3 mail_list_column"></div>
-            <!-- /MAIL LIST -->
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Inboxs User</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-sm-3 mail_list_column"></div>
+                    <!-- /MAIL LIST -->
 
-            <!-- CONTENT MAIL -->
-            <div class="col-sm-9 mail_view"></div>
-            <!-- /CONTENT MAIL -->
+                    <!-- CONTENT MAIL -->
+                    <div class="col-sm-9 mail_view"></div>
+                    <!-- /CONTENT MAIL -->
+                </div>
+            </div>
         </div>
-        </div>
-    </div>
     </div>
 </div>
 
 <script>
     var $MailList = $(".mail_list_column"),
-    $MailDetail = $(".mail_view");
+        $MailDetail = $(".mail_view");
 
     let id = urlParams.get('mail');
 
@@ -49,7 +49,9 @@
         const url = new URL(window.location.href);
         url.searchParams.set('mail', id);
         history.pushState({}, "", url);
-        getMailById(id).then((res) => { $MailDetail.html(res); NProgress.done() });
+        getMailById(id).then((res) => {
+            $MailDetail.html(res);
+            NProgress.done()
+        });
     }
-
 </script>

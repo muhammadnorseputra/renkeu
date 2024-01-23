@@ -72,7 +72,8 @@ class Spj extends CI_Controller {
                         <th>Jumlah (Rp)</th>
                         <th>Status</th>
                         <th>Eviden</th>
-                        <th></th></tr>
+                        <th colspan="3" class="text-center">Aksi</th>
+                    </tr>
                     </thead>';
         $html .= '<tbody class="list">';
         $no=1;
@@ -89,10 +90,10 @@ class Spj extends CI_Controller {
                 $status = '<span class="badge p-2 badge-danger"><i class="fa fa-close mr-2"></i> TMS</span>';
             }
 
-            if(isset($r->berkas_link)) {
+            if(isset($r->berkas_link) && !empty($r->berkas_link)) {
                 $link = '<a href="'.$r->berkas_link.'" target="_blank" class="btn btn-sm btn-warning rounded-0"><i class="fa fa-link"></i> <br> Berkas</a>';
             } else {
-                $link = '-';
+                $link = '<i class="text-secondary">Kosong</i>';
             }
 
             if($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN'){
@@ -100,14 +101,22 @@ class Spj extends CI_Controller {
             } elseif($r->is_status === 'APPROVE' || $r->is_status === 'TMS' || $r->is_status === 'BTL') {
                 $detail = '<button onclick="window.location.replace(\''.base_url('app/spj/buatusul?step=3&status='.$r->is_status.'&token='.$r->token).'\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
             } else {
-                $detail = '<button onclick="window.location.replace(\''.base_url('app/spj/buatusul?step=0&status=entri&token='.$r->token).'\')" type="button" class="btn btn-sm btn-primary m-0 rounded-0"><i class="fa fa-pencil"></i> <br> Ubah</button>';
+                $detail = '
+                        <td class="text-center">
+                            <button onclick="window.location.replace(\''.base_url('app/spj/buatusul?step=0&status=entri&token='.$r->token).'\')" type="button" class="btn btn-sm btn-primary m-0 rounded-0"><i class="fa fa-pencil"></i> <br> Ubah</button> 
+                        </td>
+                        <td class="text-center">
+                            <button onclick="HapusUsulan(\''.base_url('app/spj/hapususulan/'.$r->token).'\')" type="button" class="btn btn-sm btn-danger m-0 rounded-0 pull-right"><i class="fa fa-trash"></i> <br> Hapus</button>
+                        </td>
+                    ';
+
             }
             $html .= '<tr>
                 <td class="text-center">
                     '.$no.'
                 </td>
                 <td class="kode">
-                    <br> '.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.'
+                <br>'.$r->kode_program.'<br> '.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.'
                 </td>
                 <td class="nama">
                 <b>'.$r->nama_part.'</b> <br>  '.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.'
@@ -174,7 +183,7 @@ class Spj extends CI_Controller {
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = '<br><br>'.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan;
+            $row[] = '<br>'.$r->kode_program.'<br>'.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan;
             $row[] = '<b>'.$r->nama_part.'</b> <br>'.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan;
             $row[] = longdate_indo(substr($r->entri_at,0,10))."<br>(".$userusul->nama.")<hr>".$status;
             $row[] = "<b>".nominal($r->jumlah)."</b>";
@@ -269,9 +278,12 @@ class Spj extends CI_Controller {
         $nama_program = $this->spj->getNama('ref_programs', $detailUsul->fid_program);
         $nama_kegiatan = $this->spj->getNama('ref_kegiatans', $detailUsul->fid_kegiatan);
         $nama_sub_kegiatan = $this->spj->getNama('ref_sub_kegiatans', $detailUsul->fid_sub_kegiatan);
+        $nama_uraian = $this->spj->getNama('ref_uraians', $detailUsul->fid_uraian);
 
         $kode_kegiatan = $this->spj->getKode('ref_kegiatans', $detailUsul->fid_kegiatan);
         $kode_sub_kegiatan = $this->spj->getKode('ref_sub_kegiatans', $detailUsul->fid_sub_kegiatan);
+        $kode_uraian = $this->spj->getKode('ref_uraians', $detailUsul->fid_uraian);
+        $kode_program = $this->spj->getKode('ref_programs', $detailUsul->fid_program);
         
         $whr = [
             'token' => $detailUsul->token
@@ -297,17 +309,20 @@ class Spj extends CI_Controller {
             'nama_program' => $nama_program,
             'nama_kegiatan' => $nama_kegiatan,
             'nama_sub_kegiatan' => $nama_sub_kegiatan,
+            'nama_uraian' => $nama_uraian,
+            'kode_program' => $kode_program,
             'kode_kegiatan' => $kode_kegiatan,
             'kode_sub_kegiatan' => $kode_sub_kegiatan,
+            'kode_uraian' => $kode_uraian,
             'koderek' => $detailUsul->koderek,
-            'nomor_pembukuan' => $detailUsul->nomor_pembukuan,
+            'nomor_pembukuan' => @$detailUsul->nomor_pembukuan,
             'bulan' => $detailUsul->bulan,
             'tahun' => $detailUsul->tahun,
-            'tanggal_pembukuan' => $detailUsul->tanggal_pembukuan,
+            'tanggal_pembukuan' => @$detailUsul->tanggal_pembukuan,
             'jumlah' => $detailUsul->jumlah,
             'uraian' => $detailUsul->uraian,
             'is_status' => $is_status === 'SELESAI' ? 'APPROVE' : $detailUsul->is_status,
-            'is_realisasi' => $detail->is_realisasi,
+            'is_realisasi' => @$detailUsul->is_realisasi,
             'catatan' => $detailUsul->catatan,
             'approve_by' => $is_status === 'SELESAI' ? $this->session->userdata('user_name') : $detailUsul->approve_by,
             'approve_at' => $is_status === 'SELESAI' ? date('Y-m-d H:i:s') : $detailUsul->approve_at,
@@ -416,18 +431,22 @@ class Spj extends CI_Controller {
         $input = $this->input->post();
         $kode_kegiatan = $this->crud->getWhere('ref_kegiatans', ['id' => $input['kegiatan']])->row();
         $kode_subkegiatan = $this->crud->getWhere('ref_sub_kegiatans', ['id' => $input['sub_kegiatan']])->row();
+        $kode_uraian = $this->crud->getWhere('ref_uraians', ['id' => $input['uraian_kegiatan']])->row();
 
         $data = [
             'part_id' => $input['part'],
             'program_id' => $input['program'],
             'kegiatan_id' => $input['kegiatan'],
             'subkegiatan_id' => $input['sub_kegiatan'],
+            'uraian_id' => $input['uraian_kegiatan'],
             'kode_kegiatan' => $kode_kegiatan->kode,
             'kode_subkegiatan' => $kode_subkegiatan->kode,
-            'kode' => $kode_kegiatan->kode.".".$kode_subkegiatan->kode
+            'kode_uraian' => $kode_subkegiatan->kode,
+            'kode' => $kode_kegiatan->kode.".".$kode_subkegiatan->kode.".".$kode_uraian->kode
         ];
         echo json_encode($data);
     }
+
     public function prosesusul()
     {
         $input = $this->input->post();
@@ -437,6 +456,7 @@ class Spj extends CI_Controller {
                 'fid_program' => $input['ref_program'],
                 'fid_kegiatan' => $input['ref_kegiatan'],
                 'fid_sub_kegiatan' => $input['ref_subkegiatan'],
+                'fid_uraian' => $input['ref_uraian'],
                 'koderek' => $input['koderek'],
                 'bulan' => $input['bulan'],
                 'tahun' => $input['tahun'],
@@ -452,6 +472,7 @@ class Spj extends CI_Controller {
                 'fid_program' => $input['ref_program'],
                 'fid_kegiatan' => $input['ref_kegiatan'],
                 'fid_sub_kegiatan' => $input['ref_subkegiatan'],
+                'fid_uraian' => $input['ref_uraian'],
                 'koderek' => $input['koderek'],
                 'bulan' => $input['bulan'],
                 'tahun' => $input['tahun'],
@@ -492,5 +513,18 @@ class Spj extends CI_Controller {
             $status = ['msg' => 'Gagal', 'code' => 400];
         }
         echo json_encode($status);
+    }
+
+    public function hapususulan($token)
+    {
+
+            $db = $this->crud->deleteWhere('spj', ['token' => $token]);
+            if($db)
+            {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
     }
 }

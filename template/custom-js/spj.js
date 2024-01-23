@@ -80,3 +80,12 @@ $(function () {
 		],
 	};
 });
+
+function HapusUsulan(url) {
+	if(confirm('Apakah anda yakin akan menghapus usulan tersebut ?')) {
+		$.post(url, {}, function(res) {
+			res === 200 ? window.location.reload() : alert('Hapus GAGAL');
+		}, 'json');
+		return false;
+	}
+}

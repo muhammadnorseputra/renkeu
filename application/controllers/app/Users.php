@@ -86,14 +86,16 @@ class Users extends CI_Controller {
         $role_name = $row->role;
         if($role_name == 'SUPER_USER'):
             $role_color = '<span class="badge badge-success">'.$role_name.'</span>';
+        elseif($role_name == 'SUPER_ADMIN'):
+            $role_color = '<span class="badge badge-danger">'.$role_name.'</span>';
         elseif($role_name == 'ADMIN'):
             $role_color = '<span class="badge badge-info">'.$role_name.'</span>';
         elseif($role_name == 'USER'):
             $role_color = '<span class="badge badge-dark">'.$role_name.'</span>';
-        elseif($role_name == 'TAMU'):
-            $role_color = '<span class="badge badge-gray">'.$role_name.'</span>';
+        elseif($role_name == 'VERIFICATOR'):
+            $role_color = '<span class="badge badge-warning">'.$role_name.'</span>';
         else:
-            $role_color = '<span class="badge badge-success">'.$role_name.'</span>';
+            $role_color = '<span class="badge badge-default">'.$role_name.'</span>';
         endif;
         return $role_color;
     }
@@ -145,11 +147,13 @@ class Users extends CI_Controller {
             $is_restrected = $r->is_restricted == 'Y' ? '<i class="fa fa-check-circle text-success"></i>' : '<i class="fa fa-close text-danger"></i>';
             // $check_in = '<span class="text-sm">'.jamServer($r->check_in).' | '.TanggalIndo($r->check_in).'</span>';
             // $check_out = '<span class="text-sm">'.jamServer($r->check_out).' | '.TanggalIndo($r->check_out).'</span>';
+            $nama_bidang = @$this->users->part_detail($r->fid_part) != null ? @$this->users->part_detail($r->fid_part) : '';
 
             $no++;
             $row = array();
             $row[] = $pic;
-            $row[] = ucwords($r->nama);
+            $row[] = "<b>".ucwords($r->nama)."</b><br>".$nama_bidang;
+            $row[] = $r->username;
             $row[] = $this->role($r->id);
             $row[] = $is_block;
             $row[] = $is_restrected;

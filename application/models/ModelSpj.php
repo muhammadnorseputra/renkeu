@@ -3,7 +3,7 @@
 class ModelSpj extends CI_Model {
 	public function inbox()
     {
-        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
+        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
         $this->db->from('spj AS s');
         $this->db->join('ref_parts AS part', 's.fid_part=part.id');
         $this->db->join('ref_programs AS program', 's.fid_program=program.id');
@@ -17,7 +17,7 @@ class ModelSpj extends CI_Model {
 
     public function detail($whr)
     {
-        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
+        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
         $this->db->from('spj AS s');
         $this->db->join('ref_parts AS part', 's.fid_part=part.id');
         $this->db->join('ref_programs AS program', 's.fid_program=program.id');
@@ -54,7 +54,7 @@ class ModelSpj extends CI_Model {
 	// default order 
 	protected $order = array('s.id' => 'desc');
 	// default select 
-	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
+	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
   
 	private function _datatables()
 	{
