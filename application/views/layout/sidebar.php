@@ -39,10 +39,10 @@
                     <li><a href="<?= base_url('app/spj') ?>"><i class="fa fa-book"></i> SPJ</a></li>
                 <li>
                     <a>
-                        <i class="fa fa-money"></i> Target <span class="fa fa-chevron-down"></span>
+                        <i class="fa fa-money"></i> Anggaran & Kinerja <span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu">
-                        <li><a href="<?= base_url('app/target') ?>">Anggaran & Kinerja</a></li>
+                        <li><a href="<?= base_url('app/target') ?>">Target</a></li>
                         <li><a href="#level1_1">Realisasi</a></li>
                     </ul>
                 </li>

@@ -36,7 +36,7 @@ class Target extends CI_Controller {
 		$programs = $this->crud->get('ref_programs');
         $data = [
 			'title' => 'Target Anggaran & Kinerja',
-            'content' => 'pages/target/index',
+            'content' => 'pages/anggaran_kinerja/target',
 			'programs' => $programs,
 			'autoload_js' => [
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',

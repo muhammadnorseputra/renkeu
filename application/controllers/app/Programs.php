@@ -27,6 +27,8 @@ class Programs extends CI_Controller
         if (!privilages('priv_programs')) :
             return show_404();
         endif;
+        $this->load->model('modeltarget', 'target');
+        
     }
 
     public function index()
@@ -107,12 +109,14 @@ class Programs extends CI_Controller
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Program</th>
-                        <th></th>
+                        <th>Alokasi Anggaran</th>
                     </tr>
                     </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r) :
+            
+            $totalPaguAwal = !empty($this->target->getAlokasiPaguProgram($r->id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguProgram($r->id)->row()->total_pagu_awal : 0;
             $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_programs') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
@@ -126,6 +130,9 @@ class Programs extends CI_Controller
                 </td>
                 <td class="nama">
                     ' . $r->nama . '
+                </td>
+                <td>
+                    <b>'.@nominal($totalPaguAwal).'</b>
                 </td>
             </tr>';
             $no++;
@@ -164,12 +171,13 @@ class Programs extends CI_Controller
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan</th>
+                        <th>Alokasi Anggaran (Rp)</th>
                     </tr>
                 </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r) :
-
+            $totalPaguAwal = !empty($this->target->getAlokasiPaguKegiatan($r->id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguKegiatan($r->id)->row()->total_pagu_awal : 0;
             $hapus = '
             <td width="5%" class="text-center">
                 <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_kegiatans') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
@@ -184,6 +192,9 @@ class Programs extends CI_Controller
                 </td>
                 <td valign="middle" class="nama">
                     ' . strtoupper($r->nama) . '
+                </td>
+                <td>
+                    <b>'.@nominal($totalPaguAwal).'</b>
                 </td>
             </tr>';
             $no++;
@@ -225,7 +236,7 @@ class Programs extends CI_Controller
                                 <th class="text-center">No</th>
                                 <th>Kode Rekening</th>
                                 <th>Nama Sub Kegiatan</th>
-                                <th class="text-right">Alokasi Pagu</th>
+                                <th class="text-right">Alokasi Pagu (Rp)</th>
                                 <th width="5%" class="text-right"></th>
                             </tr>
                         </thead>';
@@ -245,7 +256,7 @@ class Programs extends CI_Controller
 
             $button_pagu = '<td width="10%" class="text-right">
             <div class="text-right">
-            <b>Rp.' . nominal($totalPaguAwal) . '</b>
+            <b>' . nominal($totalPaguAwal) . '</b>
         </td>
         <td>
         <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_sub_kegiatans') . '\',\'' . $totalPaguAwal . '\')" type="button" class="btn btn-info btn-sm rounded m-0 ml-2"><i class="fa fa-money"></i></button>
@@ -308,7 +319,7 @@ class Programs extends CI_Controller
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
-                        <th class="text-right">Alokasi Pagu</th>
+                        <th class="text-right">Alokasi Pagu (Rp)</th>
                         <th width="5%" class="text-right"></th>
                     </tr>
                 </thead>';
@@ -323,7 +334,7 @@ class Programs extends CI_Controller
         </td>';
             $button_pagu = '<td width="10%" class="text-right">
                 <div class="text-right">
-                <b>Rp.' . nominal($totalPaguAwal) . '</b>
+                <b>' . nominal($totalPaguAwal) . '</b>
             </td>
             <td>
             <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\')" type="button" class="btn btn-info btn-sm rounded m-0 ml-2"><i class="fa fa-money"></i></button>

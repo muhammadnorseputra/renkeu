@@ -8,7 +8,7 @@
 <div class="clearfix"></div>
 
 <div class="x_panel">
-    <table class="table table-bordered table-responsive">
+    <table class="table table-bordered">
         <thead>
             <tr class="text-center">
                 <th rowspan="2" class="align-middle">No</th>
@@ -30,7 +30,7 @@
             <tr class="bg-warning">
                 <td class="text-center align-middle"><?= $no_level_1 ?></td>
                 <td class="align-middle"><?= $program->nama ?></td>
-                <td class="text-left">
+                <td class="text-left text-nowrap">
                     <?php  
                         if($indikator_program->num_rows() > 0):
                             foreach($indikator_program->result() as $ip):
@@ -43,7 +43,9 @@
                     ?>
                     <button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Program','<?= $program->id ?>','<?= base_url('app/target/tambah_indikator/ref_programs') ?>')"><i class="fa fa-plus"></i> Tambah</button>
                 </td>
-                <td class="align-middle"></td>
+                <td class="align-middle text-right">
+                    <?= @nominal($this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal); ?>
+                </td>
                 <td>
                 <?php  
                         if($indikator_program->num_rows() > 0):
@@ -58,7 +60,12 @@
                 </td>
             </tr>
                 <?php
+                if($this->session->userdata('role') === 'SUPER_ADMIN'):
+                $kegiatans = $this->target->kegiatans($program->id);
+                else:
                 $kegiatans = $this->target->kegiatans($program->id, $this->session->userdata('part'));
+                endif;
+                
                 $no_level_2 = 1;
                 foreach($kegiatans->result() as $kegiatan): 
                 $indikator_kegiatan = $this->target->getIndikator(['fid_kegiatan' => $kegiatan->id]);
@@ -79,15 +86,21 @@
                         ?>
                         <button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Kegiatan','<?= $kegiatan->id ?>','<?= base_url('app/target/tambah_indikator/ref_kegiatans') ?>')"><i class="fa fa-plus"></i> Tambah</button>
                     </td>
-                    <td class="align-middle">
-                    
+                    <td class="align-middle text-right">
+                        <?= @nominal($this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal); ?>
                     </td>
                     <td>
                     <?php  
                             if($indikator_kegiatan->num_rows() > 0):
                                 foreach($indikator_kegiatan->result() as $ik):
                         ?>
-                            <?= $ik->kinerja_persentase ?>%
+                            <?php
+                            if($ik->kinerja_persentase === "0") {
+                                echo $ik->kinerja_eviden." ".$ik->keterangan_eviden;
+                            } else {
+                                echo $ik->kinerja_persentase."%";
+                            }
+                            ?>
                             <hr>
                         <?php 
                                 endforeach; 
@@ -104,7 +117,7 @@
                     <tr>
                         <td class="text-center align-middle"><?= $no_level_1.".".$no_level_2.".".$no_level_3 ?></td>
                         <td class="align-middle"><?= $sub_kegiatan->nama ?></td>
-                        <td class="text-left">
+                        <td class="text-left text-nowrap">
                         <?php  
                             if($indikator_sub_kegiatan->num_rows() > 0):
                                 foreach($indikator_sub_kegiatan->result() as $isk):
