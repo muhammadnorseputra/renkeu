@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 17, 2024 at 03:47 AM
+-- Generation Time: Jan 23, 2024 at 03:39 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.3.33
 
@@ -24,6 +24,34 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ref_indikators`
+--
+
+CREATE TABLE `ref_indikators` (
+  `id` int(11) NOT NULL,
+  `nama` text NOT NULL,
+  `fid_program` int(11) DEFAULT NULL,
+  `fid_kegiatan` int(11) DEFAULT NULL,
+  `fid_sub_kegiatan` int(11) DEFAULT NULL,
+  `kinerja_persentase` varchar(8) NOT NULL,
+  `kinerja_eviden` int(11) NOT NULL,
+  `keterangan_eviden` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `ref_indikators`
+--
+
+INSERT INTO `ref_indikators` (`id`, `nama`, `fid_program`, `fid_kegiatan`, `fid_sub_kegiatan`, `kinerja_persentase`, `kinerja_eviden`, `keterangan_eviden`) VALUES
+(1, 'Nilai Implementasi Manajemen Talenta Pegawai ASN', 37, NULL, NULL, '20', 0, '0'),
+(4, 'Persentase Jabatan Pimpinan dan Administrasi yang Terisi (pembatasan pada jabatan Eselon II, III, dan IV)', NULL, 39, NULL, '100', 0, '0'),
+(5, 'Persentase Jabatan Fungsional yang Terisi sesuai Prioritas Aktual Reformasi Birokrasi', NULL, 39, NULL, '32', 0, '0'),
+(10, 'Persentase Penempatan Pegawai sesuai SOP (sesuai Pohon Kinerja)', NULL, NULL, 33, '100', 0, '0'),
+(11, 'Jumlah Dokumen Hasil Pelaksanaan Mutasi Jabatan Pimpinan Tinggi, Jabatan Administrasi, Jabatan Pelaksana dan Mutasi ASN antar Daerah (sesuai Kepmendagri)', NULL, NULL, 33, '0', 1, 'Dokumen');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ref_kegiatans`
 --
 
@@ -31,7 +59,7 @@ CREATE TABLE `ref_kegiatans` (
   `id` int(11) NOT NULL,
   `fid_part` int(11) DEFAULT NULL,
   `fid_program` int(11) NOT NULL,
-  `kode` varchar(10) NOT NULL,
+  `kode` varchar(30) NOT NULL,
   `nama` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -40,7 +68,8 @@ CREATE TABLE `ref_kegiatans` (
 --
 
 INSERT INTO `ref_kegiatans` (`id`, `fid_part`, `fid_program`, `kode`, `nama`) VALUES
-(28, 3, 7, '1.2.01', 'Perencanaan, Penganggaran, dan Evaluasi Kinerja Perangkat Daerah');
+(38, 3, 37, '5.03.02.2.03', 'Pengembangan Kompetensi ASN'),
+(39, 11, 37, '5.03.02.2.02', 'Mutasi dan Promosi ASN');
 
 -- --------------------------------------------------------
 
@@ -61,9 +90,9 @@ CREATE TABLE `ref_parts` (
 INSERT INTO `ref_parts` (`id`, `nama`, `singkatan`) VALUES
 (1, 'SEKRETARIAT', 'SEKRETARIAT'),
 (2, 'PENGADAAN, PEMBERHENTIAN, INFORMASI KEPEGAWAIAN', 'PPIK'),
-(3, 'PENDIDIKAN, PELATIHAN DAN PENGEMBANGAN KOMPETENSI', 'DIKLAT'),
-(4, 'PEMBINAAN DISIPLIN PEGAWAI', 'PDP'),
-(11, 'MUTASI DAN PROMOSI ASN', 'MP ASN');
+(3, 'PENGEMBANGAN SUMBER DAYA MANUSIA', 'PSDM'),
+(11, 'MUTASI, PROMOSI DAN KINERJA', 'MPK'),
+(12, 'KEPALA BADAN', 'KABAN');
 
 -- --------------------------------------------------------
 
@@ -74,6 +103,7 @@ INSERT INTO `ref_parts` (`id`, `nama`, `singkatan`) VALUES
 CREATE TABLE `ref_programs` (
   `id` int(11) NOT NULL,
   `fid_unor` int(11) DEFAULT NULL,
+  `kode` varchar(80) NOT NULL,
   `nama` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -81,8 +111,8 @@ CREATE TABLE `ref_programs` (
 -- Dumping data for table `ref_programs`
 --
 
-INSERT INTO `ref_programs` (`id`, `fid_unor`, `nama`) VALUES
-(7, 1, 'PROGRAM PENUNJANG URUSAN PEMERINTAHAN DAERAH KABUPATEN/KOTA');
+INSERT INTO `ref_programs` (`id`, `fid_unor`, `kode`, `nama`) VALUES
+(37, 1, '5.03.02', 'PROGRAM KEPEGAWAIAN DAERAH');
 
 -- --------------------------------------------------------
 
@@ -93,21 +123,17 @@ INSERT INTO `ref_programs` (`id`, `fid_unor`, `nama`) VALUES
 CREATE TABLE `ref_sub_kegiatans` (
   `id` int(11) NOT NULL,
   `fid_kegiatan` int(11) DEFAULT NULL,
-  `kode` varchar(20) NOT NULL,
-  `nama` varchar(100) NOT NULL,
-  `total_pagu_before` varchar(10) DEFAULT NULL,
-  `total_pagu_after` varchar(10) DEFAULT NULL,
-  `total_pagu_realisasi` varchar(10) DEFAULT NULL
+  `kode` varchar(50) NOT NULL,
+  `nama` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `ref_sub_kegiatans`
 --
 
-INSERT INTO `ref_sub_kegiatans` (`id`, `fid_kegiatan`, `kode`, `nama`, `total_pagu_before`, `total_pagu_after`, `total_pagu_realisasi`) VALUES
-(5, 28, '1.2.01.1', 'Penyusunan Dokumen Perencanaan Perangkat Daerah', NULL, NULL, NULL),
-(6, 28, '1.2.01.6', 'Koordinasi dan Penyusunan Laporan Capaian Kinerja dan Ikhtisar Realisasi Kinerja SKPD', NULL, NULL, NULL),
-(7, 28, '1.2.01.7', 'Evaluasi Kinerja Perangkat Daerah', NULL, NULL, NULL);
+INSERT INTO `ref_sub_kegiatans` (`id`, `fid_kegiatan`, `kode`, `nama`) VALUES
+(32, 38, '5.03.02.2.03.0003', 'Pengeloaan Administrasi Diklat dan Sertifikasi ASN'),
+(33, 39, '5.03.02.2.02.0001', 'Pengelolaan Mutasi ASN');
 
 -- --------------------------------------------------------
 
@@ -135,11 +161,23 @@ INSERT INTO `ref_unors` (`id`, `nama`) VALUES
 
 CREATE TABLE `ref_uraians` (
   `id` int(11) NOT NULL,
-  `fid_sub_kegiatan` int(11) NOT NULL,
   `fid_kegiatan` int(11) NOT NULL,
-  `kode` varchar(30) NOT NULL,
+  `fid_sub_kegiatan` int(11) NOT NULL,
+  `kode` varchar(50) NOT NULL,
   `nama` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `ref_uraians`
+--
+
+INSERT INTO `ref_uraians` (`id`, `fid_kegiatan`, `fid_sub_kegiatan`, `kode`, `nama`) VALUES
+(7, 38, 32, '5.1.02.01.01.0026', 'Belanja Alat/Bahan untuk Kegiatan Kantor- Bahan Cetak'),
+(8, 38, 32, '5.1.02.01.01.0052', 'Belanja Makanan dan Minuman Rapat'),
+(9, 38, 32, '5.1.02.02.01.0026', 'Belanja Jasa Tenaga Administrasi'),
+(10, 38, 32, '5.1.02.02.12.0001', 'Belanja Kursus Singkat/Pelatihan'),
+(12, 39, 33, '5.1.02.01.01.0052', 'Belanja Makanan dan Minuman Rapat'),
+(13, 39, 33, '5.1.02.02.01.0003', 'Honorarium Narasumber atau Pembahas, Moderator, Pembawa Acara, dan Panitia');
 
 -- --------------------------------------------------------
 
@@ -155,15 +193,15 @@ CREATE TABLE `spj` (
   `fid_kegiatan` int(11) NOT NULL,
   `fid_sub_kegiatan` int(11) NOT NULL,
   `fid_uraian` int(11) DEFAULT NULL,
-  `koderek` varchar(40) NOT NULL,
+  `koderek` varchar(50) NOT NULL,
   `nomor_pembukuan` varchar(40) NOT NULL,
   `bulan` varchar(5) NOT NULL,
   `tahun` year(4) NOT NULL,
-  `tanggal_pembukuan` datetime NOT NULL,
+  `tanggal_pembukuan` date NOT NULL,
   `jumlah` varchar(15) NOT NULL,
   `uraian` text NOT NULL,
   `is_status` enum('ENTRI','VERIFIKASI','VERIFIKASI_ADMIN','BTL','TMS','SELESAI','SELESAI_TMS','SELESAI_BTL') NOT NULL DEFAULT 'ENTRI',
-  `is_realisasi` enum('LS','UP','GU','TU') NOT NULL,
+  `is_realisasi` enum('LS','UP','GU','TU') DEFAULT NULL,
   `catatan` text NOT NULL,
   `approve_by` varchar(30) NOT NULL,
   `approve_at` datetime NOT NULL,
@@ -175,13 +213,6 @@ CREATE TABLE `spj` (
   `berkas_file` varchar(30) NOT NULL,
   `berkas_link` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `spj`
---
-
-INSERT INTO `spj` (`id`, `token`, `fid_part`, `fid_program`, `fid_kegiatan`, `fid_sub_kegiatan`, `fid_uraian`, `koderek`, `nomor_pembukuan`, `bulan`, `tahun`, `tanggal_pembukuan`, `jumlah`, `uraian`, `is_status`, `is_realisasi`, `catatan`, `approve_by`, `approve_at`, `entri_at`, `entri_by`, `entri_by_part`, `verify_at`, `verify_by`, `berkas_file`, `berkas_link`) VALUES
-(36, 'k0PR3q1hE1TFHOmVYM', 3, 7, 28, 5, NULL, '1.2.01.1.2.01.1', '11223344', '01', 2024, '0000-00-00 00:00:00', '3200000', 'Rapat Koordinasi Penyusunan Dokument', 'VERIFIKASI_ADMIN', 'LS', '', 'abduh', '2024-01-16 07:15:03', '2024-01-16 05:44:50', 'psdm', 3, '2024-01-16 10:29:50', 'mika', '', 'https://www.youtube.com/watch?v=gXnMLo8bDEA');
 
 -- --------------------------------------------------------
 
@@ -197,18 +228,19 @@ CREATE TABLE `spj_riwayat` (
   `nama_kegiatan` varchar(100) NOT NULL,
   `nama_sub_kegiatan` varchar(100) NOT NULL,
   `nama_uraian` varchar(100) NOT NULL,
+  `kode_program` varchar(30) DEFAULT NULL,
   `kode_kegiatan` varchar(30) NOT NULL,
   `kode_sub_kegiatan` varchar(30) NOT NULL,
   `kode_uraian` varchar(100) NOT NULL,
-  `koderek` varchar(40) NOT NULL,
-  `nomor_pembukuan` varchar(40) NOT NULL,
+  `koderek` varchar(50) NOT NULL,
+  `nomor_pembukuan` varchar(40) DEFAULT NULL,
   `bulan` varchar(5) NOT NULL,
   `tahun` year(4) NOT NULL,
-  `tanggal_pembukuan` datetime NOT NULL,
+  `tanggal_pembukuan` date DEFAULT NULL,
   `jumlah` varchar(15) NOT NULL,
   `uraian` text NOT NULL,
   `is_status` enum('APPROVE','BTL','TMS') DEFAULT NULL,
-  `is_realisasi` enum('LS','UP','GU','TU') NOT NULL,
+  `is_realisasi` enum('LS','UP','GU','TU') DEFAULT NULL,
   `catatan` text NOT NULL,
   `approve_by` varchar(30) NOT NULL,
   `approve_at` datetime NOT NULL,
@@ -248,20 +280,34 @@ INSERT INTO `t_notify` (`id`, `type`, `type_icon`, `to`, `mode`, `message`, `is_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_periode`
+-- Table structure for table `t_pagu`
 --
 
-CREATE TABLE `t_periode` (
+CREATE TABLE `t_pagu` (
   `id` int(11) NOT NULL,
+  `fid_part` int(11) DEFAULT NULL,
+  `fid_kegiatan` int(11) DEFAULT NULL,
+  `fid_sub_kegiatan` int(11) DEFAULT NULL,
+  `fid_uraian` int(11) DEFAULT NULL,
   `is_perubahan` enum('Y','N') NOT NULL DEFAULT 'N',
   `total_pagu_awal` varchar(20) NOT NULL,
   `total_pagu_realisasi` varchar(30) NOT NULL,
   `total_pagu_akhir` varchar(20) NOT NULL,
   `tahun` year(4) NOT NULL,
-  `bulan` varchar(2) NOT NULL,
   `created_at` datetime NOT NULL,
   `created_by` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `t_pagu`
+--
+
+INSERT INTO `t_pagu` (`id`, `fid_part`, `fid_kegiatan`, `fid_sub_kegiatan`, `fid_uraian`, `is_perubahan`, `total_pagu_awal`, `total_pagu_realisasi`, `total_pagu_akhir`, `tahun`, `created_at`, `created_by`) VALUES
+(2, 3, NULL, 32, NULL, 'N', '2256999990', '', '', 2024, '2024-01-21 12:10:54', 'psdm'),
+(3, 3, NULL, NULL, 7, 'N', '0', '', '', 2024, '2024-01-21 12:26:11', 'psdm'),
+(4, 3, NULL, NULL, 8, 'N', '0', '', '', 2024, '2024-01-21 12:26:24', 'psdm'),
+(5, 3, NULL, NULL, 10, 'N', '0', '', '', 2024, '2024-01-21 12:44:32', 'psdm'),
+(6, 11, NULL, 33, NULL, 'N', '91828600', '', '', 2024, '2024-01-22 15:16:23', 'mpkasn');
 
 -- --------------------------------------------------------
 
@@ -288,12 +334,18 @@ CREATE TABLE `t_privilages` (
 
 INSERT INTO `t_privilages` (`id`, `fid_user`, `priv_default`, `priv_users`, `priv_notify`, `priv_settings`, `priv_programs`, `priv_verifikasi`, `priv_approve`, `priv_riwayat_spj`) VALUES
 (1, 3, 'Y', 'Y', 'Y', 'Y', 'Y', 'N', 'N', 'N'),
-(3, 4, 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'Y'),
+(3, 4, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'Y'),
 (5, 8, 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N'),
 (7, 10, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'N'),
 (8, 11, 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N'),
 (9, 12, 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N'),
-(10, 13, 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'Y');
+(10, 13, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'Y'),
+(11, 14, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'Y'),
+(12, 15, 'Y', 'N', 'N', 'N', 'N', 'N', 'N', 'N'),
+(13, 16, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'Y'),
+(14, 17, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'Y'),
+(15, 18, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'Y'),
+(16, 19, 'Y', 'N', 'N', 'N', 'Y', 'N', 'N', 'Y');
 
 -- --------------------------------------------------------
 
@@ -355,17 +407,29 @@ CREATE TABLE `t_users` (
 --
 
 INSERT INTO `t_users` (`id`, `fid_unor`, `fid_part`, `pic`, `nama`, `username`, `nip`, `nohp`, `password`, `role`, `jobdesk`, `is_block`, `is_restricted`, `check_out`, `check_in`, `created_at`) VALUES
-(3, 1, 2, 'ppik-d0FLTjcxR05LaTRUNDlHc0pQMmtPdz09.png', 'Putrabungsu6', 'ppik', '6311042705990001', '082151815132', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_ADMIN', 'Putra sebagai super admin', 'N', 'N', '2024-01-16 10:22:17', '2024-01-17 03:19:02', '2021-11-10 16:51:34'),
-(4, 1, 3, 'psdm-NnNGODdoYTFoZ1lOSkRCbG4yc0N5dz09.png', 'Antung Rima', 'psdm', '12', '082151815132', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'USER', 'admin sebagai kabid psdm', 'N', 'N', '2024-01-16 07:17:04', '2024-01-16 07:16:52', '2021-11-11 17:52:35'),
-(8, 1, NULL, 'kaban.png', 'Sufriannor', 'kaban', '123', '08234354535', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_USER', 'Kepala Badan', 'N', 'N', '2023-11-05 15:13:04', '2023-11-05 15:12:58', '2023-11-05 04:29:43'),
-(10, 1, 1, 'mika.png', 'Mika Audini', 'mika', '123', '082151815132', '8f80b44968ea7b99a59587385bb3f599630f6150', 'VERIFICATOR', 'Verifikasi Keuangan', 'N', 'N', '2024-01-16 07:14:30', '2024-01-16 10:22:19', '2024-01-15 05:08:21'),
-(11, 1, 3, 'psdmkabid.png', 'Muhammad, S.Pd', 'psdmkabid', '6311042705990001', '082151815132', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_USER', 'Kabid', 'N', 'N', NULL, NULL, '2024-01-16 05:39:15'),
-(12, 1, 1, 'abduh.png', 'Abduh', 'abduh', '6311042705990001', '082151815132', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'ADMIN', 'Sekretariat Admin', 'N', 'N', '2024-01-16 07:15:19', '2024-01-16 07:14:37', '2024-01-16 05:41:47'),
-(13, 1, 11, 'mutasi.png', 'Erwan', 'mutasi', '6311042705990001', '08215181532', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'USER', 'User Mutasi', 'N', 'N', '2024-01-16 07:17:17', '2024-01-16 08:31:42', '2024-01-16 07:16:17');
+(3, 1, 2, 'ppik-d0FLTjcxR05LaTRUNDlHc0pQMmtPdz09.png', 'M. NOR SEPUTRA, S.AP', 'redzone', '6311042705990001', '082151815132', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_ADMIN', 'Putra sebagai super admin', 'N', 'N', '2024-01-22 14:58:42', '2024-01-22 14:23:51', '2021-11-10 16:51:34'),
+(4, 1, 3, 'psdm-NnNGODdoYTFoZ1lOSkRCbG4yc0N5dz09.png', 'WULAN GALUH PERMANI, S.M.', 'psdm', '199704122020122023', '082151815132', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang Pengembangan Sumber Daya Manusia', 'N', 'N', '2024-01-22 15:14:57', '2024-01-22 15:06:22', '2021-11-11 17:52:35'),
+(8, 1, 12, 'kaban.png', 'SUFRIANNOR, S.Sos, M.AP', 'kaban', '196810121989031009', '08234354535', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_USER', 'Kepala Badan', 'N', 'N', '2023-11-05 15:13:04', '2023-11-05 15:12:58', '2023-11-05 04:29:43'),
+(10, 1, 1, 'mika.png', 'MIKA AUDINI, S.M.', 'mika', '199605092022022002', '085753359786', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'VERIFICATOR', 'Verifikasi SPJ', 'N', 'N', '2024-01-22 11:01:36', '2024-01-22 10:59:31', '2024-01-15 05:08:21'),
+(11, 1, 3, 'psdmkabid.png', 'MUHAMMAD, S.AP', 'bidpsdm', '196901151989031006', '081349514399', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_USER', 'Kepala Bidang PSDM', 'N', 'N', NULL, NULL, '2024-01-16 05:39:15'),
+(12, 1, 1, 'abduh.png', 'M. HAFIZHULLAH ABDUH, S.A.B., M.Sos', 'abduh', '198510022006041004', '081311421495', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'ADMIN', 'Sekretariat sebagai Admin', 'N', 'N', '2024-01-18 15:33:34', '2024-01-18 15:09:36', '2024-01-16 05:41:47'),
+(13, 1, 11, 'mutasi.png', 'ERWAN ADITYA PUTRA, S.Tr.IP', 'mpkasn', '199809272021081001', '08215181532', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang Mutasi, Promosi dan Kinerja', 'N', 'N', '2024-01-22 12:20:15', '2024-01-22 15:15:08', '2024-01-16 07:16:17'),
+(14, 1, 2, 'ppik2.png', 'FITRIANI, A.Md', 'ppik', '199412242019032007', '085751683871', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang PPIK', 'N', 'N', '2024-01-22 15:06:18', '2024-01-22 15:06:06', '2024-01-22 09:20:35'),
+(15, 1, 2, 'bidppik.png', 'SUPRAPTO, S.Pd, MT', 'bidppik', '197103021994011001', '08115115731', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'SUPER_USER', 'KEPALA BIDANG PPIK', 'N', 'N', NULL, NULL, '2024-01-22 10:23:33'),
+(16, 1, 1, 'dillah.png', 'MUHAMMAD UBBAY DILLAH, S.I.Pust.', 'dillah', '6307062201900006', '082155622640', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Sekretariat', 'N', 'N', NULL, NULL, '2024-01-22 11:03:40'),
+(17, 1, 1, 'yugi.png', 'YUGI TULLAH, S.Sos', 'yugi', '6311011506960001', '082251366456', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Sekretariat', 'N', 'N', NULL, NULL, '2024-01-22 11:07:56'),
+(18, 1, 11, 'mpkasn2.png', 'PAHRIATI, S.Pd.AUD', 'mpkasn2', '198612202010012025', '085248791273', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang Mutasi, Promosi dan Kinerja', 'N', 'N', NULL, NULL, '2024-01-22 11:12:25'),
+(19, 1, 2, 'putra.png', 'M. NOR SEPUTRA, S.AP', 'putra', '6311042705990001', '082151815132', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang PPIK', 'N', 'N', '2024-01-22 12:05:21', '2024-01-22 12:05:14', '2024-01-22 11:14:59');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `ref_indikators`
+--
+ALTER TABLE `ref_indikators`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `ref_kegiatans`
@@ -426,6 +490,12 @@ ALTER TABLE `t_notify`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `t_pagu`
+--
+ALTER TABLE `t_pagu`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `t_privilages`
 --
 ALTER TABLE `t_privilages`
@@ -452,28 +522,34 @@ ALTER TABLE `t_users`
 --
 
 --
+-- AUTO_INCREMENT for table `ref_indikators`
+--
+ALTER TABLE `ref_indikators`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `ref_kegiatans`
 --
 ALTER TABLE `ref_kegiatans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `ref_parts`
 --
 ALTER TABLE `ref_parts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `ref_programs`
 --
 ALTER TABLE `ref_programs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `ref_sub_kegiatans`
 --
 ALTER TABLE `ref_sub_kegiatans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `ref_unors`
@@ -485,19 +561,19 @@ ALTER TABLE `ref_unors`
 -- AUTO_INCREMENT for table `ref_uraians`
 --
 ALTER TABLE `ref_uraians`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `spj`
 --
 ALTER TABLE `spj`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `spj_riwayat`
 --
 ALTER TABLE `spj_riwayat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `t_notify`
@@ -506,10 +582,16 @@ ALTER TABLE `t_notify`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
+-- AUTO_INCREMENT for table `t_pagu`
+--
+ALTER TABLE `t_pagu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `t_privilages`
 --
 ALTER TABLE `t_privilages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `t_settings`
@@ -521,7 +603,7 @@ ALTER TABLE `t_settings`
 -- AUTO_INCREMENT for table `t_users`
 --
 ALTER TABLE `t_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Constraints for dumped tables
