@@ -43,7 +43,7 @@
                     </a>
                     <ul class="nav child_menu">
                         <li><a href="<?= base_url('app/target') ?>">Target</a></li>
-                        <li><a href="#level1_1">Realisasi</a></li>
+                        <li><a href="<?= base_url('app/realisasi') ?>">Realisasi</a></li>
                     </ul>
                 </li>
             </ul>

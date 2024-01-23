@@ -109,6 +109,7 @@ class Programs extends CI_Controller
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Program</th>
+                        <th>Ubah</th>
                         <th>Alokasi Anggaran</th>
                     </tr>
                     </thead>';
@@ -121,6 +122,10 @@ class Programs extends CI_Controller
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_programs') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
 
+            $button_edit = '<td width="5%" class="text-center">
+                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_programs') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+            </td>';
+
             $html .= '<tr>
                 <td class="text-center">
                     ' . $no . '
@@ -131,6 +136,7 @@ class Programs extends CI_Controller
                 <td class="nama">
                     ' . $r->nama . '
                 </td>
+                '.$button_edit.'
                 <td>
                     <b>'.@nominal($totalPaguAwal).'</b>
                 </td>
@@ -171,6 +177,7 @@ class Programs extends CI_Controller
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan</th>
+                        <th>Ubah</th>
                         <th>Alokasi Anggaran (Rp)</th>
                     </tr>
                 </thead>';
@@ -183,6 +190,10 @@ class Programs extends CI_Controller
                 <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_kegiatans') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
             </td>';
 
+            $button_edit = '<td width="5%" class="text-center">
+                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_kegiatans') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+            </td>';
+
             $html .= '<tr>
                 <td class="text-center">
                     ' . $no . '
@@ -193,6 +204,7 @@ class Programs extends CI_Controller
                 <td valign="middle" class="nama">
                     ' . strtoupper($r->nama) . '
                 </td>
+                '.$button_edit.'
                 <td>
                     <b>'.@nominal($totalPaguAwal).'</b>
                 </td>
@@ -236,6 +248,7 @@ class Programs extends CI_Controller
                                 <th class="text-center">No</th>
                                 <th>Kode Rekening</th>
                                 <th>Nama Sub Kegiatan</th>
+                                <th width="5%" class="text-right">Ubah</th>
                                 <th class="text-right">Alokasi Pagu (Rp)</th>
                                 <th width="5%" class="text-right"></th>
                             </tr>
@@ -273,6 +286,7 @@ class Programs extends CI_Controller
                     <td>
                         <span class="nama">' . strtoupper($r->nama) . '</span>
                     </td>
+                    '.$button_edit.'
                     ' . $button_pagu . '
                 </tr>';
             $no++;
@@ -319,6 +333,7 @@ class Programs extends CI_Controller
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
+                        <th>Ubah</th>
                         <th class="text-right">Alokasi Pagu (Rp)</th>
                         <th width="5%" class="text-right"></th>
                     </tr>
@@ -332,6 +347,10 @@ class Programs extends CI_Controller
             $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_uraians') . '\',\'URAIAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
+            $button_edit = '<td width="5%" class="text-center">
+                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_uraians') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+            </td>';
+
             $button_pagu = '<td width="10%" class="text-right">
                 <div class="text-right">
                 <b>' . nominal($totalPaguAwal) . '</b>
@@ -354,6 +373,7 @@ class Programs extends CI_Controller
                     ' . ucwords($r->nama_sub_kegiatan) . ' <br>
                     <b class="nama">' . ucwords($r->nama) . '</b>
                 </td>
+                '. $button_edit .'
                 ' . $button_pagu . '
             </tr>';
             $no++;
@@ -471,15 +491,17 @@ class Programs extends CI_Controller
         $db = $this->db->select('k.*,p.nama AS partnama, p.id AS partid')
             ->from('ref_kegiatans AS k')
             ->join('ref_parts AS p', 'k.fid_part=p.id', 'inner')
-            ->like('k.kode', $q)
-            ->or_like('k.nama', $q)
-            ->group_by('k.fid_part')
+            ->where('p.id', $this->session->userdata('part'))
+            // ->like('k.kode', $q)
+            // ->or_like('k.nama', $q)
+            // ->group_by('k.fid_part')
             ->get();
         if ($db->num_rows() > 0) :
             $group = [];
-            $db_part = $this->crud->get('ref_parts');
+            // $db_part = $this->crud->get('ref_parts');
             foreach ($db->result() as $row) :
                 $data['text'] = $row->partnama;
+                // $data['children'] = $this->ch_kegiatan($row->partid, $q);
                 $data['children'] = $this->ch_kegiatan($row->partid, $q);
                 $group[] = $data;
             endforeach;
@@ -730,14 +752,119 @@ class Programs extends CI_Controller
             echo json_encode($msg);
         }
 
-        if ($tbl === 'ref_programs') {
+        // if ($tbl === 'ref_programs') {
+        //     $input = $this->input->post();
+        //     $data = [
+        //         'fid_unor' => $input['unor'],
+        //         'nama' => $input['program']
+        //     ];
+        //     $whr = [
+        //         'id' => $id
+        //     ];
+        //     $db = $this->crud->update($tbl, $data, $whr);
+        //     if ($db) {
+        //         $msg = 200;
+        //     } else {
+        //         $msg = 400;
+        //     }
+        //     echo json_encode($msg);
+        // }
+
+        if($tbl === 'ref_sub_kegiatans') {
             $input = $this->input->post();
-            $data = [
-                'fid_unor' => $input['unor'],
-                'nama' => $input['program']
-            ];
+            if(isset($input['kegiatan'])){
+                $data = [
+                    'fid_kegiatan' => $input['kegiatan'],
+                    'kode' => $input['kode_subkegiatan'],
+                    'nama' => $input['subkegiatan']
+                ];
+            } else {
+                $data = [
+                    'kode' => $input['kode_subkegiatan'],
+                    'nama' => $input['subkegiatan']
+                ];
+            }
             $whr = [
-                'id' => $id
+                'id' => $input['uid']
+            ];
+            $db = $this->crud->update($tbl, $data, $whr);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+        }
+
+        if($tbl === 'ref_kegiatans') {
+            $input = $this->input->post();
+            if(isset($input['program'])){
+                $data = [
+                    'fid_program' => $input['program'],
+                    'kode' => $input['kode_kegiatan'],
+                    'nama' => $input['kegiatan']
+                ];
+            } else {
+                $data = [
+                    'kode' => $input['kode_kegiatan'],
+                    'nama' => $input['kegiatan']
+                ];
+            }
+            $whr = [
+                'id' => $input['uid']
+            ];
+            $db = $this->crud->update($tbl, $data, $whr);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+        }
+
+        if($tbl === 'ref_programs') {
+            $input = $this->input->post();
+            if(isset($input['unor'])){
+                $data = [
+                    'fid_unor' => $input['unor'],
+                    'kode' => $input['kode_program'],
+                    'nama' => $input['program']
+                ];
+            } else {
+                $data = [
+                    'kode' => $input['kode_program'],
+                    'nama' => $input['program']
+                ];
+            }
+            $whr = [
+                'id' => $input['uid']
+            ];
+            $db = $this->crud->update($tbl, $data, $whr);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+        }
+
+        if($tbl === 'ref_uraians') {
+            $input = $this->input->post();
+            if(isset($input['kegiatan']) && isset($input['subkegiatan'])){
+                $data = [
+                    'fid_kegiatan' => $input['kegiatan'],
+                    'fid_sub_kegiatan' => $input['subkegiatan'],
+                    'kode' => $input['kode_uraian'],
+                    'nama' => $input['nama_uraian']
+                ];
+            } else {
+                $data = [
+                    'kode' => $input['kode_uraian'],
+                    'nama' => $input['nama_uraian']
+                ];
+            }
+            $whr = [
+                'id' => $input['uid']
             ];
             $db = $this->crud->update($tbl, $data, $whr);
             if ($db) {

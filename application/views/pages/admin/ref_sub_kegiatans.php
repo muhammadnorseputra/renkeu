@@ -5,7 +5,7 @@
         $tbl = $this->uri->segment(5);
         ?>
         <?= 
-        form_open(base_url('/app/programs/update/'.$tbl), ['id' => $tbl], ['uid' => $data->id]);
+        form_open(base_url('/app/programs/update/ref_sub_kegiatans'), ['id' => $tbl, 'data-parsley-validate' => ''], ['uid' => $data->id]);
          ?>
          <div class="form-group">
             <?php 
@@ -19,17 +19,13 @@
          <hr>
             <div class="form-gorup">
                 <label for="kegiatan">Pilih Kegiatan</label>
-                <select name="kegiatan" id="kegiatan" required data-parsley-errors-container="#help-block-kegiatan" disabled></select>
+                <select name="kegiatan" id="kegiatan" data-parsley-errors-container="#help-block-kegiatan" disabled></select>
                 <div id="help-block-kegiatan"></div>
             </div>
             <div class="form-group mt-3">
                     <label for="kode_subkegiatan">Kode Sub Kegiatan <span class="text-danger">*</span></label>
                     <input type="text" name="kode_subkegiatan"  value="<?= $data->kode ?>" class="form-control" 
-                    required 
-                    data-parsley-remote="<?= base_url('app/programs/cek_kode/subkegiatan') ?>"
-                    data-parsley-remote-reverse="false"
-                    data-parsley-remote-options='{ "type": "POST" }'
-                    data-parsley-remote-message="Kode Sub Kegiatan sudah pernah digunakan !"
+                    required
                     data-parsley-pattern="^(([0-9.]?)*)+$" 
                     data-parsley-trigger="focusout">
                 </div>
@@ -83,5 +79,18 @@
 			$("button#gantiUser").addClass('d-block');
 			$('select[name="kegiatan"]').select2("val", "0");
 		})
+
+        let $form = $("form#ref_sub_kegiatans");
+        $form.on("submit", function(e) {
+            e.preventDefault();
+            let _ = $(this),
+                data = _.serialize();
+
+            $.post(_.attr('action'), data, function(res){
+                if(res === 200) {
+                    window.location.replace(`${_uri}/app/programs?tab=%23subkegiatan`)
+                }
+            }, 'json');
+        })
     })
 </script>

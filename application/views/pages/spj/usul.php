@@ -387,7 +387,8 @@
                             <?php
                             foreach ($list_bidang as $bid) :
                                 $selected = $detail->fid_part === $bid->id ? 'selected' : '';
-                                echo '<option value="' . $bid->id . '" ' . $selected . '>' . $bid->nama . '</option>';
+                                $disabled = $this->session->userdata('part') !== $bid->id ? 'disabled' : '';
+                                echo '<option value="' . $bid->id . '" ' . $selected . ' '.$disabled.'>' . $bid->nama . '</option>';
                             endforeach;
                             ?>
                         </select>
