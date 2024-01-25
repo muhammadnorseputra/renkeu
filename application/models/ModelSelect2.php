@@ -23,7 +23,6 @@ class ModelSelect2 extends CI_Model {
             $this->db->or_like('kode', $q);
         }
         $this->db->where(['fid_part' => $partid]);
-        $this->db->group_by('fid_part');
         $q = $this->db->get();
 
         return $q;

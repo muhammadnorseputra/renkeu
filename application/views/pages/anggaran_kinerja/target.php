@@ -14,12 +14,16 @@
                 <tr class="text-center">
                     <th rowspan="2" class="align-middle">No</th>
                     <th rowspan="2" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
+                    <th rowspan="2"></th>
                     <th rowspan="2" class="align-middle">Indikator Kinerja</th>
                     <th colspan="2">Target</th>
+                    <th colspan="2">Aksi</th>
                 </tr>
                 <tr class="text-center">
                     <th>Anggaran (Rp)</th>
-                    <th>Kinerja</th>
+                    <th class="align-middle">Kinerja</th>
+                    <th class="align-middle">#</th>
+                    <th class="align-middle">#</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,38 +31,52 @@
                 $no_level_1 = 1; 
                 foreach($programs->result() as $program): 
                 $indikator_program = $this->target->getIndikator(['fid_program' => $program->id]);
+                    $tr = "";
+                    // if($indikator_program->num_rows() > 0):
+                        $indikator = $indikator_program->result_array();
+                        $toEnd = count($indikator);
+                        foreach($indikator as $key => $ip):
+                            
+                            if($ip['kinerja_persentase'] === "0") {
+                                $indikator_input = $ip['kinerja_eviden']." ".$ip['keterangan_eviden'];
+                            } else {
+                                $indikator_input = $ip['kinerja_persentase']."%";
+                            }
+                            $rowspan = $toEnd++;
+                            if (0 === --$toEnd) { //last
+                                $tr .= "
+                                <tr class='bg-warning'>
+                                    <td class='align-middle'>".$ip['nama']."</td>
+                                    <td class='align-middle text-center'>".$indikator_input."</td>
+                                    <td class='align-middle'>U</td>
+                                    <td class='align-middle'>H</td>
+                                </tr>";
+                                } elseif($key === 0) { //first
+                                $tr .= "
+                                <tr class='bg-warning'>
+                                    <td class='align-middle'>".$ip['nama']."</td>
+                                    <td rowspan='".$rowspan."' class='align-middle text-right'>".@nominal($this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal)."</td>
+                                    <td class='align-middle text-center'>".$indikator_input."</td>
+                                    <td class='align-middle'>U</td>
+                                    <td class='align-middle'>H</td>
+                                </tr>";
+                                } else { //middle
+                                $tr .= "
+                                <tr class='bg-warning'>
+                                    <td class='align-middle'>".$ip['nama']."</td>
+                                    <td class='align-middle text-center'>".$indikator_input."</td>
+                                    <td class='align-middle'>U</td>
+                                    <td class='align-middle'>H</td>
+                                </tr>";
+                                }
+                        endforeach; 
+                    // endif;
                 ?>
                 <tr class="bg-warning">
-                    <td class="text-center align-middle"><?= $no_level_1 ?></td>
-                    <td class="align-middle"><?= $program->nama ?></td>
-                    <td class="text-left text-nowrap">
-                        <?php  
-                            if($indikator_program->num_rows() > 0):
-                                foreach($indikator_program->result() as $ip):
-                        ?>
-                            <?= $ip->nama ?>
-                            <hr>
-                        <?php 
-                                endforeach; 
-                            endif;
-                        ?>
-                        <button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Program','<?= $program->id ?>','<?= base_url('app/target/tambah_indikator/ref_programs') ?>')"><i class="fa fa-plus"></i> Tambah</button>
-                    </td>
-                    <td class="align-middle text-right">
-                        <?= @nominal($this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal); ?>
-                    </td>
-                    <td>
-                    <?php  
-                            if($indikator_program->num_rows() > 0):
-                                foreach($indikator_program->result() as $ip):
-                        ?>
-                            <?= $ip->kinerja_persentase ?>%
-                            <hr>
-                        <?php 
-                                endforeach; 
-                            endif;
-                        ?>
-                    </td>
+                    <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1 ?></td>
+                    <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $program->nama ?></td>
+                    <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Program','<?= $program->id ?>','<?= base_url('app/target/tambah_indikator/ref_programs') ?>')"><i class="fa fa-plus"></i></button></td>
+                    <?= $tr ?>
                 </tr>
                     <?php
                     if($this->session->userdata('role') === 'SUPER_ADMIN'):
@@ -70,86 +88,104 @@
                     $no_level_2 = 1;
                     foreach($kegiatans->result() as $kegiatan): 
                     $indikator_kegiatan = $this->target->getIndikator(['fid_kegiatan' => $kegiatan->id]);
+                    $tr = "";
+                    // if($indikator_kegiatan->num_rows() > 0):
+                        $indikator = $indikator_kegiatan->result_array();
+                        $toEnd = count($indikator);
+                        foreach($indikator as $key => $ik):
+                            
+                            if($ik['kinerja_persentase'] === "0") {
+                                $indikator_input = $ik['kinerja_eviden']." ".$ik['keterangan_eviden'];
+                            } else {
+                                $indikator_input = $ik['kinerja_persentase']."%";
+                            }
+                            $rowspan = $toEnd++;
+                            if (0 === --$toEnd) { //last
+                                $tr .= "
+                                <tr class='bg-info text-white'>
+                                    <td class='align-middle'>".$ik['nama']."</td>
+                                    <td class='align-middle text-center'>".$indikator_input."</td>
+                                    <td class='align-middle'>U</td>
+                                    <td class='align-middle'>H</td>
+                                </tr>";
+                                } elseif($key === 0) { //first
+                                $tr .= "
+                                <tr class='bg-info text-white'>
+                                    <td class='align-middle'>".$ik['nama']."</td>
+                                    <td rowspan='".$rowspan."' class='align-middle text-right'>".@nominal($this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal)."</td>
+                                    <td class='align-middle text-center'>".$indikator_input."</td>
+                                    <td class='align-middle'>U</td>
+                                    <td class='align-middle'>H</td>
+                                </tr>";
+                                } else { //middle
+                                $tr .= "
+                                <tr class='bg-info text-white'>
+                                    <td class='align-middle'>".$ik['nama']."</td>
+                                    <td class='align-middle text-center'>".$indikator_input."</td>
+                                    <td class='align-middle'>U</td>
+                                    <td class='align-middle'>H</td>
+                                </tr>";
+                                }
+                        endforeach; 
+                    // endif;
                     ?>
                     <tr class="bg-info text-white">
-                        <td class="text-center align-middle"><?= $no_level_1.".".$no_level_2 ?></td>
-                        <td class="align-middle"><?= $kegiatan->nama ?></td>
-                        <td class="text-left text-nowrap">
-                            <?php  
-                                if($indikator_kegiatan->num_rows() > 0):
-                                    foreach($indikator_kegiatan->result() as $ik):
-                            ?>
-                            <?= $ik->nama ?>
-                            <hr>
-                            <?php 
-                                    endforeach; 
-                                endif;
-                            ?>
-                            <button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Kegiatan','<?= $kegiatan->id ?>','<?= base_url('app/target/tambah_indikator/ref_kegiatans') ?>')"><i class="fa fa-plus"></i> Tambah</button>
-                        </td>
-                        <td class="align-middle text-right">
-                            <?= @nominal($this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal); ?>
-                        </td>
-                        <td>
-                        <?php  
-                                if($indikator_kegiatan->num_rows() > 0):
-                                    foreach($indikator_kegiatan->result() as $ik):
-                            ?>
-                                <?php
-                                if($ik->kinerja_persentase === "0") {
-                                    echo $ik->kinerja_eviden." ".$ik->keterangan_eviden;
-                                } else {
-                                    echo $ik->kinerja_persentase."%";
-                                }
-                                ?>
-                                <hr>
-                            <?php 
-                                    endforeach; 
-                                endif;
-                            ?>
-                        </td>
+                        <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1.".".$no_level_2 ?></td>
+                        <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $kegiatan->nama ?></td>
+                        <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Kegiatan','<?= $kegiatan->id ?>','<?= base_url('app/target/tambah_indikator/ref_kegiatans') ?>')"><i class="fa fa-plus"></i></button></td>
+                        <?= $tr ?>
                     </tr>
                         <?php
                         $sub_kegiatans = $this->target->sub_kegiatans($kegiatan->id);
                         $no_level_3 = 1;
                         foreach($sub_kegiatans->result() as $sub_kegiatan): 
                         $indikator_sub_kegiatan = $this->target->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id]);
+                        $tr = "";
+                        // if($indikator_sub_kegiatan->num_rows() > 0):
+                            $indikator = $indikator_sub_kegiatan->result_array();
+                            $toEnd = count($indikator);
+                            foreach($indikator as $key => $isk):
+                                
+                                if($isk['kinerja_persentase'] === "0") {
+                                    $indikator_input = $isk['kinerja_eviden']." ".$isk['keterangan_eviden'];
+                                } else {
+                                    $indikator_input = $isk['kinerja_persentase']."%";
+                                }
+                                $rowspan = $toEnd++;
+                                if (0 === --$toEnd) { //last
+                                    $tr .= "
+                                    <tr>
+                                        <td class='align-middle'>".$isk['nama']."</td>
+                                        <td class='align-middle text-center'>".$indikator_input."</td>
+                                        <td class='align-middle'>U</td>
+                                        <td class='align-middle'>H</td>
+                                    </tr>";
+                                    } elseif($key === 0) { //first
+                                    $tr .= "
+                                    <tr>
+                                        <td class='align-middle'>".$isk['nama']."</td>
+                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".@nominal($this->target->getPagu(['fid_sub_kegiatan' => $sub_kegiatan->id])->total_pagu_awal)."</td>
+                                        <td class='align-middle text-center'>".$indikator_input."</td>
+                                        <td class='align-middle'>U</td>
+                                        <td class='align-middle'>H</td>
+                                    </tr>";
+                                    } else { //middle
+                                    $tr .= "
+                                    <tr>
+                                        <td class='align-middle'>".$isk['nama']."</td>
+                                        <td class='align-middle text-center'>".$indikator_input."</td>
+                                        <td class='align-middle'>U</td>
+                                        <td class='align-middle'>H</td>
+                                    </tr>";
+                                    }
+                            endforeach; 
+                        // endif;
                         ?>
                         <tr>
-                            <td class="text-center align-middle"><?= $no_level_1.".".$no_level_2.".".$no_level_3 ?></td>
-                            <td class="align-middle"><?= $sub_kegiatan->nama ?></td>
-                            <td class="text-left text-nowrap">
-                            <?php  
-                                if($indikator_sub_kegiatan->num_rows() > 0):
-                                    foreach($indikator_sub_kegiatan->result() as $isk):
-                            ?>
-                                <?= $isk->nama ?>
-                                <hr>
-                            <?php 
-                                    endforeach; 
-                                endif;
-                            ?>
-                                <button class="btn btn-sm btn-primary m-0 rounded" onclick="TambahIndikator('Sub Kegiatan','<?= $sub_kegiatan->id ?>','<?= base_url('app/target/tambah_indikator/ref_sub_kegiatans') ?>')"><i class="fa fa-plus"></i> Tambah</button>
-                            </td>
-                            <td class="text-right align-middle"><?= @nominal($this->target->getPagu(['fid_sub_kegiatan' => $sub_kegiatan->id])->total_pagu_awal); ?></td>
-                            <td class="text-nowrap">
-                            <?php  
-                                if($indikator_sub_kegiatan->num_rows() > 0):
-                                    foreach($indikator_sub_kegiatan->result() as $isk):
-                            ?>
-                                <?php
-                                if($isk->kinerja_persentase === "0") {
-                                    echo $isk->kinerja_eviden." ".$isk->keterangan_eviden;
-                                } else {
-                                    echo $isk->kinerja_persentase."%";
-                                }
-                                ?>
-                                <hr>
-                            <?php 
-                                    endforeach; 
-                                endif;
-                            ?>
-                            </td>
+                            <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1.".".$no_level_2.".".$no_level_3 ?></td>
+                            <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $sub_kegiatan->nama ?></td>
+                            <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-primary m-0 rounded" onclick="TambahIndikator('Sub Kegiatan','<?= $sub_kegiatan->id ?>','<?= base_url('app/target/tambah_indikator/ref_sub_kegiatans') ?>')"><i class="fa fa-plus"></i></button></td>
+                            <?= $tr ?>
                         </tr>
                         <?php 
                         $no_level_3++;

@@ -26,6 +26,9 @@ class Realisasi extends CI_Controller {
         if(!privilages('priv_default')):
             return show_404();
         endif;
+		
+		$this->load->model('modelrealisasi', 'realisasi');
+		
     }
 	
 	public function index()

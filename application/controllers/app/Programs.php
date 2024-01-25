@@ -494,7 +494,7 @@ class Programs extends CI_Controller
             ->where('p.id', $this->session->userdata('part'))
             // ->like('k.kode', $q)
             // ->or_like('k.nama', $q)
-            // ->group_by('k.fid_part')
+            ->group_by('k.fid_part')
             ->get();
         if ($db->num_rows() > 0) :
             $group = [];
