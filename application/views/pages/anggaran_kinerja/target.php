@@ -22,8 +22,8 @@
                 <tr class="text-center">
                     <th>Anggaran (Rp)</th>
                     <th class="align-middle">Kinerja</th>
-                    <th class="align-middle">#</th>
-                    <th class="align-middle">#</th>
+                    <th class="align-middle">U</th>
+                    <th class="align-middle">H</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +36,8 @@
                         $indikator = $indikator_program->result_array();
                         $toEnd = count($indikator);
                         foreach($indikator as $key => $ip):
-                            
+                            $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="'.$ip['id'].'" data-label="Program" type="button"><i class="fa fa-trash"></i></button>';
+                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$ip['id']."/ref_programs").'\')" type="button"><i class="fa fa-pencil"></i></button>';
                             if($ip['kinerja_persentase'] === "0") {
                                 $indikator_input = $ip['kinerja_eviden']." ".$ip['keterangan_eviden'];
                             } else {
@@ -48,8 +49,8 @@
                                 <tr class='bg-warning'>
                                     <td class='align-middle'>".$ip['nama']."</td>
                                     <td class='align-middle text-center'>".$indikator_input."</td>
-                                    <td class='align-middle'>U</td>
-                                    <td class='align-middle'>H</td>
+                                    <td class='align-middle'>".$button_ubah."</td>
+                                    <td class='align-middle'>".$button_hapus."</td>
                                 </tr>";
                                 } elseif($key === 0) { //first
                                 $tr .= "
@@ -57,16 +58,16 @@
                                     <td class='align-middle'>".$ip['nama']."</td>
                                     <td rowspan='".$rowspan."' class='align-middle text-right'>".@nominal($this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal)."</td>
                                     <td class='align-middle text-center'>".$indikator_input."</td>
-                                    <td class='align-middle'>U</td>
-                                    <td class='align-middle'>H</td>
+                                    <td class='align-middle'>".$button_ubah."</td>
+                                    <td class='align-middle'>".$button_hapus."</td>
                                 </tr>";
                                 } else { //middle
                                 $tr .= "
                                 <tr class='bg-warning'>
                                     <td class='align-middle'>".$ip['nama']."</td>
                                     <td class='align-middle text-center'>".$indikator_input."</td>
-                                    <td class='align-middle'>U</td>
-                                    <td class='align-middle'>H</td>
+                                    <td class='align-middle'>".$button_ubah."</td>
+                                    <td class='align-middle'>".$button_hapus."</td>
                                 </tr>";
                                 }
                         endforeach; 
@@ -75,7 +76,7 @@
                 <tr class="bg-warning">
                     <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1 ?></td>
                     <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $program->nama ?></td>
-                    <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Program','<?= $program->id ?>','<?= base_url('app/target/tambah_indikator/ref_programs') ?>')"><i class="fa fa-plus"></i></button></td>
+                    <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $program->id ?>" data-label="Program" data-ref="ref_programs"><i class="fa fa-plus"></i></button></td>
                     <?= $tr ?>
                 </tr>
                     <?php
@@ -93,7 +94,8 @@
                         $indikator = $indikator_kegiatan->result_array();
                         $toEnd = count($indikator);
                         foreach($indikator as $key => $ik):
-                            
+                            $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="'.$ik['id'].'" data-label="Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
+                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$ik['id']."/ref_kegiatans").'\')" type="button"><i class="fa fa-pencil"></i></button>';
                             if($ik['kinerja_persentase'] === "0") {
                                 $indikator_input = $ik['kinerja_eviden']." ".$ik['keterangan_eviden'];
                             } else {
@@ -105,8 +107,8 @@
                                 <tr class='bg-info text-white'>
                                     <td class='align-middle'>".$ik['nama']."</td>
                                     <td class='align-middle text-center'>".$indikator_input."</td>
-                                    <td class='align-middle'>U</td>
-                                    <td class='align-middle'>H</td>
+                                    <td class='align-middle'>".$button_ubah."</td>
+                                    <td class='align-middle'>".$button_hapus."</td>
                                 </tr>";
                                 } elseif($key === 0) { //first
                                 $tr .= "
@@ -114,16 +116,16 @@
                                     <td class='align-middle'>".$ik['nama']."</td>
                                     <td rowspan='".$rowspan."' class='align-middle text-right'>".@nominal($this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal)."</td>
                                     <td class='align-middle text-center'>".$indikator_input."</td>
-                                    <td class='align-middle'>U</td>
-                                    <td class='align-middle'>H</td>
+                                    <td class='align-middle'>".$button_ubah."</td>
+                                    <td class='align-middle'>".$button_hapus."</td>
                                 </tr>";
                                 } else { //middle
                                 $tr .= "
                                 <tr class='bg-info text-white'>
                                     <td class='align-middle'>".$ik['nama']."</td>
                                     <td class='align-middle text-center'>".$indikator_input."</td>
-                                    <td class='align-middle'>U</td>
-                                    <td class='align-middle'>H</td>
+                                    <td class='align-middle'>".$button_ubah."</td>
+                                    <td class='align-middle'>".$button_hapus."</td>
                                 </tr>";
                                 }
                         endforeach; 
@@ -132,7 +134,7 @@
                     <tr class="bg-info text-white">
                         <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1.".".$no_level_2 ?></td>
                         <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $kegiatan->nama ?></td>
-                        <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" onclick="TambahIndikator('Kegiatan','<?= $kegiatan->id ?>','<?= base_url('app/target/tambah_indikator/ref_kegiatans') ?>')"><i class="fa fa-plus"></i></button></td>
+                        <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $kegiatan->id ?>" data-label="Kegiatan" data-ref="ref_kegiatans"><i class="fa fa-plus"></i></button></td>
                         <?= $tr ?>
                     </tr>
                         <?php
@@ -145,7 +147,8 @@
                             $indikator = $indikator_sub_kegiatan->result_array();
                             $toEnd = count($indikator);
                             foreach($indikator as $key => $isk):
-                                
+                                $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="'.$isk['id'].'" data-label="Sub Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
+                                $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$isk['id']."/ref_sub_kegiatans").'\')" type="button"><i class="fa fa-pencil"></i></button>';
                                 if($isk['kinerja_persentase'] === "0") {
                                     $indikator_input = $isk['kinerja_eviden']." ".$isk['keterangan_eviden'];
                                 } else {
@@ -157,8 +160,8 @@
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
                                         <td class='align-middle text-center'>".$indikator_input."</td>
-                                        <td class='align-middle'>U</td>
-                                        <td class='align-middle'>H</td>
+                                        <td class='align-middle'>".$button_ubah."</td>
+                                        <td class='align-middle'>".$button_hapus."</td>
                                     </tr>";
                                     } elseif($key === 0) { //first
                                     $tr .= "
@@ -166,16 +169,16 @@
                                         <td class='align-middle'>".$isk['nama']."</td>
                                         <td rowspan='".$rowspan."' class='align-middle text-right'>".@nominal($this->target->getPagu(['fid_sub_kegiatan' => $sub_kegiatan->id])->total_pagu_awal)."</td>
                                         <td class='align-middle text-center'>".$indikator_input."</td>
-                                        <td class='align-middle'>U</td>
-                                        <td class='align-middle'>H</td>
+                                        <td class='align-middle'>".$button_ubah."</td>
+                                        <td class='align-middle'>".$button_hapus."</td>
                                     </tr>";
                                     } else { //middle
                                     $tr .= "
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
                                         <td class='align-middle text-center'>".$indikator_input."</td>
-                                        <td class='align-middle'>U</td>
-                                        <td class='align-middle'>H</td>
+                                        <td class='align-middle'>".$button_ubah."</td>
+                                        <td class='align-middle'>".$button_hapus."</td>
                                     </tr>";
                                     }
                             endforeach; 
@@ -184,7 +187,7 @@
                         <tr>
                             <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1.".".$no_level_2.".".$no_level_3 ?></td>
                             <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $sub_kegiatan->nama ?></td>
-                            <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-primary m-0 rounded" onclick="TambahIndikator('Sub Kegiatan','<?= $sub_kegiatan->id ?>','<?= base_url('app/target/tambah_indikator/ref_sub_kegiatans') ?>')"><i class="fa fa-plus"></i></button></td>
+                            <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-primary m-0 rounded" id="TambahIndikator" data-id="<?= $sub_kegiatan->id ?>" data-label="Sub Kegiatan" data-ref="ref_sub_kegiatans"><i class="fa fa-plus"></i></button></td>
                             <?= $tr ?>
                         </tr>
                         <?php 
@@ -205,9 +208,9 @@
 </div>
 
 <!-- Modal Tambah Indikator -->
-<div class="modal fade modal-indikator" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+<div class="modal fade modal-indikator" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <?= form_open('#', ['id' => 'formIndikator', 'data-parsley-validate' => '']); ?>
+        <?= form_open(base_url("app/target/tambah_indikator"), ['id' => 'formIndikator', 'data-parsley-validate' => '']); ?>
         <div class="modal-content rounded-0">
             <div class="modal-header bg-success text-white rounded-0">
                 <h4 class="modal-title" id="myModalLabel">Processing ...</h4>

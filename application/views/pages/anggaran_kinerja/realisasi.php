@@ -27,7 +27,7 @@
                 foreach($programs->result() as $program): 
                 $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id]);
                         $tr = "";
-                        if($indikator_program->num_rows() > 0):
+                        // if($indikator_program->num_rows() > 0):
                             $indikator = $indikator_program->result_array();
                             $toEnd = count($indikator);
                             foreach($indikator as $key => $ip):
@@ -53,7 +53,7 @@
                                     </tr>";
                                   }
                             endforeach; 
-                        endif;
+                        // endif;
                 ?>
                 <tr class="bg-warning">
                     <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1 ?></td>
@@ -86,7 +86,7 @@
                                     $tr .= "
                                     <tr class='bg-info text-white'>
                                         <td class='align-middle'>".$ik['nama']."</td>
-                                        <td rowspan='".$rowspan."' class='align-middle text-right'>abc</td>
+                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiKegiatan(1, $kegiatan->id))."</td>
                                         <td class='align-middle text-center'>".$ik['id']."</td>
                                     </tr>";
                                   } else { //middle
@@ -110,7 +110,7 @@
                         foreach($sub_kegiatans->result() as $sub_kegiatan): 
                         $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id]);
                         $tr = "";
-                        if($indikator_sub_kegiatan->num_rows() > 0):
+                        // if($indikator_sub_kegiatan->num_rows() > 0):
                             $indikator_sub = $indikator_sub_kegiatan->result_array();
                             $toEnd = count($indikator_sub);
                             foreach($indikator_sub as $key => $isk):
@@ -125,7 +125,7 @@
                                     $tr .= "
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
-                                        <td rowspan='".$rowspan."' class='align-middle text-right'>abc</td>
+                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiSubKegiatan(1, $sub_kegiatan->id))."</td>
                                         <td class='align-middle text-center'>".$isk['id']."</td>
                                     </tr>";
                                   } else { //middle
@@ -136,7 +136,7 @@
                                     </tr>";
                                   }
                             endforeach; 
-                        endif;
+                        // endif;
                         ?>
                         <tr>
                             <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1.".".$no_level_2.".".$no_level_3 ?></td>

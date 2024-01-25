@@ -40,16 +40,17 @@ class Target extends CI_Controller {
 			'programs' => $programs,
 			'autoload_js' => [
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
-                'template/custom-js/tambah-indikator.js',
+                'template/custom-js/indikator.js',
             ],
         ];
 		$this->load->view('layout/app', $data);
 	}
 
-	public function tambah_indikator($tabel)
+	public function tambah_indikator()
 	{
 		$post = $this->input->post();
 
+		$tabel = $post['ref'];
 		$id = $post['id'];
 		$nama_indikator = $post['nama'];
 		$persentase = $post['persentase'];
@@ -84,6 +85,64 @@ class Target extends CI_Controller {
 		}
 
 		$db = $this->crud->insert('ref_indikators', $data);
+		if($db)
+        {
+            $msg = 200;
+        } else {
+            $msg = 400;
+        }
+
+        echo json_encode($msg);
+	}
+
+	public function ubah($id, $table)
+	{
+		$row = $this->crud->getWhere('ref_indikators', ['id' => $id]);
+
+		$data = [
+			'title' => 'Ubah Indikator',
+			'content' => 'pages/anggaran_kinerja/indikator_ubah',
+			'id_indikator' => $id,
+			'row' => $row->row(),
+			'autoload_js' => [
+				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+				'template/custom-js/indikator.js',
+			],
+		];
+
+		$this->load->view('layout/app', $data);
+	}
+
+	public function ubah_proses()
+	{
+		$post = $this->input->post();
+
+		$data = [
+			'nama' => $post['nama'],
+			'kinerja_persentase' => $post['persentase'],
+			'kinerja_eviden' => $post['jumlah_eviden'],
+			'keterangan_eviden' => $post['keterangan_eviden']
+		];
+
+		$whr = [
+			'id' => $post['id']
+		];
+
+		$db = $this->crud->update('ref_indikators', $data, $whr);
+		if($db)
+        {
+            $msg = 200;
+        } else {
+            $msg = 400;
+        }
+
+        echo json_encode($msg);
+	}
+
+
+	public function hapus() {
+		$id = $this->input->post('id');
+		$db = $this->crud->deleteWhere('ref_indikators', ['id' => $id]);
 		if($db)
         {
             $msg = 200;

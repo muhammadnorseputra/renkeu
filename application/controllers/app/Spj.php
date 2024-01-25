@@ -231,6 +231,7 @@ class Spj extends CI_Controller {
 
         if($input['status'] == 'MS') {
             $update = [
+                'fid_periode' => $input['periode'],
                 'nomor_pembukuan' => $input['nomor'],
                 'tanggal_pembukuan' => formatToSQL($input['tanggal']),
                 'is_status' => 'VERIFIKASI_ADMIN',
@@ -305,6 +306,7 @@ class Spj extends CI_Controller {
 
         $insert = [
             'token' => $detailUsul->token,
+            'fid_periode' => $detailUsul->fid_periode,
             'nama_part' => $nama_part,
             'nama_program' => $nama_program,
             'nama_kegiatan' => $nama_kegiatan,

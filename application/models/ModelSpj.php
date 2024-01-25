@@ -1,6 +1,13 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class ModelSpj extends CI_Model {
+	public function getPeriode()
+	{
+		$this->db->select('*');
+		$this->db->from('t_periode');
+		$q = $this->db->get();
+		return $q;
+	}
 	public function inbox()
     {
         $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');

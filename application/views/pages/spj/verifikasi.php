@@ -177,7 +177,7 @@
                         form_open(base_url('app/spj/verifikasi_proses'), ['id' => 'formVerifikasi', 'class' => 'form-horizontal', 'data-parsley-validate' => '', 'data-parsley-errors-messages-disabled' => ''], ['status' => 'MS', 'token' => $detail->token]);
                          ?>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="nomor"><b>Nomor Buku :</b></label>
                                     <input type="text" name="nomor" class="form-control" value="<?= $detail->nomor_pembukuan ?>" required="required">
@@ -201,6 +201,20 @@
                                         <option value="UP" <?= $detail->is_realisasi === 'UP' ? 'selected' : '' ?>>UP</option>
                                         <option value="GU" <?= $detail->is_realisasi === 'GU' ? 'selected' : '' ?>>GU</option>
                                         <option value="TU" <?= $detail->is_realisasi === 'TU' ? 'selected' : '' ?>>TU</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="periode"><b>Periode :</b></label>
+                                    <select name="periode" id="periode" class="form-control rounded-0" required>
+                                        <?php 
+                                            foreach($this->spj->getPeriode()->result() as $periode ): 
+                                            $is_status = $periode->is_open === 'Y' ? 'OPEN' : 'CLOSE';
+                                            $disabled = $periode->is_open !== 'Y' ? 'disabled' : '';
+                                        ?>
+                                            <option value="<?= $periode->id ?>" <?= $disabled ?>><?= $periode->nama ?> (<?= $is_status ?>)</option>    
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                             </div>

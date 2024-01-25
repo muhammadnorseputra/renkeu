@@ -57,4 +57,22 @@ class ModelRealisasi extends CI_Model {
         $q = $this->db->get();
         return $q;
     }
+    public function getRealisasiKegiatan($periodeId,$kegiatanId) {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('fid_periode', $periodeId);
+        $this->db->where('fid_kegiatan', $kegiatanId);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
+    public function getRealisasiSubKegiatan($periodeId,$subKegiatanId) {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('fid_periode', $periodeId);
+        $this->db->where('fid_sub_kegiatan', $subKegiatanId);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 }
