@@ -76,11 +76,11 @@
                 <tr class="bg-warning">
                     <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1 ?></td>
                     <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $program->nama ?></td>
-                    <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $program->id ?>" data-label="Program" data-ref="ref_programs"><i class="fa fa-plus"></i></button></td>
+                    <td class="align-middle text-center" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $program->id ?>" data-label="Program" data-ref="ref_programs"><i class="fa fa-plus"></i></button></td>
                     <?= $tr ?>
                 </tr>
                     <?php
-                    if($this->session->userdata('role') === 'SUPER_ADMIN'):
+                    if($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN'):
                     $kegiatans = $this->target->kegiatans($program->id);
                     else:
                     $kegiatans = $this->target->kegiatans($program->id, $this->session->userdata('part'));
@@ -134,7 +134,7 @@
                     <tr class="bg-info text-white">
                         <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1.".".$no_level_2 ?></td>
                         <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $kegiatan->nama ?></td>
-                        <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $kegiatan->id ?>" data-label="Kegiatan" data-ref="ref_kegiatans"><i class="fa fa-plus"></i></button></td>
+                        <td class="align-middle text-center" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $kegiatan->id ?>" data-label="Kegiatan" data-ref="ref_kegiatans"><i class="fa fa-plus"></i></button></td>
                         <?= $tr ?>
                     </tr>
                         <?php
@@ -187,7 +187,7 @@
                         <tr>
                             <td class="text-center align-middle" rowspan="<?= $toEnd+1 ?>"><?= $no_level_1.".".$no_level_2.".".$no_level_3 ?></td>
                             <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><?= $sub_kegiatan->nama ?></td>
-                            <td class="align-middle" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-primary m-0 rounded" id="TambahIndikator" data-id="<?= $sub_kegiatan->id ?>" data-label="Sub Kegiatan" data-ref="ref_sub_kegiatans"><i class="fa fa-plus"></i></button></td>
+                            <td class="align-middle text-center" rowspan="<?= $toEnd+1 ?>"><button class="btn btn-sm btn-primary m-0 rounded" id="TambahIndikator" data-id="<?= $sub_kegiatan->id ?>" data-label="Sub Kegiatan" data-ref="ref_sub_kegiatans"><i class="fa fa-plus"></i></button></td>
                             <?= $tr ?>
                         </tr>
                         <?php 

@@ -159,11 +159,12 @@
             <?= form_close() ?>
         </div>
         <div id="step-3" class="text-center">
-            <?php if(@$detail->is_status === 'VERIFIKASI'): ?>
+            <?php if(@$detail->is_status === 'VERIFIKASI' || @$detail->is_status === 'VERIFIKASI_ADMIN'): ?>
             <div class="container">
                 <div class="col-md-12">
                     <img src="<?= base_url('template/assets/icon/verifikasi.svg') ?>" alt="Verifikasi Admin" width="50%">
                     <h2 class="StepTitle">Usulan Dalam Proses Verifikasi <i class="fa fa-lock text-success ml-2"></i></h2>
+                    <button class="btn btn-warning rounded-0" onclick="window.location.href='<?= base_url('app/spj') ?>'">Kembali <i class="fa fa-arrow-right ml-3"></i> </button>
                 </div>
             </div>
             <?php endif; ?>

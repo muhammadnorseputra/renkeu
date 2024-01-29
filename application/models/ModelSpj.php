@@ -8,6 +8,20 @@ class ModelSpj extends CI_Model {
 		$q = $this->db->get();
 		return $q;
 	}
+	public function getIndikator()
+	{
+		return $this->db->select('id,nama')->from('ref_indikators')->order_by('id', 'asc')->get();
+	}
+	public function getIndikatorByToken($token)
+	{	
+		$this->db->select('r.*');
+		$this->db->from('t_realisasi AS r');
+		$this->db->join('ref_indikators AS i', 'r.fid_indikator=i.id');
+		$this->db->join('spj', 'r.fid_token=spj.token');
+		$this->db->where('spj.token', $token);
+		$q = $this->db->get();
+		return $q;
+	}
 	public function inbox()
     {
         $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');

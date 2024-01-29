@@ -7,6 +7,27 @@
 <div class="clearfix"></div>
 
 <div class="x_panel">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="periode">Pilih Periode</label>
+                <select name="periode" id="periode" class="form-control rounded-0" onchange="PilihPeriode(this.value)">
+                    <?php 
+                        foreach($this->spj->getPeriode()->result() as $periode ): 
+                        $is_status = $periode->is_open === 'Y' ? 'OPEN' : 'CLOSE';
+                        $disabled = $periode->is_open !== 'Y' ? 'disabled' : '';
+                        if(isset($_GET['periode']) && $_GET['periode'] === $periode->id && $periode->is_open === 'Y') {
+                            $selected = "selected";
+                        } else {
+                            $selected = "";
+                        }
+                    ?>
+                        <option value="<?= $periode->id ?>" <?= $disabled ?> <?= $selected ?>><?= $periode->nama ?> (<?= $is_status ?>)</option>    
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+    </div>
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead>
@@ -42,7 +63,7 @@
                                     $tr .= "
                                     <tr class='bg-warning'>
                                         <td class='align-middle'>".$ip['nama']."</td>
-                                        <td rowspan='".$rowspan."' class='align-middle text-right'>abc</td>
+                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiProgram(1, $program->id))."</td>
                                         <td class='align-middle text-center'>".$ip['id']."</td>
                                     </tr>";
                                   } else { //middle
@@ -61,7 +82,7 @@
                     <?= $tr ?>
                 </tr>
                     <?php
-                    if($this->session->userdata('role') === 'SUPER_ADMIN'):
+                    if($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN'):
                     $kegiatans = $this->realisasi->kegiatans($program->id);
                     else:
                     $kegiatans = $this->realisasi->kegiatans($program->id, $this->session->userdata('part'));

@@ -28,6 +28,7 @@ class Realisasi extends CI_Controller {
         endif;
 		
 		$this->load->model('modelrealisasi', 'realisasi');
+		$this->load->model('modelspj', 'spj');
 		
     }
 	
@@ -39,8 +40,7 @@ class Realisasi extends CI_Controller {
             'content' => 'pages/anggaran_kinerja/realisasi',
 			'programs' => $programs,
 			'autoload_js' => [
-				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
-                'template/custom-js/tambah-indikator.js',
+                'template/custom-js/realisasi.js',
             ],
         ];
 		$this->load->view('layout/app', $data);
