@@ -44,7 +44,7 @@
                     <ul class="nav child_menu">
                         <li><a href="<?= base_url('app/target') ?>">Target</a></li>
                         <li><a href="<?= base_url('app/realisasi') ?>">Realisasi</a></li>
-                        <li><a href="<?= base_url('app/laporan') ?>">Laporan</a></li>
+                        <li><a href="<?= base_url('app/capaian') ?>">Capaian</a></li>
                     </ul>
                 </li>
             </ul>

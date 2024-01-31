@@ -11,7 +11,7 @@ $(document).ready(function () {
 			$("html").block({
 				message: "<h1>Error Login</h1>",
 				overlayCSS: { backgroundColor: "#fff" },
-				timeout: 3000,
+				timeout: 1000,
 				onBlock: function () {
 					alert("Auth access akun failed!");
 					$('button[type="submit"]').html(`Masuk`);
@@ -57,7 +57,7 @@ $(document).ready(function () {
 		$("html").block({
 			message: `${response.msg}`,
 			overlayCSS: { backgroundColor: "#fff" },
-			timeout: 3000,
+			timeout: 1000,
 			onBlock: function () {
 				if (response.valid == true) {
 					window.location.href = response.redirect;
@@ -97,7 +97,7 @@ $(document).ready(function () {
 				cursor: "wait",
 				border: "1px solid #eee"
 			},
-			timeout: 3000,
+			timeout: 1000,
 			onBlock: function () {
 				$('button[type="submit"]').html(`Masuk`);
 			},

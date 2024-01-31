@@ -5,7 +5,9 @@
 </div>
 
 <div class="clearfix"></div>
-
+<?php 
+$periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPeriode()->row()->id;
+?>
 <div class="x_panel">
     <div class="row">
         <div class="col-md-2">
@@ -52,25 +54,34 @@
                             $indikator = $indikator_program->result_array();
                             $toEnd = count($indikator);
                             foreach($indikator as $key => $ip):
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ip['id'])->row();
+                                if($realisasi->persentase === "0") {
+                                    $sum_realisasi = $realisasi->eviden;
+                                } elseif($realisasi->eviden === "0") {
+                                    $sum_realisasi = $realisasi->persentase."%";
+                                } else {
+                                    $sum_realisasi = "-";
+                                }
+
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
                                     $tr .= "
                                     <tr class='bg-warning'>
                                         <td class='align-middle'>".$ip['nama']."</td>
-                                        <td class='align-middle text-center'>".$ip['id']."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   } elseif($key === 0) { //first
                                     $tr .= "
                                     <tr class='bg-warning'>
                                         <td class='align-middle'>".$ip['nama']."</td>
-                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiProgram(1, $program->id))."</td>
-                                        <td class='align-middle text-center'>".$ip['id']."</td>
+                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiProgram($periode_id, $program->id))."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   } else { //middle
                                     $tr .= "
                                     <tr class='bg-warning'>
                                         <td class='align-middle'>".$ip['nama']."</td>
-                                        <td class='align-middle text-center'>".$ip['id']."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   }
                             endforeach; 
@@ -96,25 +107,33 @@
                             $indikator_keg = $indikator_kegiatan->result_array();
                             $toEnd = count($indikator_keg);
                             foreach($indikator_keg as $key => $ik):
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ik['id'])->row();
+                                if($realisasi->persentase === "0") {
+                                    $sum_realisasi = $realisasi->eviden;
+                                } elseif($realisasi->eviden === "0") {
+                                    $sum_realisasi = $realisasi->persentase."%";
+                                } else {
+                                    $sum_realisasi = "-";
+                                }
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
                                     $tr .= "
                                     <tr class='bg-info text-white'>
                                         <td class='align-middle'>".$ik['nama']."</td>
-                                        <td class='align-middle text-center'>".$ik['id']."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   } elseif($key === 0) { //first
                                     $tr .= "
                                     <tr class='bg-info text-white'>
                                         <td class='align-middle'>".$ik['nama']."</td>
-                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiKegiatan(1, $kegiatan->id))."</td>
-                                        <td class='align-middle text-center'>".$ik['id']."</td>
+                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiKegiatan($periode_id, $kegiatan->id))."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   } else { //middle
                                     $tr .= "
                                     <tr class='bg-info text-white'>
                                         <td class='align-middle'>".$ik['nama']."</td>
-                                        <td class='align-middle text-center'>".$ik['id']."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   }
                             endforeach; 
@@ -135,25 +154,34 @@
                             $indikator_sub = $indikator_sub_kegiatan->result_array();
                             $toEnd = count($indikator_sub);
                             foreach($indikator_sub as $key => $isk):
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $isk['id'])->row();
+                                if($realisasi->persentase === "0") {
+                                    $sum_realisasi = $realisasi->eviden;
+                                } elseif($realisasi->eviden === "0") {
+                                    $sum_realisasi = $realisasi->persentase."%";
+                                } else {
+                                    $sum_realisasi = "-";
+                                }
+
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
                                     $tr .= "
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
-                                        <td class='align-middle text-center'>".$isk['id']."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   } elseif($key === 0) { //first
                                     $tr .= "
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
-                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiSubKegiatan(1, $sub_kegiatan->id))."</td>
-                                        <td class='align-middle text-center'>".$isk['id']."</td>
+                                        <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($this->realisasi->getRealisasiSubKegiatan($periode_id, $sub_kegiatan->id))."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   } else { //middle
                                     $tr .= "
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
-                                        <td class='align-middle text-center'>".$isk['id']."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   }
                             endforeach; 

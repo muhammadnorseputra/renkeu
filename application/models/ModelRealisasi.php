@@ -84,4 +84,14 @@ class ModelRealisasi extends CI_Model {
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
+    public function getRealisasiByIndikatorId($periode_id, $indikator_id)
+	{
+		$this->db->select_sum('persentase');
+        $this->db->select_sum('eviden');
+        $this->db->select('eviden_jenis');
+		$this->db->from('t_realisasi');
+		$this->db->where(['fid_indikator' => $indikator_id, 'fid_periode' => $periode_id]);
+		$q = $this->db->get();
+		return $q;
+	}
 }
