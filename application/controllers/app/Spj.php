@@ -244,28 +244,6 @@ class Spj extends CI_Controller {
             ];
             $db = $this->crud->update('spj', $update, $whr);
 
-            if($input['indikator'] !== 'TIDAK') {
-                $data = [
-                    'fid_token' => $input['token'],
-                    'fid_indikator' => $input['indikator'],
-                    'fid_periode' => $input['periode'],
-                    'persentase' => $input['persentase'],
-                    'eviden' => $input['eviden'],
-                    'eviden_jenis' => $input['jenis_eviden']
-                ];
-                $cektoken = $this->crud->getWhere('t_realisasi', ['fid_token' => $token])->num_rows();
-                if($cektoken > 0) {
-                    $this->crud->update('t_realisasi', $data, ['fid_token' => $token]);
-                } else {
-                    $this->crud->insert('t_realisasi', $data);
-                }
-            } elseif($input['indikator'] === 'TIDAK') {
-                $cektoken = $this->crud->getWhere('t_realisasi', ['fid_token' => $token])->num_rows();
-                if($cektoken > 0) {
-                    $this->crud->deleteWhere('t_realisasi', ['fid_token' => $token]);
-                } 
-            } 
-
         } elseif($input['status'] == 'TMS' || $input['status'] == 'BTL'){
             $update = [
                 'nomor_pembukuan' => '',
@@ -277,12 +255,7 @@ class Spj extends CI_Controller {
                 'verify_at' => date('Y-m-d H:i:s'),
             ];
             $db = $this->crud->update('spj', $update, $whr);
-            
-            // hapus realisasi jika status TMS atau BTL
-            $cektoken = $this->crud->getWhere('t_realisasi', ['fid_token' => $token])->num_rows();
-            if($cektoken > 0) {
-                $this->crud->deleteWhere('t_realisasi', ['fid_token' => $token]);
-            } 
+ 
         } else {
             $update = [
                 'is_status' => $input['status']

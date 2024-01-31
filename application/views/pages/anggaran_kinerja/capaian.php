@@ -163,7 +163,7 @@
                                         <td rowspan='".$rowspan."' class='align-middle text-right'>".nominal($realisasi_anggaran)."</td>
                                         <td class='align-middle text-center'>".$sum_realisasi_view."</td>
                                         <td rowspan='".$rowspan."' class='align-middle text-right'>".$capaian_anggaran." (%)</td>
-                                        <td class='align-middle text-center'>".$capaian_kinerja."</td>
+                                        <td class='align-middle text-center'>".$capaian_kinerja." (%)</td>
                                     </tr>";
                                   } else { //middle
                                     $tr .= "
@@ -171,7 +171,7 @@
                                         <td class='align-middle'>".$ik['nama']."</td>
                                         <td class='align-middle text-center'>".$indikator_input_view."</td>
                                         <td class='align-middle text-center'>".$sum_realisasi_view."</td>
-                                        <td class='align-middle text-center'>".$capaian_kinerja."</td>
+                                        <td class='align-middle text-center'>".$capaian_kinerja." (%)</td>
                                     </tr>";
                                   }
                             endforeach; 
@@ -229,7 +229,6 @@
                                     $tr .= "
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
-                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
                                     </tr>";
                                   } elseif($key === 0) { //first
                                     $tr .= "
@@ -246,7 +245,9 @@
                                     $tr .= "
                                     <tr>
                                         <td class='align-middle'>".$isk['nama']."</td>
-                                        <td class='align-middle text-center'>".$sum_realisasi."</td>
+                                        <td class='align-middle text-center'>".$indikator_input_view."</td>
+                                        <td class='align-middle text-center'>".$sum_realisasi_view."</td>
+                                        <td class='align-middle text-center text-nowrap'>".$capaian_kinerja." (%)</td>
                                     </tr>";
                                   }
                             endforeach; 

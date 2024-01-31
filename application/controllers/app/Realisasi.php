@@ -40,9 +40,60 @@ class Realisasi extends CI_Controller {
             'content' => 'pages/anggaran_kinerja/realisasi',
 			'programs' => $programs,
 			'autoload_js' => [
+				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
                 'template/custom-js/realisasi.js',
             ],
         ];
 		$this->load->view('layout/app', $data);
+	}
+
+	public function detailIndikator()
+	{
+		$id = $this->input->get('id');
+		$db = $this->crud->getWhere('ref_indikators', ['id' => $id]);
+		if($db->num_rows() > 0) {
+			$data = $db->row();
+		} else {
+			$data = null;
+		}
+		echo json_encode($data);
+	}
+
+	public function input()
+	{
+		$post = $this->input->post();
+
+		$insert = [
+			'fid_indikator' => $post['id'],
+			'fid_periode' => $post['periode'],
+			'persentase' => $post['persentase'],
+			'eviden' => $post['jumlah_eviden'],
+			'eviden_jenis' => $post['keterangan_eviden'],
+		];
+
+		$update = [
+			'persentase' => $post['persentase'],
+			'eviden' => $post['jumlah_eviden'],
+			'eviden_jenis' => $post['keterangan_eviden']
+		];
+
+		$whr = [
+			'fid_indikator' => $post['id'],
+			'fid_periode' => $post['periode']
+		];
+
+		$cekrealisasi = $this->crud->getWhere('t_realisasi', $whr);
+		if($cekrealisasi->num_rows() > 0) {
+			$db = $this->crud->update('t_realisasi', $update, $whr);
+		} else {
+			$db = $this->crud->insert('t_realisasi', $insert);
+		}
+
+		if($db) {
+			$msg = 200;
+		} else {
+			$msg = 400;
+		}
+		echo json_encode($msg);
 	}
 }

@@ -219,44 +219,6 @@
                                 </div>
                             </div>
                         </div>
-                        <hr>
-                        <?php  
-                        $query = $this->spj->getIndikatorByToken($detail->token);
-                        $db_indikator = $query->row();
-                        $selectTidak = $query->num_rows <= 0 ? 'selected' : '';
-                        ?>
-                        <div class="row">
-                            <div class="col-md-12" id="pilih_indikator">
-                                <label for="indikator"><b>Indikator :</b></label>
-                                <select name="indikator" id="indikator" class="form-control" required>
-                                    <option value="">Pilih Indikator</option>
-                                    <option value="TIDAK" <?= $selectTidak ?>>TIDAK ADA INDIKATOR TERKAIT</option>
-                                    <?php 
-                                        $indikators = $this->spj->getIndikator();
-                                        foreach($indikators->result() as $indikator):
-                                        $selected = $db_indikator->fid_indikator === $indikator->id ? 'selected' : '';
-                                    ?>
-                                        <option value="<?= $indikator->id ?>" <?= $selected ?>><?= $indikator->nama ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mt-3" id="rincian_indikator" style="display:none;">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="persentase">Persentase (%)</label>
-                                    <input type="number" name="persentase" class="form-control" value="<?= @$db_indikator->persentase ?>" required>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="eviden">Jumlah Eviden</label>
-                                <input type="number" name="eviden" class="form-control" value="<?= @$db_indikator->eviden ?>" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="jenis_eviden">Jenis Eviden</label>
-                                <input type="text" name="jenis_eviden" class="form-control" value="<?= @$db_indikator->eviden_jenis ?>" required>
-                            </div>
-                        </div>
                         <button type="submit" class="btn btn-success rounded-0 mt-2 pull-right"><i class="fa fa-save mr-2"></i> Proses</button>
 
                     <?= 
