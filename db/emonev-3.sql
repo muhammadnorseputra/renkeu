@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 23, 2024 at 03:39 AM
+-- Generation Time: Feb 01, 2024 at 02:24 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.3.33
 
@@ -43,11 +43,16 @@ CREATE TABLE `ref_indikators` (
 --
 
 INSERT INTO `ref_indikators` (`id`, `nama`, `fid_program`, `fid_kegiatan`, `fid_sub_kegiatan`, `kinerja_persentase`, `kinerja_eviden`, `keterangan_eviden`) VALUES
-(1, 'Nilai Implementasi Manajemen Talenta Pegawai ASN', 37, NULL, NULL, '20', 0, '0'),
-(4, 'Persentase Jabatan Pimpinan dan Administrasi yang Terisi (pembatasan pada jabatan Eselon II, III, dan IV)', NULL, 39, NULL, '100', 0, '0'),
-(5, 'Persentase Jabatan Fungsional yang Terisi sesuai Prioritas Aktual Reformasi Birokrasi', NULL, 39, NULL, '32', 0, '0'),
 (10, 'Persentase Penempatan Pegawai sesuai SOP (sesuai Pohon Kinerja)', NULL, NULL, 33, '100', 0, '0'),
-(11, 'Jumlah Dokumen Hasil Pelaksanaan Mutasi Jabatan Pimpinan Tinggi, Jabatan Administrasi, Jabatan Pelaksana dan Mutasi ASN antar Daerah (sesuai Kepmendagri)', NULL, NULL, 33, '0', 1, 'Dokumen');
+(113, 'Persentase Pegawai yang Memenuhi Kualifikasi dan Kompetensi Minimal (aspek kompetensi manajerial, teknis, dan fungsional - di luar tenaga pendidik dan tenaga kesehatan)', NULL, 38, NULL, '23', 0, '0'),
+(116, 'Persentase Penyelenggaraan Layanan Administrasi dan Sertifikasi Kompetensi sesuai SOP (sesuai Pohon Kinerja)', NULL, NULL, 32, '100', 0, '0'),
+(117, 'Jumlah Dokumen Hasil Pengelolaan Administrasi Diklat dan Sertifikasi ASN (sesuai Kepmendagri)', NULL, NULL, 32, '0', 1, 'Dokumen'),
+(118, 'Persentase Jabatan Pimpinan dan Administrasi yang Terisi (pembatasan pada jabatan Eselon II, III, dan IV)', NULL, 39, NULL, '100', 0, '0'),
+(119, 'Persentase Jabatan Fungsional yang Terisi sesuai Prioritas Aktual Reformasi Birokrasi', NULL, 39, NULL, '32', 0, '0'),
+(120, 'Jumlah Dokumen Hasil Pelaksanaan Mutasi Jabatan Pimpinan Tinggi, Jabatan Administrasi, Jabatan Pelaksana dan Mutasi ASN antar Daerah (sesuai Kepmendagri)', NULL, NULL, 33, '0', 1, 'Dokumen'),
+(121, 'Persentase Kenaikan Pangkat Pegawai Tepat Waktu sesuai SOP (sesuai Pohon Kinerja)', NULL, NULL, 38, '100', 0, '0'),
+(122, 'Jumlah Dokumen Pengelolaan Kenaikan Pangkat ASN (sesuai Kepmendagri)', NULL, NULL, 38, '0', 2, 'Dokumen'),
+(124, 'Nilai Implementasi Manajemen Talenta Pegawai ASN', 37, NULL, NULL, '20', 0, '0');
 
 -- --------------------------------------------------------
 
@@ -133,7 +138,8 @@ CREATE TABLE `ref_sub_kegiatans` (
 
 INSERT INTO `ref_sub_kegiatans` (`id`, `fid_kegiatan`, `kode`, `nama`) VALUES
 (32, 38, '5.03.02.2.03.0003', 'Pengeloaan Administrasi Diklat dan Sertifikasi ASN'),
-(33, 39, '5.03.02.2.02.0001', 'Pengelolaan Mutasi ASN');
+(33, 39, '5.03.02.2.02.0001', 'Pengelolaan Mutasi ASN'),
+(38, 39, '5.03.02.2.02.0002', 'Pengelolaan Kenaikan Pangkat ASN');
 
 -- --------------------------------------------------------
 
@@ -173,11 +179,12 @@ CREATE TABLE `ref_uraians` (
 
 INSERT INTO `ref_uraians` (`id`, `fid_kegiatan`, `fid_sub_kegiatan`, `kode`, `nama`) VALUES
 (7, 38, 32, '5.1.02.01.01.0026', 'Belanja Alat/Bahan untuk Kegiatan Kantor- Bahan Cetak'),
-(8, 38, 32, '5.1.02.01.01.0052', 'Belanja Makanan dan Minuman Rapat'),
+(8, 38, 32, '5.1.02.01.01.00521', 'Belanja Makanan dan Minuman Rapat'),
 (9, 38, 32, '5.1.02.02.01.0026', 'Belanja Jasa Tenaga Administrasi'),
 (10, 38, 32, '5.1.02.02.12.0001', 'Belanja Kursus Singkat/Pelatihan'),
 (12, 39, 33, '5.1.02.01.01.0052', 'Belanja Makanan dan Minuman Rapat'),
-(13, 39, 33, '5.1.02.02.01.0003', 'Honorarium Narasumber atau Pembahas, Moderator, Pembawa Acara, dan Panitia');
+(13, 39, 33, '5.1.02.02.01.0003', 'Honorarium Narasumber atau Pembahas, Moderator, Pembawa Acara, dan Panitia'),
+(16, 39, 38, '5.1.02.01.01.0026', 'Belanja Alat/Bahan untuk Kegiatan Kantor- Bahan Cetak');
 
 -- --------------------------------------------------------
 
@@ -188,6 +195,7 @@ INSERT INTO `ref_uraians` (`id`, `fid_kegiatan`, `fid_sub_kegiatan`, `kode`, `na
 CREATE TABLE `spj` (
   `id` int(11) NOT NULL,
   `token` varchar(40) NOT NULL,
+  `fid_periode` int(11) NOT NULL,
   `fid_part` int(11) NOT NULL,
   `fid_program` int(11) NOT NULL,
   `fid_kegiatan` int(11) NOT NULL,
@@ -214,6 +222,14 @@ CREATE TABLE `spj` (
   `berkas_link` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `spj`
+--
+
+INSERT INTO `spj` (`id`, `token`, `fid_periode`, `fid_part`, `fid_program`, `fid_kegiatan`, `fid_sub_kegiatan`, `fid_uraian`, `koderek`, `nomor_pembukuan`, `bulan`, `tahun`, `tanggal_pembukuan`, `jumlah`, `uraian`, `is_status`, `is_realisasi`, `catatan`, `approve_by`, `approve_at`, `entri_at`, `entri_by`, `entri_by_part`, `verify_at`, `verify_by`, `berkas_file`, `berkas_link`) VALUES
+(41, 'cdstncKo9HyVvrXbMF', 1, 11, 37, 39, 33, 12, '5.03.02.2.02.5.03.02.2.02.0001.5.1.02.01.01.0052', '001', '01', 2024, '2020-01-20', '63400000', 'Rapat Pengadaan ASN', 'SELESAI', 'LS', '', 'abduh', '2024-01-30 15:41:22', '2024-01-25 11:51:38', 'mpkasn', 11, '2024-01-30 15:41:06', 'abduh', '', 'www.google.com'),
+(42, 'ZPUaI0yvhk65O2uuDC', 1, 11, 37, 39, 38, 16, '5.03.02.2.02.5.03.02.2.02.0002.5.1.02.01.01.0026', '002', '01', 2024, '2024-01-31', '800000', 'Cetak Spanduk', 'SELESAI', 'LS', '', 'abduh', '2024-01-31 10:44:21', '2024-01-31 10:43:11', 'mpkasn', 11, '2024-01-31 10:43:55', 'mika', '', 'www.google.com');
+
 -- --------------------------------------------------------
 
 --
@@ -223,6 +239,7 @@ CREATE TABLE `spj` (
 CREATE TABLE `spj_riwayat` (
   `id` int(11) NOT NULL,
   `token` varchar(40) NOT NULL,
+  `fid_periode` int(11) NOT NULL,
   `nama_part` varchar(100) NOT NULL,
   `nama_program` varchar(100) NOT NULL,
   `nama_kegiatan` varchar(100) NOT NULL,
@@ -252,6 +269,14 @@ CREATE TABLE `spj_riwayat` (
   `berkas_file` varchar(30) NOT NULL,
   `berkas_link` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `spj_riwayat`
+--
+
+INSERT INTO `spj_riwayat` (`id`, `token`, `fid_periode`, `nama_part`, `nama_program`, `nama_kegiatan`, `nama_sub_kegiatan`, `nama_uraian`, `kode_program`, `kode_kegiatan`, `kode_sub_kegiatan`, `kode_uraian`, `koderek`, `nomor_pembukuan`, `bulan`, `tahun`, `tanggal_pembukuan`, `jumlah`, `uraian`, `is_status`, `is_realisasi`, `catatan`, `approve_by`, `approve_at`, `entri_at`, `entri_by`, `entri_by_part`, `verify_at`, `verify_by`, `berkas_file`, `berkas_link`) VALUES
+(5, 'cdstncKo9HyVvrXbMF', 1, 'MUTASI, PROMOSI DAN KINERJA', 'PROGRAM KEPEGAWAIAN DAERAH', 'Mutasi dan Promosi ASN', 'Pengelolaan Mutasi ASN', 'Belanja Makanan dan Minuman Rapat', '5.03.02', '5.03.02.2.02', '5.03.02.2.02.0001', '5.1.02.01.01.0052', '5.03.02.2.02.5.03.02.2.02.0001.5.1.02.01.01.0052', '001', '01', 2024, '2020-01-20', '63400000', 'Rapat Pengadaan ASN', 'APPROVE', 'LS', '', 'abduh', '2024-01-30 15:41:22', '2024-01-25 11:51:38', 'mpkasn', 11, '2024-01-30 15:41:06', 'abduh', '', 'www.google.com'),
+(6, 'ZPUaI0yvhk65O2uuDC', 1, 'MUTASI, PROMOSI DAN KINERJA', 'PROGRAM KEPEGAWAIAN DAERAH', 'Mutasi dan Promosi ASN', 'Pengelolaan Kenaikan Pangkat ASN', 'Belanja Alat/Bahan untuk Kegiatan Kantor- Bahan Cetak', '5.03.02', '5.03.02.2.02', '5.03.02.2.02.0002', '5.1.02.01.01.0026', '5.03.02.2.02.5.03.02.2.02.0002.5.1.02.01.01.0026', '002', '01', 2024, '2024-01-31', '800000', 'Cetak Spanduk', 'APPROVE', 'LS', '', 'abduh', '2024-01-31 10:44:21', '2024-01-31 10:43:11', 'mpkasn', 11, '2024-01-31 10:43:55', 'mika', '', 'www.google.com');
 
 -- --------------------------------------------------------
 
@@ -289,7 +314,6 @@ CREATE TABLE `t_pagu` (
   `fid_kegiatan` int(11) DEFAULT NULL,
   `fid_sub_kegiatan` int(11) DEFAULT NULL,
   `fid_uraian` int(11) DEFAULT NULL,
-  `is_perubahan` enum('Y','N') NOT NULL DEFAULT 'N',
   `total_pagu_awal` varchar(20) NOT NULL,
   `total_pagu_realisasi` varchar(30) NOT NULL,
   `total_pagu_akhir` varchar(20) NOT NULL,
@@ -302,12 +326,41 @@ CREATE TABLE `t_pagu` (
 -- Dumping data for table `t_pagu`
 --
 
-INSERT INTO `t_pagu` (`id`, `fid_part`, `fid_kegiatan`, `fid_sub_kegiatan`, `fid_uraian`, `is_perubahan`, `total_pagu_awal`, `total_pagu_realisasi`, `total_pagu_akhir`, `tahun`, `created_at`, `created_by`) VALUES
-(2, 3, NULL, 32, NULL, 'N', '2256999990', '', '', 2024, '2024-01-21 12:10:54', 'psdm'),
-(3, 3, NULL, NULL, 7, 'N', '0', '', '', 2024, '2024-01-21 12:26:11', 'psdm'),
-(4, 3, NULL, NULL, 8, 'N', '0', '', '', 2024, '2024-01-21 12:26:24', 'psdm'),
-(5, 3, NULL, NULL, 10, 'N', '0', '', '', 2024, '2024-01-21 12:44:32', 'psdm'),
-(6, 11, NULL, 33, NULL, 'N', '91828600', '', '', 2024, '2024-01-22 15:16:23', 'mpkasn');
+INSERT INTO `t_pagu` (`id`, `fid_part`, `fid_kegiatan`, `fid_sub_kegiatan`, `fid_uraian`, `total_pagu_awal`, `total_pagu_realisasi`, `total_pagu_akhir`, `tahun`, `created_at`, `created_by`) VALUES
+(2, 3, NULL, 32, NULL, '4249496000', '', '', 2024, '2024-01-21 12:10:54', 'psdm'),
+(3, 3, NULL, NULL, 7, '0', '', '', 2024, '2024-01-21 12:26:11', 'psdm'),
+(4, 3, NULL, NULL, 8, '0', '', '', 2024, '2024-01-21 12:26:24', 'psdm'),
+(5, 3, NULL, NULL, 10, '0', '', '', 2024, '2024-01-21 12:44:32', 'psdm'),
+(6, 11, NULL, 33, NULL, '91828600', '', '', 2024, '2024-01-22 15:16:23', 'mpkasn'),
+(7, 11, NULL, 35, NULL, '3000000', '', '', 2024, '2024-01-24 15:43:09', 'mpkasn'),
+(8, 11, NULL, 36, NULL, '5000000', '', '', 2024, '2024-01-24 15:54:52', 'mpkasn'),
+(9, 11, NULL, 37, NULL, '1000000', '', '', 2024, '2024-01-24 15:57:42', 'mpkasn'),
+(10, 11, NULL, 38, NULL, '206411800', '', '', 2024, '2024-01-31 10:36:39', 'mpkasn'),
+(11, 11, NULL, NULL, 16, '1170000', '', '', 2024, '2024-01-31 10:41:38', 'mpkasn');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `t_periode`
+--
+
+CREATE TABLE `t_periode` (
+  `id` int(11) NOT NULL,
+  `nama` varchar(50) NOT NULL,
+  `is_open` enum('Y','N') NOT NULL DEFAULT 'N',
+  `tgl_mulai` date NOT NULL,
+  `tgl_selesai` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `t_periode`
+--
+
+INSERT INTO `t_periode` (`id`, `nama`, `is_open`, `tgl_mulai`, `tgl_selesai`) VALUES
+(1, 'TRIWULAN I', 'Y', '2024-01-01', '2024-03-31'),
+(2, 'TRIWULAN II', 'Y', '2024-04-01', '2024-06-30'),
+(3, 'TRIWULAN III', 'N', '2024-07-01', '2024-09-30'),
+(4, 'TRIWULAN IV', 'N', '2024-10-01', '2024-12-31');
 
 -- --------------------------------------------------------
 
@@ -350,6 +403,35 @@ INSERT INTO `t_privilages` (`id`, `fid_user`, `priv_default`, `priv_users`, `pri
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `t_realisasi`
+--
+
+CREATE TABLE `t_realisasi` (
+  `id` int(11) NOT NULL,
+  `fid_indikator` int(11) NOT NULL,
+  `fid_periode` int(11) NOT NULL,
+  `persentase` varchar(8) NOT NULL,
+  `eviden` int(11) NOT NULL,
+  `eviden_jenis` varchar(50) NOT NULL,
+  `faktor_pendorong` text DEFAULT NULL,
+  `faktor_penghambat` text DEFAULT NULL,
+  `tindak_lanjut` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `t_realisasi`
+--
+
+INSERT INTO `t_realisasi` (`id`, `fid_indikator`, `fid_periode`, `persentase`, `eviden`, `eviden_jenis`, `faktor_pendorong`, `faktor_penghambat`, `tindak_lanjut`) VALUES
+(6, 10, 1, '30', 0, '0', NULL, NULL, NULL),
+(7, 120, 1, '0', 1, 'Dokumen', '-', '-', '-'),
+(8, 121, 1, '10', 0, '0', '-', '-', '-'),
+(9, 122, 1, '0', 1, 'Dokumen', '-', '-', '-'),
+(11, 119, 1, '10', 0, '0', NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `t_settings`
 --
 
@@ -376,6 +458,22 @@ INSERT INTO `t_settings` (`id`, `key`, `val`, `deskripsi`, `status`, `order`) VA
 (11, 'APPDescription', 'Penyelesaian laporan anggaran kantor lebih efektif, fleksibel dan efisien terhadap penyesuaian realisasi anggaran saat ini.', 'deskripsi aplikasi', 'Y', 2),
 (12, 'SideBarFix', 'menu_fixed', 'menu mengambang, mengikuti scrollbar', 'Y', 8),
 (13, 'APPLogo', 'logo.png', 'logo aplikasi', 'Y', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `t_target`
+--
+
+CREATE TABLE `t_target` (
+  `id` int(11) NOT NULL,
+  `fid_program` int(11) DEFAULT NULL,
+  `fid_kegiatan` int(11) DEFAULT NULL,
+  `fid_sub_kegiatan` int(11) DEFAULT NULL,
+  `persentase` varchar(8) NOT NULL,
+  `eviden_jumlah` int(11) NOT NULL,
+  `eviden_jenis` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -407,14 +505,14 @@ CREATE TABLE `t_users` (
 --
 
 INSERT INTO `t_users` (`id`, `fid_unor`, `fid_part`, `pic`, `nama`, `username`, `nip`, `nohp`, `password`, `role`, `jobdesk`, `is_block`, `is_restricted`, `check_out`, `check_in`, `created_at`) VALUES
-(3, 1, 2, 'ppik-d0FLTjcxR05LaTRUNDlHc0pQMmtPdz09.png', 'M. NOR SEPUTRA, S.AP', 'redzone', '6311042705990001', '082151815132', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_ADMIN', 'Putra sebagai super admin', 'N', 'N', '2024-01-22 14:58:42', '2024-01-22 14:23:51', '2021-11-10 16:51:34'),
-(4, 1, 3, 'psdm-NnNGODdoYTFoZ1lOSkRCbG4yc0N5dz09.png', 'WULAN GALUH PERMANI, S.M.', 'psdm', '199704122020122023', '082151815132', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang Pengembangan Sumber Daya Manusia', 'N', 'N', '2024-01-22 15:14:57', '2024-01-22 15:06:22', '2021-11-11 17:52:35'),
+(3, 1, 2, 'ppik-d0FLTjcxR05LaTRUNDlHc0pQMmtPdz09.png', 'M. NOR SEPUTRA, S.AP', 'redzone', '6311042705990001', '082151815132', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_ADMIN', 'Putra sebagai super admin', 'N', 'N', '2024-01-26 05:56:24', '2024-01-26 05:54:41', '2021-11-10 16:51:34'),
+(4, 1, 3, 'psdm-NnNGODdoYTFoZ1lOSkRCbG4yc0N5dz09.png', 'WULAN GALUH PERMANI, S.M.', 'psdm', '199704122020122023', '082151815132', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang Pengembangan Sumber Daya Manusia', 'N', 'N', '2024-01-31 10:28:10', '2024-01-31 12:46:20', '2021-11-11 17:52:35'),
 (8, 1, 12, 'kaban.png', 'SUFRIANNOR, S.Sos, M.AP', 'kaban', '196810121989031009', '08234354535', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_USER', 'Kepala Badan', 'N', 'N', '2023-11-05 15:13:04', '2023-11-05 15:12:58', '2023-11-05 04:29:43'),
-(10, 1, 1, 'mika.png', 'MIKA AUDINI, S.M.', 'mika', '199605092022022002', '085753359786', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'VERIFICATOR', 'Verifikasi SPJ', 'N', 'N', '2024-01-22 11:01:36', '2024-01-22 10:59:31', '2024-01-15 05:08:21'),
+(10, 1, 1, 'mika.png', 'MIKA AUDINI, S.M.', 'mika', '199605092022022002', '085753359786', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'VERIFICATOR', 'Verifikasi SPJ', 'N', 'N', '2024-01-31 10:44:06', '2024-01-31 10:43:33', '2024-01-15 05:08:21'),
 (11, 1, 3, 'psdmkabid.png', 'MUHAMMAD, S.AP', 'bidpsdm', '196901151989031006', '081349514399', '7110eda4d09e062aa5e4a390b0a572ac0d2c0220', 'SUPER_USER', 'Kepala Bidang PSDM', 'N', 'N', NULL, NULL, '2024-01-16 05:39:15'),
-(12, 1, 1, 'abduh.png', 'M. HAFIZHULLAH ABDUH, S.A.B., M.Sos', 'abduh', '198510022006041004', '081311421495', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'ADMIN', 'Sekretariat sebagai Admin', 'N', 'N', '2024-01-18 15:33:34', '2024-01-18 15:09:36', '2024-01-16 05:41:47'),
-(13, 1, 11, 'mutasi.png', 'ERWAN ADITYA PUTRA, S.Tr.IP', 'mpkasn', '199809272021081001', '08215181532', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang Mutasi, Promosi dan Kinerja', 'N', 'N', '2024-01-22 12:20:15', '2024-01-22 15:15:08', '2024-01-16 07:16:17'),
-(14, 1, 2, 'ppik2.png', 'FITRIANI, A.Md', 'ppik', '199412242019032007', '085751683871', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang PPIK', 'N', 'N', '2024-01-22 15:06:18', '2024-01-22 15:06:06', '2024-01-22 09:20:35'),
+(12, 1, 1, 'abduh.png', 'M. HAFIZHULLAH ABDUH, S.A.B., M.Sos', 'abduh', '198510022006041004', '081311421495', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'ADMIN', 'Sekretariat sebagai Admin', 'N', 'N', '2024-01-31 10:28:41', '2024-01-31 14:01:02', '2024-01-16 05:41:47'),
+(13, 1, 11, 'mutasi.png', 'ERWAN ADITYA PUTRA, S.Tr.IP', 'mpkasn', '199809272021081001', '08215181532', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang Mutasi, Promosi dan Kinerja', 'N', 'N', '2024-01-31 10:43:23', '2024-01-31 10:28:46', '2024-01-16 07:16:17'),
+(14, 1, 2, 'ppik2.png', 'FITRIANI, A.Md', 'ppik', '199412242019032007', '085751683871', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Bidang PPIK', 'N', 'N', '2024-01-22 15:06:18', '2024-01-26 07:31:03', '2024-01-22 09:20:35'),
 (15, 1, 2, 'bidppik.png', 'SUPRAPTO, S.Pd, MT', 'bidppik', '197103021994011001', '08115115731', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'SUPER_USER', 'KEPALA BIDANG PPIK', 'N', 'N', NULL, NULL, '2024-01-22 10:23:33'),
 (16, 1, 1, 'dillah.png', 'MUHAMMAD UBBAY DILLAH, S.I.Pust.', 'dillah', '6307062201900006', '082155622640', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Sekretariat', 'N', 'N', NULL, NULL, '2024-01-22 11:03:40'),
 (17, 1, 1, 'yugi.png', 'YUGI TULLAH, S.Sos', 'yugi', '6311011506960001', '082251366456', '7bb1b27cef98a308cc48fe19f7dffed57f8d53d5', 'USER', 'Operator Sekretariat', 'N', 'N', NULL, NULL, '2024-01-22 11:07:56'),
@@ -496,6 +594,12 @@ ALTER TABLE `t_pagu`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `t_periode`
+--
+ALTER TABLE `t_periode`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `t_privilages`
 --
 ALTER TABLE `t_privilages`
@@ -503,9 +607,21 @@ ALTER TABLE `t_privilages`
   ADD KEY `fid_user` (`fid_user`);
 
 --
+-- Indexes for table `t_realisasi`
+--
+ALTER TABLE `t_realisasi`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `t_settings`
 --
 ALTER TABLE `t_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `t_target`
+--
+ALTER TABLE `t_target`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -525,13 +641,13 @@ ALTER TABLE `t_users`
 -- AUTO_INCREMENT for table `ref_indikators`
 --
 ALTER TABLE `ref_indikators`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
 
 --
 -- AUTO_INCREMENT for table `ref_kegiatans`
 --
 ALTER TABLE `ref_kegiatans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `ref_parts`
@@ -543,13 +659,13 @@ ALTER TABLE `ref_parts`
 -- AUTO_INCREMENT for table `ref_programs`
 --
 ALTER TABLE `ref_programs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `ref_sub_kegiatans`
 --
 ALTER TABLE `ref_sub_kegiatans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `ref_unors`
@@ -561,19 +677,19 @@ ALTER TABLE `ref_unors`
 -- AUTO_INCREMENT for table `ref_uraians`
 --
 ALTER TABLE `ref_uraians`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `spj`
 --
 ALTER TABLE `spj`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `spj_riwayat`
 --
 ALTER TABLE `spj_riwayat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `t_notify`
@@ -585,7 +701,13 @@ ALTER TABLE `t_notify`
 -- AUTO_INCREMENT for table `t_pagu`
 --
 ALTER TABLE `t_pagu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `t_periode`
+--
+ALTER TABLE `t_periode`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `t_privilages`
@@ -594,10 +716,22 @@ ALTER TABLE `t_privilages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT for table `t_realisasi`
+--
+ALTER TABLE `t_realisasi`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `t_settings`
 --
 ALTER TABLE `t_settings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT for table `t_target`
+--
+ALTER TABLE `t_target`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `t_users`
