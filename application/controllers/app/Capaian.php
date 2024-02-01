@@ -39,7 +39,11 @@ class Capaian extends CI_Controller {
         $data = [
 			'title' => 'Capaian Anggaran & Kinerja',
             'content' => 'pages/anggaran_kinerja/capaian',
-			'programs' => $programs
+			'programs' => $programs,
+			'autoload_js' => [
+				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/custom-js/capaian.js',
+            ],
         ];
 		$this->load->view('layout/app', $data);
 	}

@@ -59,6 +59,18 @@ class Realisasi extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	public function detailRealisasi()
+	{
+		$id = $this->input->get('id');
+		$db = $this->crud->getWhere('t_realisasi', ['fid_indikator' => $id]);
+		if($db->num_rows() > 0) {
+			$data = $db->row();
+		} else {
+			$data = null;
+		}
+		echo json_encode($data);
+	}
+
 	public function input()
 	{
 		$post = $this->input->post();
@@ -89,6 +101,29 @@ class Realisasi extends CI_Controller {
 			$db = $this->crud->insert('t_realisasi', $insert);
 		}
 
+		if($db) {
+			$msg = 200;
+		} else {
+			$msg = 400;
+		}
+		echo json_encode($msg);
+	}
+
+	public function input_faktor()
+	{
+		$post = $this->input->post();
+		$update = [
+			'faktor_pendorong' => $post['faktor_pendorong'],
+			'faktor_penghambat' => $post['faktor_penghambat'],
+			'tindak_lanjut' => $post['tindak_lanjut']
+		];
+
+		$whr = [
+			'fid_indikator' => $post['id'],
+			'fid_periode' => $post['periode']
+		];
+
+		$db = $this->crud->update('t_realisasi', $update, $whr);
 		if($db) {
 			$msg = 200;
 		} else {

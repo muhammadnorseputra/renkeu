@@ -627,7 +627,6 @@ class Programs extends CI_Controller
             $insert = [
                 'fid_part' => $this->session->userdata('part'),
                 'fid_sub_kegiatan' => $id,
-                'is_perubahan' => 'N',
                 'total_pagu_awal' => $jml,
                 'tahun' => $thn,
                 'created_at' => date('Y-m-d H:i:s'),
@@ -646,7 +645,6 @@ class Programs extends CI_Controller
             $insert = [
                 'fid_part' => $this->session->userdata('part'),
                 'fid_uraian' => $id,
-                'is_perubahan' => 'N',
                 'total_pagu_awal' => $jml,
                 'tahun' => $thn,
                 'created_at' => date('Y-m-d H:i:s'),

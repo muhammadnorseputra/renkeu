@@ -1,6 +1,9 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class ModelRealisasi extends CI_Model {
+    public function getPeriodeById($id) {
+        return $this->db->select('nama')->get_where('t_periode', ['id' => $id]);
+    }
 	public function kegiatans($programId, $partId=null)
     {
         $this->db->select('id,nama');
@@ -75,6 +78,14 @@ class ModelRealisasi extends CI_Model {
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
+    public function getRealisasiTahunanKegiatan($kegiatanId) {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('fid_kegiatan', $kegiatanId);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
     public function getRealisasiSubKegiatan($periodeId,$subKegiatanId) {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
@@ -84,13 +95,31 @@ class ModelRealisasi extends CI_Model {
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
+    public function getRealisasiTahunanSubKegiatan($subKegiatanId) {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('fid_sub_kegiatan', $subKegiatanId);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
     public function getRealisasiByIndikatorId($periode_id, $indikator_id)
+	{
+		$this->db->select_sum('persentase');
+        $this->db->select_sum('eviden');
+        $this->db->select('eviden_jenis, faktor_pendorong, faktor_penghambat, tindak_lanjut');
+		$this->db->from('t_realisasi');
+		$this->db->where(['fid_indikator' => $indikator_id, 'fid_periode' => $periode_id]);
+		$q = $this->db->get();
+		return $q;
+	}
+    public function getRealisasiTahunanByIndikatorId($indikator_id)
 	{
 		$this->db->select_sum('persentase');
         $this->db->select_sum('eviden');
         $this->db->select('eviden_jenis');
 		$this->db->from('t_realisasi');
-		$this->db->where(['fid_indikator' => $indikator_id, 'fid_periode' => $periode_id]);
+		$this->db->where(['fid_indikator' => $indikator_id]);
 		$q = $this->db->get();
 		return $q;
 	}

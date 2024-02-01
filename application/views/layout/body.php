@@ -26,7 +26,8 @@
             <ul class="navbar-right">
               <li class="nav-item dropdown open" style="padding-left: 15px;">
                 <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
-                  <img src="<?= base_url('template/assets/picture_akun/'.$this->session->userdata('pic')) ?>" alt="<?= $this->session->userdata('user_name'); ?>"><?= $this->session->userdata('nama'); ?>
+                  <!-- <img src="<?= base_url('template/assets/picture_akun/'.$this->session->userdata('pic')) ?>" alt="<?= $this->session->userdata('user_name'); ?>"><?= $this->session->userdata('nama'); ?> -->
+                  <?= $this->session->userdata('nama'); ?>
                 </a>
                 <div class="dropdown-menu dropdown-usermenu pull-right" style="margin-top: 15px" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item"  href="<?= base_url('/app/account') ?>"><i class="fa fa-user pull-right"></i> Profile</a>

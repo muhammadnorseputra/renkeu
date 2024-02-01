@@ -1,13 +1,14 @@
+<?php 
+$periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPeriode()->row()->id;
+$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
+?>
 <div class="page-title">
     <div class="title_left">
-        <h3><i class="fa fa-dollar mr-2"></i> Realisasi Anggaran & Kinerja</h3>
+        <h3><i class="fa fa-dollar mr-2"></i> Realisasi Anggaran & Kinerja - <?= $periode_nama ?></h3>
     </div>
 </div>
 
 <div class="clearfix"></div>
-<?php 
-$periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPeriode()->row()->id;
-?>
 <div class="x_panel">
     <div class="row">
         <div class="col-md-2">
@@ -227,7 +228,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
         <input type="hidden" name="periode" value="<?= $periode_id ?>">
         <div class="modal-content rounded-0">
             <div class="modal-header bg-success text-white rounded-0">
-                <h4 class="modal-title" id="myModalLabel">Realisasi Kegiatan</h4>
+                <h4 class="modal-title" id="myModalLabel">Realisasi Kinerja</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
                 </button>
             </div>

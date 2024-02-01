@@ -3,7 +3,8 @@
     <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikator', 'data-parsley-validate' => ''], ['id' => $id_indikator]); ?>
         <div class="form-group">
             <label for="nama">Nama Indikator <span class="text-danger">*</span></label>
-            <input type="text" name="nama" id="nama" class="form-control" required value="<?= $row->nama ?>">
+            <!-- <input type="text" name="nama" id="nama" class="form-control" required value="<?= $row->nama ?>"> -->
+            <textarea name="nama" id="nama" cols="30" rows="6" class="form-control" required><?= $row->nama ?></textarea>
         </div>
         <div class="row">
             <div class="col-md-2">
