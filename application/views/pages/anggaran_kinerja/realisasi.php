@@ -57,7 +57,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             $indikator = $indikator_program->result_array();
                             $toEnd = count($indikator);
                             foreach($indikator as $key => $ip):
-                                $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi('.$ip['id'].')"><i class="fa fa-pencil"></i></button>';
+                                $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi('.$ip['indikator_id'].')"><i class="fa fa-pencil"></i></button>';
                                 $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ip['id'])->row();
                                 if($realisasi->persentase === "0") {
                                     $sum_realisasi = $realisasi->eviden;
@@ -112,7 +112,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             $indikator_keg = $indikator_kegiatan->result_array();
                             $toEnd = count($indikator_keg);
                             foreach($indikator_keg as $key => $ik):
-                                $btn_input = '<button class="btn btn-warning btn-sm m-0" onclick="InputRealisasi('.$ik['id'].')"><i class="fa fa-pencil"></i></button>';
+                                $btn_input = '<button class="btn btn-warning btn-sm m-0" onclick="InputRealisasi('.$ik['indikator_id'].')"><i class="fa fa-pencil"></i></button>';
                                 $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ik['id'])->row();
                                 if($realisasi->persentase === "0") {
                                     $sum_realisasi = $realisasi->eviden;
@@ -162,7 +162,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             $indikator_sub = $indikator_sub_kegiatan->result_array();
                             $toEnd = count($indikator_sub);
                             foreach($indikator_sub as $key => $isk):
-                                $btn_input = '<button class="btn btn-light btn-sm m-0" onclick="InputRealisasi('.$isk['id'].')"><i class="fa fa-pencil"></i></button>';
+                                $btn_input = '<button class="btn btn-light btn-sm m-0" onclick="InputRealisasi('.$isk['indikator_id'].')"><i class="fa fa-pencil"></i></button>';
                                 $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $isk['id'])->row();
                                 if($realisasi->persentase === "0") {
                                     $sum_realisasi = $realisasi->eviden." ".$realisasi->eviden_jenis;

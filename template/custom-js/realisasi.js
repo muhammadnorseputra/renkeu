@@ -21,7 +21,8 @@ $("form#formRealisasi").on("submit", function(e) {
     if(_.parsley().isValid()) {
         $.post(url, data, function(res) {
             if(res === 200) {
-                window.location.reload();
+                // window.location.reload();
+                console.log(res)
             }
         }, 'json')
     }

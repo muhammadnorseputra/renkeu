@@ -66,12 +66,12 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             $toEnd = count($indikator);
                             foreach($indikator as $key => $ip):
                                 // Target
-                                if($ip['kinerja_persentase'] === "0") {
-                                    $indikator_input_count = $ip['kinerja_eviden'];
-                                    $indikator_input_view = $indikator_input_count." ".$ip['keterangan_eviden'];
+                                if($ip['persentase'] === "0") {
+                                    $indikator_input_count = $ip['eviden_jumlah'];
+                                    $indikator_input_view = $indikator_input_count." ".$ip['eviden_jenis'];
                                 } else {
-                                    $indikator_input_count = $ip['kinerja_persentase'];
-                                    $indikator_input_view = $ip['kinerja_persentase']."%";
+                                    $indikator_input_count = $ip['persentase'];
+                                    $indikator_input_view = $ip['persentase']."%";
                                 }
 
                                 $target_anggaran = $this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal;
@@ -160,12 +160,12 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             $toEnd = count($indikator_keg);
                             foreach($indikator_keg as $key => $ik):
                                 // Target
-                                if($ik['kinerja_persentase'] === "0") {
-                                    $indikator_input_count = $ik['kinerja_eviden'];
-                                    $indikator_input_view = $ik['kinerja_eviden']." ".$ik['keterangan_eviden'];
+                                if($ik['persentase'] === "0") {
+                                    $indikator_input_count = $ik['eviden_jumlah'];
+                                    $indikator_input_view = $ik['eviden_jumlah']." ".$ik['eviden_jenis'];
                                 } else {
-                                    $indikator_input_count = $ik['kinerja_persentase'];
-                                    $indikator_input_view = $ik['kinerja_persentase']."%";
+                                    $indikator_input_count = $ik['persentase'];
+                                    $indikator_input_view = $ik['persentase']."%";
                                 }
                                 $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal;
                                 $target_kinerja = $indikator_input_count;
@@ -249,12 +249,12 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             $toEnd = count($indikator_sub);
                             foreach($indikator_sub as $key => $isk):
                                 // Target
-                                if($isk['kinerja_persentase'] === "0") {
-                                    $indikator_input_count = $isk['kinerja_eviden'];
-                                    $indikator_input_view = $indikator_input_count." ".$isk['keterangan_eviden'];
+                                if($isk['persentase'] === "0") {
+                                    $indikator_input_count = $isk['eviden_jumlah'];
+                                    $indikator_input_view = $indikator_input_count." ".$isk['eviden_jenis'];
                                 } else {
-                                    $indikator_input_count = $isk['kinerja_persentase'];
-                                    $indikator_input_view = $isk['kinerja_persentase']."%";
+                                    $indikator_input_count = $isk['persentase'];
+                                    $indikator_input_view = $isk['persentase']."%";
                                 }
 
                                 $target_anggaran = $this->target->getPagu(['fid_sub_kegiatan' => $sub_kegiatan->id])->total_pagu_awal;

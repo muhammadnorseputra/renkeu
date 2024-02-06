@@ -30,9 +30,11 @@ class ModelTarget extends CI_Model {
     }
     public function getIndikator($whr) 
     {
-        $this->db->select('*');
-        $this->db->from('ref_indikators');
+        $this->db->select('t.*,i.id AS indikator_id, i.nama');
+        $this->db->from('ref_indikators AS i');
+        $this->db->join('t_target AS t', 't.fid_indikator=i.id', 'left');
         $this->db->where($whr);
+        $this->db->order_by('i.id','asc');
         $q = $this->db->get();
         return $q;
     }

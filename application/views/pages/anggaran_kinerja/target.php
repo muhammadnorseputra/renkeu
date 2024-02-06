@@ -37,11 +37,11 @@
                         $toEnd = count($indikator);
                         foreach($indikator as $key => $ip):
                             $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="'.$ip['id'].'" data-label="Program" type="button"><i class="fa fa-trash"></i></button>';
-                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$ip['id']."/ref_programs").'\')" type="button"><i class="fa fa-pencil"></i></button>';
-                            if($ip['kinerja_persentase'] === "0") {
-                                $indikator_input = $ip['kinerja_eviden']." ".$ip['keterangan_eviden'];
+                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$ip['indikator_id']."/ref_programs").'\')" type="button"><i class="fa fa-pencil"></i></button>';
+                            if($ip['persentase'] === "0") {
+                                $indikator_input = $ip['eviden_jumlah']." ".$ip['eviden_jenis'];
                             } else {
-                                $indikator_input = $ip['kinerja_persentase']."%";
+                                $indikator_input = $ip['persentase']."%";
                             }
                             $rowspan = $toEnd++;
                             if (0 === --$toEnd) { //last
@@ -95,11 +95,11 @@
                         $toEnd = count($indikator);
                         foreach($indikator as $key => $ik):
                             $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="'.$ik['id'].'" data-label="Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
-                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$ik['id']."/ref_kegiatans").'\')" type="button"><i class="fa fa-pencil"></i></button>';
-                            if($ik['kinerja_persentase'] === "0") {
-                                $indikator_input = $ik['kinerja_eviden']." ".$ik['keterangan_eviden'];
+                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$ik['indikator_id']."/ref_kegiatans").'\')" type="button"><i class="fa fa-pencil"></i></button>';
+                            if($ik['persentase'] === "0") {
+                                $indikator_input = $ik['eviden_jumlah']." ".$ik['eviden_jenis'];
                             } else {
-                                $indikator_input = $ik['kinerja_persentase']."%";
+                                $indikator_input = $ik['persentase']."%";
                             }
                             $rowspan = $toEnd++;
                             if (0 === --$toEnd) { //last
@@ -148,11 +148,11 @@
                             $toEnd = count($indikator);
                             foreach($indikator as $key => $isk):
                                 $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="'.$isk['id'].'" data-label="Sub Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
-                                $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$isk['id']."/ref_sub_kegiatans").'\')" type="button"><i class="fa fa-pencil"></i></button>';
-                                if($isk['kinerja_persentase'] === "0") {
-                                    $indikator_input = $isk['kinerja_eviden']." ".$isk['keterangan_eviden'];
+                                $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\''.base_url("app/target/ubah/".$isk['indikator_id']."/ref_sub_kegiatans").'\')" type="button"><i class="fa fa-pencil"></i></button>';
+                                if($isk['persentase'] === "0") {
+                                    $indikator_input = $isk['eviden_jumlah']." ".$isk['eviden_jenis'];
                                 } else {
-                                    $indikator_input = $isk['kinerja_persentase']."%";
+                                    $indikator_input = $isk['persentase']."%";
                                 }
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
@@ -211,6 +211,8 @@
 <div class="modal fade modal-indikator" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <?= form_open(base_url("app/target/tambah_indikator"), ['id' => 'formIndikator', 'data-parsley-validate' => '']); ?>
+        <input type="hidden" name="id">
+        <input type="hidden" name="ref">
         <div class="modal-content rounded-0">
             <div class="modal-header bg-success text-white rounded-0">
                 <h4 class="modal-title" id="myModalLabel">Processing ...</h4>
@@ -221,26 +223,6 @@
                 <div class="form-group">
                     <label for="nama">Nama Indikator <span class="text-danger">*</span></label>
                     <input type="text" name="nama" id="nama" class="form-control" required>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="persentase">Peserntase % <span class="text-danger">*</span></label>
-                            <input type="number" name="persentase" id="persentase" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="jumlah_eviden">Jumlah Eviden <span class="text-danger">*</span></label>
-                            <input type="number" name="jumlah_eviden" id="jumlah_eviden" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="keterangan_eviden">Keterangan Eviden <span class="text-danger">*</span></label>
-                            <input type="text" name="keterangan_eviden" id="keterangan_eviden" class="form-control" required>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="modal-footer">

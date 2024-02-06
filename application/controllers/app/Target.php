@@ -53,34 +53,22 @@ class Target extends CI_Controller {
 		$tabel = $post['ref'];
 		$id = $post['id'];
 		$nama_indikator = $post['nama'];
-		$persentase = $post['persentase'];
-		$jumlah_eviden = $post['jumlah_eviden'];
-		$keterangan_eviden = $post['keterangan_eviden'];
 
 		if($tabel === 'ref_programs')
 		{
 			$data = [
 				'nama' => $nama_indikator,
-				'fid_program' => $id,
-				'kinerja_persentase' => $persentase,
-				'kinerja_eviden' => $jumlah_eviden,
-				'keterangan_eviden' => $keterangan_eviden
+				'fid_program' => $id
 			];
 		} elseif($tabel === 'ref_kegiatans') {
 			$data = [
 				'nama' => $nama_indikator,
-				'fid_kegiatan' => $id,
-				'kinerja_persentase' => $persentase,
-				'kinerja_eviden' => $jumlah_eviden,
-				'keterangan_eviden' => $keterangan_eviden
+				'fid_kegiatan' => $id
 			];
 		} elseif($tabel === 'ref_sub_kegiatans') {
 			$data = [
 				'nama' => $nama_indikator,
-				'fid_sub_kegiatan' => $id,
-				'kinerja_persentase' => $persentase,
-				'kinerja_eviden' => $jumlah_eviden,
-				'keterangan_eviden' => $keterangan_eviden
+				'fid_sub_kegiatan' => $id
 			];
 		}
 
@@ -97,7 +85,7 @@ class Target extends CI_Controller {
 
 	public function ubah($id, $table)
 	{
-		$row = $this->crud->getWhere('ref_indikators', ['id' => $id]);
+		$row = $this->target->getIndikator(['i.id' => $id]);
 
 		$data = [
 			'title' => 'Ubah Indikator',
@@ -119,9 +107,6 @@ class Target extends CI_Controller {
 
 		$data = [
 			'nama' => $post['nama'],
-			'kinerja_persentase' => $post['persentase'],
-			'kinerja_eviden' => $post['jumlah_eviden'],
-			'keterangan_eviden' => $post['keterangan_eviden']
 		];
 
 		$whr = [
@@ -132,6 +117,18 @@ class Target extends CI_Controller {
 		if($db)
         {
             $msg = 200;
+			$insert = [
+				'fid_indikator' => $post['id'],
+				'persentase' => $post['persentase'],
+				'eviden_jumlah' => $post['jumlah_eviden'],
+				'eviden_jenis' => $post['keterangan_eviden']
+			];
+			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
+			if($dbcek->num_rows() > 0) {
+				$this->crud->update('t_target', $insert, ['fid_indikator' => $post['id']]);
+			} else {
+				$this->crud->insert('t_target', $insert);
+			}
         } else {
             $msg = 400;
         }
@@ -145,6 +142,8 @@ class Target extends CI_Controller {
 		$db = $this->crud->deleteWhere('ref_indikators', ['id' => $id]);
 		if($db)
         {
+			$this->crud->deleteWhere('t_realisasi', ['fid_indikator' => $id]);
+			$this->crud->deleteWhere('t_target', ['fid_indikator' => $id]);
             $msg = 200;
         } else {
             $msg = 400;
