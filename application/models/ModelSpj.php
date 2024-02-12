@@ -34,14 +34,17 @@ class ModelSpj extends CI_Model {
 	}
 	public function inbox()
     {
-        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
+        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan,uraian.nama AS nama_uraian, uraian.kode AS kode_uraian');
         $this->db->from('spj AS s');
         $this->db->join('ref_parts AS part', 's.fid_part=part.id');
         $this->db->join('ref_programs AS program', 's.fid_program=program.id');
         $this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
         $this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
+        $this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
         $this->db->where('s.entri_by_part', $this->session->userdata('part'));
 		$this->db->where('s.is_status !=', 'SELESAI');
+		// $this->db->where('s.is_status !=', 'SELESAI_TMS');
+		// $this->db->where('s.is_status !=', 'SELESAI_BTL');
         $q = $this->db->get();
         return $q;
     }
@@ -59,9 +62,9 @@ class ModelSpj extends CI_Model {
         return $q;
     }
 
-	public function riwayat()
+	public function riwayat($whr)
     {
-        $q = $this->db->get('spj_riwayat');
+        $q = $this->db->get_where('spj_riwayat', $whr);
         return $q;
     }
 
@@ -75,13 +78,74 @@ class ModelSpj extends CI_Model {
 		return $this->db->get_where($tbl, ['id' => $id])->row()->kode;
 	}
 
+	public function TopTransaksiSPJ()
+	{
+		$this->db->select('r.jumlah,r.entri_by,r.entri_at,r.is_status,p.singkatan');
+		$this->db->from('spj_riwayat AS r');
+		$this->db->join('ref_parts AS p', 'r.entri_by_part=p.id');
+		$this->db->limit(6);
+		$this->db->order_by('r.id', 'desc');
+		$q = $this->db->get();
+		return $q;
+	}
+
+	public function TransaksiSpjBulanan($bulan)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj_riwayat');
+		$this->db->where('bulan', $bulan);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function TransaksiSpjBulananNonMs($bulan, $status)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj_riwayat');
+		$this->db->where('bulan', $bulan);
+		$this->db->where('is_status', $status);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function TransaksiTriwulan($triwulan)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj_riwayat');
+		$this->db->where('fid_periode', $triwulan);
+		$this->db->where('is_status', 'APPROVE');
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function getRealisasiSpjByPart($part)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj_riwayat');
+		$this->db->where('entri_by_part', $part);
+		$this->db->where('is_status', 'APPROVE');
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function getJumlahSpjByPart($part,$status)
+	{
+		$this->db->select('id');
+		$this->db->from('spj_riwayat');
+		$this->db->where('entri_by_part', $part);
+		$this->db->where('is_status', $status);
+		$q = $this->db->get();
+		return $q->num_rows();
+	}
+	
+
 	// -------------------------------- datatable-verifikasi --------------------------//
     // set table
 	protected $table = 'spj AS s';
 	//set column field database for datatable orderable
 	protected $column_order = array(null);
 	//set column field database for datatable searchable 
-	protected $column_search = array('kegiatan.kode');
+	protected $column_search = array('kegiatan.koderek');
 	// default order 
 	protected $order = array('s.id' => 'desc');
 	// default select 
@@ -159,15 +223,16 @@ class ModelSpj extends CI_Model {
 	//set column field database for datatable orderable
 	protected $column_order_verifikasi_selesai = array(null);
 	//set column field database for datatable searchable 
-	protected $column_search_verifikasi_selesai = array('kegiatan.kode');
+	protected $column_search_verifikasi_selesai = array('spj_riwayat.nama_uraian','spj_riwayat.nama_sub_kegiatan','spj_riwayat.nama_kegiatan','spj_riwayat.koderek');
 	// default order 
 	protected $order_verifikasi_selesai = array('id' => 'desc');
 
 	private function _datatables_verifikasi_selesai()
 	{
   
-	$this->db->select('*');
+	$this->db->select('spj_riwayat.*,t_periode.nama');
 	$this->db->from('spj_riwayat');
+	$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
 	if($this->session->userdata('role') != 'VERIFICATOR' && $this->session->userdata('role') != 'ADMIN' && $this->session->userdata('role') != 'SUPER_ADMIN' && $this->session->userdata('role') != 'SUPER_USER') {
 		$this->db->where('entri_by_part', $this->session->userdata('part'));
 	}

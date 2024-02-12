@@ -1,6 +1,20 @@
 <div class="row">
     <div class="col-md-12">
-    <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikatorUbah', 'data-parsley-validate' => ''], ['id' => $id_indikator]); ?>
+        <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikatorUbah', 'data-parsley-validate' => ''], ['id' => $id_indikator]); ?>
+        <div class="form-group">
+            <label class="col-form-label label-align" for="tahun">Target Tahun</label>
+            <select name="tahun" id="tahun" class="form-control" required="required" data-parsley-errors-container="#help-block-tahun">
+                <option value="">Pilih Tahun</option>
+                <?php
+                $year = date('Y');
+                for ($i = $year; $i <= $year + 3; $i++) {
+                    $selected = date('Y') == $i ? 'selected' : 'disabled';
+                    echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+                }
+                ?>
+            </select>
+            <div id="help-block-tahun" class="row col-md-12"></div>
+        </div>
         <div class="form-group">
             <label for="nama">Nama Indikator <span class="text-danger">*</span></label>
             <!-- <input type="text" name="nama" id="nama" class="form-control" required value="<?= $row->nama ?>"> -->
@@ -27,17 +41,17 @@
             </div>
         </div>
         <div class="form-group">
-                <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/target') ?>'"><i class="fa fa-close mr-2"></i>Batal</button>
-                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
-        </div>    
-    <?= form_close(); ?>
+            <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/target') ?>'"><i class="fa fa-close mr-2"></i>Batal</button>
+            <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+        </div>
+        <?= form_close(); ?>
     </div>
 </div>
 
 <script>
-    $(function(){
-	    let $form = $("form#formIndikatorUbah");
-        $form.on("submit", function (e) {
+    $(function() {
+        let $form = $("form#formIndikatorUbah");
+        $form.on("submit", function(e) {
             e.preventDefault();
             $data = $(this).serialize();
             if ($(this).parsley().isValid()) {

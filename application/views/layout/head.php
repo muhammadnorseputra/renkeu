@@ -22,6 +22,7 @@
     <!-- Custom Theme Style -->
     <link href="<?= base_url('template/backend/build/css/admin.css') ?>" rel="stylesheet">
     <link href="<?= base_url('template/backend/build/css/custom.min.css') ?>" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css"/>
     <!-- Link Tags Dinamic-->
 	  <?php
     if(isset($autoload_css)) {
@@ -32,6 +33,7 @@
     ?>
 
     <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
     <script src="<?= base_url('template/backend/vendors/jquery/dist/jquery.min.js') ?>"></script>
     <script src="<?= base_url('template/custom-js/route.js') ?>"></script>
   </head>

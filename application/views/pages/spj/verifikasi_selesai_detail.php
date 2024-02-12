@@ -1,38 +1,37 @@
-<div class="page-title">
-    <div class="title_left">
-        <h3><i class="fa fa-check-circle mr-2"></i> Verifikasi Selesai</h3>
-    </div>
-
-    <div class="title_right">
-        <div class="col-md-2 col-6 form-group row pull-right top_search">
-            <button class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/spj?tab=%23selesai') ?>'">Kembali<i class="fa fa-arrow-right ml-3"></i> </button>
-        </div>
-    </div>
-</div>
-
-<div class="clearfix"></div>
-
+<?php  
+if($detail->is_status === 'ENTRI') {
+    $status = '<span class="badge p-2 badge-secondar pull-right"><i class="fa fa-edit mr-2"></i> ENTRI</span>';
+} elseif($detail->is_status === 'VERIFIKASI' || $detail->is_status === 'VERIFIKASI_ADMIN') {
+    $status = '<span class="badge p-2 badge-primary text-white pull-right"><i class="fa fa-lock mr-2"></i> VERIFIKASI</span>';
+} elseif($detail->is_status === 'APPROVE') {
+    $status = '<span class="badge p-2 badge-success text-white pull-right"><i class="fa fa-check-circle mr-2"></i> APPROVE</span>';
+} elseif($detail->is_status === 'BTL') {
+    $status = '<span class="badge p-2 badge-danger text-white pull-right "><i class="fa fa-close mr-2"></i> BTL</span>';
+} else {
+    $status = '<span class="badge p-2 badge-danger text-white  pull-right"><i class="fa fa-close mr-2"></i> TMS</span>';
+}
+?>
 <div class="x_panel">
-    <!-- <div class="x_title">
-        <h2>SPJ (Surat Pertanggung Jawaban)</h2>
+    <div class="x_title">
+        <h2><i class="fa fa-check-circle mr-2"></i> Verifikasi Selesai </h2><?= $status ?>
         <div class="clearfix"></div>
-    </div> -->
+    </div>
     <table class="table table-bordered">
         <tbody>
             <tr>
                 <td>
                     Bidang / Bagian
                 </td>
-                <td rowspan="2">
-
-                </td>
-                <td>
+                <td colspan="2">
                     <?= $detail->nama_part ?>
                 </td>
             </tr>
             <tr>
                 <td>
                     Program
+                </td>
+                <td class="text-right">
+                    <?= $detail->kode_program ?>
                 </td>
                 <td>
                     <?= $detail->nama_program ?>
@@ -147,4 +146,6 @@
 
         </tbody>
     </table>
+    <button class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/spj?tab=%23selesai') ?>'"><i class="fa fa-arrow-left mr-3"></i> Kembali </button>
+
 </div>

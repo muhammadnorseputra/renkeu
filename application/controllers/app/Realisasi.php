@@ -23,18 +23,19 @@ class Realisasi extends CI_Controller {
         parent::__construct();
         cek_session();
 		//  CEK USER PRIVILAGES 
-        if(!privilages('priv_default')):
+        if(!privilages('priv_default')  && !privilages('priv_anggarankinerja') ):
             return show_404();
         endif;
 		
 		$this->load->model('modelrealisasi', 'realisasi');
 		$this->load->model('modelspj', 'spj');
+		$this->load->model('modeltarget', 'target');
 		
     }
 	
 	public function index()
 	{
-		$programs = $this->crud->get('ref_programs');
+		$programs = $this->target->program($this->session->userdata('part'));
         $data = [
 			'title' => 'Realisasi Anggaran & Kinerja',
             'content' => 'pages/anggaran_kinerja/realisasi',
@@ -51,8 +52,12 @@ class Realisasi extends CI_Controller {
 	{
 		$id = $this->input->get('id');
 		$db = $this->crud->getWhere('ref_indikators', ['id' => $id]);
+		$realisasi = $this->crud->getWhere('t_realisasi', ['fid_indikator' => $id]);
 		if($db->num_rows() > 0) {
-			$data = $db->row();
+			$data = [
+				'indikator' => $db->row(),
+				'realisasi' => $realisasi->row()
+			];
 		} else {
 			$data = null;
 		}
@@ -108,6 +113,24 @@ class Realisasi extends CI_Controller {
 		}
 		echo json_encode($msg);
 	}
+
+	public function cetak($periode_id)
+    {
+		$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
+		$programs = $this->target->program($this->session->userdata('part'));
+
+        $this->load->library('pdf');
+        $this->pdf->setPaper('legal', 'landscape');
+		$this->pdf->filename = 'SIMEV - Cetak Realisasi Anggaran & Kinerja - '.$periode_nama;
+
+        $data = [
+            'title' => 'Realisasi Anggaran & Kinerja  - '.$periode_nama,
+			'programs' => $programs,
+			'tw_id' => $periode_id,
+			'tw_nama' => $periode_nama
+        ];
+		$this->pdf->load_view('pages/anggaran_kinerja/realisasi_cetak', $data);
+    }
 
 	public function input_faktor()
 	{

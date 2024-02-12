@@ -14,7 +14,7 @@
                     <?php foreach($data->result() as $r): ?>
                     <tr>
                         <td><b><?= $r->key ?></b> <br/> <?= ucwords($r->deskripsi) ?></td>
-                        <td>
+                        <td class="text-wrap">
                             <?= $r->val ?>
                             <!-- Button Edit -->
                             <?php if($r->key === 'APPName' || $r->key === 'APPDescription' ||

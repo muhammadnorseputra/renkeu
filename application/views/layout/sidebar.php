@@ -36,7 +36,13 @@
                 <?php if(privilages('priv_programs')): ?>
                     <li><a href="<?= base_url('app/programs') ?>"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
                 <?php endif; ?>
-                    <li><a href="<?= base_url('app/spj') ?>"><i class="fa fa-book"></i> SPJ</a></li>
+                <?php if(privilages('priv_spj')): ?>
+                    <li><a href="<?= base_url('app/spj') ?>"><i class="fa fa-dollar"></i> SPJ</a></li>
+                <?php endif; ?>
+                <?php if(privilages('priv_bukujaga')): ?>
+                    <li><a href="<?= base_url('app/bukujaga') ?>"><i class="fa fa-book"></i> Buku Jaga</a></li>
+                <?php endif; ?>
+                <?php if(privilages('priv_anggarankinerja')): ?>
                 <li>
                     <a>
                         <i class="fa fa-money"></i> Anggaran & Kinerja <span class="fa fa-chevron-down"></span>
@@ -45,11 +51,13 @@
                         <li><a href="<?= base_url('app/target') ?>">Target</a></li>
                         <li><a href="<?= base_url('app/realisasi') ?>">Realisasi</a></li>
                         <li><a href="<?= base_url('app/capaian') ?>">Capaian</a></li>
+                        <li><a href="<?= base_url('app/laporan') ?>">Laporan Tahunan</a></li>
                     </ul>
                 </li>
+                <?php endif; ?>
             </ul>
         </div>
-        <?php if($this->session->userdata('role') === 'SUPER_ADMIN'): ?>
+        <?php if(privilages('priv_users') || privilages('priv_notify')): ?>
         <div class="menu_section">
             <h3>MASTER DATA</h3>
             <ul class="nav side-menu">

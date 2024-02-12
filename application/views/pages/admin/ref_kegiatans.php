@@ -40,14 +40,9 @@
         // select program
         $('select[name="program"]').select2({
             placeholder: 'Pilih Program',
-            allowClear: true,
-            // maximumSelectionLength: 1,
-            width: "100%",
-            // theme: "classic",
-            dropdownParent: $("form#formKegiatan"),
-            // templateResult: formatUserSelect2,
+			width: "100%",
             ajax: {
-                // delay: 250,
+                delay: 250,
                 method: 'post',
                 url: '<?= base_url("app/programs/getProgram") ?>',
                 dataType: 'json',
@@ -56,7 +51,7 @@
                         q: params.term, // search term
                     };
                 },
-                cache: true,
+                cache: false,
                 processResults: function(data) {
                     // Transforms the top-level key of the response object from 'items' to 'results'
                     return {

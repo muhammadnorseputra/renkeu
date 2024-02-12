@@ -302,7 +302,10 @@ class Users extends CI_Controller {
                 'priv_programs' => !empty($p['priv_programs']) ? $p['priv_programs'] : "N",
                 'priv_verifikasi' => !empty($p['priv_verifikasi']) ? $p['priv_verifikasi'] : "N",
                 'priv_approve' => !empty($p['priv_approve']) ? $p['priv_approve'] : "N",
+                'priv_spj' => !empty($p['priv_spj']) ? $p['priv_spj'] : "N",
                 'priv_riwayat_spj' => !empty($p['priv_riwayat_spj']) ? $p['priv_riwayat_spj'] : "N",
+                'priv_bukujaga' => !empty($p['priv_bukujaga']) ? $p['priv_bukujaga'] : "N",
+                'priv_anggarankinerja' => !empty($p['priv_anggarankinerja']) ? $p['priv_anggarankinerja'] : "N",
             ];
             $tbl = 't_privilages';
             $cek_privilage = $this->users->get_privilages_count($tbl,$uid);

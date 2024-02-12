@@ -103,17 +103,15 @@ $(document).ready(function () {
 			},
 		});
 	}
-
-	// $(".toggle-password").click(function () {
-	// 	$(this).toggleClass("fa-eye fa-eye-slash");
-	// 	var input = $($(this).attr("toggle"));
-	// 	var textPw = $("small.text_pw");
-	// 	if (input.attr("type") == "password") {
-	// 		input.attr("type", "text");
-	// 		textPw.text("Hide Password");
-	// 	} else {
-	// 		input.attr("type", "password");
-	// 		textPw.text("Show Password");
-	// 	}
-	// });
+	$(".toggle-password").click(function () {
+        var passwordInput = $(".password-input");
+        var icon = $(this);
+        if (passwordInput.attr("type") == "password") {
+            passwordInput.attr("type", "text");
+            icon.removeClass("icon-eye").addClass("icon-eye-slash");
+        } else {
+            passwordInput.attr("type", "password");
+            icon.removeClass("icon-eye-slash").addClass("icon-eye");
+        }
+    });
 });

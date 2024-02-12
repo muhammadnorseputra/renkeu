@@ -23,7 +23,7 @@ class Spj extends CI_Controller {
         parent::__construct();
         cek_session();
 		//  CEK USER PRIVILAGES 
-        if(!privilages('priv_default')):
+        if(!privilages('priv_default')  && !privilages('priv_spj')):
             return show_404();
         endif;
         $this->load->model('modelspj', 'spj');
@@ -98,7 +98,7 @@ class Spj extends CI_Controller {
 
             if($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN'){
                 $detail = '<button onclick="window.location.replace(\''.base_url('app/spj/buatusul?step=0&status='.$r->is_status.'&token='.$r->token).'\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
-            } elseif($r->is_status === 'APPROVE' || $r->is_status === 'TMS' || $r->is_status === 'BTL') {
+            } elseif($r->is_status === 'APPROVE' || $r->is_status === 'TMS' || $r->is_status === 'SELESAI_TMS' || $r->is_status === 'BTL' || $r->is_status === 'SELESAI_BTL') {
                 $detail = '<button onclick="window.location.replace(\''.base_url('app/spj/buatusul?step=3&status='.$r->is_status.'&token='.$r->token).'\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
             } else {
                 $detail = '
@@ -116,10 +116,10 @@ class Spj extends CI_Controller {
                     '.$no.'
                 </td>
                 <td class="kode">
-                <br>'.$r->kode_program.'<br> '.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.'
+                <br>'.$r->kode_program.'<br> '.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.' <br> '.$r->kode_uraian.'
                 </td>
                 <td class="nama">
-                <b>'.$r->nama_part.'</b> <br>  '.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.'
+                <b>'.$r->nama_part.'</b> <br>  '.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br>'.$r->nama_uraian.'
                 </td>
                 <td>
                     <b>'.nominal($r->jumlah).'</b>
@@ -376,8 +376,9 @@ class Spj extends CI_Controller {
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = '<br><br>'.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan;
-            $row[] = '<b>'.$r->nama_part.'</b> <br>'.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan;
+            $row[] = '<br>'.$r->kode_program.'<br>'.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.' <br> '.$r->kode_uraian;
+            $row[] = '<b>'.$r->nama_part.'</b> <br>'.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br> '.$r->nama_uraian;
+            $row[] = $r->nama."<hr>".bulan($r->bulan);
             $row[] = longdate_indo(substr($r->entri_at,0,10))."<br>(".$userusul->nama.")";
             $row[] = $status;
             $row[] = "<b>".nominal($r->jumlah)."</b>";
@@ -415,7 +416,7 @@ class Spj extends CI_Controller {
         $data = [
 			'title' => 'Entri Usul - SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/usul',
-            'list_bidang' => $this->crud->get('ref_parts')->result(),
+            'list_bidang' => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
             'list_program' => $this->crud->get('ref_programs')->result(),
             'detail' => @$detail,
             'autoload_js' => [
@@ -447,7 +448,7 @@ class Spj extends CI_Controller {
             'uraian_id' => $input['uraian_kegiatan'],
             'kode_kegiatan' => $kode_kegiatan->kode,
             'kode_subkegiatan' => $kode_subkegiatan->kode,
-            'kode_uraian' => $kode_subkegiatan->kode,
+            'kode_uraian' => $kode_uraian->kode,
             'kode' => $kode_kegiatan->kode.".".$kode_subkegiatan->kode.".".$kode_uraian->kode
         ];
         echo json_encode($data);

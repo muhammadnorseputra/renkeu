@@ -5,7 +5,12 @@ class ModelSelect2 extends CI_Model {
     {
         $this->db->select('id, kode, nama');
         $this->db->from('ref_kegiatans');
-        $this->db->where('fid_part', $refPart);
+        if($this->session->userdata('role') !== 'SUPER_ADMIN' 
+        && $this->session->userdata('role') !== 'SUPER_USER' 
+        && $this->session->userdata('role') !== 'VERIFICATOR' 
+        && $this->session->userdata('role') !== 'ADMIN'):
+            $this->db->where('fid_part', $refPart);
+        endif;
         $this->db->where('fid_program', $refId);
         if(!empty($search)) {
             $this->db->like('kode', $search);

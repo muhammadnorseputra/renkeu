@@ -23,7 +23,7 @@ class Target extends CI_Controller {
         parent::__construct();
         cek_session();
 		//  CEK USER PRIVILAGES 
-        if(!privilages('priv_default')):
+        if(!privilages('priv_default') && !privilages('priv_anggarankinerja')):
             return show_404();
         endif;
 		
@@ -33,7 +33,7 @@ class Target extends CI_Controller {
 	
 	public function index()
 	{
-		$programs = $this->crud->get('ref_programs');
+		$programs = $this->target->program($this->session->userdata('part'));
         $data = [
 			'title' => 'Target Anggaran & Kinerja',
             'content' => 'pages/anggaran_kinerja/target',
@@ -121,11 +121,22 @@ class Target extends CI_Controller {
 				'fid_indikator' => $post['id'],
 				'persentase' => $post['persentase'],
 				'eviden_jumlah' => $post['jumlah_eviden'],
-				'eviden_jenis' => $post['keterangan_eviden']
+				'eviden_jenis' => $post['keterangan_eviden'],
+				'tahun' => $post['tahun'],
+				'created_by' => $this->session->userdata('user_name')
+			];
+
+			$update = [
+				'persentase' => $post['persentase'],
+				'eviden_jumlah' => $post['jumlah_eviden'],
+				'eviden_jenis' => $post['keterangan_eviden'],
+				'tahun' => $post['tahun'],
+				'update_at' => date('Y-m-d H:i:s'),
+				'update_by' => $this->session->userdata('user_name')
 			];
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
 			if($dbcek->num_rows() > 0) {
-				$this->crud->update('t_target', $insert, ['fid_indikator' => $post['id']]);
+				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id']]);
 			} else {
 				$this->crud->insert('t_target', $insert);
 			}
@@ -136,6 +147,22 @@ class Target extends CI_Controller {
         echo json_encode($msg);
 	}
 
+	public function cetak($tahun)
+    {
+
+		$programs = $this->target->program($this->session->userdata('part'));
+
+        $this->load->library('pdf');
+        $this->pdf->setPaper('legal', 'landscape');
+		$this->pdf->filename = 'SIMEV - Cetak Target Anggaran & Kinerja - Tahun '.$tahun;
+
+        $data = [
+            'title' => 'Target Anggaran & Kinerja  - Tahun '.$tahun,
+			'programs' => $programs,
+			'tahun' => $tahun
+        ];
+		$this->pdf->load_view('pages/anggaran_kinerja/target_cetak', $data);
+    }
 
 	public function hapus() {
 		$id = $this->input->post('id');

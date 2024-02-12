@@ -129,6 +129,11 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
+                    <label for="program">Pilih Program <span class="text-danger">*</span></label>
+                    <select name="program" id="program" required data-parsley-errors-container="#help-block-program"></select>
+                    <div id="help-block-program"></div>
+                </div>
+                <div class="form-group">
                     <label for="part-nama">Nama Badan / Bidang / Bagian <span class="text-danger">*</span></label>
                     <input type="text" name="part" id="part-nama" class="form-control" required>
                 </div>
@@ -184,6 +189,11 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <label for="program">Pilih Program <span class="text-danger">*</span></label>
+                    <select name="program" id="program" required data-parsley-errors-container="#help-block-program"></select>
+                    <div id="help-block-program"></div>
+                </div>
                 <div class="form-group">
                     <label for="part-nama">Nama Badan / Bidang / Bagian <span class="text-danger">*</span></label>
                     <input type="text" name="part" id="part-nama" class="form-control" required>
@@ -723,11 +733,11 @@
         // select program
         $('select[name="program"]').select2({
             placeholder: 'Pilih Program',
-            allowClear: true,
+            // allowClear: true,
             // maximumSelectionLength: 1,
             width: "100%",
             // theme: "classic",
-            dropdownParent: MODAL_KEGIATAN,
+            // dropdownParent: MODAL_KEGIATAN,
             // templateResult: formatUserSelect2,
             ajax: {
                 // delay: 250,
@@ -739,7 +749,7 @@
                         q: params.term, // search term
                     };
                 },
-                cache: true,
+                cache: false,
                 processResults: function(data) {
                     // Transforms the top-level key of the response object from 'items' to 'results'
                     return {
@@ -753,7 +763,7 @@
         // select kegiatan
         $('select[name="kegiatan"]').select2({
             placeholder: 'Pilih Kegiatan',
-            allowClear: true,
+            // allowClear: true,
             // maximumSelectionLength: 1,
             width: "100%",
             // theme: "classic",
@@ -1070,6 +1080,7 @@
             $.getJSON(url, {
                 id: id
             }, (res) => {
+                _.find('select[name="program"]').val(res.fid_program).trigger("change");
                 _.find('input[name="part"]').val(res.nama);
                 _.find('input[name="part_singkatan"]').val(res.singkatan);
                 _.find('input[name="id"]').val(res.id)

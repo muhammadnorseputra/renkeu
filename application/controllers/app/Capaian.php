@@ -23,7 +23,7 @@ class Capaian extends CI_Controller {
         parent::__construct();
         cek_session();
 		//  CEK USER PRIVILAGES 
-        if(!privilages('priv_default')):
+        if(!privilages('priv_default') && !privilages('priv_anggarankinerja')):
             return show_404();
         endif;
 		
@@ -35,7 +35,7 @@ class Capaian extends CI_Controller {
 	
 	public function index()
 	{
-		$programs = $this->crud->get('ref_programs');
+		$programs = $this->target->program($this->session->userdata('part'));
         $data = [
 			'title' => 'Capaian Anggaran & Kinerja',
             'content' => 'pages/anggaran_kinerja/capaian',
@@ -47,4 +47,22 @@ class Capaian extends CI_Controller {
         ];
 		$this->load->view('layout/app', $data);
 	}
+
+	public function cetak($periode_id)
+    {
+		$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
+		$programs = $this->target->program($this->session->userdata('part'));
+
+        $this->load->library('pdf');
+        $this->pdf->setPaper('legal', 'landscape');
+		$this->pdf->filename = 'SIMEV - Cetak Capaian Anggaran & Kinerja - '.$periode_nama;
+
+        $data = [
+            'title' => 'Capaian Anggaran & Kinerja  - '.$periode_nama,
+			'programs' => $programs,
+			'tw_id' => $periode_id,
+			'tw_nama' => $periode_nama
+        ];
+		$this->pdf->load_view('pages/anggaran_kinerja/capaian_cetak', $data);
+    }
 }

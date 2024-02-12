@@ -125,7 +125,7 @@ function formatResults(res) {
 
 $(function () {
 	$(
-		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan']"
+		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan'],select[name='uraian_kegiatan']"
 	).select2({
 		width: "100%",
 		dropdownParent: $("#modelSearchKode"),

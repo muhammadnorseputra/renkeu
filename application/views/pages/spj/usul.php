@@ -2,12 +2,6 @@
     <div class="title_left">
         <h3><i class="fa fa-inbox mr-2"></i> Formulir Usul SPJ</h3>
     </div>
-
-    <div class="title_right">
-        <div class="col-md-3 col-6 form-group row pull-right top_search">
-            <button class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/spj') ?>'">Kembali<i class="fa fa-arrow-right ml-3"></i> </button>
-        </div>
-    </div>
 </div>
 
 <div class="clearfix"></div>
@@ -119,7 +113,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-form-label label-align" for="uraian">Uraian <span class="text-danger">*</span></label>
+                    <label class="col-form-label label-align" for="uraian">Uraian/Untuk Pembayaran/Keterangan Kwitansi <span class="text-danger">*</span></label>
                     <textarea name="uraian" id="uraian" cols="30" rows="5" class="form-control" required="required" <?= $disabled_status ?>><?= @$detail->uraian ?></textarea>
                 </div>
                 <div class="form-group">
@@ -127,12 +121,13 @@
                     <input type="text" value="<?= @$detail->jumlah ?>" name="jumlah" id="jumlah" class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-jumlah" <?= $disabled_status ?>>
                     <div id="help-block-jumlah" class="row col-md-12"></div>
                 </div>
+                <button class="btn btn-danger rounded-0 pull-left mt-3" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-arrow-left mr-3"></i> Kembali  </button>
                 <?php if ((@$detail->is_status === 'ENTRI') || (empty(@$detail->token))) : ?>
                     <div class="form-group">
-                        <button class="btn btn-primary rounded-0 pull-right mt-3" type="submit"><i class="fa fa-save mr-2"></i> Simpan & Lanjutkan</button>
+                        <button class="btn btn-primary rounded-0 pull-left mt-3" type="submit"><i class="fa fa-save mr-2"></i> Simpan & Lanjutkan</button>
                     </div>
                 <?php else : ?>
-                    <button onclick="nextStep('<?= base_url('app/spj/buatusul?step=1&token=' . @$detail->token) ?>')" class="btn btn-primary rounded-0 pull-right mt-3" type="button"> Selanjutnya <i class="fa fa-arrow-right ml-2"></i></button>
+                    <button onclick="nextStep('<?= base_url('app/spj/buatusul?step=1&token=' . @$detail->token) ?>')" class="btn btn-primary rounded-0 pull-left mt-3" type="button"> Selanjutnya <i class="fa fa-arrow-right ml-2"></i></button>
                 <?php endif; ?>
             </div>
             <?= form_close() ?>
@@ -142,16 +137,17 @@
             <?= form_open(base_url('app/spj/proseseviden'), ['id' => 'step-2', 'class' => 'form-horizontal form-label-left', 'data-parsley-validate' => '']); ?>
             <input type="hidden" name="token" value="<?= @$detail->token ?>">
             <div class="col-md-10 center-margin">
-                <div class="alert alert-info rounded-0" role="alert">
-                    <strong>Penting :</strong> Usahakan link yang diberikan berstatus publik, dapat diakses saat pengecekan.
+                <div class="alert alert-warning rounded-0" role="alert">
+                    <strong>Penting :</strong> Usahakan link yang diberikan berstatus publik, dapat diakses saat pengecekan oleh verifikator.
                 </div>
                 <div class="form-group">
                     <label class="col-form-label label-align" for="link">Link Berkas <span class="text-danger">*</span></label>
                     <textarea name="link" id="link" cols="30" rows="3" class="form-control" required="required" <?= $disabled_status ?>><?= @$detail->berkas_link ?></textarea>
                 </div>
                 <?php if ((@$detail->is_status === 'ENTRI') || (empty(@$detail->token))) : ?>
-                    <button type="button" class="btn btn-primary rounded-0" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=0&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
-                    <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i> Kirim Usulan</button>
+                <button type="button" class="btn btn-primary rounded-0" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=0&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i> Kirim Usulan</button>
+                <button class="btn btn-danger rounded-0 pull-right" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-close mr-3"></i> Batalkan  </button>
                 <?php else : ?>
                     <button onclick="nextStep('<?= base_url('app/spj/buatusul?step=2&token=' . @$detail->token) ?>')" class="btn btn-primary rounded-0 pull-right mt-3" type="button"> Selanjutnya <i class="fa fa-arrow-right ml-2"></i></button>
                 <?php endif; ?>
@@ -342,7 +338,7 @@
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <?php if ($spj->is_status === 'TMS' || $spj->is_status === 'BTL') : ?>
+                                    <?php if ($spj->is_status === 'SELESAI_TMS' || $spj->is_status === 'SELESAI_BTL') : ?>
                                         <?php
                                         $userusul = $this->users->profile_username($spj->verify_by)->row();
                                         ?>

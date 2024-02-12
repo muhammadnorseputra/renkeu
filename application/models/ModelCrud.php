@@ -11,6 +11,11 @@ class ModelCrud extends CI_Model {
        return $this->db->get_where($table,$where); 
     }
 
+    public function getWhereIn($table,$where)
+    {
+       return $this->db->where_in($where)->get($table); 
+    }
+
     public function getLikes($table, $likes)
     {
         return $this->db->like($likes)->get($table);

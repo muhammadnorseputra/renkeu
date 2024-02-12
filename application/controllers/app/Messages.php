@@ -8,7 +8,7 @@ class Messages extends CI_Controller {
         parent::__construct();
         cek_session();
         //  CEK USER PRIVILAGES 
-        if(!privilages('priv_notify')):
+        if(!privilages('priv_default') && !privilages('priv_notify')):
             return show_404();
         endif;
         $this->load->model('ModelMessages', 'messages');

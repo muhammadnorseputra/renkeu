@@ -24,11 +24,10 @@ class Programs extends CI_Controller
         parent::__construct();
         cek_session();
         //  CEK USER PRIVILAGES 
-        if (!privilages('priv_programs')) :
+        if (!privilages('priv_default') && !privilages('priv_programs')) :
             return show_404();
         endif;
         $this->load->model('modeltarget', 'target');
-        
     }
 
     public function index()
@@ -39,12 +38,16 @@ class Programs extends CI_Controller
             'autoload_js' => [
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/backend/vendors/datatables.net/js/jquery.dataTables.min.js',
+                'template/backend/vendors/TreeTables-master/treeTable.js',
                 'template/custom-js/list.min.js',
                 'template/custom-js/rupiah.js',
                 'template/backend/vendors/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js'
             ],
             'autoload_css' => [
-                'template/backend/vendors/select2/dist/css/select2.min.css'
+                'template/backend/vendors/select2/dist/css/select2.min.css',
+                'template/backend/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css',
+                'template/backend/vendors/TreeTables-master/tree-table.css',
             ]
         ];
         $this->load->view('layout/app', $data);
@@ -93,37 +96,41 @@ class Programs extends CI_Controller
 
     public function program()
     {
-        $db = $this->crud->get('ref_programs');
-
-        $btnAdd = '<div>
+        $db = $this->target->program($this->session->userdata('part'));
+        if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') :
+            $btnAdd = '<div>
             <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
             </div>
         ';
+        else :
+            $btnAdd = '';
+        endif;
         $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listProgram"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover">';
+        $html .= '<table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Program</th>
-                        <th>Ubah</th>
-                        <th>Alokasi Anggaran</th>
+                        <th class="text-center">Ubah</th>
+                        <th class="text-right">Alokasi Anggaran (Rp)</th>
                     </tr>
                     </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r) :
-            
+
             $totalPaguAwal = !empty($this->target->getAlokasiPaguProgram($r->id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguProgram($r->id)->row()->total_pagu_awal : 0;
             $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_programs') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
 
+            $disabled_edit = ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') ? '' : 'disabled';
             $button_edit = '<td width="5%" class="text-center">
-                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_programs') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+                <button onclick="window.location.href = \'' . base_url('app/programs/ubah/' . $r->id . '/ref_programs') . '\'" type="button" class="btn btn-info btn-sm rounded-0 m-0" ' . $disabled_edit . '><i class="fa fa-pencil"></i></button>
             </td>';
 
             $html .= '<tr>
@@ -136,9 +143,9 @@ class Programs extends CI_Controller
                 <td class="nama">
                     ' . $r->nama . '
                 </td>
-                '.$button_edit.'
-                <td>
-                    <b>'.@nominal($totalPaguAwal).'</b>
+                ' . $button_edit . '
+                <td class="text-right">
+                    <b>' . @nominal($totalPaguAwal) . '</b>
                 </td>
             </tr>';
             $no++;
@@ -171,14 +178,14 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listKegiatan"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover">';
+        $html .= '<table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan</th>
                         <th>Ubah</th>
-                        <th>Alokasi Anggaran (Rp)</th>
+                        <th class="text-right">Alokasi Anggaran (Rp)</th>
                     </tr>
                 </thead>';
         $html .= '<tbody class="list">';
@@ -204,9 +211,9 @@ class Programs extends CI_Controller
                 <td valign="middle" class="nama">
                     ' . strtoupper($r->nama) . '
                 </td>
-                '.$button_edit.'
-                <td>
-                    <b>'.@nominal($totalPaguAwal).'</b>
+                ' . $button_edit . '
+                <td class="text-right">
+                    <b>' . @nominal($totalPaguAwal) . '</b>
                 </td>
             </tr>';
             $no++;
@@ -242,7 +249,7 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-6 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listSubKegiatan"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover">';
+        $html .= '<table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                             <tr>
                                 <th class="text-center">No</th>
@@ -250,15 +257,15 @@ class Programs extends CI_Controller
                                 <th>Nama Sub Kegiatan</th>
                                 <th width="5%" class="text-right">Ubah</th>
                                 <th class="text-right">Alokasi Pagu (Rp)</th>
-                                <th width="5%" class="text-right"></th>
                             </tr>
                         </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r) :
             //get alokasi pagu berdasarkan id kegiatan
-            $pagu = $this->crud->getWhere('t_pagu', ['fid_sub_kegiatan' => $r->id])->row();
-            $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
+            // $pagu = $this->crud->getWhere('t_pagu', ['fid_sub_kegiatan' => $r->id])->row();
+            // $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
+            $totalPaguAwal = !empty($this->target->getAlokasiPaguSubKegiatan($r->id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id)->row()->total_pagu_awal : 0;
 
             $button_hapus = '<td width="5%" class="text-center">
                 <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_sub_kegiatans') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
@@ -266,7 +273,7 @@ class Programs extends CI_Controller
             $button_edit = '<td width="5%" class="text-center">
                 <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_sub_kegiatans') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
             </td>';
-
+            $alokasi_pagu = nominal($totalPaguAwal);
             $button_pagu = '<td width="10%" class="text-right">
             <div class="text-right">
             <b>' . nominal($totalPaguAwal) . '</b>
@@ -286,8 +293,10 @@ class Programs extends CI_Controller
                     <td>
                         <span class="nama">' . strtoupper($r->nama) . '</span>
                     </td>
-                    '.$button_edit.'
-                    ' . $button_pagu . '
+                    ' . $button_edit . '
+                    <td class="text-right">
+                    <b>' . $alokasi_pagu . '</b>
+                    </td>
                 </tr>';
             $no++;
         endforeach;
@@ -327,22 +336,24 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listUraian"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover">';
+        $html .= '<table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
                         <th>Ubah</th>
-                        <th class="text-right">Alokasi Pagu (Rp)</th>
-                        <th width="5%" class="text-right"></th>
+                        <th class="text-right" colspan="2">Alokasi Pagu (Rp)</th>
                     </tr>
                 </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
-        foreach ($db->result() as $r) ://get alokasi pagu berdasarkan id kegiatan
+        $total_all_pagu = 0;
+        foreach ($db->result() as $r) :
+            //get alokasi pagu berdasarkan id kegiatan
             $pagu = $this->crud->getWhere('t_pagu', ['fid_uraian' => $r->id])->row();
             $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
+            $total_all_pagu += $totalPaguAwal;
 
             $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_uraians') . '\',\'URAIAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
@@ -355,8 +366,8 @@ class Programs extends CI_Controller
                 <div class="text-right">
                 <b>' . nominal($totalPaguAwal) . '</b>
             </td>
-            <td>
-            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\')" type="button" class="btn btn-info btn-sm rounded m-0 ml-2"><i class="fa fa-money"></i></button>
+            <td class="text-center">
+            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\')" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
             </div>
             </td>';
             $html .= '<tr>
@@ -373,11 +384,17 @@ class Programs extends CI_Controller
                     ' . ucwords($r->nama_sub_kegiatan) . ' <br>
                     <b class="nama">' . ucwords($r->nama) . '</b>
                 </td>
-                '. $button_edit .'
+                ' . $button_edit . '
                 ' . $button_pagu . '
             </tr>';
             $no++;
         endforeach;
+        $html .= '
+            <tr>
+                <td colspan="4" class="text-right align-middle"><b>Total</b></td>
+                <td colspan="2" class="text-right"><b>Rp. ' . nominal($total_all_pagu) . '</b></td>
+            </tr>
+        ';
         $html .= '</tbody>';
         $html .= '</table></div>';
 
@@ -455,9 +472,25 @@ class Programs extends CI_Controller
     public function getProgram()
     {
         $q = $this->input->post('q');
+        $partid = $this->session->userdata('part');
 
         // $db = $this->crud->getLikes('ref_programs', ['nama' => $q]);
-        $db = $this->db->select('id,kode,nama')->from('ref_programs')->like('nama', $q)->or_like('kode', $q)->get();
+        if ($this->session->userdata('role') !== 'VERIFICATOR' && $this->session->userdata('role') !== 'SUPER_USER' && $this->session->userdata('role') !== 'SUPER_ADMIN' && $this->session->userdata('role') !== 'ADMIN') :
+            $db = $this->db->select('p.id,p.kode,p.nama')
+                ->from('ref_parts AS q')
+                ->join('ref_programs AS p', 'q.fid_program=p.id')
+                ->where('q.id', $partid)
+                ->group_by('p.id')
+                ->get();
+        else :
+            $db = $this->db->select('p.id,p.kode,p.nama')
+                ->from('ref_parts AS q')
+                ->join('ref_programs AS p', 'q.fid_program=p.id')
+                ->like('p.nama', $q)
+                ->or_like('p.kode', $q)
+                ->group_by('p.id')
+                ->get();
+        endif;
         $all = [];
         if ($db->num_rows() > 0) :
             foreach ($db->result() as $row) :
@@ -488,14 +521,22 @@ class Programs extends CI_Controller
     {
         $q = $this->input->post('q');
         // $db = $this->crud->getLikes('ref_kegiatans', ['nama' => $q]);
-        $db = $this->db->select('k.*,p.nama AS partnama, p.id AS partid')
-            ->from('ref_kegiatans AS k')
-            ->join('ref_parts AS p', 'k.fid_part=p.id', 'inner')
-            ->where('p.id', $this->session->userdata('part'))
-            // ->like('k.kode', $q)
-            // ->or_like('k.nama', $q)
-            ->group_by('k.fid_part')
-            ->get();
+        if ($this->session->userdata('role') !== 'VERIFICATOR' && $this->session->userdata('role') !== 'SUPER_USER' && $this->session->userdata('role') !== 'SUPER_ADMIN' && $this->session->userdata('role') !== 'ADMIN') :
+            $db = $this->db->select('k.*,p.nama AS partnama, p.id AS partid')
+                ->from('ref_kegiatans AS k')
+                ->join('ref_parts AS p', 'k.fid_part=p.id', 'inner')
+                ->where('p.id', $this->session->userdata('part'))
+                ->group_by('k.fid_part')
+                ->get();
+        else :
+            $db = $this->db->select('k.*,p.nama AS partnama, p.id AS partid')
+                ->from('ref_kegiatans AS k')
+                ->join('ref_parts AS p', 'k.fid_part=p.id', 'inner')
+                ->like('k.kode', $q)
+                ->or_like('k.nama', $q)
+                ->group_by('k.fid_part')
+                ->get();
+        endif;
         if ($db->num_rows() > 0) :
             $group = [];
             // $db_part = $this->crud->get('ref_parts');
@@ -531,6 +572,7 @@ class Programs extends CI_Controller
         if ($type === 'part') {
             $p = $this->input->post();
             $data = [
+                'fid_program' => $p['program'],
                 'nama' => $p['part'],
                 'singkatan' => $p['part_singkatan']
             ];
@@ -621,9 +663,8 @@ class Programs extends CI_Controller
         $id = $post['id'];
         $jml = get_only_numbers($post['jumlah']);
         $thn = date('Y');
-        
-        if($type === 'ref_sub_kegiatans')
-        {
+
+        if ($type === 'ref_sub_kegiatans') {
             $insert = [
                 'fid_part' => $this->session->userdata('part'),
                 'fid_sub_kegiatan' => $id,
@@ -641,7 +682,7 @@ class Programs extends CI_Controller
             $whr = [
                 'fid_sub_kegiatan' => $id
             ];
-        } else if($type === 'ref_uraians') {
+        } else if ($type === 'ref_uraians') {
             $insert = [
                 'fid_part' => $this->session->userdata('part'),
                 'fid_uraian' => $id,
@@ -662,14 +703,13 @@ class Programs extends CI_Controller
         }
 
         $cekid = $this->crud->getWhere('t_pagu', $whr)->num_rows();
-        if($cekid > 0) {
+        if ($cekid > 0) {
             $db = $this->crud->update('t_pagu', $update, $whr);
         } else {
             $db = $this->crud->insert('t_pagu', $insert);
         }
-        
-        if($db)
-        {
+
+        if ($db) {
             $msg = 200;
         } else {
             $msg = 400;
@@ -735,6 +775,7 @@ class Programs extends CI_Controller
         if ($tbl === 'ref_parts') {
             $input = $this->input->post();
             $data = [
+                'fid_program' => $input['program'],
                 'nama' => $input['part'],
                 'singkatan' => $input['part_singkatan']
             ];
@@ -768,9 +809,9 @@ class Programs extends CI_Controller
         //     echo json_encode($msg);
         // }
 
-        if($tbl === 'ref_sub_kegiatans') {
+        if ($tbl === 'ref_sub_kegiatans') {
             $input = $this->input->post();
-            if(isset($input['kegiatan'])){
+            if (isset($input['kegiatan'])) {
                 $data = [
                     'fid_kegiatan' => $input['kegiatan'],
                     'kode' => $input['kode_subkegiatan'],
@@ -794,9 +835,9 @@ class Programs extends CI_Controller
             echo json_encode($msg);
         }
 
-        if($tbl === 'ref_kegiatans') {
+        if ($tbl === 'ref_kegiatans') {
             $input = $this->input->post();
-            if(isset($input['program'])){
+            if (isset($input['program'])) {
                 $data = [
                     'fid_program' => $input['program'],
                     'kode' => $input['kode_kegiatan'],
@@ -820,9 +861,9 @@ class Programs extends CI_Controller
             echo json_encode($msg);
         }
 
-        if($tbl === 'ref_programs') {
+        if ($tbl === 'ref_programs') {
             $input = $this->input->post();
-            if(isset($input['unor'])){
+            if (isset($input['unor'])) {
                 $data = [
                     'fid_unor' => $input['unor'],
                     'kode' => $input['kode_program'],
@@ -846,9 +887,9 @@ class Programs extends CI_Controller
             echo json_encode($msg);
         }
 
-        if($tbl === 'ref_uraians') {
+        if ($tbl === 'ref_uraians') {
             $input = $this->input->post();
-            if(isset($input['kegiatan']) && isset($input['subkegiatan'])){
+            if (isset($input['kegiatan']) && isset($input['subkegiatan'])) {
                 $data = [
                     'fid_kegiatan' => $input['kegiatan'],
                     'fid_sub_kegiatan' => $input['subkegiatan'],
@@ -913,12 +954,12 @@ class Programs extends CI_Controller
             $kode = $this->input->post('nama_uraian');
             $kegiatan_id = $this->input->post('ref_kegiatan');
             $db = $this->db->select('u.nama,k.fid_part')
-            ->from('ref_uraians AS u')
-            ->join('ref_kegiatans AS k', 'u.fid_kegiatan=k.id')
-            ->join('ref_parts AS p', 'k.fid_part=p.id')
-            ->where('k.fid_part', $this->session->userdata('part'))
-            ->where('u.nama', $kode)
-            ->get();
+                ->from('ref_uraians AS u')
+                ->join('ref_kegiatans AS k', 'u.fid_kegiatan=k.id')
+                ->join('ref_parts AS p', 'k.fid_part=p.id')
+                ->where('k.fid_part', $this->session->userdata('part'))
+                ->where('u.nama', $kode)
+                ->get();
             if ($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
             } else {
@@ -930,12 +971,12 @@ class Programs extends CI_Controller
         if ($form === 'kodeuraian') {
             $kode = $this->input->post('kode_uraian');
             $db = $this->db->select('u.kode,k.fid_part')
-            ->from('ref_uraians AS u')
-            ->join('ref_kegiatans AS k', 'u.fid_kegiatan=k.id')
-            ->join('ref_parts AS p', 'k.fid_part=p.id')
-            ->where('k.fid_part', $this->session->userdata('part'))
-            ->where('u.kode', $kode)
-            ->get();
+                ->from('ref_uraians AS u')
+                ->join('ref_kegiatans AS k', 'u.fid_kegiatan=k.id')
+                ->join('ref_parts AS p', 'k.fid_part=p.id')
+                ->where('k.fid_part', $this->session->userdata('part'))
+                ->where('u.kode', $kode)
+                ->get();
             if ($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
             } else {
