@@ -307,14 +307,7 @@
                 <div class="divider-dashed"></div>
                 <div class="form-group">
                     <label for="kode_subkegiatan">Kode Sub Kegiatan <span class="text-danger">*</span></label>
-                    <input type="text" name="kode_subkegiatan" class="form-control" 
-                    required 
-                    data-parsley-remote="<?= base_url('app/programs/cek_kode/subkegiatan') ?>" 
-                    data-parsley-remote-reverse="false" 
-                    data-parsley-remote-options='{ "type": "POST" }' 
-                    data-parsley-remote-message="Kode Sub Kegiatan sudah pernah digunakan !" 
-                    data-parsley-pattern="^(([0-9.]?)*)+$" 
-                    data-parsley-trigger="focusout">
+                    <input type="text" name="kode_subkegiatan" class="form-control" required data-parsley-remote="<?= base_url('app/programs/cek_kode/subkegiatan') ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Kode Sub Kegiatan sudah pernah digunakan !" data-parsley-pattern="^(([0-9.]?)*)+$" data-parsley-trigger="focusout">
                 </div>
                 <div class="form-group">
                     <label for="subkegiatan">Nama Sub Kegiatan <span class="text-danger">*</span></label>
@@ -363,25 +356,11 @@
                 <div class="divider-dashed"></div>
                 <div class="form-group">
                     <label for="kode_uraian">Kode Uraian <span class="text-danger">*</span></label>
-                    <input type="text" id="kode_uraian" name="kode_uraian" class="form-control" 
-                    required 
-                    data-parsley-remote="<?= base_url('app/programs/cek_kode/kodeuraian') ?>" 
-                    data-parsley-remote-reverse="false" 
-                    data-parsley-remote-options='{ "type": "POST" }' 
-                    data-parsley-remote-message="Kode Uraian sudah pernah digunakan !" 
-                    data-parsley-pattern="^(([0-9.]?)*)+$" 
-                    data-parsley-trigger="focusout">
+                    <input type="text" id="kode_uraian" name="kode_uraian" class="form-control" required data-parsley-remote="<?= base_url('app/programs/cek_kode/kodeuraian') ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Kode Uraian sudah pernah digunakan !" data-parsley-pattern="^(([0-9.]?)*)+$" data-parsley-trigger="focusout">
                 </div>
                 <div class="form-group">
                     <label for="nama_uraian">Uraian <span class="text-danger">*</span></label>
-                    <input type="text" id="nama_uraian" name="nama_uraian" class="form-control" 
-                    required 
-                    data-parsley-whitespace="squish"
-                    data-parsley-remote="<?= base_url('app/programs/cek_kode/namauraian') ?>" 
-                    data-parsley-remote-reverse="false" 
-                    data-parsley-remote-options='{ "type": "POST" }' 
-                    data-parsley-remote-message="Nama Uraian sudah pernah digunakan !" 
-                    data-parsley-trigger="focusout">
+                    <input type="text" id="nama_uraian" name="nama_uraian" class="form-control" required data-parsley-whitespace="squish" data-parsley-remote="<?= base_url('app/programs/cek_kode/namauraian') ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Nama Uraian sudah pernah digunakan !" data-parsley-trigger="focusout">
                 </div>
             </div>
             <div class="modal-footer">
@@ -618,7 +597,7 @@
         var option = {
             valueNames: ['nama', 'kode'],
             searchColumns: ['nama', 'kode'],
-            page: 10,
+            page: 5,
             pagination: [{
                 item: "<li class='page-item rounded-0'><a class='page page-link rounded-0' href='#'></a></li>"
             }],
@@ -1035,7 +1014,7 @@
     function InputPagu(id, url, paguAwal) {
         let $modal = $(".modal-alokasipagu"),
             $form = $modal.find("form#formAlokasiPagu");
-            $modal.modal('show');
+        $modal.modal('show');
 
         $modal.on('shown.bs.modal', function(e) {
             $form.find('input[name="jumlah"]').val(formatRupiah(paguAwal));
@@ -1043,7 +1022,10 @@
                 e.preventDefault();
                 $data = $(this).serializeArray();
                 if ($(this).parsley().isValid()) {
-                    $data.push({ "name": "id", "value": id });
+                    $data.push({
+                        "name": "id",
+                        "value": id
+                    });
                     $.post(url, $data, (response) => {
                         if (response === 200) {
                             window.location.reload();

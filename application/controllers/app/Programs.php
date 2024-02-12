@@ -336,13 +336,14 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listUraian"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover table-bordered">';
+        $html .= '<table class="table table-condensed table-hover table-bordered table-responsive">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
-                        <th>Ubah</th>
+                        <th>Total SPJ</th>
+                        <th class="text-center" colspan="2">Ubah | Hapus</th>
                         <th class="text-right" colspan="2">Alokasi Pagu (Rp)</th>
                     </tr>
                 </thead>';
@@ -355,11 +356,16 @@ class Programs extends CI_Controller
             $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
             $total_all_pagu += $totalPaguAwal;
 
-            $button_hapus = '<td width="5%" class="text-center">
+            if($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'SUPER_USER' || $this->session->userdata('role') === 'VERIFICATOR'):
+                $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_uraians') . '\',\'URAIAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
+            else:
+                $button_hapus = '';
+            endif;
             $button_edit = '<td width="5%" class="text-center">
                 <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_uraians') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+                '.$button_hapus.'
             </td>';
 
             $button_pagu = '<td width="10%" class="text-right">
@@ -374,16 +380,17 @@ class Programs extends CI_Controller
                 <td class="text-center">
                     ' . $no . '
                 </td>
-                <td class="kode">
+                <td>
                     ' . $r->kode_kegiatan . ' <br>
                     ' . $r->kode_sub_kegiatan . ' <br>
-                    ' . $r->kode . '
+                    <b class="kode">' . $r->kode . '</b>
                 </td>
                 <td valign="middle">
                     ' . ucwords($r->nama_kegiatan) . ' <br>
                     ' . ucwords($r->nama_sub_kegiatan) . ' <br>
                     <b class="nama">' . ucwords($r->nama) . '</b>
                 </td>
+                <td></td>
                 ' . $button_edit . '
                 ' . $button_pagu . '
             </tr>';
@@ -391,8 +398,8 @@ class Programs extends CI_Controller
         endforeach;
         $html .= '
             <tr>
-                <td colspan="4" class="text-right align-middle"><b>Total</b></td>
-                <td colspan="2" class="text-right"><b>Rp. ' . nominal($total_all_pagu) . '</b></td>
+                <td colspan="6" class="text-right align-middle"><b>Total</b></td>
+                <td colspan="2" class="text-left"><b>Rp. ' . nominal($total_all_pagu) . '</b></td>
             </tr>
         ';
         $html .= '</tbody>';
