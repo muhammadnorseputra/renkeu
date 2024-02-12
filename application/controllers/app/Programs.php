@@ -506,7 +506,7 @@ class Programs extends CI_Controller
 
     function ch_kegiatan($partid, $q)
     {
-        $this->load->model('modelselect2', 'select');
+        $this->load->model('ModelSelect2', 'select');
         $ch = [];
         $db = $this->select->getChildKegiatan($q, $partid);
         foreach ($db->result() as $k) {
