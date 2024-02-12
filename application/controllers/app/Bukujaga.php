@@ -27,10 +27,10 @@ class Bukujaga extends CI_Controller {
             return show_404();
         endif;
         
-        $this->load->model('modelspj', 'spj');
-        $this->load->model('modelbukujaga', 'bukujaga');
-        $this->load->model('modelusers', 'user');
-        $this->load->model('modeltarget', 'target');
+        $this->load->model('ModelSpj', 'spj');
+        $this->load->model('ModelBukujaga', 'bukujaga');
+        $this->load->model('ModelUsers', 'user');
+        $this->load->model('ModelTarget', 'target');
     }
 	
 	public function index()

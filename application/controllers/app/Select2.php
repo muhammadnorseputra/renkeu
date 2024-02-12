@@ -27,7 +27,7 @@ class Select2 extends CI_Controller {
             return show_404();
         endif;
 
-        $this->load->model('modelselect2', 'select');
+        $this->load->model('ModelSelect2', 'select');
     }
 
 	public function ajaxKegiatan()

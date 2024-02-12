@@ -26,8 +26,8 @@ class Spj extends CI_Controller {
         if(!privilages('priv_default')  && !privilages('priv_spj')):
             return show_404();
         endif;
-        $this->load->model('modelspj', 'spj');
-        $this->load->model('modeltarget', 'target');
+        $this->load->model('ModelSpj', 'spj');
+        $this->load->model('ModelTarget', 'target');
         
     }
 	

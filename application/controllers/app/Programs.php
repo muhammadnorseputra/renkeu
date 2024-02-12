@@ -27,7 +27,7 @@ class Programs extends CI_Controller
         if (!privilages('priv_default') && !privilages('priv_programs')) :
             return show_404();
         endif;
-        $this->load->model('modeltarget', 'target');
+        $this->load->model('ModelTarget', 'target');
     }
 
     public function index()

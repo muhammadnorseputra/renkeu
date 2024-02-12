@@ -32,15 +32,15 @@
         <div class="menu_section">
             <h3>NAVIGASI</h3>
             <ul class="nav side-menu">
-                <li><a href="<?= base_url('app/dashboard') ?>"><i class="fa fa-home"></i> Beranda</a></li>
+                <li><a href="<?= base_url('app/dashboard') ?>" class="loadContent"><i class="fa fa-home"></i> Beranda</a></li>
                 <?php if(privilages('priv_programs')): ?>
-                    <li><a href="<?= base_url('app/programs') ?>"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
+                    <li><a href="<?= base_url('app/programs') ?>" class="loadContent"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
                 <?php endif; ?>
                 <?php if(privilages('priv_spj')): ?>
-                    <li><a href="<?= base_url('app/spj') ?>"><i class="fa fa-dollar"></i> SPJ</a></li>
+                    <li><a href="<?= base_url('app/spj') ?>" class="loadContent"><i class="fa fa-dollar"></i> SPJ</a></li>
                 <?php endif; ?>
                 <?php if(privilages('priv_bukujaga')): ?>
-                    <li><a href="<?= base_url('app/bukujaga') ?>"><i class="fa fa-book"></i> Buku Jaga</a></li>
+                    <li><a href="<?= base_url('app/bukujaga') ?>" class="loadContent"><i class="fa fa-book"></i> Buku Jaga</a></li>
                 <?php endif; ?>
                 <?php if(privilages('priv_anggarankinerja')): ?>
                 <li>
@@ -48,10 +48,10 @@
                         <i class="fa fa-money"></i> Anggaran & Kinerja <span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu">
-                        <li><a href="<?= base_url('app/target') ?>">Target</a></li>
-                        <li><a href="<?= base_url('app/realisasi') ?>">Realisasi</a></li>
-                        <li><a href="<?= base_url('app/capaian') ?>">Capaian</a></li>
-                        <li><a href="<?= base_url('app/capaian/laporan') ?>">Laporan Tahunan</a></li>
+                        <li><a href="<?= base_url('app/target') ?>" class="loadContent">Target</a></li>
+                        <li><a href="<?= base_url('app/realisasi') ?>" class="loadContent">Realisasi</a></li>
+                        <li><a href="<?= base_url('app/capaian') ?>" class="loadContent">Capaian</a></li>
+                        <li><a href="<?= base_url('app/capaian/laporan') ?>" class="loadContent">Laporan Tahunan</a></li>
                     </ul>
                 </li>
                 <?php endif; ?>

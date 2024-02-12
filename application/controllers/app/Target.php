@@ -27,7 +27,7 @@ class Target extends CI_Controller {
             return show_404();
         endif;
 		
-		$this->load->model('modeltarget', 'target');
+		$this->load->model('ModelTarget', 'target');
 		
     }
 	

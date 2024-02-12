@@ -27,10 +27,10 @@ class Capaian extends CI_Controller {
             return show_404();
         endif;
 		
-		$this->load->model('modeltarget', 'target');
-		$this->load->model('modelrealisasi', 'realisasi');
-		$this->load->model('modelspj', 'spj');
-		$this->load->model('modelusers', 'user');
+		$this->load->model('ModelTarget', 'target');
+		$this->load->model('ModelRealisasi', 'realisasi');
+		$this->load->model('ModelSpj', 'spj');
+		$this->load->model('ModelUsers', 'user');
 		
     }
 	

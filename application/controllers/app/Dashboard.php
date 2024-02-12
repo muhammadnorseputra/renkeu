@@ -26,10 +26,10 @@ class Dashboard extends CI_Controller {
         if(!privilages('priv_default')):
             return show_404();
         endif;
-        $this->load->model('modelspj', 'spj');
-        $this->load->model('modeltarget', 'target');
-		$this->load->model('modelrealisasi', 'realisasi');
-		$this->load->model('modelusers', 'user');
+        $this->load->model('ModelSpj', 'spj');
+        $this->load->model('ModelTarget', 'target');
+		$this->load->model('ModelRealisasi', 'realisasi');
+		$this->load->model('ModelUsers', 'user');
     }
 	
 	public function index()
