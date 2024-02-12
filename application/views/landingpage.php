@@ -10,8 +10,8 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="<?= base_url('template/landingpage/assets/img/favicon.png') ?>" rel="icon">
-  <link href="<?= base_url('template/landingpage/assets/img/apple-touch-icon.png') ?>" rel="apple-touch-icon">
+  <link href="<?= base_url('template/assets/logo.png') ?>" rel="icon">
+  <link href="<?= base_url('template/assets/logo.png') ?>" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Roboto:100,300,400,500,700|Philosopher:400,400i,700,700i" rel="stylesheet">
