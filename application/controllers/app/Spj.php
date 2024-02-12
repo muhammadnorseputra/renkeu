@@ -379,7 +379,7 @@ class Spj extends CI_Controller {
             $row[] = $no;
             $row[] = '<br>'.$r->kode_program.'<br>'.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.' <br> '.$r->kode_uraian;
             $row[] = '<b>'.$r->nama_part.'</b> <br>'.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br> '.$r->nama_uraian;
-            $row[] = $r->nama."<hr>".bulan($r->bulan);
+            $row[] = $r->nama."<div class='divider-dashed'></div>".bulan($r->bulan);
             $row[] = longdate_indo(substr($r->entri_at,0,10))."<br>(".$userusul->nama.")";
             $row[] = $status;
             $row[] = "<b>".nominal($r->jumlah)."</b>";

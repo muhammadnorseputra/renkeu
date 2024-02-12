@@ -54,10 +54,10 @@ if(urldecode($tab) === '#selesai') {
                     <div class="tab-pane <?= $inbox ?> <?= $is_show_inbox ?>" id="inbox" role="tabpanel" aria-labelledby="inbox-tab"></div>
                     <?php if($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || privilages('priv_verifikasi')): ?>
                         <div class="tab-pane <?= $verifikasi ?> <?= $is_show_verifikasi ?>" id="verifikasi" role="tabpanel" aria-labelledby="verifikasi-tab">
-                            <table id="table-spj" class="table table-condensed dt-responsive nowrap" cellspacing="0" width="100%">
+                            <table id="table-spj" class="table table-condensed table-sm" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th class="text-center" width="5%">No</th>
+                                        <th class="text-center align-middle" width="5%">No</th>
                                         <th>Kode</th>
                                         <th>Bidang/Program/Kegiatan/Sub Kegiatan</th>
                                         <th>Tanggal/User/Status/Usulan</th>
@@ -70,7 +70,7 @@ if(urldecode($tab) === '#selesai') {
                     <?php endif; ?>
                     <?php if($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || privilages('priv_riwayat_spj')): ?>
                         <div class="tab-pane <?= $selesai ?> <?= $is_show_selesai ?>" id="selesai" role="tabpanel" aria-labelledby="selesai-tab">
-                            <table id="table-spj-selesai" class="table table-condensed nowrap" cellspacing="0" width="100%">
+                            <table id="table-spj-selesai" class="table table-condensed table-sm" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th class="text-center" width="5%">No</th>

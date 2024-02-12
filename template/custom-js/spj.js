@@ -8,24 +8,22 @@ $(function () {
 	// fungsi mengambil param tab di url
 	let tab_active = urlParams.get("tab");
 
+	// Initial load
+	$('#inbox').html(`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`);
+	
 	// jika tab inbox aktif
-	if (tab_active === "#verifikasi") {
-
-    } else {
-        getInbox().then((data) => {
-            if (data.code === 404) {
-                $("#inbox").html(
-                    `<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}" Silahkan klik tombol buat usul spj</div>`
-                );
-                NProgress.done();
-                return false;
-            }
-            $("#inbox").html(data.result);
-            NProgress.done();
-            var spjList = new List("spjList", option);
-        });
-
-    }
+	getInbox().then((data) => {
+		if (data.code === 404) {
+			$("#inbox").html(
+				`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}" Silahkan klik tombol buat usul spj</div>`
+			);
+			NProgress.done();
+			return false;
+		}
+		$("#inbox").html(data.result);
+		NProgress.done();
+		var spjList = new List("spjList", option);
+	});
 
 	$(document).on("click", "#myTab a[href='#inbox']", function (e) {
 		let _ = $(this),

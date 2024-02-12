@@ -451,8 +451,11 @@
             const res = await req.json();
             return res;
         }
-
+        // Initial load
+        $('#kegiatan,#subkegiatan,#part,#uraian,#program').html(`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`);
+        // Get Tab Active
         let tab_active = urlParams.get('tab');
+        // if tab active same as url
         if (tab_active === '#kegiatan') {
             getListKegiatan().then((data) => {
                 if (data.code === 404) {
