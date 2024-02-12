@@ -54,6 +54,7 @@
               $this->session->csrf_token = hash('sha1', time());
             }
             ?>
+            <div id="message"></div>
             <?= form_open(base_url('login/cek_akun'), ['autocomplete' => 'off', 'id' => 'f_login', 'class' => 'toggle-disabled'], ['token' => $this->session->csrf_token, 'continue' => $urlRef]); ?>
             <div class="form-group first">
               <label for="username">Username</label>

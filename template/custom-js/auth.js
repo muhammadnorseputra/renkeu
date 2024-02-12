@@ -1,4 +1,12 @@
+$(document).ajaxStart(function(e) {
+	$.blockUI({
+		message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+		css: { backgroundColor: "transparent", borderColor: "transparent" },
+	});
+})
+$(document).ajaxStop($.unblockUI);
 $(document).ready(function () {
+	var $containerMsg = $("#message");
 	$("input[name='username']").focus();
 	$.validate({
 		form: "#f_login",
@@ -8,27 +16,13 @@ $(document).ready(function () {
 		disabledFormFilter: 'form.toggle-disabled',
         // validateOnEvent: false,
 		onError: function ($form) {
-			$("html").block({
-				message: "<h1>Error Login</h1>",
-				overlayCSS: { backgroundColor: "#fff" },
-				timeout: 1000,
-				onBlock: function () {
-					alert("Auth access akun failed!");
-					$('button[type="submit"]').html(`Masuk`);
-				},
-				css: {
-					padding: 20,
-					margin: 20,
-					fontSize: 20,
-					borderRadius: 0,
-					boxShadow: "0 0 3px #444",
-					textAlign: "center",
-					color: "red",
-					backgroundColor: "#fff",
-					border: false,
-					cursor: "wait",
-				},
-			});
+			$containerMsg.html(`
+			<div class="alert alert-danger" role="alert">
+				Auth access akun failed!
+			</div>
+			`);
+			$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
+			
 		},
 		onSuccess: function ($form) {
 			var _action = $form.attr("action");
@@ -40,12 +34,40 @@ $(document).ready(function () {
 				data: _data,
 				dataType: "json",
 				beforeSend: function () {
-					$('button[type="submit"]').html(
+					$('button[type="submit"]').prop("disabled", true).html(
 						`<div class="d-flex justify-content-center align-items-center"><span class="mr-2"><img width="15" src="${_uri}/template/assets/loader/oval.svg"></span> <span>Processing ...</span></div>`
 					);
 				},
-				success: call_success,
-				error: call_error,
+				success: function(response) {
+					
+
+					if (response.valid == true) {
+						$containerMsg.html(`
+						<div class="alert alert-success" role="alert">
+							<i class="icon-check-circle mr-2"></i> ${response.msg}, mohon tunggu ...
+						</div>
+						`);
+						setTimeout(() => {
+							window.location.href = response.redirect;
+							$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
+						}, 2000)
+						return false;
+					}
+					$containerMsg.html(`
+					<div class="alert alert-danger" role="alert">
+						<i class="icon-block mr-2"></i>${response.msg}
+					</div>
+					`);
+					$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
+				},
+				error: function(err) {
+					$containerMsg.html(`
+					<div class="alert alert-danger" role="alert">
+						${err.status} (${err.statusText}
+					</div>
+					`);
+					$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
+				},
 			});
 			return false; // Will stop the submission of the form
 			// $form.removeClass('toggle-disabled');
@@ -53,56 +75,6 @@ $(document).ready(function () {
 		},
 	});
 
-	function call_success(response) {
-		$("html").block({
-			message: `${response.msg}`,
-			overlayCSS: { backgroundColor: "#fff" },
-			timeout: 1000,
-			onBlock: function () {
-				if (response.valid == true) {
-					window.location.href = response.redirect;
-				}
-				$('button[type="submit"]').html(`Masuk`);
-			},
-			css: {
-				padding: 20,
-				margin: 20,
-				fontSize: 20,
-				borderRadius: 0,
-				top: '10%',
-				boxShadow: "0 2px 3em #ccc",
-				textAlign: "center",
-				color: "#000",
-				backgroundColor: "#fff",
-				border: "1px solid #eee",
-				cursor: "wait",
-			},
-		});
-	}
-
-	function call_error(error) {
-		$("html").block({
-			message: `${error.status} (${error.statusText})`,
-			overlayCSS: { backgroundColor: "#fff" },
-			css: {
-				padding: 20,
-				margin: 20,
-				fontSize: 20,
-				top: '10%',
-				textAlign: "center",
-				borderRadius: 0,
-				boxShadow: "0 2px 3em #ccc",
-				color: "red",
-				backgroundColor: "#fff",
-				cursor: "wait",
-				border: "1px solid #eee"
-			},
-			timeout: 1000,
-			onBlock: function () {
-				$('button[type="submit"]').html(`Masuk`);
-			},
-		});
-	}
 	$(".toggle-password").click(function () {
         var passwordInput = $(".password-input");
         var icon = $(this);
