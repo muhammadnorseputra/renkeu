@@ -67,7 +67,7 @@
             <div class="col-md-10 center-margin">
                 <div class="form-group row">
                     <label for="koderek" class="row col-md-12">Kode Rekening <span class="text-danger ml-1 mr-1">*</span></label>
-                    <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-warning rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Kode</button>
+                    <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" onclick="showModalSearchKode()" class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-warning rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Kode</button>
                     <div id="help-block-koderek" class="row col-md-12"></div>
                 </div>
                 <div class="row">
@@ -349,6 +349,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <button class="btn btn-danger rounded-0 pull-left mt-3" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-arrow-left mr-3"></i> Kembali  </button>
                 <?php endif; ?>
             </div>
             <?php endif; ?>

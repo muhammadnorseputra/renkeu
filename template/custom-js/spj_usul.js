@@ -32,6 +32,9 @@ $("#wizard").smartWizard({
 function nextStep(path) {
 	return (window.location.href = path);
 }
+function showModalSearchKode() {
+	$("#modelSearchKode").modal('show');
+}
 
 $("form#step-1").on("submit", function (e) {
 	e.preventDefault();

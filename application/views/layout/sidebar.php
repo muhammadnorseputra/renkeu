@@ -51,7 +51,7 @@
                         <li><a href="<?= base_url('app/target') ?>">Target</a></li>
                         <li><a href="<?= base_url('app/realisasi') ?>">Realisasi</a></li>
                         <li><a href="<?= base_url('app/capaian') ?>">Capaian</a></li>
-                        <li><a href="<?= base_url('app/laporan') ?>">Laporan Tahunan</a></li>
+                        <li><a href="<?= base_url('app/capaian/laporan') ?>">Laporan Tahunan</a></li>
                     </ul>
                 </li>
                 <?php endif; ?>

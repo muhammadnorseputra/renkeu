@@ -70,7 +70,7 @@ if(urldecode($tab) === '#selesai') {
                     <?php endif; ?>
                     <?php if($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || privilages('priv_riwayat_spj')): ?>
                         <div class="tab-pane <?= $selesai ?> <?= $is_show_selesai ?>" id="selesai" role="tabpanel" aria-labelledby="selesai-tab">
-                            <table id="table-spj-selesai" class="table table-condensed table-responsive nowrap" cellspacing="0" width="100%">
+                            <table id="table-spj-selesai" class="table table-condensed nowrap" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th class="text-center" width="5%">No</th>

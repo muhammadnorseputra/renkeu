@@ -49,7 +49,6 @@
         }
 
         table {
-            margin-bottom: 1.2em;
             width: 100%;
             font-size: 1em;
             page-break-before:auto;
@@ -107,9 +106,9 @@
         <table class="collapse">
             <tr>
                 <td colspan="5" class="text-center">
-                    <h2 style="margin:0; padding:0">Pemerintah Kabupaten Balangan</h2>
-                    <h3 style="margin:0; padding:0"><?= $title ?> </h3>
-                    <h4 style="margin:0; padding:0"> Badan Kepegawaian dan Pengembangan Sumber Daya Manusia</h4>
+                    <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
+                    <h3 style="margin:0; padding:0"> BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</h3>
+                    <h4 style="margin:0; padding:0"><?= strtoupper($title) ?> </h4>
                     <small><i>Dicetak : <?= longdate_indo(date('Y-m-d')) ?></i></small>
                 </td>
             </tr>
@@ -365,7 +364,7 @@
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle'>" . $capaian_kinerja . " (%)</td>
+                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
                                         <td class='align-middle'>" . $FaktorPendorong . "</td>
                                         <td class='align-middle'>" . $FaktorPenghambat . "</td>
                                         <td class='align-middle'>" . $TindakLanjut . "</td>";
@@ -375,7 +374,7 @@
                                         <td class='align-middle'>" . $isk['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td class='align-middle'>" . $capaian_kinerja . " (%)</td>
+                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
                                         <td class='align-middle'>" . $FaktorPendorong . "</td>
                                         <td class='align-middle'>" . $FaktorPenghambat . "</td>
                                         <td class='align-middle'>" . $TindakLanjut . "</td>

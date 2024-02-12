@@ -30,6 +30,7 @@ class Capaian extends CI_Controller {
 		$this->load->model('modeltarget', 'target');
 		$this->load->model('modelrealisasi', 'realisasi');
 		$this->load->model('modelspj', 'spj');
+		$this->load->model('modelusers', 'user');
 		
     }
 	
@@ -65,4 +66,35 @@ class Capaian extends CI_Controller {
         ];
 		$this->pdf->load_view('pages/anggaran_kinerja/capaian_cetak', $data);
     }
+
+	public function laporan()
+	{
+		$data = [
+			'title' => 'Laporan Anggaran & Kinerja',
+            'content' => 'pages/anggaran_kinerja/laporan',
+			'autoload_js' => [
+                'template/backend/vendors/select2/dist/js/select2.full.min.js',
+            ],
+            'autoload_css' => [
+                'template/backend/vendors/select2/dist/css/select2.min.css',
+            ]
+        ];
+		$this->load->view('layout/app', $data);
+	}
+
+	public function laporan_cetak()
+	{
+		$post = $this->input->post();
+		$programs = $this->target->program($this->session->userdata('part'));
+
+        $this->load->library('pdf');
+        $this->pdf->setPaper('legal', 'landscape');
+		$this->pdf->filename = 'SIMEV - Laporan Anggaran & Kinerja - Tahun '.$post['tahun'];
+
+        $data = [
+            'title' => 'Laporan Anggaran & Kinerja - Tahun '.$post['tahun'],
+			'programs' => $programs,
+        ];
+		$this->pdf->load_view('pages/anggaran_kinerja/laporan_cetak', $data);
+	}
 }

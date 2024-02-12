@@ -27,6 +27,7 @@ class Spj extends CI_Controller {
             return show_404();
         endif;
         $this->load->model('modelspj', 'spj');
+        $this->load->model('modeltarget', 'target');
         
     }
 	
@@ -119,7 +120,7 @@ class Spj extends CI_Controller {
                 <br>'.$r->kode_program.'<br> '.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.' <br> '.$r->kode_uraian.'
                 </td>
                 <td class="nama">
-                <b>'.$r->nama_part.'</b> <br>  '.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br>'.$r->nama_uraian.'
+                <b>'.$r->nama_part.'</b> <br>  '.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br><b>'.$r->nama_uraian.'</b>
                 </td>
                 <td>
                     <b>'.nominal($r->jumlah).'</b>
@@ -417,7 +418,7 @@ class Spj extends CI_Controller {
 			'title' => 'Entri Usul - SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/usul',
             'list_bidang' => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
-            'list_program' => $this->crud->get('ref_programs')->result(),
+            'list_program' => $this->target->program($this->session->userdata('part'))->result(),
             'detail' => @$detail,
             'autoload_js' => [
                 'template/backend/vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js',

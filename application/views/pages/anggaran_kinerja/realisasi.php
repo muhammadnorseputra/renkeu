@@ -27,7 +27,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 $selected = "";
                             }
                         ?>
-                            <option value="<?= $periode->id ?>" <?= $disabled ?> <?= $selected ?>><?= $periode->nama ?> (<?= $is_status ?>)</option>
+                            <option value="<?= $periode->id ?>" <?= $disabled ?> <?= $selected ?>><?= $periode->nama ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

@@ -49,8 +49,8 @@
         }
 
         table {
-            margin-bottom: 2em;
             width: 100%;
+            page-break-before:auto;
         }
 
         thead {
@@ -95,9 +95,9 @@
         <table class="collapse">
             <tr>
                 <td colspan="3" class="text-center">
-                    <h2 style="margin:0; padding:0">Pemerintah Kabupaten Balangan</h2>
-                    <h3 style="margin:0; padding:0">Buku Jaga Kegiatan </h3>
-                    <h4 style="margin:0; padding:0"> Badan Kepegawaian dan Pengembangan Sumber Daya Manusia</h4>
+                <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
+                <h3 style="margin:0; padding:0"> BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</h3>
+                    <h4 style="margin:0; padding:0"><?= strtoupper($title) ?> </h4>
                     <small><i>Dicetak : <?= longdate_indo(date('Y-m-d')) ?></i></small>
                 </td>
             </tr>
