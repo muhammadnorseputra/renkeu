@@ -85,7 +85,7 @@ class Bukujaga extends CI_Controller {
         $post = $this->input->post();
         $uraians = $this->bukujaga->getUraianBySubKegiatan($post['ref_subkegiatan']);
 
-        $this->load->library('pdf');
+        $this->load->library('Pdf');
         $this->pdf->setPaper('legal', 'landscape');
 		$this->pdf->filename = 'SIMEV - Cetak Bukujaga - '.$post['kodesub'].' '.$post['namasub'].'.pdf';
         
