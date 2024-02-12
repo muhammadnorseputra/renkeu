@@ -109,7 +109,7 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listProgram"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover table-bordered">';
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
@@ -151,7 +151,7 @@ class Programs extends CI_Controller
             $no++;
         endforeach;
         $html .= '</tbody>';
-        $html .= '</table></div>';
+        $html .= '</table></div></div>';
 
         if ($db->num_rows() > 0) :
             $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
@@ -178,7 +178,7 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listKegiatan"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover table-bordered">';
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
@@ -219,7 +219,7 @@ class Programs extends CI_Controller
             $no++;
         endforeach;
         $html .= '</tbody>';
-        $html .= '</table></div>';
+        $html .= '</table></div></div>';
 
         if ($db->num_rows() > 0) :
             $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
@@ -249,7 +249,7 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-6 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listSubKegiatan"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover table-bordered">';
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                             <tr>
                                 <th class="text-center">No</th>
@@ -301,7 +301,7 @@ class Programs extends CI_Controller
             $no++;
         endforeach;
         $html .= '</tbody>';
-        $html .= '</table></div>';
+        $html .= '</table></div></div>';
 
         if ($db->num_rows() > 0) :
             $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
@@ -336,7 +336,7 @@ class Programs extends CI_Controller
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
         $html = '<div id="listUraian"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover table-bordered table-responsive">';
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
@@ -351,6 +351,8 @@ class Programs extends CI_Controller
         $no = 1;
         $total_all_pagu = 0;
         foreach ($db->result() as $r) :
+            //get jumlah spj berdasarkan id uraian
+            $jmlSpj = $this->crud->getWhere('spj', ['fid_uraian' => $r->id])->num_rows();
             //get alokasi pagu berdasarkan id kegiatan
             $pagu = $this->crud->getWhere('t_pagu', ['fid_uraian' => $r->id])->row();
             $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
@@ -390,7 +392,7 @@ class Programs extends CI_Controller
                     ' . ucwords($r->nama_sub_kegiatan) . ' <br>
                     <b class="nama">' . ucwords($r->nama) . '</b>
                 </td>
-                <td></td>
+                <td class="text-center">'.$jmlSpj.'</td>
                 ' . $button_edit . '
                 ' . $button_pagu . '
             </tr>';
@@ -403,7 +405,7 @@ class Programs extends CI_Controller
             </tr>
         ';
         $html .= '</tbody>';
-        $html .= '</table></div>';
+        $html .= '</table></div></div>';
 
         if ($db->num_rows() > 0) :
             $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
