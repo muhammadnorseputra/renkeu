@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/bkpsdm/public_html/simev
-    - /bin/cp -R * /home/bkpsdm/simev/
+    - /bin/cp -R * /home/bkpsdm/simev
