@@ -7,6 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
+  <!-- Favicons -->
+  <link href="<?= base_url('template/assets/logo.png') ?>" rel="icon">
+  <link href="<?= base_url('template/assets/logo.png') ?>" rel="apple-touch-icon">
+  
   <link rel="stylesheet" href="<?= base_url('template/login-form-02/fonts/icomoon/icons.css') ?>">
 
   <link rel="stylesheet" href="<?= base_url('template/login-form-02/css/owl.carousel.min.css') ?>">
