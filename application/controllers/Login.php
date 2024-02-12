@@ -108,7 +108,7 @@ class Login extends CI_Controller {
             $this->session->set_userdata($data_session);
             $p_continue = $this->input->post('continue');
             $continue = isset($p_continue) ? $p_continue : base_url('app/dashboard');
-            $json_msg = ['valid' => true, 'msg' => 'Auth success, akun ditemukan.', 'redirect' => $continue];
+            $json_msg = ['valid' => true, 'msg' => 'Auth success.', 'redirect' => $continue];
         } else {
             $json_msg = ['valid' => false, 'msg' => 'Auth gagal, akun tidak ditemukan.', 'redirect' => base_url('lockscreen')];
         }
