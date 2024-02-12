@@ -18,7 +18,7 @@ $(document).ready(function () {
 		onError: function ($form) {
 			$containerMsg.html(`
 			<div class="alert alert-danger" role="alert">
-				Auth access akun failed!
+				<i class="icon-block mr-2"></i> Auth access akun failed!
 			</div>
 			`);
 			$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
@@ -49,7 +49,6 @@ $(document).ready(function () {
 						`);
 						setTimeout(() => {
 							window.location.href = response.redirect;
-							$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
 						}, 2000)
 						return false;
 					}

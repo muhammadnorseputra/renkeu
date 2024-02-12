@@ -44,6 +44,7 @@
                 $this->session->csrf_token = hash('sha1', time());
               }
               ?>
+              <div id="message"></div>
               <?= form_open(base_url('login/cek_akun'), ['autocomplete' => 'off', 'id' => 'f_login', 'class' => 'toggle-disabled'], ['token' => $this->session->csrf_token, 'continue' => $urlRef, 'username' => $this->session->userdata('user_name')]); ?>
               <div class="form-group first mb-4">
                 <label for="pwd">Password</label>
@@ -54,7 +55,7 @@
                 <span class="ml-auto"><a href="https://wa.me/6282151815132/?text=Halo%20Admin%20Aplikasi%20e-monev%2C%20saya%20mau%20reset%20password." target="_blank" class="forgot-pass">Lupa Password ?</a></span>
               </div>
 
-              <button type="submit" role="button" class="btn btn-block btn-primary">Masuk</button>
+              <button type="submit" role="button" class="btn btn-block btn-success">Masuk</button>
               <?= form_close(); ?>
               <p class="text-center mt-4" style="font-size: small">
                 &copy; <?= date('Y') ?> <?= getSetting('copyright') ?> <br /> <?= getSetting('version_app') ?>
