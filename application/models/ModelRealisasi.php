@@ -113,6 +113,14 @@ class ModelRealisasi extends CI_Model {
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
+    public function getRealisasiTahunanUraian($uraian_id) {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('fid_uraian', $uraian_id);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
     public function getRealisasiByIndikatorId($periode_id, $indikator_id)
 	{
 		$this->db->select_sum('persentase');
@@ -123,6 +131,7 @@ class ModelRealisasi extends CI_Model {
 		$q = $this->db->get();
 		return $q;
 	}
+
     public function getRealisasiTahunanByIndikatorId($indikator_id)
 	{
 		$this->db->select_sum('persentase');

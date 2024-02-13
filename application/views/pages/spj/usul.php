@@ -1,10 +1,3 @@
-<div class="page-title">
-    <div class="title_left">
-        <h3><i class="fa fa-inbox mr-2"></i> Formulir Usul SPJ</h3>
-    </div>
-</div>
-
-<div class="clearfix"></div>
 <?php if (@$detail->is_status === 'VERIFIKASI'  || @$detail->is_status === 'VERIFIKASI_ADMIN') : ?>
     <div class="alert alert-warning text-dark rounded-0" role="alert">
         <strong><i class="fa fa-lock mr-2"></i> Verifikasi </strong>, Usulan SPJ dalam tahap verifikasi.
@@ -13,7 +6,7 @@
 <!-- Smart Wizard -->
 <div class="x_panel">
     <div class="x_title">
-        <h2>SPJ (Surat Pertanggung Jawaban)</h2>
+        <h2><i class="fa fa-inbox mr-2"></i> Formulir Usul SPJ (Surat Pertanggung Jawaban)</h2>
         <div class="clearfix"></div>
     </div>
     <div id="wizard" class="form_wizard wizard_horizontal">
@@ -65,13 +58,13 @@
             <input type="hidden" name="ref_subkegiatan" value="<?= @$detail->fid_sub_kegiatan ?>">
             <input type="hidden" name="ref_uraian" value="<?= @$detail->fid_uraian ?>">
             <div class="col-md-10 center-margin">
-                <div class="form-group row">
+                <div class="input-group">
                     <label for="koderek" class="row col-md-12">Kode Rekening <span class="text-danger ml-1 mr-1">*</span></label>
-                    <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" onclick="showModalSearchKode()" class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-warning rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Kode</button>
+                    <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" onclick="showModalSearchKode()" class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-light rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Kode</button>
                     <div id="help-block-koderek" class="row col-md-12"></div>
                 </div>
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-12 col-md-3">
                         <div class="form-group">
                             <label class="col-form-label label-align" for="bulan">SPJ Bulan</label>
                             <select name="bulan" id="bulan" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-bulan" <?= $disabled_status ?>>
@@ -91,7 +84,7 @@
                             <div id="help-block-bulan" class="row col-md-12"></div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-12 col-md-3">
                         <div class="form-group">
                             <label class="col-form-label label-align" for="tahun">SPJ Tahun</label>
                             <select name="tahun" id="tahun" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-tahun" <?= $disabled_status ?>>
@@ -112,15 +105,32 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-form-label label-align" for="uraian">Uraian/Untuk Pembayaran/Keterangan Kwitansi <span class="text-danger">*</span></label>
-                    <textarea name="uraian" id="uraian" cols="30" rows="5" class="form-control" required="required" <?= $disabled_status ?>><?= @$detail->uraian ?></textarea>
+
+                <div class="divider-dashed"></div>
+                <div class="form-group d-flex">
+                    <div class="pr-5 border-right">
+                        <b>Jumlah Maksimum</b>
+                        <h5 id="jumlah_max">0</h5>
+                    </div>
+                    <div class="pl-5">
+                        <b>Sisa Anggaran</b>
+                        <h5 id="sisa_max">0</h5>
+                    </div>
                 </div>
+                <div class="divider-dashed"></div>
+
                 <div class="form-group">
                     <label for="jumlah" class="row col-md-12">Jumlah <span class="text-danger ml-1 mr-1">*</span></label>
                     <input type="text" value="<?= @$detail->jumlah ?>" name="jumlah" id="jumlah" class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-jumlah" <?= $disabled_status ?>>
                     <div id="help-block-jumlah" class="row col-md-12"></div>
                 </div>
+
+                <div class="clearfix"></div>
+                <div class="form-group">
+                    <label class="col-form-label label-align" for="uraian">Uraian/Untuk Pembayaran/Keterangan Kwitansi <span class="text-danger">*</span></label>
+                    <textarea name="uraian" id="uraian" cols="30" rows="5" class="form-control" required="required" <?= $disabled_status ?>><?= @$detail->uraian ?></textarea>
+                </div>
+
                 <button class="btn btn-danger rounded-0 pull-left mt-3" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-arrow-left mr-3"></i> Kembali  </button>
                 <?php if ((@$detail->is_status === 'ENTRI') || (empty(@$detail->token))) : ?>
                     <div class="form-group">

@@ -88,4 +88,13 @@ class ModelTarget extends CI_Model
         $q = $this->db->get();
         return $q;
     }
+    public function getAlokasiPaguUraian($uraian_id)
+    {
+        $this->db->select_sum('p.total_pagu_awal');
+        $this->db->from('t_pagu AS p');
+        $this->db->join('ref_uraians AS u', 'p.fid_uraian=u.id');
+        $this->db->where('p.fid_uraian', $uraian_id);
+        $q = $this->db->get();
+        return $q;
+    }
 }

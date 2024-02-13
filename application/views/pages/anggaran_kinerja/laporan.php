@@ -10,7 +10,6 @@
         <?= form_open(base_url('app/capaian/laporan_cetak'), ['id' => 'formLaporan', 'target' => '_blank']) ?>
         <div class="col-md-2">
         <div class="form-group">
-                            <label class="col-form-label label-align" for="tahun">SPJ Tahun</label>
                             <select name="tahun" id="tahun" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-tahun">
                                 <option value="">Pilih Tahun</option>
                                 <?php
@@ -28,8 +27,7 @@
                             <div id="help-block-tahun" class="row col-md-12"></div>
                         </div>
         </div>
-        <div class="col-md-1">
-            <p></p>
+        <div class="col-md-2">
             <button type="submit" class="btn btn-primary rounded-0"><i class="fa fa-print mr-2"></i> Cetak</button>
         </div>
         <?= form_close() ?>

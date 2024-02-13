@@ -90,6 +90,21 @@ $("form#step-2").on("submit", function (e) {
 	}
 });
 
+function rupiah(num) {
+	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function newRealisasi(start, end) {
+	var jml = start-end;
+	var convert = rupiah(jml);
+	return $("form#step-1").find('h5#sisa_max').html(`Rp. ${convert} <i class="text-danger fa fa-level-down"></i>`);
+}
+
+$("input[name='jumlah']").on('keyup', function(e) {
+	let start = $(this).attr('data-start');
+	let end = $(this).val();
+	return newRealisasi(start, end.split('.').join(""));
+});
 $("form#formCariKode").on("submit", function (e) {
 	e.preventDefault();
 	let _ = $(this),
@@ -108,6 +123,12 @@ $("form#formCariKode").on("submit", function (e) {
 				$formStep.find('input[name="ref_kegiatan"]').val(res.kegiatan_id);
 				$formStep.find('input[name="ref_subkegiatan"]').val(res.subkegiatan_id);
 				$formStep.find('input[name="ref_uraian"]').val(res.uraian_id);
+				
+				$formStep.find('h5#jumlah_max').html(`Rp. ${rupiah(res.pagu.total_sisa_pa)} <i class="text-success fa fa-external-link-square"></i>`);
+				$formStep.find('h5#sisa_max').html(`Rp. ${rupiah(res.pagu.total_sisa_pa)} <i class="text-danger fa fa-level-down"></i>`);
+
+				$("input[name='jumlah']").attr('data-start', res.pagu.total_sisa_pa);
+				$("input[name='jumlah']").attr('max', res.pagu.total_sisa_pa);
 				$modal.modal("hide");
 			},
 			"json"

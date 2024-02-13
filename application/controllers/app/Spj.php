@@ -28,6 +28,7 @@ class Spj extends CI_Controller {
         endif;
         $this->load->model('ModelSpj', 'spj');
         $this->load->model('ModelTarget', 'target');
+        $this->load->model('ModelRealisasi', 'realisasi');
         
     }
 	
@@ -441,6 +442,10 @@ class Spj extends CI_Controller {
         $kode_subkegiatan = $this->crud->getWhere('ref_sub_kegiatans', ['id' => $input['sub_kegiatan']])->row();
         $kode_uraian = $this->crud->getWhere('ref_uraians', ['id' => $input['uraian_kegiatan']])->row();
 
+        $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian($input['uraian_kegiatan'])->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian($input['uraian_kegiatan'])->row()->total_pagu_awal : 0;
+        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($input['uraian_kegiatan']);
+        $totalSisaPagu = ($totalPaguAwal-$totalRealisasiPagu);
+
         $data = [
             'part_id' => $input['part'],
             'program_id' => $input['program'],
@@ -450,7 +455,12 @@ class Spj extends CI_Controller {
             'kode_kegiatan' => $kode_kegiatan->kode,
             'kode_subkegiatan' => $kode_subkegiatan->kode,
             'kode_uraian' => $kode_uraian->kode,
-            'kode' => $kode_kegiatan->kode.".".$kode_subkegiatan->kode.".".$kode_uraian->kode
+            'kode' => $kode_kegiatan->kode.".".$kode_subkegiatan->kode.".".$kode_uraian->kode,
+            'pagu' => [
+                'total_pa' => $totalPaguAwal,
+                'realisasi_pa' => $totalRealisasiPagu,
+                'total_sisa_pa' => (int) $totalSisaPagu
+            ]
         ];
         echo json_encode($data);
     }

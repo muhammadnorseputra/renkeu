@@ -16,7 +16,7 @@ class ModelBukujaga extends CI_Model {
         $q = $this->db->get();
         return $q->row();
     }
-    public function getPaguRealisasiLs($whr)
+    public function getPaguRealisasi($whr)
     {
         $this->db->select_sum('jumlah');
         $this->db->from('spj');

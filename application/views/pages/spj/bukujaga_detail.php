@@ -64,14 +64,14 @@
                     </td>
                     <td class="text-right">
                         <?php 
-                            $realisasi_ls = @$this->bukujaga->getPaguRealisasiLs(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS'])->jumlah;
+                            $realisasi_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS', 'is_status' => 'SELESAI'])->jumlah;
                             $total_realisasi_ls += $realisasi_ls;
                             echo nominal($realisasi_ls);
                         ?>
                     </td>
                     <td class="text-right">
                     <?php 
-                            $realisasi_not_ls = @$this->bukujaga->getPaguRealisasiLs(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS'])->jumlah;
+                            $realisasi_not_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS', 'is_status' => 'SELESAI'])->jumlah;
                             $total_realisasi_not_ls += $realisasi_not_ls;
                             echo nominal($realisasi_not_ls);
                         ?>
