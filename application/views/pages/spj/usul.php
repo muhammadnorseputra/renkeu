@@ -124,7 +124,7 @@
                 </div>
                 <?php
                 $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal : 0;
-                $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, 'BELUM_SELESAI');
+                $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, 'SELESAI');
                 $totalSisaPagu = ($totalPaguAwal - $totalRealisasiPagu);
                 ?>
                 <div class="divider-dashed"></div>
