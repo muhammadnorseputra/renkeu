@@ -123,19 +123,19 @@
                     </div>
                 </div>
                 <?php
-                //$totalPaguAwal = !empty($this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal : 0;
-                $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, 'BELUM_SELESAI');
+                $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal : 0;
+                $totalRealisasiPagu =  $totalPaguAwal - $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, 'SELESAI');
                 $totalSisaPagu = ($totalRealisasiPagu - @$detail->jumlah);
                 ?>
                 <div class="divider-dashed"></div>
                 <div class="form-group d-flex">
                     <div class="pr-5 border-right">
                         <b>Jumlah Maksimum</b>
-                        <h5 id="jumlah_max"><?= nominal($totalRealisasiPagu) ?></h5>
+                        <h5 id="jumlah_max">Rp. <?= nominal($totalRealisasiPagu) ?></h5>
                     </div>
                     <div class="pl-5">
                         <b>Sisa Anggaran</b>
-                        <h5 id="sisa_max"><?= nominal($totalSisaPagu) ?></h5>
+                        <h5 id="sisa_max">Rp. <?= nominal($totalSisaPagu) ?></h5>
                     </div>
                 </div>
                 <div class="divider-dashed"></div>
