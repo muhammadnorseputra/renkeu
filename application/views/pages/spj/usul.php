@@ -142,7 +142,7 @@
 
                 <div class="form-group">
                     <label for="jumlah" class="row col-md-12">Jumlah <span class="text-danger ml-1 mr-1">*</span></label>
-                    <input type="text" value="<?= @nominal($detail->jumlah) ?>" data-start="<?= $totalPaguAwal ?>" name="jumlah" id="jumlah" class="form-control col-md-6" required data-parsley-errors-container="#help-block-jumlah" data-parsley-remote="<?= base_url('app/spj/cek_jumlah_pengajuan/' . @$detail->fid_uraian) ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Jumlah yang dimasukan melebihi batas maksimum." data-parsley-pattern="^(([0-9.]?)*)+$"  data-parsley-trigger="focusout" <?= $disabled_status ?>>
+                    <input type="text" value="<?= @nominal($detail->jumlah) ?>" data-start="<?= $totalRealisasiPagu ?>" name="jumlah" id="jumlah" class="form-control col-md-6" required data-parsley-errors-container="#help-block-jumlah" data-parsley-remote="<?= base_url('app/spj/cek_jumlah_pengajuan/' . @$detail->fid_uraian) ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Jumlah yang dimasukan melebihi batas maksimum." data-parsley-pattern="^(([0-9.]?)*)+$"  data-parsley-trigger="focusout" <?= $disabled_status ?>>
                     <div id="help-block-jumlah" class="row col-md-12"></div>
                 </div>
 
