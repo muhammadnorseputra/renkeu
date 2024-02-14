@@ -83,7 +83,7 @@ class ModelSpj extends CI_Model {
 		$this->db->select('r.jumlah,r.entri_by,r.entri_at,r.is_status,p.singkatan');
 		$this->db->from('spj_riwayat AS r');
 		$this->db->join('ref_parts AS p', 'r.entri_by_part=p.id');
-		$this->db->limit(6);
+		$this->db->limit(5);
 		$this->db->order_by('r.id', 'desc');
 		$q = $this->db->get();
 		return $q;
