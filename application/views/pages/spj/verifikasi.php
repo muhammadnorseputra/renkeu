@@ -204,20 +204,6 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="periode"><b>Periode :</b></label>
-                                    <select name="periode" id="periode" class="form-control rounded-0" required>
-                                        <?php 
-                                            foreach($this->spj->getPeriode()->result() as $periode ): 
-                                            $is_status = $periode->is_open === 'Y' ? 'OPEN' : 'CLOSE';
-                                            $disabled = $periode->is_open !== 'Y' ? 'disabled' : '';
-                                        ?>
-                                            <option value="<?= $periode->id ?>" <?= $disabled ?>><?= $periode->nama ?> (<?= $is_status ?>)</option>    
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                         <button type="submit" class="btn btn-success rounded-0 mt-2 pull-right"><i class="fa fa-save mr-2"></i> Proses</button>
 

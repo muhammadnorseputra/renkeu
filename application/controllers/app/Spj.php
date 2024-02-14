@@ -235,7 +235,6 @@ class Spj extends CI_Controller {
 
         if($input['status'] == 'MS') {
             $update = [
-                'fid_periode' => $input['periode'],
                 'nomor_pembukuan' => $input['nomor'],
                 'tanggal_pembukuan' => formatToSQL($input['tanggal']),
                 'is_status' => 'VERIFIKASI_ADMIN',
@@ -379,7 +378,7 @@ class Spj extends CI_Controller {
             $row = array();
             $row[] = $no;
             $row[] = '<br>'.$r->kode_program.'<br>'.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.' <br> '.$r->kode_uraian;
-            $row[] = '<b>'.$r->nama_part.'</b> <br>'.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br> '.$r->nama_uraian;
+            $row[] = '<b>'.$r->nama_part.'</b> <br>'.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br> <b>'.$r->nama_uraian.'</b>';
             $row[] = $r->nama."<div class='divider-dashed'></div>".bulan($r->bulan);
             $row[] = longdate_indo(substr($r->entri_at,0,10))."<br>(".$userusul->nama.")";
             $row[] = $status;
@@ -443,7 +442,7 @@ class Spj extends CI_Controller {
         $kode_uraian = $this->crud->getWhere('ref_uraians', ['id' => $input['uraian_kegiatan']])->row();
 
         $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian($input['uraian_kegiatan'])->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian($input['uraian_kegiatan'])->row()->total_pagu_awal : 0;
-        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($input['uraian_kegiatan']);
+        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($input['uraian_kegiatan'], 'SELESAI');
         $totalSisaPagu = ($totalPaguAwal-$totalRealisasiPagu);
 
         $data = [
@@ -465,11 +464,28 @@ class Spj extends CI_Controller {
         echo json_encode($data);
     }
 
+    public function cek_jumlah_pengajuan($uraian_id)
+    {
+        $jml = $this->input->post('jumlah');
+        $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian($uraian_id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian($uraian_id)->row()->total_pagu_awal : 0;
+        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($uraian_id, 'SELESAI');
+        $totalSisaPagu = ($totalPaguAwal-$totalRealisasiPagu);
+
+        echo json_encode(['jml' => get_only_numbers($jml), 'realisasi' => $totalSisaPagu]);
+        if (get_only_numbers($jml) > $totalSisaPagu) {
+            $this->output->set_status_header('400');
+        } else {
+            $this->output->set_status_header('200');
+        }
+        return false;
+    }
+
     public function prosesusul()
     {
         $input = $this->input->post();
         if(!empty($input['token'])) {
             $data = [
+                'fid_periode' => $input['periode'],
                 'fid_part' => $input['ref_part'],
                 'fid_program' => $input['ref_program'],
                 'fid_kegiatan' => $input['ref_kegiatan'],
@@ -486,6 +502,7 @@ class Spj extends CI_Controller {
         } else {
             $data = [
                 'token' => generateRandomString(18),
+                'fid_periode' => $input['periode'],
                 'fid_part' => $input['ref_part'],
                 'fid_program' => $input['ref_program'],
                 'fid_kegiatan' => $input['ref_kegiatan'],

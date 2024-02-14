@@ -61,10 +61,19 @@ class Select2 extends CI_Controller {
         $kegiatanId = $this->input->post('kegiatanId');
         $subKegiatanId = $this->input->post('subKegiatanId');
         $db = $this->select->getUraian($kegiatanId, $subKegiatanId, $search)->result();
-        $data = array();
+        $all = array();
         foreach ($db as $u) {
-            $data[] = array("id" => $u->id, "text" => $u->kode." - ".$u->nama, "kode" => $u->kode);
+            $cek_spj_uraianid = $this->select->cekUraianIdBySpj($u->id);
+            if ($cek_spj_uraianid->num_rows() > 0) {
+                $data['disabled'] = true;
+            } else {
+                $data['disabled'] = false;
+            }
+            $data['id'] = $u->id;
+            $data['text'] = $u->kode." - ".$u->nama;
+            $data['kode'] = $u->kode;
+            $all[] = $data;
         }
-        echo json_encode($data);
+        echo json_encode($all);
     }
 }

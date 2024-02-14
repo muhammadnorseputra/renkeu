@@ -107,6 +107,7 @@ $("input[name='jumlah']").on('keyup', function(e) {
 });
 $("form#formCariKode").on("submit", function (e) {
 	e.preventDefault();
+	$("input[name='jumlah']").val('');
 	let _ = $(this),
 		action = _.attr("action"),
 		data = _.serialize();
@@ -126,9 +127,11 @@ $("form#formCariKode").on("submit", function (e) {
 				
 				$formStep.find('h5#jumlah_max').html(`Rp. ${rupiah(res.pagu.total_sisa_pa)} <i class="text-success fa fa-external-link-square"></i>`);
 				$formStep.find('h5#sisa_max').html(`Rp. ${rupiah(res.pagu.total_sisa_pa)} <i class="text-danger fa fa-level-down"></i>`);
-
+				
+				$("input[name='jumlah']").attr('data-parsley-remote', `${_uri}/app/spj/cek_jumlah_pengajuan/${res.uraian_id}`);
 				$("input[name='jumlah']").attr('data-start', res.pagu.total_sisa_pa);
-				$("input[name='jumlah']").attr('max', res.pagu.total_sisa_pa);
+				// $("input[name='jumlah']").attr('max', res.pagu.total_sisa_pa);
+				
 				$modal.modal("hide");
 			},
 			"json"
@@ -155,7 +158,7 @@ $(function () {
 		dropdownParent: $("#modelSearchKode"),
 	});
 
-	$("select[name='bulan'],select[name='tahun']").select2();
+	$("select[name='periode'],select[name='bulan'],select[name='tahun']").select2();
 
 	let $modal = $("#modelSearchKode");
 

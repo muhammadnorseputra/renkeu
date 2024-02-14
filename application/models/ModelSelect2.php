@@ -58,4 +58,15 @@ class ModelSelect2 extends CI_Model {
             $q = $this->db->get();
         return $q;
     }
+    public function cekUraianIdBySpj($uid) 
+    {
+        $this->db->select('id');
+        $this->db->from('spj');
+        $this->db->where('fid_uraian', $uid);
+        $this->db->where('is_status !=', 'SELESAI');
+        $this->db->where('is_status !=', 'SELESAI_TMS');
+        $this->db->where('is_status !=', 'SELESAI_BTL');
+        $q = $this->db->get();
+        return $q;
+    }
 }

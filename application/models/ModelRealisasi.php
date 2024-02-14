@@ -113,10 +113,16 @@ class ModelRealisasi extends CI_Model {
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
-    public function getRealisasiTahunanUraian($uraian_id) {
+    public function getRealisasiTahunanUraian($uraian_id, $status) {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
-        $this->db->where('is_status', 'SELESAI');
+        if($status === 'SELESAI'):
+        $this->db->where('is_status', 'SELESAI'); 
+        else:
+        $this->db->where('is_status !=', 'SELESAI'); 
+        endif;
+        $this->db->where('is_status !=', 'SELESAI_TMS');
+        $this->db->where('is_status !=', 'SELESAI_BTL');
         $this->db->where('fid_uraian', $uraian_id);
         $q = $this->db->get();
         return $q->row()->jumlah;
