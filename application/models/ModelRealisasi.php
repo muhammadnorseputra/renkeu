@@ -142,7 +142,7 @@ class ModelRealisasi extends CI_Model {
 	{
 		$this->db->select_sum('persentase');
         $this->db->select_sum('eviden');
-        $this->db->select('eviden_jenis');
+        $this->db->select('eviden_jenis,faktor_pendorong,faktor_penghambat,tindak_lanjut');
 		$this->db->from('t_realisasi');
 		$this->db->where(['fid_indikator' => $indikator_id]);
 		$q = $this->db->get();

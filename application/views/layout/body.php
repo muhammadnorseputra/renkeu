@@ -38,7 +38,8 @@
                     </a>
                     <?php endif; ?>
                   <a class="dropdown-item"  href="javascript:;"><i class="fa fa-help pull-right"></i> Help</a>
-                  <a class="dropdown-item"  href="<?= base_url("/login/lockScreenAction?continue=".urlencode(curPageURL())) ?>"><i class="fa fa-sign-out pull-right"></i> Lock Screen</a>
+                  <a class="dropdown-item"  href="<?= base_url("/login/lockScreenAction?continue=".urlencode(curPageURL())) ?>"><i class="fa fa-lock pull-right"></i> Lockscreen</a>
+                  <a class="dropdown-item"  href="<?= base_url("/login/removeSession") ?>"><i class="fa fa-sign-out pull-right"></i> Logout</a>
                 </div>
               </li>
 

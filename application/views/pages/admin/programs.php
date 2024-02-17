@@ -58,20 +58,20 @@
             if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'VERIFICATOR') :
             ?>
                 <li class="nav-item float-right">
-                    <a class="nav-link <?= $part ?>" style="font-size:16px; font-weight: bold" id="part-tab" data-toggle="tab" href="#part" role="tab" aria-controls="part" aria-selected="<?= $is_active_part ?>"><i class="fa fa-tasks mr-2"></i>Unor/Bidang/Bagian</a>
+                    <a class="nav-link <?= $part ?>" title="Bidang / Bagian" style="font-size:16px; font-weight: bold" id="part-tab" data-toggle="tab" href="#part" role="tab" aria-controls="part" aria-selected="<?= $is_active_part ?>"><i class="fa fa-tasks mr-2"></i>Unor/Bidang/Bagian</a>
                 </li>
             <?php endif; ?>
             <li class="nav-item">
-                <a class="nav-link <?= $program ?>" style="font-size:16px; font-weight: bold" id="program-tab" data-toggle="tab" href="#program" role="tab" aria-controls="program" aria-selected="<?= $is_active_program ?>"><span class="badge badge-secondary">1.</span> Program</a>
+                <a class="nav-link <?= $program ?>" title="Program & Kegiatan" style="font-size:16px; font-weight: bold" id="program-tab" data-toggle="tab" href="#program" role="tab" aria-controls="program" aria-selected="<?= $is_active_program ?>"><span class="badge badge-secondary">1.</span> Program</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= $kegiatan ?>" style="font-size:16px; font-weight: bold" id="kegiatan-tab" data-toggle="tab" href="#kegiatan" role="tab" aria-controls="kegiatan" aria-selected="<?= $is_active_kegiatan ?>"><span class="badge badge-secondary">2.</span> Kegiatan</a>
+                <a class="nav-link <?= $kegiatan ?>" title="Kegiatan" style="font-size:16px; font-weight: bold" id="kegiatan-tab" data-toggle="tab" href="#kegiatan" role="tab" aria-controls="kegiatan" aria-selected="<?= $is_active_kegiatan ?>"><span class="badge badge-secondary">2.</span> Kegiatan</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= $subkegiatan ?>" style="font-size:16px; font-weight: bold" id="subkegiatan-tab" data-toggle="tab" href="#subkegiatan" role="tab" aria-controls="subkegiatan" aria-selected="<?= $is_active_subkegiatan ?>"><span class="badge badge-secondary">3.</span> Sub Kegiatan</a>
+                <a class="nav-link <?= $subkegiatan ?>" title="Sub Kegiatan" style="font-size:16px; font-weight: bold" id="subkegiatan-tab" data-toggle="tab" href="#subkegiatan" role="tab" aria-controls="subkegiatan" aria-selected="<?= $is_active_subkegiatan ?>"><span class="badge badge-secondary">3.</span> Sub Kegiatan</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= $uraian ?>" style="font-size:16px; font-weight: bold" id="uraian-tab" data-toggle="tab" href="#uraian" role="tab" aria-controls="uraian" aria-selected="<?= $is_active_uraian ?>"><span class="badge badge-secondary">4.</span> Uraian Kegiatan</a>
+                <a class="nav-link <?= $uraian ?>" title="Uraian Kegiatan" style="font-size:16px; font-weight: bold" id="uraian-tab" data-toggle="tab" href="#uraian" role="tab" aria-controls="uraian" aria-selected="<?= $is_active_uraian ?>"><span class="badge badge-secondary">4.</span> Uraian Kegiatan</a>
             </li>
         </ul>
         <div class="x_panel" style="border-top:0">
@@ -499,6 +499,7 @@
             url.searchParams.set('tab', href);
             history.pushState({}, "", url);
             NProgress.start();
+            document.title = _.attr('title');
             // window.location.replace(url);
             getListPart().then((data) => {
                 if (data.code === 404) {
@@ -519,6 +520,7 @@
             url.searchParams.set('tab', href);
             history.pushState({}, "", url);
             NProgress.start();
+            document.title = _.attr('title');
             // window.location.replace(url);
             getListProgram().then((data) => {
                 if (data.code === 404) {
@@ -540,6 +542,7 @@
             url.searchParams.set('tab', href);
             history.pushState({}, "", url);
             NProgress.start();
+            document.title = _.attr('title');
             // window.location.replace(url);
             getListKegiatan().then((data) => {
                 if (data.code === 404) {
@@ -561,6 +564,7 @@
             url.searchParams.set('tab', href);
             history.pushState({}, "", url);
             NProgress.start();
+            document.title = _.attr('title');
             // window.location.replace(url);
             getListSubKegiatan().then((data) => {
                 if (data.code === 404) {
@@ -576,11 +580,12 @@
 
         $(document).on("click", "#myTab a[href='#uraian']", function(e) {
             let _ = $(this),
-                href = _.attr('href');
+            href = _.attr('href');
             // console.log(_.attr('href'))
             const url = new URL(window.location.href);
             url.searchParams.set('tab', href);
             history.pushState({}, "", url);
+            document.title = _.attr('title');
             NProgress.start();
             // window.location.replace(url);
             getListUraian().then((data) => {

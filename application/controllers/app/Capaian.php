@@ -94,6 +94,7 @@ class Capaian extends CI_Controller {
         $data = [
             'title' => 'Laporan Anggaran & Kinerja - Tahun '.$post['tahun'],
 			'programs' => $programs,
+			'tahun' => $post['tahun']
         ];
 		$this->pdf->load_view('pages/anggaran_kinerja/laporan_cetak', $data);
 	}

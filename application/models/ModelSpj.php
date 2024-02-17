@@ -8,6 +8,14 @@ class ModelSpj extends CI_Model {
 		$q = $this->db->get();
 		return $q;
 	}
+	public function getPeriodeAktif()
+	{
+		$this->db->select('*');
+		$this->db->from('t_periode');
+		$this->db->where('is_open', 'Y');
+		$q = $this->db->get();
+		return $q;
+	}
 	public function getLastPeriode()
 	{
 		$this->db->select('*');

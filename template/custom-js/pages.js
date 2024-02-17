@@ -1,8 +1,11 @@
 $(function() {
-    function loadContent(url, title=null, target='loadContent') {
+    function loadContent(url, title=null, target='renderContent') {
         $.ajax({
-            method: 'GET',
+            method: 'POST',
             url: url,
+            dataType: 'html',
+            async: 'async',
+            cache: false,
             error: function(XMLHttpRequest) {
                 alert(XMLHttpRequest.status + ' - ' + XMLHttpRequest.statusText);
             },
@@ -21,5 +24,5 @@ $(function() {
     });
 
     //DEFAULT CONTENT
-    loadContent(`${_uri}/app/dashboard`, 'Dashboard');
+    // loadContent(`${_uri}/app/dashboard`, 'Dashboard');
 })
