@@ -23,6 +23,7 @@
     <link href="<?= base_url('template/backend/build/css/admin.css') ?>" rel="stylesheet">
     <link href="<?= base_url('template/backend/build/css/custom.min.css') ?>" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css"/>
+
     <!-- Link Tags Dinamic-->
 	  <?php
     if(isset($autoload_css)) {

@@ -71,11 +71,11 @@ class ModelRealisasi extends CI_Model {
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
-    public function getRealisasiTahunProgram($programId) {
+    public function getRealisasiTahunProgram($kode_program) {
         $this->db->select_sum('s.jumlah');
-        $this->db->from('spj AS s');
-        $this->db->where('is_status', 'SELESAI');
-        $this->db->where('fid_program', $programId);
+        $this->db->from('spj_riwayat AS s');
+        $this->db->where('is_status', 'APPROVE');
+        $this->db->where('kode_program', $kode_program);
         $q = $this->db->get();
         return $q->row()->jumlah;
     }

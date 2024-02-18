@@ -70,7 +70,7 @@ class Spj extends CI_Controller {
                     <tr>
                         <th class="text-center" width="5%">No</th>
                         <th>Kode</th>
-                        <th>Bidang/Program/Kegiatan/Sub Kegiatan</th>
+                        <th>Kegiatan/Sub Kegiatan/Uraian</th>
                         <th>Jumlah (Rp)</th>
                         <th>Status</th>
                         <th>Eviden</th>
@@ -93,7 +93,7 @@ class Spj extends CI_Controller {
             }
 
             if(isset($r->berkas_link) && !empty($r->berkas_link)) {
-                $link = '<a href="'.$r->berkas_link.'" target="_blank" class="btn btn-sm btn-warning rounded-0"><i class="fa fa-link"></i> <br> Berkas</a>';
+                $link = '<a href="'.$r->berkas_link.'" target="_blank"><i class="fa fa-link"></i> <br> Berkas</a>';
             } else {
                 $link = '<i class="text-secondary">Kosong</i>';
             }
@@ -118,10 +118,10 @@ class Spj extends CI_Controller {
                     '.$no.'
                 </td>
                 <td class="kode">
-                <br>'.$r->kode_program.'<br> '.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.' <br> '.$r->kode_uraian.'
+                '.$r->kode_kegiatan.' <br> '.$r->kode_sub_kegiatan.' <br> '.$r->kode_uraian.'
                 </td>
                 <td class="nama">
-                <b>'.$r->nama_part.'</b> <br>  '.$r->nama_program.' <br/>  '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br><b>'.$r->nama_uraian.'</b>
+                '.strtoupper($r->nama_kegiatan).' <br>  '.$r->nama_sub_kegiatan.' <br><b>'.$r->nama_uraian.'</b>
                 </td>
                 <td>
                     <b>'.nominal($r->jumlah).'</b>

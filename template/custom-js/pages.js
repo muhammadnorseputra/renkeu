@@ -24,5 +24,5 @@ $(function() {
     });
 
     //DEFAULT CONTENT
-    // loadContent(`${_uri}/app/dashboard`, 'Dashboard');
+    loadContent(`${_uri}/app/dashboard/view`, 'Dashboard');
 })

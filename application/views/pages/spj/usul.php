@@ -2,7 +2,7 @@
 <?php if (@$detail->is_status === 'VERIFIKASI'  || @$detail->is_status === 'VERIFIKASI_ADMIN') : ?>
 
     <div class="alert alert-warning text-dark rounded-0" role="alert">
-        <strong><i class="fa fa-lock mr-2"></i> Verifikasi </strong>, Usulan SPJ kamu masih dalam tahap verifikasi.
+        <strong><i class="fa fa-lock mr-2"></i> Verifikasi </strong>, Usulan SPJ kamu dalam tahap verifikasi.
     </div>
 <?php endif; ?>
 <!-- Smart Wizard -->
@@ -65,6 +65,17 @@
                     <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" onclick="showModalSearchKode()" <?= $disabled_status ?> class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-light rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Kode</button>
                     <div id="help-block-koderek" class="row col-md-12"></div>
                 </div>
+                <?php if(!empty($detail->fid_kegiatan)): ?>
+                <div class="row">
+                    <div class="col-md-12" id="loadKegiatan">
+                        <ul class="list-unstyled d-lg-flex justify-content-start font-weight-bold">
+                            <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-warning mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_kegiatans',$detail->fid_kegiatan) ?></li>
+                            <li class="d-inline-flex align-items-center mx-md-2"><i class="fa fa-file-code-o text-info ml-md-2 mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_sub_kegiatans',$detail->fid_sub_kegiatan) ?></li>
+                            <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-success ml-md- mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_uraians',$detail->fid_uraian) ?> <i class="fa fa-check-circle text-success ml-2"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <?php endif; ?>
                 <div class="row">
                     <div class="col-12 col-md-3">
                         <div class="form-group">
@@ -142,7 +153,7 @@
 
                 <div class="form-group">
                     <label for="jumlah" class="row col-md-12">Jumlah <span class="text-danger ml-1 mr-1">*</span></label>
-                    <input type="text" value="<?= @nominal($detail->jumlah) ?>" data-start="<?= $totalRealisasiPagu ?>" name="jumlah" id="jumlah" class="form-control col-md-6" required data-parsley-errors-container="#help-block-jumlah" data-parsley-remote="<?= base_url('app/spj/cek_jumlah_pengajuan/' . @$detail->fid_uraian) ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Jumlah yang dimasukan melebihi batas maksimum." data-parsley-pattern="^(([0-9.]?)*)+$"  data-parsley-trigger="focusout" <?= $disabled_status ?>>
+                    <input type="text" value="<?= @nominal($detail->jumlah) ?>" data-start="<?= $totalRealisasiPagu ?>" name="jumlah" id="jumlah" class="form-control col-md-6" required data-parsley-errors-container="#help-block-jumlah" data-parsley-remote="<?= base_url('app/spj/cek_jumlah_pengajuan/' . @$detail->fid_uraian) ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Jumlah yang dimasukan melebihi batas maksimum." data-parsley-pattern="^(([0-9.]?)*)+$" data-parsley-trigger="focusout" <?= $disabled_status ?>>
                     <div id="help-block-jumlah" class="row col-md-12"></div>
                 </div>
 

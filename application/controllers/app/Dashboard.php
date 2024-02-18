@@ -41,7 +41,7 @@ class Dashboard extends CI_Controller {
 		$ProgramTotalRealisasi = 0;
 		foreach ($db_program->result() as $r) :
 		$ProgramTotalPaguAwal += $this->target->getAlokasiPaguProgram($r->id)->row()->total_pagu_awal;
-		$ProgramTotalRealisasi += $this->realisasi->getRealisasiTahunProgram($r->id);
+		$ProgramTotalRealisasi += $this->realisasi->getRealisasiTahunProgram($r->kode);
         endforeach;
 		$persentase_capaian = ($ProgramTotalRealisasi/$ProgramTotalPaguAwal)*100;
 
