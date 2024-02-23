@@ -79,7 +79,7 @@
                                 <?php
                                 $tw_jumlah = $this->spj->TransaksiTriwulan($v->id);
                                 $percentase =  ($tw_jumlah / $panel['program_total_pagu']) * 100;
-                                $percentase_cek = !empty($percentase) ? $percentase : 0;
+                                $percentase_cek = ($percentase != 0) ? $percentase : '';
                                 ?>
                                 <span>TOTAL <?= $v->nama ?></span>
                                 <h2>Rp. <?= @nominal($tw_jumlah); ?></h2>
