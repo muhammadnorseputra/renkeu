@@ -40,13 +40,13 @@
             <hr>
             <div class="row">
                 <div class="col-md-5">
-                    <div class="count"><?= round($panel['persentase_capaian'], 2) ?> %</div>
+                    <div class="count"><?= @round($panel['persentase_capaian'], 2) ?> %</div>
                 </div>
                 <div class="col-md-7 px-3 px-md-4">
                     <!-- <small>Progres Capaian 100%</small> -->
                     <div class="mt-md-2">
                         <div class="progress m-0" style="width: 100%;">
-                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?= round($panel['persentase_capaian'], 2) ?>"></div>
+                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?= @round($panel['persentase_capaian'], 2) ?>"></div>
                         </div>
                     </div>
                 </div>
@@ -79,11 +79,12 @@
                                 <?php
                                 $tw_jumlah = $this->spj->TransaksiTriwulan($v->id);
                                 $percentase =  ($tw_jumlah / $panel['program_total_pagu']) * 100;
+                                $percentase_cek = !empty($percentase) ? $percentase : 0;
                                 ?>
                                 <span>TOTAL <?= $v->nama ?></span>
-                                <h2>Rp. <?= nominal($tw_jumlah); ?></h2>
+                                <h2>Rp. <?= @nominal($tw_jumlah); ?></h2>
                                 <div class="progress progress_sm m-0" style="width: 100%;">
-                                    <div class="progress-bar" role="progressbar" data-transitiongoal="<?= round($percentase, 2) ?>"></div>
+                                    <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
