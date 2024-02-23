@@ -36,7 +36,8 @@ class Settings extends CI_Controller {
             'content' => 'pages/admin/settings',
 			'data' => $db,
 			'autoload_js' => [
-                'template/backend/vendors/switchery/dist/switchery.min.js'
+                'template/backend/vendors/switchery/dist/switchery.min.js',
+				'template/custom-js/settings.js'
 			],
 			'autoload_css' => [
                 'template/backend/vendors/switchery/dist/switchery.min.css'

@@ -57,21 +57,21 @@
             <?php
             if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'VERIFICATOR') :
             ?>
-                <li class="nav-item float-right">
-                    <a class="nav-link <?= $part ?>" title="Bidang / Bagian" style="font-size:16px; font-weight: bold" id="part-tab" data-toggle="tab" href="#part" role="tab" aria-controls="part" aria-selected="<?= $is_active_part ?>"><i class="fa fa-tasks mr-2"></i>Unor/Bidang/Bagian</a>
+                <li class="nav-item mr-2">
+                    <a class="nav-link pb-4 font-weight-bold <?= $part ?>" title="Bidang / Bagian" style="font-size:16px;" id="part-tab" data-toggle="tab" href="#part" role="tab" aria-controls="part" aria-selected="<?= $is_active_part ?>"><i class="fa fa-tasks mr-2"></i>Unor/Bidang/Bagian</a>
                 </li>
             <?php endif; ?>
-            <li class="nav-item">
-                <a class="nav-link <?= $program ?>" title="Program & Kegiatan" style="font-size:16px; font-weight: bold" id="program-tab" data-toggle="tab" href="#program" role="tab" aria-controls="program" aria-selected="<?= $is_active_program ?>"><span class="badge badge-secondary">1.</span> Program</a>
+            <li class="nav-item mr-2">
+                <a class="nav-link pb-4 font-weight-bold <?= $program ?>" title="Program & Kegiatan" style="font-size:16px;" id="program-tab" data-toggle="tab" href="#program" role="tab" aria-controls="program" aria-selected="<?= $is_active_program ?>"><span class="fa fa-book mr-2"></span> Program</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link <?= $kegiatan ?>" title="Kegiatan" style="font-size:16px; font-weight: bold" id="kegiatan-tab" data-toggle="tab" href="#kegiatan" role="tab" aria-controls="kegiatan" aria-selected="<?= $is_active_kegiatan ?>"><span class="badge badge-secondary">2.</span> Kegiatan</a>
+            <li class="nav-item mr-2">
+                <a class="nav-link pb-4 font-weight-bold <?= $kegiatan ?>" title="Kegiatan" style="font-size:16px;" id="kegiatan-tab" data-toggle="tab" href="#kegiatan" role="tab" aria-controls="kegiatan" aria-selected="<?= $is_active_kegiatan ?>"><span class="fa fa-file-code-o mr-2"></span> Kegiatan</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link <?= $subkegiatan ?>" title="Sub Kegiatan" style="font-size:16px; font-weight: bold" id="subkegiatan-tab" data-toggle="tab" href="#subkegiatan" role="tab" aria-controls="subkegiatan" aria-selected="<?= $is_active_subkegiatan ?>"><span class="badge badge-secondary">3.</span> Sub Kegiatan</a>
+            <li class="nav-item mr-2">
+                <a class="nav-link pb-4 font-weight-bold <?= $subkegiatan ?>" title="Sub Kegiatan" style="font-size:16px;" id="subkegiatan-tab" data-toggle="tab" href="#subkegiatan" role="tab" aria-controls="subkegiatan" aria-selected="<?= $is_active_subkegiatan ?>"><span class="fa fa-file-o mr-2 text-success"></span> Sub Kegiatan</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link <?= $uraian ?>" title="Uraian Kegiatan" style="font-size:16px; font-weight: bold" id="uraian-tab" data-toggle="tab" href="#uraian" role="tab" aria-controls="uraian" aria-selected="<?= $is_active_uraian ?>"><span class="badge badge-secondary">4.</span> Uraian Kegiatan</a>
+            <li class="nav-item mr-2">
+                <a class="nav-link pb-4 font-weight-bold <?= $uraian ?>" title="Uraian Kegiatan" style="font-size:16px;" id="uraian-tab" data-toggle="tab" href="#uraian" role="tab" aria-controls="uraian" aria-selected="<?= $is_active_uraian ?>"><span class="fa fa-files-o mr-2 text-info"></span> Uraian Kegiatan</a>
             </li>
         </ul>
         <div class="x_panel" style="border-top:0">

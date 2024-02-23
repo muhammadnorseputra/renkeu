@@ -245,7 +245,7 @@ $(function () {
 				url: `${_uri}/app/select2/ajaxUraianKegiatan`,
 				type: "post",
 				dataType: "json",
-				delay: 200,
+				delay: 350,
 				data: function (params) {
 					return {
 						searchTerm: params.term,
@@ -259,7 +259,11 @@ $(function () {
 					};
 				},
 				cache: false,
+				
 			},
+			escapeMarkup: function(m) {
+			return m;
+			}
 			// templateResult: formatResults,
 			// templateSelection: formatResults
 		});

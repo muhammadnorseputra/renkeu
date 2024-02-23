@@ -66,11 +66,13 @@ class Select2 extends CI_Controller {
             $cek_spj_uraianid = $this->select->cekUraianIdBySpj($u->id);
             if ($cek_spj_uraianid->num_rows() > 0) {
                 $data['disabled'] = true;
+                $status = '<span class="fa fa-ban text-danger"></span>';
             } else {
                 $data['disabled'] = false;
+                $status = '';
             }
             $data['id'] = $u->id;
-            $data['text'] = $u->kode." - ".$u->nama;
+            $data['text'] = $u->kode." - ".$u->nama." $status ";
             $data['kode'] = $u->kode;
             $all[] = $data;
         }

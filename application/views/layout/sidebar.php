@@ -84,6 +84,7 @@
                 <?php endif; ?>
                 <?php if(privilages('priv_notify')): ?>
                 <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Notify</a></li>
+                <li><a href="<?= base_url('app/settings') ?>"><i class="fa fa-cogs"></i> Settings</a></li>
                 <?php endif; ?>
             </ul>
         </div>
