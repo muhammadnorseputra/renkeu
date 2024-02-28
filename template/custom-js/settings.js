@@ -14,7 +14,7 @@ $(function() {
 		href = _.attr("href");
 
         const url = new URL(window.location.href);
-		url.searchParams.set("tab", `${href}&globalActive=active&globalShow=show`);
+		url.searchParams.set("tab", `${href}`);
 		history.pushState({}, "", decodeURI(url));
 		// NProgress.start();
     })
@@ -24,7 +24,7 @@ $(function() {
 		href = _.attr("href");
 
         const url = new URL(window.location.href);
-		url.searchParams.set("tab", `${href}&periodeActive=active&periodeShow=show`);
+		url.searchParams.set("tab", `${href}`);
 		history.pushState({}, "", decodeURI(url));
 		// NProgress.start();
     })

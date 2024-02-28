@@ -1,17 +1,39 @@
+<?php  
+$tab = isset($_GET['tab']) ? $_GET['tab'] : '#global';
+if (urldecode($tab) === '#global') {
+    $global = 'active';
+    $is_active_global = true;
+    $is_show_global = "show";
+} else {
+    $is_show_global = "";
+    $is_active_global = false;
+    $global = '';
+}
+
+if (urldecode($tab) === '#periode') {
+    $periode = 'active';
+    $is_active_periode = true;
+    $is_show_periode = "show";
+} else {
+    $is_show_periode = "";
+    $is_active_periode = false;
+    $periode = '';
+}
+?>
 <div class="row">
     <div class="col-md-12">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link pb-4 font-weight-bold" style="font-size:16px" id="global-tab" data-toggle="tab" href="#global" role="tab" aria-controls="global" aria-selected="false"><i class="fa fa-cogs mr-2"></i>Global</a>
+                <a class="nav-link pb-4 font-weight-bold <?= $global ?>" style="font-size:16px" id="global-tab" data-toggle="tab" href="#global" role="tab" aria-controls="global" aria-selected="<?= $is_active_global ?>"><i class="fa fa-cogs mr-2"></i>Global</a>
             </li>
             <li class="nav-item ml-2">
-                <a class="nav-link pb-4 font-weight-bold" style="font-size:16px" id="periode-tab" data-toggle="tab" href="#periode" role="tab" aria-controls="periode" aria-selected="false"><i class="fa fa-calendar mr-2"></i>Periode</a>
+                <a class="nav-link pb-4 font-weight-bold <?= $periode ?>" style="font-size:16px" id="periode-tab" data-toggle="tab" href="#periode" role="tab" aria-controls="periode" aria-selected="<?= $is_active_periode ?>"><i class="fa fa-calendar mr-2"></i>Periode</a>
             </li>
         </ul>
         <div class="x_panel" style="border-top:0">
             <div class="x_content">
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade <?= @$_GET['globalShow']." ".@$_GET['globalActive'] ?>" id="global" role="tabpanel" aria-labelledby="global-tab">
+                    <div class="tab-pane fade <?= $global ?> <?= $is_show_global ?>" id="global" role="tabpanel" aria-labelledby="global-tab">
                         <h4>Pengaturan Global</h4>
                         <div class="table-responsive">
                             <table class="table table-straped">
@@ -53,7 +75,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="tab-pane fade <?= @$_GET['periodeShow']." ".@$_GET['periodeActive'] ?>" id="periode" role="tabpanel" aria-labelledby="periode-tab"></div>
+                    <div class="tab-pane fade <?= $periode ?> <?= $is_show_periode ?>" id="periode" role="tabpanel" aria-labelledby="periode-tab"></div>
                 </div>
             </div>
         </div>
