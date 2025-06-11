@@ -286,7 +286,7 @@ class Anggarankinerja extends RestController
         }
 
         // Target
-        $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan, $is_perubahan)->row()->total_pagu_awal;
+        $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal;
 
         // Realisasi
         $realisasi_kinerja = $this->realisasi->getRealisasiByIndikatorId($periode_id, $indikator_id)->row();

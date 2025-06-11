@@ -173,7 +173,7 @@
                                         } elseif ($key === 0) { //first
                                             $tr .= "
                                         <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata("tahun_anggaran"))->row()->total_pagu_awal) . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input . "</td>
                                         <td class='align-middle'>" . $button_ubah . "</td>
                                         <td class='align-middle'>" . $button_hapus . "</td>";

@@ -83,14 +83,14 @@ class ModelTarget extends CI_Model
         $q = $this->db->get();
         return $q;
     }
-    public function getAlokasiPaguSubKegiatan($subKegiatanId, $is_perubahan = "0")
+    public function getAlokasiPaguSubKegiatan($subKegiatanId, $is_perubahan = "0", $ta)
     {
         $this->db->select_sum('p.total_pagu_awal');
         $this->db->from('t_pagu AS p');
         $this->db->join('ref_uraians AS u', 'p.fid_uraian=u.id');
         $this->db->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id');
         $this->db->where('u.fid_sub_kegiatan', $subKegiatanId);
-        $this->db->where('p.tahun', $this->session->userdata('tahun_anggaran'));
+        $this->db->where('p.tahun', $ta);
         $this->db->where('p.is_perubahan', $is_perubahan);
         $q = $this->db->get();
         return $q;

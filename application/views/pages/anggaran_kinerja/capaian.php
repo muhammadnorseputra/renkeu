@@ -251,7 +251,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             $indikator_input_view = $isk['persentase'] . "%";
                                         }
 
-                                        $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
+                                        $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                                         $target_kinerja = $indikator_input_count;
 
                                         // Realisasi
