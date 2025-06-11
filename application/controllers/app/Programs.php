@@ -19,6 +19,7 @@ class Programs extends CI_Controller
      * map to /index.php/welcome/<method_name>
      * @see https://codeigniter.com/userguide3/general/urls.html
      */
+    public $tahun_anggaran;
     public function __construct()
     {
         parent::__construct();
@@ -28,6 +29,7 @@ class Programs extends CI_Controller
             return show_404();
         endif;
         $this->load->model('ModelTarget', 'target');
+        $this->tahun_anggaran = $this->session->userdata('tahun_anggaran');
     }
 
     public function index()
@@ -96,7 +98,7 @@ class Programs extends CI_Controller
 
     public function program()
     {
-        $db = $this->target->program($this->session->userdata('part'));
+        $db = $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
         if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') :
             $btnAdd = '<div>
             <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
@@ -116,14 +118,16 @@ class Programs extends CI_Controller
                         <th>Kode Rekening</th>
                         <th>Nama Program</th>
                         <th class="text-center">Ubah</th>
-                        <th class="text-right">Alokasi Anggaran (Rp)</th>
+                        <th class="text-right">Alokasi Anggaran Awal (Rp)</th>
+                        <th class="text-right">Alokasi Anggaran Perubahan (Rp)</th>
                     </tr>
                     </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r) :
 
-            $totalPaguAwal = !empty($this->target->getAlokasiPaguProgram($r->id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguProgram($r->id)->row()->total_pagu_awal : 0;
+            $totalPaguAwal = !empty($this->target->getAlokasiPaguProgram($r->id, "0", $this->tahun_anggaran)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguProgram($r->id, "0", $this->tahun_anggaran)->row()->total_pagu_awal : 0;
+            $totalPaguPerubahan = !empty($this->target->getAlokasiPaguProgram($r->id, "1", $this->tahun_anggaran)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguProgram($r->id, "1", $this->tahun_anggaran)->row()->total_pagu_awal : 0;
             $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_programs') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
@@ -147,6 +151,9 @@ class Programs extends CI_Controller
                 <td class="text-right">
                     <b>' . @nominal($totalPaguAwal) . '</b>
                 </td>
+                <td class="text-right">
+                    <b>' . @nominal($totalPaguPerubahan) . '</b>
+                </td>
             </tr>';
             $no++;
         endforeach;
@@ -166,9 +173,9 @@ class Programs extends CI_Controller
     {
         // get data kegiatan
         if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
-            $db = $this->db->order_by('kode', 'asc')->get('ref_kegiatans');
+            $db = $this->db->order_by('kode', 'asc')->where('tahun', $this->session->userdata('tahun_anggaran'))->get('ref_kegiatans');
         else :
-            $db = $this->db->order_by('kode', 'asc')->where('fid_part', $this->session->userdata('part'))->get('ref_kegiatans');
+            $db = $this->db->order_by('kode', 'asc')->where('fid_part', $this->session->userdata('part'))->where('tahun', $this->session->userdata('tahun_anggaran'))->get('ref_kegiatans');
         endif;
 
         $btnAdd = '<div>
@@ -185,13 +192,15 @@ class Programs extends CI_Controller
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan</th>
                         <th>Ubah</th>
-                        <th class="text-right">Alokasi Anggaran (Rp)</th>
+                        <th class="text-right">Alokasi Anggaran Awal (Rp)</th>
+                        <th class="text-right">Alokasi Anggaran Perubahan (Rp)</th>
                     </tr>
                 </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r) :
-            $totalPaguAwal = !empty($this->target->getAlokasiPaguKegiatan($r->id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguKegiatan($r->id)->row()->total_pagu_awal : 0;
+            $totalPaguAwal = !empty($this->target->getAlokasiPaguKegiatan($r->id, "0", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguKegiatan($r->id, "0", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal : 0;
+            $totalPaguPerubahan = !empty($this->target->getAlokasiPaguKegiatan($r->id, "1", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguKegiatan($r->id, "1", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal : 0;
             $hapus = '
             <td width="5%" class="text-center">
                 <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_kegiatans') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
@@ -215,6 +224,9 @@ class Programs extends CI_Controller
                 <td class="text-right">
                     <b>' . @nominal($totalPaguAwal) . '</b>
                 </td>
+                <td class="text-right">
+                    <b>' . @nominal($totalPaguPerubahan) . '</b>
+                </td>
             </tr>';
             $no++;
         endforeach;
@@ -234,12 +246,14 @@ class Programs extends CI_Controller
     {
         if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
             $db = $this->db->order_by('kode', 'asc')
+                ->where('tahun', $this->session->userdata('tahun_anggaran'))
                 ->get('ref_sub_kegiatans AS sub');
         else :
             $db = $this->db->select('sub.id,sub.fid_kegiatan,sub.kode,sub.nama')
                 ->order_by('sub.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'sub.fid_kegiatan=keg.id', 'inner')
                 ->where('keg.fid_part', $this->session->userdata('part'))
+                ->where('sub.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get('ref_sub_kegiatans AS sub');
         endif;
         $btnAdd = '<div>
@@ -256,7 +270,8 @@ class Programs extends CI_Controller
                                 <th>Kode Rekening</th>
                                 <th>Nama Sub Kegiatan</th>
                                 <th width="5%" class="text-right">Ubah</th>
-                                <th class="text-right">Alokasi Pagu (Rp)</th>
+                                <th class="text-right">Alokasi Pagu Awal (Rp)</th>
+                                <th class="text-right">Alokasi Pagu Perubahan (Rp)</th>
                             </tr>
                         </thead>';
         $html .= '<tbody class="list">';
@@ -265,7 +280,8 @@ class Programs extends CI_Controller
             //get alokasi pagu berdasarkan id kegiatan
             // $pagu = $this->crud->getWhere('t_pagu', ['fid_sub_kegiatan' => $r->id])->row();
             // $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
-            $totalPaguAwal = !empty($this->target->getAlokasiPaguSubKegiatan($r->id)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id)->row()->total_pagu_awal : 0;
+            $totalPaguAwal = !empty($this->target->getAlokasiPaguSubKegiatan($r->id, "0")->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id, "0")->row()->total_pagu_awal : 0;
+            $totalPaguPerubahan = !empty($this->target->getAlokasiPaguSubKegiatan($r->id, "1")->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id, "1")->row()->total_pagu_awal : 0;
 
             $button_hapus = '<td width="5%" class="text-center">
                 <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_sub_kegiatans') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
@@ -274,6 +290,7 @@ class Programs extends CI_Controller
                 <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_sub_kegiatans') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
             </td>';
             $alokasi_pagu = nominal($totalPaguAwal);
+            $alokasi_pagu_perubahan = nominal($totalPaguPerubahan);
             $button_pagu = '<td width="10%" class="text-right">
             <div class="text-right">
             <b>' . nominal($totalPaguAwal) . '</b>
@@ -297,6 +314,9 @@ class Programs extends CI_Controller
                     <td class="text-right">
                     <b>' . $alokasi_pagu . '</b>
                     </td>
+                    <td class="text-right">
+                    <b>' . $alokasi_pagu_perubahan . '</b>
+                    </td>
                 </tr>';
             $no++;
         endforeach;
@@ -319,6 +339,7 @@ class Programs extends CI_Controller
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
+                ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get('ref_uraians AS u');
         else :
             $db = $this->db->select('u.id,u.fid_kegiatan,u.kode,u.nama,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
@@ -326,6 +347,7 @@ class Programs extends CI_Controller
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
                 ->where('keg.fid_part', $this->session->userdata('part'))
+                ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get('ref_uraians AS u');
         endif;
 
@@ -344,7 +366,8 @@ class Programs extends CI_Controller
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
                         <th>Total SPJ</th>
                         <th class="text-center" colspan="2">Ubah | Hapus</th>
-                        <th class="text-right" colspan="2">Alokasi Pagu (Rp)</th>
+                        <th class="text-right" colspan="2">Alokasi Pagu Awal (Rp)</th>
+                        <th class="text-right" colspan="2">Alokasi Pagu Perubahan (Rp)</th>
                     </tr>
                 </thead>';
         $html .= '<tbody class="list">';
@@ -354,11 +377,14 @@ class Programs extends CI_Controller
             //get jumlah spj berdasarkan id uraian
             $jmlSpj = $this->crud->getWhere('spj', ['fid_uraian' => $r->id])->num_rows();
             //get alokasi pagu berdasarkan id kegiatan
-            $pagu = $this->crud->getWhere('t_pagu', ['fid_uraian' => $r->id])->row();
+            $pagu = $this->crud->getWhere('t_pagu', ['fid_uraian' => $r->id, 'is_perubahan' => '0'])->row();
+            $paguPerubahan = $this->crud->getWhere('t_pagu', ['fid_uraian' => $r->id, 'is_perubahan' => '1'])->row();
+
+            $totalPaguPerubahan = !empty($paguPerubahan->total_pagu_awal) ? $paguPerubahan->total_pagu_awal : 0;
             $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
             $total_all_pagu += $totalPaguAwal;
 
-            if($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'SUPER_USER' || $this->session->userdata('role') === 'VERIFICATOR'):
+            if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'SUPER_USER' || $this->session->userdata('role') === 'VERIFICATOR'):
                 $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_uraians') . '\',\'URAIAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
@@ -367,7 +393,7 @@ class Programs extends CI_Controller
             endif;
             $button_edit = '<td width="5%" class="text-center">
                 <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_uraians') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
-                '.$button_hapus.'
+                ' . $button_hapus . '
             </td>';
 
             $button_pagu = '<td width="10%" class="text-right">
@@ -375,7 +401,15 @@ class Programs extends CI_Controller
                 <b>' . nominal($totalPaguAwal) . '</b>
             </td>
             <td class="text-center">
-            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\')" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
+            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\',0)" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
+            </div>
+            </td>';
+            $button_pagu_perubahan = '<td width="10%" class="text-right">
+                <div class="text-right">
+                <b>' . nominal($totalPaguPerubahan) . '</b>
+            </td>
+            <td class="text-center">
+            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguPerubahan . '\',1)" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
             </div>
             </td>';
             $html .= '<tr>
@@ -392,9 +426,10 @@ class Programs extends CI_Controller
                     ' . ucwords($r->nama_sub_kegiatan) . ' <br>
                     <b class="nama">' . ucwords($r->nama) . '</b>
                 </td>
-                <td class="text-center">'.$jmlSpj.'</td>
+                <td class="text-center">' . $jmlSpj . '</td>
                 ' . $button_edit . '
                 ' . $button_pagu . '
+                ' . $button_pagu_perubahan . '
             </tr>';
             $no++;
         endforeach;
@@ -445,7 +480,7 @@ class Programs extends CI_Controller
                 $all[] = $data;
             endforeach;
         else :
-            $all[] = ['id' => 0,  'text' => 'Maaf, Unor "' . strtoupper($q) . '" tidak ditemukan.'];
+            $all[] = ['id' => 0,  'text' => 'Maaf, Unor tidak ditemukan.'];
         endif;
         echo json_encode($all);
     }
@@ -486,15 +521,17 @@ class Programs extends CI_Controller
         // $db = $this->crud->getLikes('ref_programs', ['nama' => $q]);
         if ($this->session->userdata('role') !== 'VERIFICATOR' && $this->session->userdata('role') !== 'SUPER_USER' && $this->session->userdata('role') !== 'SUPER_ADMIN' && $this->session->userdata('role') !== 'ADMIN') :
             $db = $this->db->select('p.id,p.kode,p.nama')
-                ->from('ref_parts AS q')
-                ->join('ref_programs AS p', 'q.fid_program=p.id')
+                ->from('ref_programs AS p')
+                ->join('ref_parts AS q', 'q.fid_program=p.id', 'left')
                 ->where('q.id', $partid)
+                ->where('p.tahun', $this->session->userdata('tahun_anggaran'))
                 ->group_by('p.id')
                 ->get();
         else :
             $db = $this->db->select('p.id,p.kode,p.nama')
-                ->from('ref_parts AS q')
-                ->join('ref_programs AS p', 'q.fid_program=p.id')
+                ->from('ref_programs AS p')
+                ->join('ref_parts AS q', 'q.fid_program=p.id', 'left')
+                ->where('p.tahun', $this->session->userdata('tahun_anggaran'))
                 ->like('p.nama', $q)
                 ->or_like('p.kode', $q)
                 ->group_by('p.id')
@@ -535,12 +572,14 @@ class Programs extends CI_Controller
                 ->from('ref_kegiatans AS k')
                 ->join('ref_parts AS p', 'k.fid_part=p.id', 'inner')
                 ->where('p.id', $this->session->userdata('part'))
+                ->where('k.tahun', $this->session->userdata('tahun_anggaran'))
                 ->group_by('k.fid_part')
                 ->get();
         else :
             $db = $this->db->select('k.*,p.nama AS partnama, p.id AS partid')
                 ->from('ref_kegiatans AS k')
                 ->join('ref_parts AS p', 'k.fid_part=p.id', 'inner')
+                ->where('k.tahun', $this->session->userdata('tahun_anggaran'))
                 ->like('k.kode', $q)
                 ->or_like('k.nama', $q)
                 ->group_by('k.fid_part')
@@ -601,7 +640,8 @@ class Programs extends CI_Controller
                 'fid_part' => $p['part'],
                 'fid_program' => $p['program'],
                 'kode' => $p['kode_kegiatan'],
-                'nama' => $p['kegiatan']
+                'nama' => $p['kegiatan'],
+                'tahun' => $this->session->userdata('tahun_anggaran')
             ];
             $db = $this->crud->insert('ref_kegiatans', $data);
             if ($db) {
@@ -618,7 +658,8 @@ class Programs extends CI_Controller
             $data = [
                 'fid_unor' => $p['unor'],
                 'kode' => $p['kode_program'],
-                'nama' => $p['program']
+                'nama' => $p['program'],
+                'tahun' => $this->session->userdata('tahun_anggaran')
             ];
             $db = $this->crud->insert('ref_programs', $data);
             if ($db) {
@@ -635,7 +676,8 @@ class Programs extends CI_Controller
             $data = [
                 'fid_kegiatan' => $p['kegiatan'],
                 'kode' => $p['kode_subkegiatan'],
-                'nama' => $p['subkegiatan']
+                'nama' => $p['subkegiatan'],
+                'tahun' => $this->session->userdata('tahun_anggaran')
             ];
             $db = $this->crud->insert('ref_sub_kegiatans', $data);
             if ($db) {
@@ -653,7 +695,8 @@ class Programs extends CI_Controller
                 'fid_kegiatan' => $p['kegiatan'],
                 'fid_sub_kegiatan' => $p['subkegiatan'],
                 'kode' => $p['kode_uraian'],
-                'nama' => $p['nama_uraian']
+                'nama' => $p['nama_uraian'],
+                'tahun' => $this->session->userdata('tahun_anggaran')
             ];
             $db = $this->crud->insert('ref_uraians', $data);
             if ($db) {
@@ -671,7 +714,7 @@ class Programs extends CI_Controller
         $post = $this->input->post();
         $id = $post['id'];
         $jml = get_only_numbers($post['jumlah']);
-        $thn = date('Y');
+        $thn = $this->session->userdata('tahun_anggaran');
 
         if ($type === 'ref_sub_kegiatans') {
             $insert = [
@@ -692,23 +735,48 @@ class Programs extends CI_Controller
                 'fid_sub_kegiatan' => $id
             ];
         } else if ($type === 'ref_uraians') {
-            $insert = [
-                'fid_part' => $this->session->userdata('part'),
-                'fid_uraian' => $id,
-                'total_pagu_awal' => $jml,
-                'tahun' => $thn,
-                'created_at' => date('Y-m-d H:i:s'),
-                'created_by' => $this->session->userdata('user_name')
-            ];
 
-            $update = [
-                'total_pagu_awal' => $jml,
-                'tahun' => $thn
-            ];
+            if ($post['is_perubahan'] === "1") {
+                $insert = [
+                    'is_perubahan' => "1",
+                    'fid_part' => $this->session->userdata('part'),
+                    'fid_uraian' => $id,
+                    'total_pagu_awal' => $jml,
+                    'tahun' => $thn,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => $this->session->userdata('user_name')
+                ];
 
-            $whr = [
-                'fid_uraian' => $id
-            ];
+                $update = [
+                    'total_pagu_awal' => $jml,
+                    'tahun' => $thn
+                ];
+
+                $whr = [
+                    'fid_uraian' => $id,
+                    'is_perubahan' => "1"
+                ];
+            } else {
+                $insert = [
+                    'fid_part' => $this->session->userdata('part'),
+                    'fid_uraian' => $id,
+                    'total_pagu_awal' => $jml,
+                    'tahun' => $thn,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => $this->session->userdata('user_name')
+                ];
+
+
+                $update = [
+                    'total_pagu_awal' => $jml,
+                    'tahun' => $thn
+                ];
+
+                $whr = [
+                    'fid_uraian' => $id,
+                    'is_perubahan' => "0"
+                ];
+            }
         }
 
         $cekid = $this->crud->getWhere('t_pagu', $whr)->num_rows();

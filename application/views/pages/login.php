@@ -10,7 +10,7 @@
   <!-- Favicons -->
   <link href="<?= base_url('template/assets/logo.png') ?>" rel="icon">
   <link href="<?= base_url('template/assets/logo.png') ?>" rel="apple-touch-icon">
-  
+
   <link rel="stylesheet" href="<?= base_url('template/login-form-02/fonts/icomoon/icons.css') ?>">
 
   <link rel="stylesheet" href="<?= base_url('template/login-form-02/css/owl.carousel.min.css') ?>">
@@ -25,8 +25,8 @@
   <title><?= $title ?></title>
   <style>
     .toggle-password {
-    cursor: pointer;
-}
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -56,6 +56,22 @@
             ?>
             <div id="message"></div>
             <?= form_open(base_url('login/cek_akun'), ['autocomplete' => 'off', 'id' => 'f_login', 'class' => 'toggle-disabled'], ['token' => $this->session->csrf_token, 'continue' => $urlRef]); ?>
+            <div class="form-group first">
+              <label for="tahun">Tahun Anggaran</label>
+              <select name="tahun" id="tahun" class="form-control">
+                <?php
+                $year = date('Y');
+                for ($i = $year - 1; $i <= $year + 1; $i++) {
+                  if (isset($detail->tahun)) {
+                    $selected = $detail->tahun == $i ? 'selected' : '';
+                  } else {
+                    $selected = $year == $i ? 'selected' : '';
+                  }
+                  echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+                }
+                ?>
+              </select>
+            </div>
             <div class="form-group first">
               <label for="username">Username</label>
               <input type="text" name="username" placeholder="Masukan Username" class="form-control" data-sanitize="trim" data-validation="required" id="username">

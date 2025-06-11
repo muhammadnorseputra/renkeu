@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Settings extends CI_Controller {
+class Settings extends CI_Controller
+{
 
 	/**
 	 * Index Page for this controller.
@@ -19,41 +20,41 @@ class Settings extends CI_Controller {
 	 * @see https://codeigniter.com/userguide3/general/urls.html
 	 */
 	public function __construct()
-    {
-        parent::__construct();
-        cek_session();
+	{
+		parent::__construct();
+		cek_session();
 		//  CEK USER PRIVILAGES 
-        if(!privilages('priv_settings')):
-            return show_404();
-        endif;
-    }
-	
+		if (!privilages('priv_settings')):
+			return show_404();
+		endif;
+	}
+
 	public function index()
 	{
 		$db = $this->db->order_by('order', 'asc')->get('t_settings');
-        $data = [
+		$data = [
 			'title' => 'Settings',
-            'content' => 'pages/admin/settings',
+			'content' => 'pages/admin/settings',
 			'data' => $db,
 			'autoload_js' => [
-                'template/backend/vendors/switchery/dist/switchery.min.js',
+				'template/backend/vendors/switchery/dist/switchery.min.js',
 				'template/custom-js/settings.js'
 			],
 			'autoload_css' => [
-                'template/backend/vendors/switchery/dist/switchery.min.css'
+				'template/backend/vendors/switchery/dist/switchery.min.css'
 			]
-        ];
+		];
 		$this->load->view('layout/app', $data);
 	}
 
 	public function ubah($key)
 	{
 		$row = $this->crud->getWhere('t_settings', ['key' => decrypt_url($key)]);
-        $data = [
-			'title' => 'Settings - '.decrypt_url($key),
-            'content' => 'pages/admin/settings_ubah',
+		$data = [
+			'title' => 'Settings - ' . decrypt_url($key),
+			'content' => 'pages/admin/settings_ubah',
 			'data' => $row->row()
-        ];
+		];
 		$this->load->view('layout/app', $data);
 	}
 
@@ -62,17 +63,17 @@ class Settings extends CI_Controller {
 		$p = $this->input->post();
 		$val = $p['val'];
 		$key = $p['key'];
-		
+
 		$data = [];
-		foreach($key as $k => $v) {
+		foreach ($key as $k => $v) {
 			$data[] = [
 				'key' => $v,
-				'status' => @$val[$v] ? @$val[$v] : 'N' 
+				'status' => @$val[$v] ? @$val[$v] : 'N'
 			];
 		}
 
 		$db = $this->crud->updateAll('t_settings', $data);
-		if($db) {
+		if ($db) {
 			redirect(base_url('/app/settings/'), 'refresh');
 			return false;
 		}
@@ -93,11 +94,11 @@ class Settings extends CI_Controller {
 		];
 
 		$db = $this->crud->update('t_settings', $data, $whr);
-		if($db) {
+		if ($db) {
 			redirect(base_url('/app/settings'));
 			return false;
-		} 
-		redirect(base_url('/app/settings/ubah/'. $key));
+		}
+		redirect(base_url('/app/settings/ubah/' . $key));
 	}
 
 	public function updateWithImage($key)
@@ -105,26 +106,25 @@ class Settings extends CI_Controller {
 		$p = $this->input->post();
 
 		$path = './template/assets';
-		$config['upload_path'] = $path;  
-		$config['allowed_types'] = 'jpg|jpeg|png'; 
+		$config['upload_path'] = $path;
+		$config['allowed_types'] = 'jpg|jpeg|png';
 		$config['max_size'] = 1000; // 1MB
 		$config['file_ext_tolower'] = TRUE;
 		$config['file_name'] = 'logo';
-        $config['overwrite'] = TRUE;
+		$config['overwrite'] = TRUE;
 
-		$this->load->library('upload', $config); 
-		
-		if(!$this->upload->do_upload('image'))  
-		{  
+		$this->load->library('upload', $config);
+
+		if (!$this->upload->do_upload('image')) {
 			// redirect(base_url('/app/settings/ubah/'. $key));
-			$msg = ['valid' => false, 'pesan' => $this->upload->display_errors()];  
+			$msg = ['valid' => false, 'pesan' => $this->upload->display_errors()];
 			echo json_encode($msg);
 			return false;
 		}
-		
+
 		$data = array('upload_data' => $this->upload->data());
-        $image= $data['upload_data']['file_name'];
-		
+		$image = $data['upload_data']['file_name'];
+
 		$data_insert = [
 			'val' => $image,
 			'deskripsi' => $p['desc']
@@ -135,10 +135,19 @@ class Settings extends CI_Controller {
 		];
 
 		$db = $this->crud->update('t_settings', $data_insert, $whr);
-		if($db) {
+		if ($db) {
 			redirect(base_url('/app/settings'));
 			return false;
-		} 
-		redirect(base_url('/app/settings/ubah/'. $key));
+		}
+		redirect(base_url('/app/settings/ubah/' . $key));
+	}
+
+	public function statuspagu()
+	{
+		$is_perbahan = $this->input->post('is_perubahan');
+		$this->session->set_userdata([
+			'is_perubahan' => $is_perbahan
+		]);
+		redirect($this->input->post('redirectTo'));
 	}
 }

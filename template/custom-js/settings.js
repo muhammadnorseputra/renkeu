@@ -11,7 +11,7 @@ $(function() {
     // Tabs
     $(document).on("click", "#myTab a[href='#global']", function (e) {
         let _ = $(this),
-		href = _.attr("href");
+		href = _.attr("href");  
 
         const url = new URL(window.location.href);
 		url.searchParams.set("tab", `${href}`);

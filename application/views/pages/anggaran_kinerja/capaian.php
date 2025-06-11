@@ -3,7 +3,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
 ?>
 <div class="x_panel">
     <div class="x_title">
-        <h2><i class="fa fa-percent mr-2"></i> Persentase Capaian Per Triwulan</h2>
+        <h2><i class="fa fa-percent mr-2"></i> Persentase Capaian Per Bulan</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
             <li class="d-flex justify-content-center align-items-center mr-2 "><a href="<?= base_url('app/capaian/cetak/' . $periode_id) ?>" target="_blank" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
@@ -33,7 +33,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
             </div>
         </div>
         <div class="table-responsive">
-            <table class="table table-bordered">
+            <table class="table table-bordered table-sm">
                 <thead>
                     <tr class="text-center">
                         <th rowspan="2" class="align-middle">No</th>
@@ -76,7 +76,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     $indikator_input_view = $ip['persentase'] . "%";
                                 }
 
-                                $target_anggaran = $this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal;
+                                // Target Anggaran & Kinerja
+                                $target_anggaran = $this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                                 $target_kinerja = $indikator_input_count;
 
                                 // Realisasi
@@ -92,6 +93,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     $sum_realisasi_view = "-";
                                 }
 
+                                // Realisasi Anggaran & Kinerja
                                 $realisasi_anggaran = $this->realisasi->getRealisasiProgram($periode_id, $program->id);
                                 $realisasi_kinerja = $sum_realisasi_count;
 
@@ -164,7 +166,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                         $indikator_input_count = $ik['persentase'];
                                         $indikator_input_view = $ik['persentase'] . "%";
                                     }
-                                    $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal;
+                                    $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                                     $target_kinerja = $indikator_input_count;
 
                                     // Realisasi
@@ -249,7 +251,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             $indikator_input_view = $isk['persentase'] . "%";
                                         }
 
-                                        $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id)->row()->total_pagu_awal;
+                                        $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
                                         $target_kinerja = $indikator_input_count;
 
                                         // Realisasi

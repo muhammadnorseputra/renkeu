@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Target extends CI_Controller {
+class Target extends CI_Controller
+{
 
 	/**
 	 * Index Page for this controller.
@@ -19,30 +20,29 @@ class Target extends CI_Controller {
 	 * @see https://codeigniter.com/userguide3/general/urls.html
 	 */
 	public function __construct()
-    {
-        parent::__construct();
-        cek_session();
+	{
+		parent::__construct();
+		cek_session();
 		//  CEK USER PRIVILAGES 
-        if(!privilages('priv_default') && !privilages('priv_anggarankinerja')):
-            return show_404();
-        endif;
-		
+		if (!privilages('priv_default') && !privilages('priv_anggarankinerja')):
+			return show_404();
+		endif;
+
 		$this->load->model('ModelTarget', 'target');
-		
-    }
-	
+	}
+
 	public function index()
 	{
-		$programs = $this->target->program($this->session->userdata('part'));
-        $data = [
+		$programs = $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+		$data = [
 			'title' => 'Target Anggaran & Kinerja',
-            'content' => 'pages/anggaran_kinerja/target',
+			'content' => 'pages/anggaran_kinerja/target',
 			'programs' => $programs,
 			'autoload_js' => [
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
-                'template/custom-js/indikator.js',
-            ],
-        ];
+				'template/custom-js/indikator.js',
+			],
+		];
 		$this->load->view('layout/app', $data);
 	}
 
@@ -54,33 +54,34 @@ class Target extends CI_Controller {
 		$id = $post['id'];
 		$nama_indikator = $post['nama'];
 
-		if($tabel === 'ref_programs')
-		{
+		if ($tabel === 'ref_programs') {
 			$data = [
 				'nama' => $nama_indikator,
-				'fid_program' => $id
+				'fid_program' => $id,
+				'tahun' => $this->session->userdata('tahun_anggaran')
 			];
-		} elseif($tabel === 'ref_kegiatans') {
+		} elseif ($tabel === 'ref_kegiatans') {
 			$data = [
 				'nama' => $nama_indikator,
-				'fid_kegiatan' => $id
+				'fid_kegiatan' => $id,
+				'tahun' => $this->session->userdata('tahun_anggaran')
 			];
-		} elseif($tabel === 'ref_sub_kegiatans') {
+		} elseif ($tabel === 'ref_sub_kegiatans') {
 			$data = [
 				'nama' => $nama_indikator,
-				'fid_sub_kegiatan' => $id
+				'fid_sub_kegiatan' => $id,
+				'tahun' => $this->session->userdata('tahun_anggaran')
 			];
 		}
 
 		$db = $this->crud->insert('ref_indikators', $data);
-		if($db)
-        {
-            $msg = 200;
-        } else {
-            $msg = 400;
-        }
+		if ($db) {
+			$msg = 200;
+		} else {
+			$msg = 400;
+		}
 
-        echo json_encode($msg);
+		echo json_encode($msg);
 	}
 
 	public function ubah($id, $table)
@@ -114,9 +115,8 @@ class Target extends CI_Controller {
 		];
 
 		$db = $this->crud->update('ref_indikators', $data, $whr);
-		if($db)
-        {
-            $msg = 200;
+		if ($db) {
+			$msg = 200;
 			$insert = [
 				'fid_indikator' => $post['id'],
 				'persentase' => $post['persentase'],
@@ -135,47 +135,47 @@ class Target extends CI_Controller {
 				'update_by' => $this->session->userdata('user_name')
 			];
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
-			if($dbcek->num_rows() > 0) {
+			if ($dbcek->num_rows() > 0) {
 				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id']]);
 			} else {
 				$this->crud->insert('t_target', $insert);
 			}
-        } else {
-            $msg = 400;
-        }
+		} else {
+			$msg = 400;
+		}
 
-        echo json_encode($msg);
+		echo json_encode($msg);
 	}
 
 	public function cetak($tahun)
-    {
+	{
 
 		$programs = $this->target->program($this->session->userdata('part'));
 
-        $this->load->library('pdf');
-        $this->pdf->setPaper('legal', 'landscape');
-		$this->pdf->filename = 'SIMEV - Cetak Target Anggaran & Kinerja - Tahun '.$tahun;
+		$this->load->library('pdf');
+		$this->pdf->setPaper('legal', 'landscape');
+		$this->pdf->filename = 'SIMEV - Cetak Target Anggaran & Kinerja - Tahun ' . $tahun;
 
-        $data = [
-            'title' => 'Target Anggaran & Kinerja  - Tahun '.$tahun,
+		$data = [
+			'title' => 'Target Anggaran & Kinerja  - Tahun ' . $tahun,
 			'programs' => $programs,
 			'tahun' => $tahun
-        ];
+		];
 		$this->pdf->load_view('pages/anggaran_kinerja/target_cetak', $data);
-    }
+	}
 
-	public function hapus() {
+	public function hapus()
+	{
 		$id = $this->input->post('id');
 		$db = $this->crud->deleteWhere('ref_indikators', ['id' => $id]);
-		if($db)
-        {
+		if ($db) {
 			$this->crud->deleteWhere('t_realisasi', ['fid_indikator' => $id]);
 			$this->crud->deleteWhere('t_target', ['fid_indikator' => $id]);
-            $msg = 200;
-        } else {
-            $msg = 400;
-        }
+			$msg = 200;
+		} else {
+			$msg = 400;
+		}
 
-        echo json_encode($msg);
+		echo json_encode($msg);
 	}
 }

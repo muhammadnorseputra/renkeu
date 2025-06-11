@@ -155,7 +155,7 @@
                                 $indikator_input_view = $ip['persentase'] . "%";
                             }
 
-                            $target_anggaran = $this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal;
+                            $target_anggaran = $this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
                             $target_kinerja = $indikator_input_count;
 
                             $rowspan = $toEnd++;
@@ -232,7 +232,7 @@
                                     $indikator_input_count = $ik['persentase'];
                                     $indikator_input_view = $ik['persentase'] . "%";
                                 }
-                                $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal;
+                                $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
                                 $target_kinerja = $indikator_input_count;
 
                                 // Realisasi
@@ -303,7 +303,7 @@
                                         $indikator_input_view = $isk['persentase'] . "%";
                                     }
 
-                                    $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id)->row()->total_pagu_awal;
+                                    $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
                                     $target_kinerja = $indikator_input_count;
 
                                     $rowspan = $toEnd++;

@@ -1,37 +1,38 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Login extends CI_Controller {
+class Login extends CI_Controller
+{
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/userguide3/general/urls.html
-	 */
-	public function __construct()
+    /**
+     * Index Page for this controller.
+     *
+     * Maps to the following URL
+     * 		http://example.com/index.php/welcome
+     *	- or -
+     * 		http://example.com/index.php/welcome/index
+     *	- or -
+     * Since this controller is set as the default controller in
+     * config/routes.php, it's displayed at http://example.com/
+     *
+     * So any other public methods not prefixed with an underscore will
+     * map to /index.php/welcome/<method_name>
+     * @see https://codeigniter.com/userguide3/general/urls.html
+     */
+    public function __construct()
     {
         parent::__construct();
         $this->load->model('ModelAuth', 'auth');
     }
 
-	public function index()
-	{
-		if($this->session->userdata('user_id') != ''):
+    public function index()
+    {
+        if ($this->session->userdata('user_id') != ''):
             redirect(base_url('app/dashboard'));
             return false;
         endif;
 
-        if($this->session->userdata('pic') != '' && $this->session->userdata('user_name') != ''): 
+        if ($this->session->userdata('pic') != '' && $this->session->userdata('user_name') != ''):
             redirect(base_url('/lockscreen'));
             return false;
         endif;
@@ -39,17 +40,17 @@ class Login extends CI_Controller {
         $data = [
             'title' => 'Authentication - Emonev App'
         ];
-		$this->load->view('pages/login', $data);
-	}
+        $this->load->view('pages/login', $data);
+    }
 
     public function lockScreen()
-	{
-		if($this->session->userdata('user_id') != ''):
+    {
+        if ($this->session->userdata('user_id') != ''):
             redirect(base_url('app/dashboard'));
             return false;
         endif;
 
-        if($this->session->userdata('pic') == '' && $this->session->userdata('user_name') == ''): 
+        if ($this->session->userdata('pic') == '' && $this->session->userdata('user_name') == ''):
             redirect(base_url('/'));
             return false;
         endif;
@@ -57,22 +58,22 @@ class Login extends CI_Controller {
         $data = [
             'title' => 'Lock Screen - Emonev App'
         ];
-		$this->load->view('pages/lockscreen', $data);
-	}
+        $this->load->view('pages/lockscreen', $data);
+    }
 
-	public function cek_akun()
+    public function cek_akun()
     {
         $true_token = $this->session->csrf_token;
-        if($this->input->post('token') != $true_token):
+        if ($this->input->post('token') != $true_token):
             $this->output->set_status_header('403');
             $this->session->unset_userdata('csrf_token');
             show_error('This request rejected');
             return false;
-            // $json_msg = ['valid' => false, 'msg' => 'Token Invalid', 'redirect' => base_url('console')];
-            // return false;   
+        // $json_msg = ['valid' => false, 'msg' => 'Token Invalid', 'redirect' => base_url('console')];
+        // return false;   
         endif;
 
-        if(!empty($this->session->userdata('user_id'))):
+        if (!empty($this->session->userdata('user_id'))):
             return redirect(base_url('app/dashboard'));
         endif;
 
@@ -103,6 +104,8 @@ class Login extends CI_Controller {
                 'jobdesk' => $row->jobdesk,
                 'check_in' => date('Y-m-d H:i:s'),
                 'check_out' => $row->check_out,
+                'tahun_anggaran' => $this->input->post('tahun', true),
+                'is_perubahan' => "0",
             );
             $this->db->update('t_users', ['check_in' => date('Y-m-d H:i:s')], ['id' => $row->id]);
             $this->session->set_userdata($data_session);
@@ -118,21 +121,21 @@ class Login extends CI_Controller {
     public function removeSession()
     {
         clearstatcache();
-        $redirectTo = isset($_GET['continue']) ? "?continue=".$_GET['continue'] : '';
-        $data = array('user_name', 'user_id','csrf_token');
+        $redirectTo = isset($_GET['continue']) ? "?continue=" . $_GET['continue'] : '';
+        $data = array('user_name', 'user_id', 'csrf_token');
         $this->db->update('t_users', ['check_out' => date('Y-m-d H:i:s')], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
         $this->session->sess_destroy();
-        redirect(base_url('/login'.$redirectTo));
+        redirect(base_url('/login' . $redirectTo));
     }
 
     public function lockScreenAction()
     {
         clearstatcache();
-        $redirectTo = isset($_GET['continue']) ? "/lockscreen?continue=".urlencode($_GET['continue']) : '/lockscreen';
-        $data = array('user_id','csrf_token');
+        $redirectTo = isset($_GET['continue']) ? "/lockscreen?continue=" . urlencode($_GET['continue']) : '/lockscreen';
+        $data = array('user_id', 'csrf_token');
         $this->db->update('t_users', ['check_out' => date('Y-m-d H:i:s')], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
-        redirect(base_url('/login'.$redirectTo));
+        redirect(base_url('/login' . $redirectTo));
     }
 }

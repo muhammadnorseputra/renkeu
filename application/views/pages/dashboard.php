@@ -74,20 +74,54 @@
                         <div id="chart_transaksi" class="demo-placeholder"></div>
                     </div>
                     <div class="tiles">
-                        <?php foreach ($chart['triwulan'] as $tw => $v) : ?>
-                            <div class="col-3 col-sm-3 col-md-3 tile">
-                                <?php
-                                $tw_jumlah = $this->spj->TransaksiTriwulan($v->id);
-                                $percentase =  ($tw_jumlah / $panel['program_total_pagu']) * 100;
-                                $percentase_cek = ($percentase != 0) ? $percentase : '';
-                                ?>
-                                <span>TOTAL <?= $v->nama ?></span>
-                                <h2>Rp. <?= @nominal($tw_jumlah); ?></h2>
-                                <div class="progress progress_sm m-0" style="width: 100%;">
-                                    <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
-                                </div>
+                        <div class="col-3 col-sm-3 col-md-3 tile">
+                            <?php
+                            $tw_jumlah = $chart['triwulan_1'];
+                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                            ?>
+                            <span>TOTAL TRIWULAN I</span>
+                            <h2>Rp. <?= @nominal($chart['triwulan_1']); ?></h2>
+                            <div class="progress progress_sm m-0" style="width: 100%;">
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
                             </div>
-                        <?php endforeach; ?>
+                        </div>
+                        <div class="col-3 col-sm-3 col-md-3 tile">
+                            <?php
+                            $tw_jumlah = $chart['triwulan_2'];
+                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                            ?>
+                            <span>TOTAL TRIWULAN II</span>
+                            <h2>Rp. <?= @nominal($chart['triwulan_2']); ?></h2>
+                            <div class="progress progress_sm m-0" style="width: 100%;">
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
+                            </div>
+                        </div>
+                        <div class="col-3 col-sm-3 col-md-3 tile">
+                            <?php
+                            $tw_jumlah = $chart['triwulan_3'];
+                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                            ?>
+                            <span>TOTAL TRIWULAN III</span>
+                            <h2>Rp. <?= @nominal($chart['triwulan_3']); ?></h2>
+                            <div class="progress progress_sm m-0" style="width: 100%;">
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
+                            </div>
+                        </div>
+                        <div class="col-3 col-sm-3 col-md-3 tile">
+                            <?php
+                            $tw_jumlah = $chart['triwulan_4'];
+                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                            ?>
+                            <span>TOTAL TRIWULAN IV</span>
+                            <h2>Rp. <?= @nominal($chart['triwulan_4']); ?></h2>
+                            <div class="progress progress_sm m-0" style="width: 100%;">
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -307,57 +341,57 @@
         const data = {
             labels: labels,
             datasets: [{
-                label: 'APPROVE',
-                data: <?= $chart['spj_count_ms'] ?>,
-                backgroundColor: [
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                ],
-                borderColor: [
-                    'rgb(75, 192, 192)',
-                    'rgb(75, 192, 192)',
-                    'rgb(75, 192, 192)',
-                    'rgb(75, 192, 192)',
-                ],
-                borderWidth: 1
-            }, 
-            {
-                label: 'TMS',
-                data: <?= $chart['spj_count_tms'] ?>,
-                backgroundColor: [
-                    'rgba(255, 0, 0, 0.2)',
-                    'rgba(255, 0, 0, 0.2)',
-                    'rgba(255, 0, 0, 0.2)',
-                    'rgba(255, 0, 0, 0.2)',
-                ],
-                borderColor: [
-                    'rgb(255, 0, 0)',
-                    'rgb(255, 0, 0)',
-                    'rgb(255, 0, 0)',
-                    'rgb(255, 0, 0)',
-                ],
-                borderWidth: 1
-            }, 
-            {
-                label: 'BTL',
-                data: <?= $chart['spj_count_btl'] ?>,
-                backgroundColor: [
-                    'rgba(255, 102, 0, 0.2)',
-                    'rgba(255, 102, 0, 0.2)',
-                    'rgba(255, 102, 0, 0.2)',
-                    'rgba(255, 102, 0, 0.2)',
-                ],
-                borderColor: [
-                    'rgb(255, 102, 0)',
-                    'rgb(255, 102, 0)',
-                    'rgb(255, 102, 0)',
-                    'rgb(255, 102, 0)',
-                ],
-                borderWidth: 1
-            }
-        ]
+                    label: 'APPROVE',
+                    data: <?= $chart['spj_count_ms'] ?>,
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgb(75, 192, 192)',
+                        'rgb(75, 192, 192)',
+                        'rgb(75, 192, 192)',
+                        'rgb(75, 192, 192)',
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: 'TMS',
+                    data: <?= $chart['spj_count_tms'] ?>,
+                    backgroundColor: [
+                        'rgba(255, 0, 0, 0.2)',
+                        'rgba(255, 0, 0, 0.2)',
+                        'rgba(255, 0, 0, 0.2)',
+                        'rgba(255, 0, 0, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgb(255, 0, 0)',
+                        'rgb(255, 0, 0)',
+                        'rgb(255, 0, 0)',
+                        'rgb(255, 0, 0)',
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: 'BTL',
+                    data: <?= $chart['spj_count_btl'] ?>,
+                    backgroundColor: [
+                        'rgba(255, 102, 0, 0.2)',
+                        'rgba(255, 102, 0, 0.2)',
+                        'rgba(255, 102, 0, 0.2)',
+                        'rgba(255, 102, 0, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgb(255, 102, 0)',
+                        'rgb(255, 102, 0)',
+                        'rgb(255, 102, 0)',
+                        'rgb(255, 102, 0)',
+                    ],
+                    borderWidth: 1
+                }
+            ]
         };
         const config = {
             type: 'horizontalBar',

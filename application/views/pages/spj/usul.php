@@ -65,16 +65,16 @@
                     <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" onclick="showModalSearchKode()" <?= $disabled_status ?> class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-light rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Kode</button>
                     <div id="help-block-koderek" class="row col-md-12"></div>
                 </div>
-                <?php if(!empty($detail->fid_kegiatan)): ?>
-                <div class="row">
-                    <div class="col-md-12" id="loadKegiatan">
-                        <ul class="list-unstyled d-lg-flex justify-content-start font-weight-bold">
-                            <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-warning mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_kegiatans',$detail->fid_kegiatan) ?></li>
-                            <li class="d-inline-flex align-items-center mx-md-2"><i class="fa fa-file-code-o text-info ml-md-2 mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_sub_kegiatans',$detail->fid_sub_kegiatan) ?></li>
-                            <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-success ml-md- mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_uraians',$detail->fid_uraian) ?> <i class="fa fa-check-circle text-success ml-2"></i></li>
-                        </ul>
+                <?php if (!empty($detail->fid_kegiatan)): ?>
+                    <div class="row">
+                        <div class="col-md-12" id="loadKegiatan">
+                            <ul class="list-unstyled d-lg-flex justify-content-start font-weight-bold">
+                                <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-warning mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_kegiatans', $detail->fid_kegiatan) ?></li>
+                                <li class="d-inline-flex align-items-center mx-md-2"><i class="fa fa-file-code-o text-info ml-md-2 mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_sub_kegiatans', $detail->fid_sub_kegiatan) ?></li>
+                                <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-success ml-md- mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_uraians', $detail->fid_uraian) ?> <i class="fa fa-check-circle text-success ml-2"></i></li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
                 <?php endif; ?>
                 <div class="row">
                     <div class="col-12 col-md-3">
@@ -94,36 +94,16 @@
                     </div>
                     <div class="col-12 col-md-3">
                         <div class="form-group">
-                            <label class="col-form-label label-align" for="bulan">SPJ Bulan</label>
-                            <select name="bulan" id="bulan" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-bulan" <?= $disabled_status ?>>
-                                <option value="">Pilih Bulan</option>
-                                <?php
-                                $m = date('m');
-                                foreach (bulanIndo() as $month => $monthName) {
-                                    if (isset($detail->bulan)) {
-                                        $selected = $detail->bulan == $month ? 'selected' : '';
-                                    } else {
-                                        $selected = date('m') == $month ? 'selected' : '';
-                                    }
-                                    echo '<option value="' . $month . '" ' . $selected . '>' . $monthName . '</option>';
-                                }
-                                ?>
-                            </select>
-                            <div id="help-block-bulan" class="row col-md-12"></div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-3">
-                        <div class="form-group">
                             <label class="col-form-label label-align" for="tahun">SPJ Tahun</label>
                             <select name="tahun" id="tahun" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-tahun" <?= $disabled_status ?>>
                                 <option value="">Pilih Tahun</option>
                                 <?php
                                 $year = date('Y');
-                                for ($i = $year; $i <= $year + 3; $i++) {
+                                for ($i = $year - 1; $i <= $year + 1; $i++) {
                                     if (isset($detail->tahun)) {
                                         $selected = $detail->tahun == $i ? 'selected' : '';
                                     } else {
-                                        $selected = date('Y') == $i ? 'selected' : '';
+                                        $selected = $year == $i ? 'selected' : '';
                                     }
                                     echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
                                 }
@@ -134,7 +114,7 @@
                     </div>
                 </div>
                 <?php
-                $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal : 0;
+                $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian(@$detail->fid_uraian, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal : 0;
                 $totalRealisasiPagu =  $totalPaguAwal - $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, 'SELESAI');
                 $totalSisaPagu = ($totalRealisasiPagu - @$detail->jumlah);
                 ?>

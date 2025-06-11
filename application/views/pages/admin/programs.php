@@ -375,7 +375,7 @@
 <!-- Modal Tambah Alokasi Pagu Kegiatan -->
 <div class="modal fade modal-alokasipagu" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
-        <?= form_open('#', ['id' => 'formAlokasiPagu', 'data-parsley-validate' => '']); ?>
+        <?= form_open('#', ['id' => 'formAlokasiPagu', 'data-parsley-validate' => ''], ['is_perubahan' => '']); ?>
         <div class="modal-content rounded-0">
             <div class="modal-header bg-success text-white rounded-0">
                 <h4 class="modal-title" id="myModalLabel">Alokasi Pagu Anggaran</h4>
@@ -396,8 +396,6 @@
         <?= form_close(); ?>
     </div>
 </div>
-
-
 
 <script>
     $(function() {
@@ -580,7 +578,7 @@
 
         $(document).on("click", "#myTab a[href='#uraian']", function(e) {
             let _ = $(this),
-            href = _.attr('href');
+                href = _.attr('href');
             // console.log(_.attr('href'))
             const url = new URL(window.location.href);
             url.searchParams.set('tab', href);
@@ -1016,13 +1014,14 @@
 
     })
 
-    function InputPagu(id, url, paguAwal) {
+    function InputPagu(id, url, paguAwal, is_perubahan) {
         let $modal = $(".modal-alokasipagu"),
             $form = $modal.find("form#formAlokasiPagu");
         $modal.modal('show');
 
         $modal.on('shown.bs.modal', function(e) {
             $form.find('input[name="jumlah"]').val(formatRupiah(paguAwal));
+            $form.find('input[name="is_perubahan"]').val(is_perubahan);
             $form.on("submit", function(e) {
                 e.preventDefault();
                 $data = $(this).serializeArray();

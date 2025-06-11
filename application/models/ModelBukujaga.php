@@ -1,7 +1,9 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (! defined('BASEPATH')) exit('No direct script access allowed');
 
-class ModelBukujaga extends CI_Model {
-    public function getUraianBySubKegiatan($sub_kegiatan_id) {
+class ModelBukujaga extends CI_Model
+{
+    public function getUraianBySubKegiatan($sub_kegiatan_id)
+    {
         $this->db->select('*');
         $this->db->from('ref_uraians');
         $this->db->where('fid_sub_kegiatan', $sub_kegiatan_id);
@@ -13,6 +15,7 @@ class ModelBukujaga extends CI_Model {
         $this->db->select('total_pagu_awal');
         $this->db->from('t_pagu');
         $this->db->where($whr);
+        $this->db->where('is_perubahan', $this->session->userdata('is_perubahan'));
         $q = $this->db->get();
         return $q->row();
     }
