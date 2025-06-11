@@ -98,9 +98,9 @@ else:
 	$db['default'] = array(
 		'dsn'	=> '',
 		'hostname' => 'localhost',
-		'username' => 'bkpsdm_simev',
-		'password' => 'bkpsdm_simev',
-		'database' => 'bkpsdm_simev',
+		'username' => 'simev_bkpsdm',
+		'password' => 'simev_bkpsdm',
+		'database' => 'simev_bkpsdm',
 		'dbdriver' => 'mysqli',
 		'dbprefix' => '',
 		'pconnect' => FALSE,
