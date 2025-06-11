@@ -373,6 +373,7 @@ class Programs extends CI_Controller
         $html .= '<tbody class="list">';
         $no = 1;
         $total_all_pagu = 0;
+        $total_all_pagu_perubahan = 0;
         foreach ($db->result() as $r) :
             //get jumlah spj berdasarkan id uraian
             $jmlSpj = $this->crud->getWhere('spj', ['fid_uraian' => $r->id])->num_rows();
@@ -382,21 +383,24 @@ class Programs extends CI_Controller
 
             $totalPaguPerubahan = !empty($paguPerubahan->total_pagu_awal) ? $paguPerubahan->total_pagu_awal : 0;
             $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
-            $total_all_pagu += $totalPaguAwal;
+
 
             if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'SUPER_USER' || $this->session->userdata('role') === 'VERIFICATOR'):
                 $button_hapus = '<td width="5%" class="text-center">
             <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_uraians') . '\',\'URAIAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
         </td>';
             else:
-                $button_hapus = '';
+                $button_hapus = '<td></td>';
             endif;
             $button_edit = '<td width="5%" class="text-center">
                 <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_uraians') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
                 ' . $button_hapus . '
             </td>';
 
-            $button_pagu = '<td width="10%" class="text-right">
+            // Pagu Awal
+            if (!$this->session->userdata('is_perubahan')) {
+                $total_all_pagu += $totalPaguAwal;
+                $button_pagu = '<td width="10%" class="text-right">
                 <div class="text-right">
                 <b>' . nominal($totalPaguAwal) . '</b>
             </td>
@@ -404,7 +408,16 @@ class Programs extends CI_Controller
             <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\',0)" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
             </div>
             </td>';
-            $button_pagu_perubahan = '<td width="10%" class="text-right">
+            } else {
+                $button_pagu = '<td></td>
+                <td></td>';
+            }
+
+            // Pagu Perubahan
+            if ($this->session->userdata('is_perubahan')) {
+
+                $total_all_pagu_perubahan += $totalPaguPerubahan;
+                $button_pagu_perubahan = '<td width="10%" class="text-right">
                 <div class="text-right">
                 <b>' . nominal($totalPaguPerubahan) . '</b>
             </td>
@@ -412,6 +425,10 @@ class Programs extends CI_Controller
             <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguPerubahan . '\',1)" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
             </div>
             </td>';
+            } else {
+                $button_pagu_perubahan = '<td></td>
+                <td></td>';
+            }
             $html .= '<tr>
                 <td class="text-center">
                     ' . $no . '
@@ -437,6 +454,7 @@ class Programs extends CI_Controller
             <tr>
                 <td colspan="6" class="text-right align-middle"><b>Total</b></td>
                 <td colspan="2" class="text-left"><b>Rp. ' . nominal($total_all_pagu) . '</b></td>
+                <td colspan="2" class="text-left"><b>Rp. ' . nominal($total_all_pagu_perubahan) . '</b></td>
             </tr>
         ';
         $html .= '</tbody>';
