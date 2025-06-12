@@ -49,10 +49,14 @@
                             <i class="fa fa-money"></i> Anggaran & Kinerja <span class="fa fa-chevron-down"></span>
                         </a>
                         <ul class="nav child_menu">
-                            <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target Indikator">Target</a></li>
+                            <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN'])): ?>
+                                <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target Indikator">Target</a></li>
+                            <?php endif; ?>
                             <li><a href="<?= base_url('app/realisasi') ?>" class="loadContent" title="Realisasi Indikator">Realisasi</a></li>
                             <li><a href="<?= base_url('app/capaian') ?>" class="loadContent" title="Capaian Indikator">Capaian</a></li>
-                            <li><a href="<?= base_url('app/capaian/laporan') ?>" class="loadContent" title="Target Laporan">Laporan Tahunan</a></li>
+                            <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN'])): ?>
+                                <li><a href="<?= base_url('app/capaian/laporan') ?>" class="loadContent" title="Target Laporan">Laporan Tahunan</a></li>
+                            <?php endif ?>
                         </ul>
                     </li>
                 <?php endif; ?>
