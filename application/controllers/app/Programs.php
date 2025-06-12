@@ -280,8 +280,8 @@ class Programs extends CI_Controller
             //get alokasi pagu berdasarkan id kegiatan
             // $pagu = $this->crud->getWhere('t_pagu', ['fid_sub_kegiatan' => $r->id])->row();
             // $totalPaguAwal = !empty($pagu->total_pagu_awal) ? $pagu->total_pagu_awal : 0;
-            $totalPaguAwal = !empty($this->target->getAlokasiPaguSubKegiatan($r->id, "0")->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id, "0")->row()->total_pagu_awal : 0;
-            $totalPaguPerubahan = !empty($this->target->getAlokasiPaguSubKegiatan($r->id, "1")->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id, "1")->row()->total_pagu_awal : 0;
+            $totalPaguAwal = !empty($this->target->getAlokasiPaguSubKegiatan($r->id, "0", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id, "0", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal : 0;
+            $totalPaguPerubahan = !empty($this->target->getAlokasiPaguSubKegiatan($r->id, "1", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguSubKegiatan($r->id, "1", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal : 0;
 
             $button_hapus = '<td width="5%" class="text-center">
                 <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_sub_kegiatans') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
