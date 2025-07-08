@@ -55,6 +55,183 @@ class Anggarankinerja extends RestController
         return $this->response($data, RestController::HTTP_OK);
     }
 
+    public function tujuan_get()
+    {
+        // Query
+        $unor_id = $this->query('unor_id');
+        $tahun_anggaran = $this->query('tahun_anggaran');
+
+        $validation = $this->validator->validate($_GET, [
+            // 'unor_id'   => 'required|numeric',
+            'tahun_anggaran' => 'required|numeric|digits:4'
+        ]);
+
+        if ($validation->fails()) {
+            return $this->response([
+                'status' => false,
+                'message' => 'Data retrieved failed',
+                'errors' => $validation->errors()->toArray()
+            ], RestController::HTTP_INTERNAL_ERROR);
+            die();
+        }
+        $tujuan = $this->api->tujuan($unor_id, $tahun_anggaran);
+
+        if ($tujuan->num_rows() === 0) {
+            return $this->response([
+                'status' => false,
+                'message' => 'Data retrieved failed',
+                'errors' => 'Data Empty'
+            ], RestController::HTTP_NOT_FOUND);
+            die();
+        }
+
+        $data = [
+            'status' => true,
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'tujuan' => $tujuan->result(),
+            ]
+        ];
+
+        return $this->response($data, RestController::HTTP_OK);
+    }
+
+    public function tujuan_post()
+    {
+        $tujuan = $this->post('tujuan');
+        $is_perubahan = $this->query('is_perubahan');
+        $tahun_anggaran = $this->query('tahun_anggaran');
+        $periode_id = $this->query('periode');
+        $indikator_id = $this->query('indikator');
+
+        $validation = $this->validator->validate($this->post() + $this->query(), [
+            'is_perubahan'   => 'required|numeric|digits:1',
+            'tahun_anggaran' => 'required|numeric|digits:4',
+            'tujuan' => 'required|numeric'
+        ]);
+
+        if ($validation->fails()) {
+            return $this->response([
+                'status' => false,
+                'message' => 'Data retrieved failed',
+                'errors' => $validation->errors()->toArray()
+            ]);
+            die();
+        }
+
+        // Target
+        $target_anggaran = $this->target->getAlokasiPaguTujuan($tujuan, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal;
+
+        // Realisasi
+        $realisasi_kinerja = [];
+        $realisasi_anggaran = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $realisasi_kinerja[$i] = $this->realisasi->getRealisasiByIndikatorId($i, $indikator_id)->row();
+            $realisasi_anggaran[$i] = (int)  $this->realisasi->getRealisasiTujuan($i, $tujuan, $tahun_anggaran);
+        }
+
+
+        $data = [
+            'status' => true,
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'target' => (int) $target_anggaran,
+                'realisasi_anggaran' => $realisasi_anggaran,
+                'realisasi_kinerja' => $realisasi_kinerja
+            ]
+        ];
+
+        return $this->response($data, RestController::HTTP_OK);
+    }
+
+    public function sasaran_get()
+    {
+        // Query
+        $tujuan_id = $this->query('tujuan_id');
+        $tahun_anggaran = $this->query('tahun_anggaran');
+
+        $validation = $this->validator->validate($_GET, [
+            'tujuan_id'   => 'required|numeric',
+            'tahun_anggaran' => 'required|numeric|digits:4'
+        ]);
+
+        if ($validation->fails()) {
+            return $this->response([
+                'status' => false,
+                'message' => 'Data retrieved failed',
+                'errors' => $validation->errors()->toArray()
+            ], RestController::HTTP_INTERNAL_ERROR);
+            die();
+        }
+
+        $sasaran = $this->api->sasaran($tujuan_id, $tahun_anggaran);
+
+        if ($sasaran->num_rows() === 0) {
+            return $this->response([
+                'status' => false,
+                'message' => 'Data retrieved failed',
+                'errors' => 'Data Empty'
+            ], RestController::HTTP_NOT_FOUND);
+            die();
+        }
+
+        $data = [
+            'status' => true,
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'sasaran' => $sasaran->result(),
+            ]
+        ];
+
+        return $this->response($data, RestController::HTTP_OK);
+    }
+
+    public function sasaran_post()
+    {
+        $sasaran = $this->post('sasaran');
+        $is_perubahan = $this->query('is_perubahan');
+        $tahun_anggaran = $this->query('tahun_anggaran');
+        $periode_id = $this->query('periode');
+        $indikator_id = $this->query('indikator');
+
+        $validation = $this->validator->validate($this->post() + $this->query(), [
+            'is_perubahan'   => 'required|numeric|digits:1',
+            'tahun_anggaran' => 'required|numeric|digits:4',
+            'sasaran' => 'required|numeric'
+        ]);
+
+        if ($validation->fails()) {
+            return $this->response([
+                'status' => false,
+                'message' => 'Data retrieved failed',
+                'errors' => $validation->errors()->toArray()
+            ]);
+            die();
+        }
+
+        // Target
+        $target_anggaran = $this->target->getAlokasiPaguSasaran($sasaran, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal;
+
+        // Realisasi
+        $realisasi_kinerja = [];
+        $realisasi_anggaran = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $realisasi_kinerja[$i] = $this->realisasi->getRealisasiByIndikatorId($i, $indikator_id)->row();
+            $realisasi_anggaran[$i] = (int) $this->realisasi->getRealisasiSasaran($i, $sasaran, $tahun_anggaran);
+        }
+        $data = [
+            'status' => true,
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'target' => (int) $target_anggaran,
+                'realisasi_anggaran' => $realisasi_anggaran,
+                'realisasi_kinerja' => $realisasi_kinerja
+            ]
+        ];
+
+        return $this->response($data, RestController::HTTP_OK);
+    }
+
     public function program_get()
     {
 
@@ -62,10 +239,12 @@ class Anggarankinerja extends RestController
         $is_perubahan = $this->query('is_perubahan');
         $tahun_anggaran = $this->query('tahun_anggaran');
         $part = $this->query('part');
+        $sasaran = $this->query('sasaran_id');
 
         $validation = $this->validator->validate($_GET, [
             'is_perubahan'   => 'required|numeric|digits:1',
-            'tahun_anggaran' => 'required|numeric|digits:4'
+            'tahun_anggaran' => 'required|numeric|digits:4',
+            'sasaran_id' => 'required|numeric'
         ]);
 
         if ($validation->fails()) {
@@ -81,7 +260,7 @@ class Anggarankinerja extends RestController
             'status' => true,
             'message' => 'Data retrieved successfully',
             'data' => [
-                'programs' => $this->api->program($part, $tahun_anggaran)->result(),
+                'programs' => $this->api->program($part, $sasaran, $tahun_anggaran)->result(),
             ]
         ];
 
@@ -115,15 +294,19 @@ class Anggarankinerja extends RestController
         $target_anggaran = $this->target->getAlokasiPaguProgram($program, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal;
 
         // Realisasi
-        $realisasi_kinerja = $this->realisasi->getRealisasiByIndikatorId($periode_id, $indikator_id)->row();
-        $realisasi_anggaran = $this->realisasi->getRealisasiProgram($periode_id, $program);
+        $realisasi_kinerja = [];
+        $realisasi_anggaran = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $realisasi_kinerja[$i] = $this->realisasi->getRealisasiByIndikatorId($i, $indikator_id)->row();
+            $realisasi_anggaran[$i] = (int) $this->realisasi->getRealisasiProgram($i, $program);
+        }
 
         $data = [
             'status' => true,
             'message' => 'Data retrieved successfully',
             'data' => [
                 'target' => (int) $target_anggaran,
-                'realisasi_anggaran' => (int) $realisasi_anggaran,
+                'realisasi_anggaran' => $realisasi_anggaran,
                 'realisasi_kinerja' => $realisasi_kinerja
             ]
         ];
@@ -203,15 +386,18 @@ class Anggarankinerja extends RestController
         $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal;
 
         // Realisasi
-        $realisasi_kinerja = $this->realisasi->getRealisasiByIndikatorId($periode_id, $indikator_id)->row();
-        $realisasi_anggaran = $this->realisasi->getRealisasiKegiatan($periode_id, $kegiatan);
-
+        $realisasi_kinerja = [];
+        $realisasi_anggaran = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $realisasi_kinerja[$i] = $this->realisasi->getRealisasiByIndikatorId($i, $indikator_id)->row();
+            $realisasi_anggaran[$i] = (int) $this->realisasi->getRealisasiKegiatan($i, $kegiatan);
+        }
         $data = [
             'status' => true,
             'message' => 'Data retrieved successfully',
             'data' => [
                 'target' => (int) $target_anggaran,
-                'realisasi_anggaran' => (int) $realisasi_anggaran,
+                'realisasi_anggaran' => $realisasi_anggaran,
                 'realisasi_kinerja' => $realisasi_kinerja
             ]
         ];
@@ -264,7 +450,7 @@ class Anggarankinerja extends RestController
 
     public function subkegiatan_post()
     {
-        $sub_kegiatan = $this->post('sub_kegiatan');
+        $sub_kegiatan = $this->post('subkegiatan');
         $is_perubahan = $this->query('is_perubahan');
         $tahun_anggaran = $this->query('tahun_anggaran');
         $periode_id = $this->query('periode');
@@ -273,7 +459,7 @@ class Anggarankinerja extends RestController
         $validation = $this->validator->validate($this->post() + $this->query(), [
             'is_perubahan'   => 'required|numeric|digits:1',
             'tahun_anggaran' => 'required|numeric|digits:4',
-            'sub_kegiatan' => 'required|numeric'
+            'subkegiatan' => 'required|numeric'
         ]);
 
         if ($validation->fails()) {
@@ -289,15 +475,18 @@ class Anggarankinerja extends RestController
         $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal;
 
         // Realisasi
-        $realisasi_kinerja = $this->realisasi->getRealisasiByIndikatorId($periode_id, $indikator_id)->row();
-        $realisasi_anggaran = $this->realisasi->getRealisasiSubKegiatan($periode_id, $sub_kegiatan);
-
+        $realisasi_kinerja = [];
+        $realisasi_anggaran = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $realisasi_kinerja[$i] = $this->realisasi->getRealisasiByIndikatorId($i, $indikator_id)->row();
+            $realisasi_anggaran[$i] = (int) $this->realisasi->getRealisasiSubKegiatan($i, $sub_kegiatan);
+        }
         $data = [
             'status' => true,
             'message' => 'Data retrieved successfully',
             'data' => [
                 'target' => (int) $target_anggaran,
-                'realisasi_anggaran' => (int) $realisasi_anggaran,
+                'realisasi_anggaran' => $realisasi_anggaran,
                 'realisasi_kinerja' => $realisasi_kinerja
             ]
         ];
@@ -313,7 +502,7 @@ class Anggarankinerja extends RestController
 
         $validation = $this->validator->validate($_GET, [
             'id'   => 'required|numeric',
-            'type' => 'required|in:fid_program,fid_kegiatan,fid_sub_kegiatan'
+            'type' => 'required|in:fid_tujuan,fid_sasaran,fid_program,fid_kegiatan,fid_sub_kegiatan'
         ]);
 
         if ($validation->fails()) {
@@ -326,7 +515,7 @@ class Anggarankinerja extends RestController
 
         try {
             // Indikator Program
-            $indikator = $this->realisasi->getIndikator([$type => $id]);
+            $indikator = $this->realisasi->getIndikator([$type => $id], null);
 
             if ($indikator->num_rows() === 0) {
                 return $this->response([

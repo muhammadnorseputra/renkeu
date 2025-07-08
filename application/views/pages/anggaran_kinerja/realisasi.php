@@ -37,9 +37,8 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
             <table class="table table-bordered">
                 <thead>
                     <tr class="text-center">
-                        <th rowspan="2" class="align-middle">No</th>
-                        <th rowspan="2" class="align-middle sticky-col">Tujuan</th>
-                        <th rowspan="2" class="align-middle sticky-col">Sasaran</th>
+                        <th rowspan="2" class="align-middle">Kode</th>
+                        <th rowspan="2" class="align-middle">Tujuan & Sasaran</th>
                         <th rowspan="2" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
                         <th rowspan="2" class="align-middle">Indikator Kinerja</th>
                         <th colspan="2">Realisasi</th>
@@ -54,24 +53,24 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                 </thead>
                 <tbody>
                     <?php
-                    $no_level_1 = 1;
-                    $tujuan = "";
-                    $sasaran = "";
-                    foreach ($programs->result() as $program) :
-                        $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id]);
+                    $no_level_0 = "#";
+                    $tujuan = $this->target->getTujuan(['t.tahun' => $this->session->userdata('tahun_anggaran')]);
+                    foreach ($tujuan->result() as $t) :
+                        $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id], $this->session->userdata('part'));
                         $tr = "";
-                        if ($indikator_program->num_rows() > 0) :
-                            $indikator = $indikator_program->result_array();
+                        if ($indikator_tujuan->num_rows() > 0):
+                            $indikator = $indikator_tujuan->result_array();
                             $toEnd = count($indikator);
-                            foreach ($indikator as $key => $ip) :
-
+                            foreach ($indikator as $key => $r) :
+                                // Aksi
                                 if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') :
-                                    $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi(' . $ip['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
+                                    $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi(' . $r['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
                                 else:
                                     $btn_input = '';
                                 endif;
 
-                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ip['indikator_id'])->row();
+                                // Realisasi by indikator
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $r['indikator_id'])->row();
                                 if ($realisasi->persentase === "0") {
                                     $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
                                 } elseif ($realisasi->eviden === "0") {
@@ -87,16 +86,14 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     $link = "";
                                 }
 
-                                $tujuan = $realisasi->tujuan;
-                                $sasaran = $realisasi->sasaran;
-
+                                // Row
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
                                     $tr .= "";
                                 } elseif ($key === 0) { //first
                                     $tr .= "
-                                        <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiProgram($periode_id, $program->id)) . "</td>
+                                        <td class='align-middle'>" . $r['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiTujuan($periode_id, $t->id, $this->session->userdata('tahun_anggaran'))) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
@@ -104,7 +101,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 } else { //middle
                                     $tr .= "
                                     <tr class='bg-warning'>
-                                        <td class='align-middle'>" . $ip['nama'] . "</td>
+                                        <td class='align-middle'>" . $r['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
@@ -114,33 +111,29 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         endif;
                     ?>
                         <tr class="bg-warning">
-                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
-                            <td rowspan="<?= $toEnd ?>"><?= $tujuan; ?></td>
-                            <td rowspan="<?= $toEnd ?>"><?= $sasaran; ?></td>
-                            <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
+                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
+                            <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama ?> </td>
                             <?= $tr ?>
                         </tr>
                         <?php
-                        if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('user_name') === 'kaban' || $this->session->userdata('role') === 'ADMIN') :
-                            $kegiatans = $this->realisasi->kegiatans($program->id);
-                        else :
-                            $kegiatans = $this->realisasi->kegiatans($program->id, $this->session->userdata('part'));
-                        endif;
-
-                        $no_level_2 = 1;
-                        foreach ($kegiatans->result() as $kegiatan) :
-                            $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id]);
+                        $no_level_0_1 = "#1";
+                        $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
+                        foreach ($sasaran->result() as $s) :
+                            $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id], $this->session->userdata('part'));
                             $tr = "";
-                            if ($indikator_kegiatan->num_rows() > 0) :
-                                $indikator_keg = $indikator_kegiatan->result_array();
-                                $toEnd = count($indikator_keg);
-                                foreach ($indikator_keg as $key => $ik) :
-                                    if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'USER') :
-                                        $btn_input = '<button class="btn btn-warning btn-sm m-0" onclick="InputRealisasi(' . $ik['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
+                            if ($indikator_sasaran->num_rows() > 0):
+                                $indikator = $indikator_sasaran->result_array();
+                                $toEnd = count($indikator);
+                                foreach ($indikator as $key => $r) :
+                                    // Aksi
+                                    if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') :
+                                        $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi(' . $r['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
                                     else:
                                         $btn_input = '';
                                     endif;
-                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ik['indikator_id'])->row();
+
+                                    // Realisasi by indikator
+                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $r['indikator_id'])->row();
                                     if ($realisasi->persentase === "0") {
                                         $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
                                     } elseif ($realisasi->eviden === "0") {
@@ -150,26 +143,28 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     }
 
                                     // Link
-                                    if (!empty($realisasi->eviden_link)) {
+                                    if ($realisasi->eviden_link !== null || !empty($realisasi->eviden_link)) {
                                         $link = '<a href="' . $realisasi->eviden_link . '" target="_blank" class="btn btn-warning btn-sm m-0"><i class="fa fa-link"></i></a>';
                                     } else {
                                         $link = "";
                                     }
 
+                                    // Row
                                     $rowspan = $toEnd++;
                                     if (0 === --$toEnd) { //last
                                         $tr .= "";
                                     } elseif ($key === 0) { //first
                                         $tr .= "
-                                        <td class='align-middle'>" . $ik['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiKegiatan($periode_id, $kegiatan->id)) . "</td>
+                                        <td class='align-middle'>" . $r['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiSasaran($periode_id, $s->id, $this->session->userdata('tahun_anggaran'))) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
-                                        <td class='align-middle text-center'>" . $link . "</td>";
+                                        <td class='align-middle text-center'>" . $link . "</td>
+                                        ";
                                     } else { //middle
                                         $tr .= "
-                                    <tr class='bg-info text-white'>
-                                        <td class='align-middle'>" . $ik['nama'] . "</td>
+                                    <tr class='bg-success text-white'>
+                                        <td class='align-middle'>" . $r['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
@@ -178,29 +173,28 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 endforeach;
                             endif;
                         ?>
-                            <tr class="bg-info text-white">
-                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                                <td rowspan="<?= $toEnd ?>"></td>
-                                <td rowspan="<?= $toEnd ?>"></td>
-                                <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
+                            <tr class="bg-success text-white">
+                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0_1 ?></td>
+                                <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $s->nama ?> </td>
                                 <?= $tr ?>
                             </tr>
                             <?php
-                            $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
-                            $no_level_3 = 1;
-                            foreach ($sub_kegiatans->result() as $sub_kegiatan) :
-                                $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id]);
+                            $no_level_1 = 1;
+                            $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+                            foreach ($programs->result() as $program) :
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], $this->session->userdata('part'));
                                 $tr = "";
-                                if ($indikator_sub_kegiatan->num_rows() > 0) :
-                                    $indikator_sub = $indikator_sub_kegiatan->result_array();
-                                    $toEnd = count($indikator_sub);
-                                    foreach ($indikator_sub as $key => $isk) :
-                                        if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'USER') :
-                                            $btn_input = '<button class="btn btn-light btn-sm m-0" onclick="InputRealisasi(' . $isk['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
+                                if ($indikator_program->num_rows() > 0) :
+                                    $indikator = $indikator_program->result_array();
+                                    $toEnd = count($indikator);
+                                    foreach ($indikator as $key => $ip) :
+                                        if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
+                                            $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi(' . $ip['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
                                         else:
-                                            $btn_input = '';
+                                            $btn_input = "";
                                         endif;
-                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $isk['indikator_id'])->row();
+
+                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ip['indikator_id'])->row();
                                         if ($realisasi->persentase === "0") {
                                             $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
                                         } elseif ($realisasi->eviden === "0") {
@@ -221,16 +215,16 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                             $tr .= "";
                                         } elseif ($key === 0) { //first
                                             $tr .= "
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiSubKegiatan($periode_id, $sub_kegiatan->id)) . "</td>
+                                        <td class='align-middle'>" . $ip['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiProgram($periode_id, $program->id)) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
                                         ";
                                         } else { //middle
                                             $tr .= "
-                                    <tr>
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>
+                                    <tr class='bg-secondary text-white'>
+                                        <td class='align-middle'>" . $ip['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
@@ -239,24 +233,155 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     endforeach;
                                 endif;
                             ?>
-                                <tr>
-                                    <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                    <td rowspan="<?= $toEnd ?>"></td>
-                                    <td rowspan="<?= $toEnd ?>"></td>
-                                    <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                                <tr class="bg-secondary text-white">
+                                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
+                                    <td rowspan="<?= @$toEnd ?>"></td>
+                                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
                                     <?= $tr ?>
                                 </tr>
+                                <?php
+                                if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('user_name') === 'kaban' || $this->session->userdata('role') === 'ADMIN') :
+                                    $kegiatans = $this->realisasi->kegiatans($program->id);
+                                else :
+                                    $kegiatans = $this->realisasi->kegiatans($program->id, $this->session->userdata('part'));
+                                endif;
 
+                                $no_level_2 = 1;
+                                foreach ($kegiatans->result() as $kegiatan) :
+                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], $this->session->userdata('part'));
+                                    $tr = "";
+                                    if ($indikator_kegiatan->num_rows() > 0) :
+                                        $indikator_keg = $indikator_kegiatan->result_array();
+                                        $toEnd = count($indikator_keg);
+                                        foreach ($indikator_keg as $key => $ik) :
+                                            if ($this->session->userdata('role') === 'USER') :
+                                                $btn_input = '<button class="btn btn-warning btn-sm m-0" onclick="InputRealisasi(' . $ik['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
+                                            else:
+                                                $btn_input = '';
+                                            endif;
+                                            $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $ik['indikator_id'])->row();
+                                            if ($realisasi->persentase === "0") {
+                                                $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
+                                            } elseif ($realisasi->eviden === "0") {
+                                                $sum_realisasi = $realisasi->persentase . "%";
+                                            } else {
+                                                $sum_realisasi = "-";
+                                            }
+
+                                            // Link
+                                            if (!empty($realisasi->eviden_link)) {
+                                                $link = '<a href="' . $realisasi->eviden_link . '" target="_blank" class="btn btn-warning btn-sm m-0"><i class="fa fa-link"></i></a>';
+                                            } else {
+                                                $link = "";
+                                            }
+
+                                            $rowspan = $toEnd++;
+                                            if (0 === --$toEnd) { //last
+                                                $tr .= "";
+                                            } elseif ($key === 0) { //first
+                                                $tr .= "
+                                        <td class='align-middle'>" . $ik['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiKegiatan($periode_id, $kegiatan->id)) . "</td>
+                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $btn_input . "</td>
+                                        <td class='align-middle text-center'>" . $link . "</td>";
+                                            } else { //middle
+                                                $tr .= "
+                                    <tr class='bg-info text-white'>
+                                        <td class='align-middle'>" . $ik['nama'] . "</td>
+                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $btn_input . "</td>
+                                        <td class='align-middle text-center'>" . $link . "</td>
+                                    </tr>";
+                                            }
+                                        endforeach;
+                                    endif;
+                                ?>
+                                    <tr class="bg-info text-white">
+                                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                                        <td rowspan="<?= @$toEnd ?>"></td>
+                                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
+                                        <?= $tr ?>
+                                    </tr>
+                                    <?php
+                                    $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
+                                    $no_level_3 = 1;
+                                    foreach ($sub_kegiatans->result() as $sub_kegiatan) :
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], $this->session->userdata('part'));
+                                        $tr = "";
+                                        if ($indikator_sub_kegiatan->num_rows() > 0) :
+                                            $indikator_sub = $indikator_sub_kegiatan->result_array();
+                                            $toEnd = count($indikator_sub);
+                                            foreach ($indikator_sub as $key => $isk) :
+                                                if ($this->session->userdata('role') === 'USER') :
+                                                    $btn_input = '<button class="btn btn-light btn-sm m-0" onclick="InputRealisasi(' . $isk['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
+                                                else:
+                                                    $btn_input = '';
+                                                endif;
+                                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, $isk['indikator_id'])->row();
+                                                if ($realisasi->persentase === "0") {
+                                                    $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
+                                                } elseif ($realisasi->eviden === "0") {
+                                                    $sum_realisasi = $realisasi->persentase . "%";
+                                                } else {
+                                                    $sum_realisasi = "-";
+                                                }
+
+                                                // Link
+                                                if ($realisasi->eviden_link !== null || !empty($realisasi->eviden_link)) {
+                                                    $link = '<a href="' . $realisasi->eviden_link . '" target="_blank" class="btn btn-warning btn-sm m-0"><i class="fa fa-link"></i></a>';
+                                                } else {
+                                                    $link = "";
+                                                }
+
+                                                $rowspan = $toEnd++;
+                                                if (0 === --$toEnd) { //last
+                                                    $tr .= "";
+                                                } elseif ($key === 0) { //first
+                                                    $tr .= "
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiSubKegiatan($periode_id, $sub_kegiatan->id)) . "</td>
+                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $btn_input . "</td>
+                                        <td class='align-middle text-center'>" . $link . "</td>
+                                        ";
+                                                } else { //middle
+                                                    $tr .= "
+                                    <tr>
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $btn_input . "</td>
+                                        <td class='align-middle text-center'>" . $link . "</td>
+                                    </tr>";
+                                                }
+                                            endforeach;
+                                        endif;
+                                    ?>
+                                        <tr>
+                                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                            <td class="bg-success border-bottom-0" rowspan="<?= @$toEnd ?>"></td>
+                                            <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                                            <?= $tr ?>
+                                        </tr>
+
+                                    <?php
+                                        $no_level_3++;
+                                    endforeach;
+                                    ?>
+                                <?php
+                                    $no_level_2++;
+                                endforeach;
+                                ?>
                             <?php
-                                $no_level_3++;
+                                $no_level_1++;
                             endforeach;
                             ?>
                         <?php
-                            $no_level_2++;
+                            $no_level_0_1++;
                         endforeach;
                         ?>
                     <?php
-                        $no_level_1++;
+                        $no_level_0++;
                     endforeach;
                     ?>
                 </tbody>
@@ -278,14 +403,6 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="tujuan">Tujuan</label>
-                    <textarea name="tujuan" id="tujuan" cols="30" rows="4" class="form-control"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="sasaran">Sasaran</label>
-                    <textarea name="sasaran" id="sasaran" cols="30" rows="4" class="form-control"></textarea>
-                </div>
                 <div class="form-group">
                     <label for="nama">Nama Indikator <span class="text-danger">*</span></label>
                     <textarea name="nama" id="nama" cols="30" rows="4" class="form-control" disabled></textarea>
@@ -310,7 +427,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="keterangan_eviden">Jenis Eviden <span class="text-danger">*</span></label>
-                            <input type="text" name="keterangan_eviden" id="keterangan_eviden" class="form-control" required>
+                            <input type="text" name="keterangan_eviden" id="keterangan_eviden" class="form-control" required readonly>
                         </div>
                     </div>
                 </div>

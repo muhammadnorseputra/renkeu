@@ -37,14 +37,14 @@
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
     <div class="container d-flex align-items-center justify-content-between">
-    
+
       <div id="logo">
-        <h1 data-aos="fade-in"><?= getSetting('APPName') ?></h1>
+        <!-- <h1 data-aos="fade-in"><?= getSetting('APPName') ?></h1> -->
         <!-- Uncomment below if you prefer to use an image logo -->
         <!-- <a href="index.html"><img src="<?= base_url('template/landingpage/assets/img/logo.png') ?>" alt="" title="" /></a>-->
       </div>
 
-      <nav id="navbar" class="navbar">
+      <!-- <nav id="navbar" class="navbar">
         <ul>
           <li><a class="nav-link scrollto <?= isActive('/') ?>" href="<?= base_url('/') ?>">Home</a></li>
           <li><a class="nav-link scrollto <?= isActive('about') ?>" href="<?= base_url('frontend/about') ?>">About</a></li>
@@ -54,7 +54,7 @@
           <li><a class="nav-link scrollto <?= isActive('contact') ?>" href="<?= base_url('frontend/contact') ?>">Contact</a></li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
-      </nav><!-- .navbar -->
+      </nav>.navbar -->
 
     </div>
   </header><!-- End Header -->

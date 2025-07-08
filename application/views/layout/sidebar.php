@@ -35,7 +35,7 @@
             <ul class="nav side-menu">
                 <li><a href="<?= base_url('app/dashboard') ?>" class="loadContent" title="Dashboard"><i class="fa fa-home"></i> Beranda</a></li>
                 <?php if (privilages('priv_programs')): ?>
-                    <li><a href="<?= base_url('app/programs') ?>" class="loadContent" title="Program & Kegiatan"><i class="fa fa-database"></i> Program & Kegiatan</a></li>
+                    <li><a href="<?= base_url('app/programs') ?>" class="loadContent" title="Program & Kegiatan"><i class="fa fa-database"></i>Rincian Anggaran </a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_spj')): ?>
                     <li><a href="<?= base_url('app/spj') ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)"><i class="fa fa-dollar"></i> SPJ</a></li>

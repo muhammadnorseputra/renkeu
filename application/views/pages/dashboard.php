@@ -76,48 +76,52 @@
                     <div class="tiles">
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
+                            $limit = $chart['limit_triwulan_1'];
                             $tw_jumlah = $chart['triwulan_1'];
-                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase =  @($tw_jumlah / $limit) * 100;
                             $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN I</span>
-                            <h2>Rp. <?= @nominal($chart['triwulan_1']); ?></h2>
+                            <h2>Rp. <?= @nominal($tw_jumlah); ?> | <span class="text-danger">Rp. <?= @nominal($limit); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
+                            $limit = $chart['limit_triwulan_2'];
                             $tw_jumlah = $chart['triwulan_2'];
-                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase =  @($tw_jumlah / $limit) * 100;
                             $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN II</span>
-                            <h2>Rp. <?= @nominal($chart['triwulan_2']); ?></h2>
+                            <h2>Rp. <?= @nominal($tw_jumlah); ?> | <span class="text-danger">Rp. <?= @nominal($limit); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
+                            $limit = $chart['limit_triwulan_3'];
                             $tw_jumlah = $chart['triwulan_3'];
-                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase =  @($tw_jumlah / $limit) * 100;
                             $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN III</span>
-                            <h2>Rp. <?= @nominal($chart['triwulan_3']); ?></h2>
+                            <h2>Rp. <?= @nominal($tw_jumlah); ?> | <span class="text-danger">Rp. <?= @nominal($limit); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
+                            $limit = $chart['limit_triwulan_4'];
                             $tw_jumlah = $chart['triwulan_4'];
-                            $percentase =  @($tw_jumlah / $panel['program_total_pagu']) * 100;
+                            $percentase =  @($tw_jumlah / $limit) * 100;
                             $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN IV</span>
-                            <h2>Rp. <?= @nominal($chart['triwulan_4']); ?></h2>
+                            <h2>Rp. <?= @nominal($tw_jumlah); ?> | <span class="text-danger">Rp. <?= @nominal($limit); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
                             </div>

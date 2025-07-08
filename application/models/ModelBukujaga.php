@@ -24,6 +24,7 @@ class ModelBukujaga extends CI_Model
         $this->db->select_sum('jumlah');
         $this->db->from('spj');
         $this->db->where($whr);
+        $this->db->where('is_perubahan', $this->session->userdata('is_perubahan'));
         $q = $this->db->get();
         return $q->row();
     }

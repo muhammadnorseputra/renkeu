@@ -40,7 +40,7 @@ class Dashboard extends CI_Controller
 	{
 		// Panel Dashboard
 		$db_program = $this->crud->get('ref_programs');
-		$db_indikator = $this->crud->get('ref_indikators');
+		$db_indikator = $this->crud->getWhere('ref_indikators', ['tahun' => $this->ta, 'is_perubahan' => $this->session->userdata('is_perubahan')]);
 		$ProgramTotalPaguAwal = 0;
 		$ProgramTotalRealisasi = 0;
 		foreach ($db_program->result() as $r) :
@@ -96,6 +96,10 @@ class Dashboard extends CI_Controller
 				'triwulan_2' => $this->spj->TransaksiTriwulan(["04", "05", "06"], $this->ta),
 				'triwulan_3' => $this->spj->TransaksiTriwulan(["07", "08", "09"], $this->ta),
 				'triwulan_4' => $this->spj->TransaksiTriwulan(["10", "11", "12"], $this->ta),
+				'limit_triwulan_1' => $this->spj->LimitTransaksiTriwulan(["1", "2", "3"], $this->ta),
+				'limit_triwulan_2' => $this->spj->LimitTransaksiTriwulan(["4", "5", "6"], $this->ta),
+				'limit_triwulan_3' => $this->spj->LimitTransaksiTriwulan(["7", "8", "9"], $this->ta),
+				'limit_triwulan_4' => $this->spj->LimitTransaksiTriwulan(["10", "11", "12"], $this->ta),
 				'part_label' => json_encode($label),
 				'part_jumlah' => json_encode($part_jumlah),
 				'spj_count_ms' => json_encode($spj_count_ms),

@@ -3,6 +3,16 @@
         <?php
         $tab = isset($_GET['tab']) ? $_GET['tab'] : '#program';
 
+        if (urldecode($tab) === '#tujuan_sasaran') {
+            $tujuan_sasaran = 'active';
+            $is_active_tujuan_sasaran = true;
+            $is_show_tujuan_sasaran = "show";
+        } else {
+            $is_show_tujuan_sasaran = "";
+            $is_active_tujuan_sasaran = false;
+            $tujuan_sasaran = '';
+        }
+
         if (urldecode($tab) === '#part') {
             $part = 'active';
             $is_active_part = true;
@@ -55,11 +65,15 @@
         ?>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <?php
-            if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'VERIFICATOR') :
+            if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
             ?>
                 <li class="nav-item mr-2">
                     <a class="nav-link pb-4 font-weight-bold <?= $part ?>" title="Bidang / Bagian" style="font-size:16px;" id="part-tab" data-toggle="tab" href="#part" role="tab" aria-controls="part" aria-selected="<?= $is_active_part ?>"><i class="fa fa-tasks mr-2"></i>Unor/Bidang/Bagian</a>
                 </li>
+                <li class="nav-item mr-2">
+                    <a class="nav-link pb-4 font-weight-bold <?= $tujuan_sasaran ?>" title="Tujuan & Sasaran" style="font-size:16px;" id="tujuan_sasaran-tab" data-toggle="tab" href="#tujuan_sasaran" role="tab" aria-controls="tujuan_sasaran" aria-selected="<?= $is_active_tujuan_sasaran ?>"><span class="fa fa-book mr-2"></span> Tujuan & Sasaran</a>
+                </li>
+
             <?php endif; ?>
             <li class="nav-item mr-2">
                 <a class="nav-link pb-4 font-weight-bold <?= $program ?>" title="Program & Kegiatan" style="font-size:16px;" id="program-tab" data-toggle="tab" href="#program" role="tab" aria-controls="program" aria-selected="<?= $is_active_program ?>"><span class="fa fa-book mr-2"></span> Program</a>
@@ -80,9 +94,18 @@
                     <?php
                     if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'VERIFICATOR') :
                     ?>
-                        <div class="tab-pane <?= $part ?> <?= $is_show_part ?>" id="part" role="tabpanel" aria-labelledby="part-tab"></div>
+                        <div class="tab-pane <?= $part ?> <?= $is_show_part ?>" id="part" role="tabpanel" aria-labelledby="part-tab">
+                            <div class="listUnor"></div>
+                            <div class="divider-dashed"></div>
+                            <div class="listPart"></div>
+                        </div>
                     <?php endif; ?>
                     <div class="tab-pane <?= $program ?> <?= $is_show_program ?>" id="program" role="tabpanel" aria-labelledby="program-tab"></div>
+                    <div class="tab-pane <?= $tujuan_sasaran ?> <?= $is_show_tujuan_sasaran ?>" id="tujuan_sasaran" role="tabpanel" aria-labelledby="tujuan_sasaran-tab">
+                        <div class="listTujuan"></div>
+                        <div class="divider-dashed"></div>
+                        <div class="listSasaran"></div>
+                    </div>
                     <div class="tab-pane <?= $kegiatan ?> <?= $is_show_kegiatan ?>" id="kegiatan" role="tabpanel" aria-labelledby="kegiatan-tab"></div>
                     <div class="tab-pane <?= $subkegiatan ?> <?= $is_show_subkegiatan ?>" id="subkegiatan" role="tabpanel" aria-labelledby="subkegiatan-tab"></div>
                     <div class="tab-pane <?= $uraian ?> <?= $is_show_uraian ?>" id="uraian" role="tabpanel" aria-labelledby="uraian-tab"></div>
@@ -151,6 +174,56 @@
     </div>
 </div>
 
+<!-- Modal Edit Tujuan -->
+<div class="modal fade modal-tujuan-edit" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?= form_open(base_url('/app/programs/update/ref_tujuan/'), ['id' => 'formTujuanEdit', 'data-parsley-validate' => ''], ['id' => '']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Edit Tujuan</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tujuan-nama">Isi Tujuan <span class="text-danger">*</span></label>
+                    <input type="text" name="tujuan" id="tujuan-nama" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
+
+<!-- Modal Edit Sasaran -->
+<div class="modal fade modal-sasaran-edit" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?= form_open(base_url('/app/programs/update/ref_sasaran/'), ['id' => 'formSasaranEdit', 'data-parsley-validate' => ''], ['id' => '']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Edit Sasaran</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="sasaran-nama">Isi Sasaran <span class="text-danger">*</span></label>
+                    <input type="text" name="sasaran" id="sasaran-nama" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
+
 <!-- Modal Tambah Unor -->
 <div class="modal fade modal-unor" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -162,8 +235,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="listUnor"></div>
-                <div class="divider-dashed"></div>
                 <div class="form-group">
                     <label for="unor">Nama Unor <span class="text-danger">*</span></label>
                     <input type="text" name="unor" id="unor" class="form-control" placeholder="Masukan nama unor baru disini ..." required>
@@ -212,6 +283,66 @@
     </div>
 </div>
 
+<!-- Modal Tambah Tujuan -->
+<div class="modal fade modal-tujuan" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?= form_open(base_url('/app/programs/tambah/tujuan'), ['id' => 'formTujuan']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-info text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Tambah Tujuan</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="unor">Pilih Unor <span class="text-danger">*</span></label>
+                    <select name="unor" id="unor" required data-parsley-errors-container="#help-block-unor"></select>
+                    <div id="help-block-unor"></div>
+                </div>
+                <div class="form-group">
+                    <label for="tujuan-nama">Isi Tujuan <span class="text-danger">*</span></label>
+                    <input type="text" name="tujuan" id="tujuan-nama" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
+
+<!-- Modal Tambah Sasaran -->
+<div class="modal fade modal-sasaran" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?= form_open(base_url('/app/programs/tambah/sasaran'), ['id' => 'formSasaran']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-primary text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Tambah Sasaran</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tujuan">Pilih Tujuan <span class="text-danger">*</span></label>
+                    <select name="tujuan" id="tujuan" required data-parsley-errors-container="#help-block-tujuan"></select>
+                    <div id="help-block-tujuan"></div>
+                </div>
+                <div class="form-group">
+                    <label for="sasaran-nama">Isi Sasaran <span class="text-danger">*</span></label>
+                    <input type="text" name="sasaran" id="sasaran-nama" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
+
 <!-- Modal Tambah Program -->
 <div class="modal fade modal-program" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -224,9 +355,9 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="unor">Pilih Unit Organisasi <span class="text-danger">*</span></label>
-                    <select name="unor" id="unor" required data-parsley-errors-container="#help-block-unor"></select>
-                    <div id="help-block-unor"></div>
+                    <label for="sasaran">Pilih Sasaran <span class="text-danger">*</span></label>
+                    <select name="sasaran" id="sasaran" required data-parsley-errors-container="#help-block-sasaran"></select>
+                    <div id="help-block-sasaran"></div>
                 </div>
                 <div class="divider-dashed"></div>
                 <div class="form-group">
@@ -236,6 +367,11 @@
                 <div class="form-group">
                     <label for="program">Nama Program <span class="text-danger">*</span></label>
                     <input type="text" id="program" name="program" class="form-control" required data-parsley-remote="<?= base_url('app/programs/cek_kode/namaprogram') ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Nama Program sudah pernah digunakan !" data-parsley-trigger="keyup">
+                </div>
+                <div class="form-group">
+                    <label for="bidang">Pilih Bidang <span class="text-danger">*</span></label>
+                    <select name="bidang[]" id="bidang" multiple="multiple" required data-parsley-errors-container="#help-block-bidang"></select>
+                    <div id="help-block-bidang"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -399,6 +535,24 @@
 
 <script>
     $(function() {
+        async function getListTujuan() {
+            const req = await fetch(`${_uri}/app/programs/tujuan`);
+            const res = await req.json();
+            return res;
+        }
+
+        async function getListSasaran() {
+            const req = await fetch(`${_uri}/app/programs/sasaran`);
+            const res = await req.json();
+            return res;
+        }
+
+        async function getListUnor() {
+            const req = await fetch(`${_uri}/app/programs/unor`);
+            const res = await req.json();
+            return res;
+        }
+
         async function getListPart() {
             const req = await fetch(`${_uri}/app/programs/part`);
             const res = await req.json();
@@ -429,7 +583,7 @@
             return res;
         }
         // Initial load
-        $('#kegiatan,#subkegiatan,#part,#uraian,#program').html(`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`);
+        $('.listTujuan,.listSasaran,.listPart,#kegiatan,#subkegiatan,#uraian,#program').html(`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`);
         // Get Tab Active
         let tab_active = urlParams.get('tab');
         // if tab active same as url
@@ -456,13 +610,23 @@
                 var subKegiatanList = new List('listSubKegiatan', option);
             });
         } else if (tab_active === '#part') {
-            getListPart().then((data) => {
+            getListUnor().then((data) => {
                 if (data.code === 404) {
-                    $('#part').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    $('.listUnor').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
                     NProgress.done()
                     return false;
                 }
-                $('#part').html(data.result);
+                $('.listUnor').html(data.result);
+                NProgress.done()
+                var unorList = new List('listUnor', option);
+            });
+            getListPart().then((data) => {
+                if (data.code === 404) {
+                    $('.listPart').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('.listPart').html(data.result);
                 NProgress.done()
             });
         } else if (tab_active === '#uraian') {
@@ -476,6 +640,28 @@
                 NProgress.done()
                 var uraianList = new List('listUraian', option);
             });
+        } else if (tab_active === '#tujuan_sasaran') {
+            getListTujuan().then((data) => {
+                if (data.code === 404) {
+                    $('.listTujuan').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('.listTujuan').html(data.result);
+                NProgress.done()
+                var tujuanList = new List('listTujuan', option);
+            });
+            getListSasaran().then((data) => {
+                if (data.code === 404) {
+                    $('.listSasaran').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('.listSasaran').html(data.result);
+                NProgress.done()
+                var sasaranList = new List('listSasaran', option);
+            });
+
         } else {
             getListProgram().then((data) => {
                 if (data.code === 404) {
@@ -489,6 +675,37 @@
             });
         }
 
+        $(document).on("click", "#myTab a[href='#tujuan_sasaran']", function(e) {
+            let _ = $(this),
+                href = _.attr('href');
+            // console.log(_.attr('href'))
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', href);
+            history.pushState({}, "", url);
+            NProgress.start();
+            document.title = _.attr('title');
+            getListTujuan().then((data) => {
+                if (data.code === 404) {
+                    $('.listTujuan').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('.listTujuan').html(data.result);
+                NProgress.done()
+                var tujuanList = new List('listTujuan', option);
+            });
+            getListSasaran().then((data) => {
+                if (data.code === 404) {
+                    $('.listSasaran').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('.listSasaran').html(data.result);
+                NProgress.done()
+                var sasaranList = new List('listSasaran', option);
+            });
+        })
+
         $(document).on("click", "#myTab a[href='#part']", function(e) {
             let _ = $(this),
                 href = _.attr('href');
@@ -499,13 +716,23 @@
             NProgress.start();
             document.title = _.attr('title');
             // window.location.replace(url);
-            getListPart().then((data) => {
+            getListUnor().then((data) => {
                 if (data.code === 404) {
-                    $('#part').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    $('.listUnor').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
                     NProgress.done()
                     return false;
                 }
-                $('#part').html(data.result);
+                $('.listUnor').html(data.result);
+                NProgress.done()
+                var unorList = new List('listUnor', option);
+            });
+            getListPart().then((data) => {
+                if (data.code === 404) {
+                    $('.listPart').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('.listPart').html(data.result);
                 NProgress.done()
             });
         })
@@ -624,6 +851,18 @@
             FORM_PART_EDIT = MODAL_PART_EDIT.find("form#formPartEdit");
 
         // section add modal
+        var MODAL_TUJUAN = $(".modal-tujuan"),
+            FORM_TUJUAN = MODAL_TUJUAN.find("form#formTujuan");
+
+        var MODAL_TUJUAN_EDIT = $(".modal-tujuan-edit"),
+            FORM_TUJUAN_EDIT = MODAL_TUJUAN_EDIT.find("form#formTujuanEdit");
+
+        var MODAL_SASARAN = $(".modal-sasaran"),
+            FORM_SASARAN = MODAL_SASARAN.find("form#formSasaran");
+
+        var MODAL_SASARAN_EDIT = $(".modal-sasaran-edit"),
+            FORM_SASARAN_EDIT = MODAL_SASARAN_EDIT.find("form#formSasaranEdit");
+
         var MODAL_PART = $(".modal-part"),
             FORM_PART = MODAL_PART.find("form#formPart");
 
@@ -656,9 +895,39 @@
             });
         })
 
-        // select Unit Organisasi
-        $('select[name="unor"]').select2({
-            placeholder: 'Pilih Unor',
+        // select Tujuan
+        $('select[name="tujuan"]').select2({
+            placeholder: 'Pilih Tujuan',
+            allowClear: true,
+            // maximumSelectionLength: 1,
+            width: "100%",
+            // theme: "classic",
+            dropdownParent: MODAL_SASARAN,
+            // templateResult: formatUserSelect2,
+            ajax: {
+                delay: 250,
+                method: 'post',
+                url: '<?= base_url("app/programs/getTujuan") ?>',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: params.term, // search term
+                    };
+                },
+                cache: true,
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data
+                    };
+                }
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+
+        // select Sasaran
+        $('select[name="sasaran"]').select2({
+            placeholder: 'Pilih Sasaran',
             allowClear: true,
             // maximumSelectionLength: 1,
             width: "100%",
@@ -666,7 +935,37 @@
             dropdownParent: MODAL_PROGRAM,
             // templateResult: formatUserSelect2,
             ajax: {
-                // delay: 250,
+                delay: 250,
+                method: 'post',
+                url: '<?= base_url("app/programs/getSasaran") ?>',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: params.term, // search term
+                    };
+                },
+                cache: true,
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data
+                    };
+                }
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+
+        // select Unor
+        $('select[name="unor"]').select2({
+            placeholder: 'Pilih Unor',
+            allowClear: true,
+            // maximumSelectionLength: 1,
+            width: "100%",
+            // theme: "classic",
+            dropdownParent: MODAL_TUJUAN,
+            // templateResult: formatUserSelect2,
+            ajax: {
+                delay: 250,
                 method: 'post',
                 url: '<?= base_url("app/programs/getUnor") ?>',
                 dataType: 'json',
@@ -687,9 +986,11 @@
         });
 
         // select part
-        $('select[name="part"]').select2({
-            placeholder: 'Pilih Badan / Bagian / Bidang',
-            allowClear: true,
+        $('select#bidang').select2({
+            placeholder: 'Pilih Bidang',
+            allowClear: false,
+            tags: true,
+            tokenSeparators: [',', ' '],
             // maximumSelectionLength: 1,
             width: "100%",
             // theme: "classic",
@@ -810,35 +1111,6 @@
             });
         });
 
-
-        function listUnor() {
-            $.getJSON('<?= base_url('app/programs/getListUnor') ?>', (res) => {
-                let data = '';
-                res.forEach((r, i) => {
-                    data += `<tr>
-                                <td valign="middle" class="">${r.text.toUpperCase()}</td>
-                                <td width="5%"><button type="button" onclick="Hapus(${r.id},'${_uri}/app/programs/hapus/ref_unors')" class="btn btn-danger btn-danger m-0"><i class="fa fa-trash"></i></button></td>
-                                <td width="5%"><button onclick="Edit('${_uri}/app/programs/detail/ref_unors','.modal-unor-edit')" type="button" class="btn btn-light m-0"><i class="fa fa-pencil"></i></button></td>
-                            </tr>`;
-                })
-                LIST_UNOR.html(`
-                    <div class="table-responsive p-3 shadow mb-3">
-                        <h5>Daftar Unor</h5>
-                        <table class="table table-condensed table-bordered">
-                            <tbody>
-                                ${data}
-                            </tbody>
-                        </table>
-                    </div>
-                `);
-            });
-            return false;
-        }
-
-        MODAL_UNOR.on('show.bs.modal', (e) => {
-            listUnor();
-        });
-
         MODAL_PROGRAM.on('hidden.bs.modal', function(e) {
             FORM_PROGRAM[0].reset()
             FORM_PROGRAM.parsley().reset();
@@ -858,6 +1130,16 @@
             $('select[name="kegiatan"]').val('').trigger('change');
         })
 
+        MODAL_TUJUAN.on('hidden.bs.modal', function(e) {
+            FORM_TUJUAN[0].reset();
+            FORM_TUJUAN.parsley().reset();
+        })
+
+        MODAL_SASARAN.on('hidden.bs.modal', function(e) {
+            FORM_SASARAN[0].reset();
+            FORM_SASARAN.parsley().reset();
+        })
+
         MODAL_PART.on('hidden.bs.modal', function(e) {
             FORM_PART[0].reset();
             FORM_PART.parsley().reset();
@@ -871,6 +1153,16 @@
         MODAL_PART_EDIT.on('hidden.bs.modal', function(e) {
             FORM_PART_EDIT[0].reset();
             FORM_PART_EDIT.parsley().reset();
+        })
+
+        MODAL_TUJUAN_EDIT.on('hidden.bs.modal', function(e) {
+            FORM_TUJUAN_EDIT[0].reset();
+            FORM_TUJUAN_EDIT.parsley().reset();
+        })
+
+        MODAL_SASARAN_EDIT.on('hidden.bs.modal', function(e) {
+            FORM_SASARAN_EDIT[0].reset();
+            FORM_SASARAN_EDIT.parsley().reset();
         })
 
         MODAL_URAIAN.on('hidden.bs.modal', function(e) {
@@ -939,6 +1231,36 @@
             return false;
         });
 
+        FORM_TUJUAN.parsley();
+        FORM_TUJUAN.on("submit", function(e) {
+            e.preventDefault();
+            $url = $(this).attr('action');
+            $data = FORM_TUJUAN.serialize();
+            if (FORM_TUJUAN.parsley().isValid()) {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            }
+            return false;
+        });
+
+        FORM_SASARAN.parsley();
+        FORM_SASARAN.on("submit", function(e) {
+            e.preventDefault();
+            $url = $(this).attr('action');
+            $data = FORM_SASARAN.serialize();
+            if (FORM_SASARAN.parsley().isValid()) {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            }
+            return false;
+        });
+
         FORM_PART.parsley();
         FORM_PART.on("submit", function(e) {
             e.preventDefault();
@@ -978,10 +1300,7 @@
             if (FORM_UNOR_EDIT.parsley().isValid()) {
                 $.post($url, $data, (response) => {
                     if (response === 200) {
-                        // window.location.reload();
-                        listUnor();
-                        FORM_UNOR_EDIT[0].reset();
-                        MODAL_UNOR_EDIT.modal('hide');
+                        window.location.reload();
                     }
                 }, 'json');
             }
@@ -993,6 +1312,34 @@
             $url = $(this).attr('action');
             $data = FORM_PART_EDIT.serialize();
             if (FORM_PART_EDIT.parsley().isValid()) {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            }
+            return false;
+        });
+
+        FORM_TUJUAN_EDIT.on("submit", function(e) {
+            e.preventDefault();
+            $url = $(this).attr('action');
+            $data = FORM_TUJUAN_EDIT.serialize();
+            if (FORM_TUJUAN_EDIT.parsley().isValid()) {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            }
+            return false;
+        });
+
+        FORM_SASARAN_EDIT.on("submit", function(e) {
+            e.preventDefault();
+            $url = $(this).attr('action');
+            $data = FORM_SASARAN_EDIT.serialize();
+            if (FORM_SASARAN_EDIT.parsley().isValid()) {
                 $.post($url, $data, (response) => {
                     if (response === 200) {
                         window.location.reload();
@@ -1073,6 +1420,32 @@
                 _.find('input[name="part"]').val(res.nama);
                 _.find('input[name="part_singkatan"]').val(res.singkatan);
                 _.find('input[name="id"]').val(res.id)
+            });
+            return false;
+        }
+
+        if (target === '.modal-tujuan-edit') {
+            let _ = $(target);
+            let $form = _.find("#formTujuanEdit");
+            _.modal('show');
+            $.getJSON(url, {
+                id: id
+            }, (res) => {
+                _.find('input[name="tujuan"]').val(res.nama);
+                _.find('input[name="id"]').val(res.id);
+            });
+            return false;
+        }
+
+        if (target === '.modal-sasaran-edit') {
+            let _ = $(target);
+            let $form = _.find("#formSasaranEdit");
+            _.modal('show');
+            $.getJSON(url, {
+                id: id
+            }, (res) => {
+                _.find('input[name="sasaran"]').val(res.nama);
+                _.find('input[name="id"]').val(res.id);
             });
             return false;
         }

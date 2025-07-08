@@ -5,23 +5,13 @@ function PilihPeriode(id) {
 var MODAL_FAKTOR = $(".modal-faktor");
 
 function InputFaktor(id) {
-	$.getJSON(
-		`${_uri}/app/realisasi/detailRealisasi`,
-		{ id: id },
-		function (res) {
-			MODAL_FAKTOR.find("input[name='id']").val(id);
-			MODAL_FAKTOR.find("textarea[name='faktor_pendorong']").val(
-				res.faktor_pendorong
-			);
-			MODAL_FAKTOR.find("textarea[name='faktor_penghambat']").val(
-				res.faktor_penghambat
-			);
-			MODAL_FAKTOR.find("textarea[name='tindak_lanjut']").val(
-				res.tindak_lanjut
-			);
-			MODAL_FAKTOR.modal("show");
-		}
-	);
+	MODAL_FAKTOR.modal("show");
+	$.getJSON(`${_uri}/app/capaian/detail_faktor`, { id: id }, function (res) {
+		MODAL_FAKTOR.find("input[name='id']").val(id);
+		MODAL_FAKTOR.find("textarea[name='pendorong']").val(res.pendorong);
+		MODAL_FAKTOR.find("textarea[name='penghambat']").val(res.penghambat);
+		MODAL_FAKTOR.find("textarea[name='tindak_lanjut']").val(res.tindak_lanjut);
+	});
 }
 
 $("form#formFaktor").on("submit", function (e) {

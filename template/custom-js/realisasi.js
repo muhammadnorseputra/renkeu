@@ -9,18 +9,29 @@ function InputRealisasi(id, periode) {
 		`${_uri}/app/realisasi/detailIndikator`,
 		{ id: id, periode: periode },
 		function (res) {
-			console.log(res);
 			$modal.modal("show");
 			$modal.find("textarea[name='nama']").val(res.indikator.nama);
 			$modal.find("input[name='id']").val(res.indikator.id);
-			$modal.find("textarea[name='tujuan']").val(res.realisasi.tujuan);
-			$modal.find("textarea[name='sasaran']").val(res.realisasi.sasaran);
-			$modal.find("input[name='persentase']").val(res.realisasi.persentase);
-			$modal.find("input[name='jumlah_eviden']").val(res.realisasi.eviden);
+			$modal
+				.find("input[name='persentase']")
+				.val(res?.realisasi?.persentase)
+				.prop(
+					"readonly",
+					res?.target?.persentase == 0 || res?.target?.persentase == null
+				)
+				.prop("required", res?.target?.persentase == 0 ? false : true);
+			$modal
+				.find("input[name='jumlah_eviden']")
+				.val(res?.realisasi?.eviden)
+				.prop(
+					"readonly",
+					res?.target?.eviden_jumlah == 0 || res?.target?.eviden_jumlah == null
+				)
+				.prop("required", res?.target?.eviden_jumlah == 0 ? false : true);
 			$modal
 				.find("input[name='keterangan_eviden']")
-				.val(res.realisasi.eviden_jenis);
-			$modal.find("textarea[name='link']").val(res.realisasi.eviden_link);
+				.val(res?.target?.eviden_jenis);
+			$modal.find("textarea[name='link']").val(res?.realisasi?.eviden_link);
 		}
 	);
 }
@@ -36,9 +47,10 @@ $("form#formRealisasi").on("submit", function (e) {
 			url,
 			data,
 			function (res) {
-				if (res === 200) {
+				if (res.status) {
 					window.location.reload();
 				}
+				return alert(res.message);
 			},
 			"json"
 		);

@@ -100,12 +100,12 @@
             </li>
 
             <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px">
-              <?= form_open(base_url('app/dashboard/statuspagu'), ['class' => 'form-inline', 'style' => 'margin: 0; padding: 0'], ['redirectTo' => current_url()]) ?>
+              <?= form_open(base_url('app/dashboard/statuspagu'), ['class' => 'd-flex justify-content-center align-items-center m-0 p-0'], ['redirectTo' => current_url()]) ?>
               <select name="is_perubahan" id="is_perubahan" class="form-control form-control-sm">
                 <option value="0" <?= $this->session->userdata('is_perubahan') === "0" ? 'selected' : '' ?>>MURNI</option>
                 <option value="1" <?= $this->session->userdata('is_perubahan') === "1" ? 'selected' : '' ?>>PERUBAHAN</option>
               </select>
-              <button class="btn btn-sm btn-primary" type="submit">GO</button>
+              <button class="btn btn-sm btn-primary" type="submit">Simpan</button>
               <?= form_close() ?>
             </li>
             <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px">

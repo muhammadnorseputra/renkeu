@@ -5,6 +5,12 @@
         <strong><i class="fa fa-lock mr-2"></i> Verifikasi </strong>, Usulan SPJ kamu dalam tahap verifikasi.
     </div>
 <?php endif; ?>
+<?php if (isset($detail->catatan) && @$detail->is_status === 'ENTRI'): ?>
+    <div class="alert alert-warning rounded-0 border text-dark d-flex justify-content-start align-items-start" role="alert">
+        <i class="fa fa-exclamation-triangle mr-2 mt-1 text-danger"></i>
+        <div><strong>Catatan Verifikator : </strong> <br> <?= !empty($detail->catatan) ? $detail->catatan : '-' ?></div>
+    </div>
+<?php endif; ?>
 <!-- Smart Wizard -->
 <div class="x_panel">
     <div class="x_title">
@@ -115,18 +121,18 @@
                 </div>
                 <?php
                 $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian(@$detail->fid_uraian, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal : 0;
-                $totalRealisasiPagu =  $totalPaguAwal - $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, 'SELESAI');
+                $totalRealisasiPagu =  $totalPaguAwal - $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
                 $totalSisaPagu = ($totalRealisasiPagu - @$detail->jumlah);
                 ?>
                 <div class="divider-dashed"></div>
                 <div class="form-group d-flex">
                     <div class="pr-5 border-right">
                         <b>Jumlah Maksimum</b>
-                        <h5 id="jumlah_max">Rp. <?= nominal($totalRealisasiPagu) ?></h5>
+                        <h5 id="jumlah_max">Rp. <?= nominal($totalPaguAwal) ?></h5>
                     </div>
                     <div class="pl-5">
                         <b>Sisa Anggaran</b>
-                        <h5 id="sisa_max">Rp. <?= nominal($totalSisaPagu) ?></h5>
+                        <h5 id="sisa_max">Rp. <?= nominal($totalRealisasiPagu) ?></h5>
                     </div>
                 </div>
                 <div class="divider-dashed"></div>

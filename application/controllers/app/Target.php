@@ -29,19 +29,24 @@ class Target extends CI_Controller
 		endif;
 
 		$this->load->model('ModelTarget', 'target');
+		$this->load->model('ModelCrud', 'crud');
 	}
 
 	public function index()
 	{
-		$programs = $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+		$jenis_indikator = $this->crud->get('ref_jenis_indikators')->result();
 		$data = [
 			'title' => 'Target Anggaran & Kinerja',
 			'content' => 'pages/anggaran_kinerja/target',
-			'programs' => $programs,
+			'jenis_indikator' => $jenis_indikator,
 			'autoload_js' => [
+				'template/backend/vendors/select2/dist/js/select2.full.min.js',
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
 				'template/custom-js/indikator.js',
 			],
+			'autoload_css' => [
+				'template/backend/vendors/select2/dist/css/select2.min.css'
+			]
 		];
 		$this->load->view('layout/app', $data);
 	}
@@ -53,23 +58,49 @@ class Target extends CI_Controller
 		$tabel = $post['ref'];
 		$id = $post['id'];
 		$nama_indikator = $post['nama'];
+		$jenis_indikator = $post['jenis_indikator'];
+		$perubahan = $post['perubahan'];
+		$part_id = implode(",", $post['bidang']);
 
-		if ($tabel === 'ref_programs') {
+		if ($tabel === 'ref_tujuan') {
 			$data = [
 				'nama' => $nama_indikator,
+				'fid_part' => $part_id,
+				'fid_tujuan' => $id,
+				'is_perubahan' => $perubahan,
+				'tahun' => $this->session->userdata('tahun_anggaran')
+			];
+		} elseif ($tabel === 'ref_sasaran') {
+			$data = [
+				'nama' => $nama_indikator,
+				'fid_part' => $part_id,
+				'fid_sasaran' => $id,
+				'is_perubahan' => $perubahan,
+				'tahun' => $this->session->userdata('tahun_anggaran')
+			];
+		} elseif ($tabel === 'ref_programs') {
+			$data = [
+				'nama' => $nama_indikator,
+				'fid_part' => $part_id,
 				'fid_program' => $id,
+				'is_perubahan' => $perubahan,
 				'tahun' => $this->session->userdata('tahun_anggaran')
 			];
 		} elseif ($tabel === 'ref_kegiatans') {
 			$data = [
 				'nama' => $nama_indikator,
+				'fid_part' => $part_id,
 				'fid_kegiatan' => $id,
+				'is_perubahan' => $perubahan,
 				'tahun' => $this->session->userdata('tahun_anggaran')
 			];
 		} elseif ($tabel === 'ref_sub_kegiatans') {
 			$data = [
 				'nama' => $nama_indikator,
+				'fid_part' => $part_id,
 				'fid_sub_kegiatan' => $id,
+				'fid_jenis_indikator' => $jenis_indikator,
+				'is_perubahan' => $perubahan,
 				'tahun' => $this->session->userdata('tahun_anggaran')
 			];
 		}
@@ -87,16 +118,22 @@ class Target extends CI_Controller
 	public function ubah($id, $table)
 	{
 		$row = $this->target->getIndikator(['i.id' => $id]);
-
+		$jenis_indikator = $this->crud->get('ref_jenis_indikators');
 		$data = [
 			'title' => 'Ubah Indikator',
 			'content' => 'pages/anggaran_kinerja/indikator_ubah',
 			'id_indikator' => $id,
+			'table' => $table,
+			'jenis_indikator' => $jenis_indikator,
 			'row' => $row->row(),
 			'autoload_js' => [
+				'template/backend/vendors/select2/dist/js/select2.full.min.js',
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
 				'template/custom-js/indikator.js',
 			],
+			'autoload_css' => [
+				'template/backend/vendors/select2/dist/css/select2.min.css'
+			]
 		];
 
 		$this->load->view('layout/app', $data);
@@ -105,10 +142,20 @@ class Target extends CI_Controller
 	public function ubah_proses()
 	{
 		$post = $this->input->post();
+		$part_id = implode(",", $post['bidang']);
 
-		$data = [
-			'nama' => $post['nama'],
-		];
+		if (isset($post['jenis_indikator'])) {
+			$data = [
+				'nama' => $post['nama'],
+				'fid_part' => $part_id,
+				'fid_jenis_indikator' => $post['jenis_indikator']
+			];
+		} else {
+			$data = [
+				'nama' => $post['nama'],
+				'fid_part' => $part_id,
+			];
+		}
 
 		$whr = [
 			'id' => $post['id']
@@ -150,7 +197,7 @@ class Target extends CI_Controller
 	public function cetak($tahun)
 	{
 
-		$programs = $this->target->program($this->session->userdata('part'));
+		$programs = $this->target->program(null, null, $this->session->userdata('part'));
 
 		$this->load->library('pdf');
 		$this->pdf->setPaper('legal', 'landscape');

@@ -35,11 +35,9 @@ class Realisasi extends CI_Controller
 
 	public function index()
 	{
-		$programs = $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
 		$data = [
 			'title' => 'Realisasi Anggaran & Kinerja',
 			'content' => 'pages/anggaran_kinerja/realisasi',
-			'programs' => $programs,
 			'autoload_js' => [
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
 				'template/custom-js/realisasi.js',
@@ -54,10 +52,12 @@ class Realisasi extends CI_Controller
 		$periode = $this->input->get('periode');
 		$db = $this->crud->getWhere('ref_indikators', ['id' => $id]);
 		$realisasi = $this->crud->getWhere('t_realisasi', ['fid_indikator' => $id, 'fid_periode' => $periode]);
+		$target = $this->crud->getWhere('t_target', ['fid_indikator' => $id, 'tahun' => $this->session->userdata('tahun_anggaran')]);
 		if ($db->num_rows() > 0) {
 			$data = [
 				'indikator' => $db->row(),
-				'realisasi' => $realisasi->row()
+				'realisasi' => $realisasi->row(),
+				'target' => $target->row()
 			];
 		} else {
 			$data = null;
@@ -81,24 +81,40 @@ class Realisasi extends CI_Controller
 	{
 		$post = $this->input->post();
 
+		$target = $this->target->getTarget($post['id']);
+
+		if (isset($post['persentase']) && $post['persentase'] > $target->persentase) {
+			echo json_encode([
+				'message' => 'Realisasi melebihi target persentase !',
+				'status' => false
+			]);
+			return false;
+			die();
+		}
+
+		if (isset($post['jumlah_eviden']) &&  $post['jumlah_eviden'] > $target->eviden_jumlah) {
+			echo json_encode([
+				'message' => 'Realisasi melebihi target eviden !',
+				'status' => false
+			]);
+			return false;
+			die();
+		}
+
 		$insert = [
 			'tahun' => $this->session->userdata('tahun_anggaran'),
-			'tujuan' => $post['tujuan'],
-			'sasaran' => $post['sasaran'],
 			'fid_indikator' => $post['id'],
 			'fid_periode' => $post['periode'],
-			'persentase' => $post['persentase'],
-			'eviden' => $post['jumlah_eviden'],
+			'persentase' => isset($post['persentase']) ? $post['persentase'] : 0,
+			'eviden' => isset($post['jumlah_eviden']) ? $post['jumlah_eviden'] : 0,
 			'eviden_link' => $post['link'],
 			'eviden_jenis' => $post['keterangan_eviden'],
 		];
 
 		$update = [
 			'tahun' => $this->session->userdata('tahun_anggaran'),
-			'tujuan' => $post['tujuan'],
-			'sasaran' => $post['sasaran'],
-			'persentase' => $post['persentase'],
-			'eviden' => $post['jumlah_eviden'],
+			'persentase' => isset($post['persentase']) ? $post['persentase'] : 0,
+			'eviden' => isset($post['jumlah_eviden']) ? $post['jumlah_eviden'] : 0,
 			'eviden_jenis' => $post['keterangan_eviden'],
 			'eviden_link' => $post['link'],
 		];
@@ -116,9 +132,15 @@ class Realisasi extends CI_Controller
 		}
 
 		if ($db) {
-			$msg = 200;
+			$msg = [
+				'message' => 'Realisasi berhasil diperbaharui !',
+				'status' => true
+			];
 		} else {
-			$msg = 400;
+			$msg = [
+				'message' => 'Realisasi gagal diperbaharui !',
+				'status' => false
+			];
 		}
 		echo json_encode($msg);
 	}
@@ -126,7 +148,7 @@ class Realisasi extends CI_Controller
 	public function cetak($periode_id)
 	{
 		$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
-		$programs = $this->target->program($this->session->userdata('part'));
+		$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
 
 		$this->load->library('pdf');
 		$this->pdf->setPaper('legal', 'landscape');

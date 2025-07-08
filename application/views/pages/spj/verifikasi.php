@@ -2,12 +2,6 @@
     <div class="title_left">
         <h3><i class="fa fa-check-circle mr-2"></i> Verifikasi Usul SPJ</h3>
     </div>
-
-    <div class="title_right">
-        <div class="col-md-2 col-6 form-group row pull-right top_search">
-            <button class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/spj?tab=%23verifikasi') ?>'">Batal<i class="fa fa-arrow-right ml-3"></i> </button>
-        </div>
-    </div>
 </div>
 
 <div class="clearfix"></div>
@@ -84,7 +78,7 @@
             </tr>
             <tr>
                 <td>
-                    Uraian
+                    Keterangan
                 </td>
                 <td colspan="2">
                     <?= $detail->uraian ?>
@@ -139,27 +133,49 @@
                 </td>
             </tr>
             <tr>
-                <td class="bg-light text-dark text-center" colspan="3">Ubah Status / Perbaikan Usulan</td>
+                <td class="bg-light text-dark text-center" colspan="3">Perbaikan Usulan</td>
             </tr>
             <tr>
+                <td class="text-center" valign="middle">Perbaikan <br> (Ubah Status Usulan)</td>
                 <td colspan="3">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <?=
                             form_open(base_url('app/spj/verifikasi_proses'), ['id' => 'formVerifikasi', 'class' => 'form-horizontal', 'data-parsley-validate' => '', 'data-parsley-errors-messages-disabled' => ''], ['status' => 'UBAH_STATUS', 'token' => $detail->token]);
                             ?>
-                            <div class="form-group">
-                                <div class="col-md-6">
-                                    <select name="status" id="status" class="form-control" required>
-                                        <option value="">Pilih Status</option>
-                                        <option value="ENTRI" <?= $detail->is_status == 'ENTRI' ? 'selected' : '' ?>>ENTRI</option>
-                                        <?php if ($this->session->userdata('role') === 'ADMIN'): ?>
-                                            <option value="VERIFIKASI" <?= $detail->is_status == 'VERIFIKASI' ? 'selected' : '' ?>>VERIFIKASI</option>
-                                        <?php endif; ?>
-                                    </select>
+                            <?php
+                            if ($this->session->userdata('role') === 'VERIFICATOR' && isset($detail->catatan) && $detail->catatan_by === 'ADMIN'):
+                            ?>
+                                <div class="alert alert-warning rounded-0 border text-dark d-flex justify-content-start align-items-start" role="alert">
+                                    <i class="fa fa-exclamation-triangle mr-2 mt-1 text-danger"></i>
+                                    <div><strong>Catatan Admin : </strong> <br> <?= !empty($detail->catatan) ? $detail->catatan : '-' ?></div>
                                 </div>
-                                <button type="submit" class="btn btn-primary"><i class="fa fa-save mr-2"></i> Kirim</button>
+                            <?php
+                            elseif ($this->session->userdata('role') === 'VERIFICATOR' && isset($detail->catatan) && $detail->catatan_by === 'VERIFICATOR'):
+                            ?>
+                                <div class="alert alert-warning rounded-0 border text-dark d-flex justify-content-start align-items-start" role="alert">
+                                    <i class="fa fa-exclamation-triangle mr-2 mt-1 text-danger"></i>
+                                    <div><strong>Catatan Verifikator : </strong> <br> <?= !empty($detail->catatan) ? $detail->catatan : '-' ?></div>
+                                </div>
+                            <?php
+                            endif;
+                            ?>
+                            <div class="form-group">
+                                <select name="status" id="status" class="form-control" required>
+                                    <option value="">Pilih Status</option>
+                                    <?php if ($this->session->userdata('role') === 'VERIFICATOR'): ?>
+                                        <option value="ENTRI" <?= $detail->is_status == 'ENTRI' ? 'selected' : '' ?>>ENTRI</option>
+                                    <?php endif; ?>
+                                    <?php if ($this->session->userdata('role') === 'ADMIN'): ?>
+                                        <option value="VERIFIKASI" <?= $detail->is_status == 'VERIFIKASI' ? 'selected' : '' ?>>VERIFIKASI</option>
+                                    <?php endif; ?>
+                                </select>
                             </div>
+                            <div class="form-group">
+                                <label for="catatan"><b>Keterangan Perbaikan :</b></label>
+                                <textarea name="catatan" id="catatan" cols="5" rows="3" class="form-control" placeholder="Masukan keterangan perbaikan" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-0"><i class="fa fa-save mr-2"></i> Proses</button>
                             <?=
                             form_close();
                             ?>
@@ -170,32 +186,30 @@
             <tr>
                 <td class="bg-light text-dark text-center" colspan="3">Proses Usulan</td>
             </tr>
-            <tr>
+            <tr class="bg-light">
                 <td class="text-center" valign="middle">MS <br> (Memenuhi Syarat)</td>
                 <td colspan="2">
                     <?=
                     form_open(base_url('app/spj/verifikasi_proses'), ['id' => 'formVerifikasi', 'class' => 'form-horizontal', 'data-parsley-validate' => '', 'data-parsley-errors-messages-disabled' => ''], ['status' => 'MS', 'token' => $detail->token]);
+
+                    $disabled_tms = $this->session->userdata('role') !== 'VERIFICATOR' ? 'disabled' : '';
                     ?>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="nomor"><b>Nomor Buku :</b></label>
-                                <input type="text" name="nomor" class="form-control" value="<?= $detail->nomor_pembukuan ?>" required="required">
+                                <input type="text" name="nomor" class="form-control" value="<?= $detail->nomor_pembukuan ?>" required="required" <?= $disabled_tms ?>>
                             </div>
-                        </div>
-                        <div class="col-md-3">
                             <label for="tanggal"><b>Tanggal Buku :</b></label>
-                            <div class="input-group date" id="tanggal">
+                            <div class="input-group">
                                 <span class="input-group-addon">
                                     <span class="fa fa-calendar"></span>
                                 </span>
-                                <input type="text" name="tanggal" class="form-control" value="<?= $detail->tanggal_pembukuan ?>" required="required">
+                                <input type="text" name="tanggal" class="form-control date" id="tanggal" value="<?= $detail->tanggal_pembukuan ?>" required="required" <?= $disabled_tms ?>>
                             </div>
-                        </div>
-                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="is_realisasi"><b>Status Realisasi :</b></label>
-                                <select name="is_realisasi" id="is_realisasi" class="form-control rounded-0" required>
+                                <select name="is_realisasi" id="is_realisasi" class="form-control rounded-0" required <?= $disabled_tms ?>>
                                     <option value="">Status Realisasi</option>
                                     <option value="LS" <?= $detail->is_realisasi === 'LS' ? 'selected' : '' ?>>LS</option>
                                     <option value="UP" <?= $detail->is_realisasi === 'UP' ? 'selected' : '' ?>>UP</option>
@@ -203,9 +217,10 @@
                                     <option value="TU" <?= $detail->is_realisasi === 'TU' ? 'selected' : '' ?>>TU</option>
                                 </select>
                             </div>
+                            <button class="btn btn-secondary rounded-0" type="button" onclick="window.location.href='<?= base_url('app/spj?tab=%23verifikasi') ?>'">Batal</button>
+                            <button type="submit" class="btn btn-success rounded-0 pull-right" <?= $disabled_tms ?>><i class="fa fa-save mr-2"></i> Proses</button>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-success rounded-0 mt-2 pull-right"><i class="fa fa-save mr-2"></i> Proses</button>
 
                     <?=
                     form_close();
@@ -220,15 +235,17 @@
                     ?>
                     <?php
                     $tms_keterangan = $detail->is_status == 'TMS' ? $detail->catatan : '';
+                    $disabled_tms = $this->session->userdata('role') !== 'VERIFICATOR' ? 'disabled' : '';
                     ?>
-                    <textarea name="catatan" id="catatan" cols="5" rows="2" class="form-control" placeholder="Masukan keterangan TMS"><?= $tms_keterangan ?></textarea>
-                    <button type="submit" class="btn btn-danger rounded-0 mt-2"><i class="fa fa-save mr-2"></i> Proses</button>
+                    <textarea name="catatan" id="catatan" cols="5" rows="3" class="form-control" placeholder="Masukan keterangan TMS" <?= $disabled_tms ?>><?= $tms_keterangan ?></textarea>
+                    <button class="btn btn-secondary rounded-0 mt-2" type="button" onclick="window.location.href='<?= base_url('app/spj?tab=%23verifikasi') ?>'">Batal</button>
+                    <button type="submit" class="btn btn-danger rounded-0 mt-2" <?= $disabled_tms ?>><i class="fa fa-save mr-2"></i> Proses</button>
                     <?=
                     form_close();
                     ?>
                 </td>
             </tr>
-            <tr>
+            <!-- <tr>
                 <td class="text-center" valign="middle">BTL <br> (Berkas Tidak Lengkap)</td>
                 <td colspan="2">
                     <?=
@@ -243,7 +260,7 @@
                     form_close();
                     ?>
                 </td>
-            </tr>
+            </tr> -->
         </tbody>
     </table>
 </div>

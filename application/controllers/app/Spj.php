@@ -72,8 +72,10 @@ class Spj extends CI_Controller
                         <th class="text-center" width="5%">No</th>
                         <th>Kode</th>
                         <th>Kegiatan/Sub Kegiatan/Uraian</th>
+                        <th>Utk. SPJ Bulan</th>
                         <th>Jumlah (Rp)</th>
                         <th>Status</th>
+                        <th>Tgl. Entri</th>
                         <th>Eviden</th>
                         <th colspan="3" class="text-center">Aksi</th>
                     </tr>
@@ -81,10 +83,15 @@ class Spj extends CI_Controller
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r):
+            // Catatan
+            $catatan = isset($r->catatan) && !empty($r->catatan) && $r->is_status === 'ENTRI' ? '<span class="text-danger"><i class="fa fa-exclamation-triangle mr-2"></i> ' . substr($r->catatan, 0, 100) . '...</span>' : '';
+            // Status
             if ($r->is_status === 'ENTRI') {
                 $status = '<span class="badge p-2 badge-secondary"><i class="fa fa-edit mr-2"></i> ENTRI</span>';
-            } elseif ($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN') {
+            } elseif ($r->is_status === 'VERIFIKASI') {
                 $status = '<span class="badge p-2 badge-primary"><i class="fa fa-lock mr-2"></i> VERIFIKASI</span>';
+            } elseif ($r->is_status === 'VERIFIKASI_ADMIN') {
+                $status = '<span class="badge p-2 badge-info"><i class="fa fa-lock mr-2"></i> VERIFIKASI ADMIN</span>';
             } elseif ($r->is_status === 'APPROVE') {
                 $status = '<span class="badge p-2 badge-success"><i class="fa fa-check-circle mr-2"></i> APPROVE</span>';
             } elseif ($r->is_status === 'BTL') {
@@ -123,11 +130,17 @@ class Spj extends CI_Controller
                 <td class="nama">
                 ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br><b>' . $r->nama_uraian . '</b>
                 </td>
+                <td class="text-center">
+                    ' . bulan(strtoupper($r->periode_id)) . '
+                </td>
                 <td>
                     <b>' . nominal($r->jumlah) . '</b>
                 </td>
                 <td>
-                    ' . $status . '
+                    ' . $status . ' <br> ' . $catatan . '
+                </td>
+                <td>
+                    ' . date_indo(substr($r->entri_at, 0, 10)) . '
                 </td>
                 <td width="5%" class="text-center">
                     ' . $link . '
@@ -255,7 +268,9 @@ class Spj extends CI_Controller
             $db = $this->crud->update('spj', $update, $whr);
         } else {
             $update = [
-                'is_status' => $input['status']
+                'is_status' => $input['status'],
+                'catatan_by' => $this->session->userdata('role'),
+                'catatan' => $input['catatan'],
             ];
             $db = $this->crud->update('spj', $update, $whr);
         }
@@ -375,7 +390,7 @@ class Spj extends CI_Controller
             $row[] = $no;
             $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian;
             $row[] = '<b>' . $r->nama_part . '</b> <br>' . $r->nama_program . ' <br/>  ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br> <b>' . $r->nama_uraian . '</b>';
-            $row[] = $r->nama . "<div class='divider-dashed'></div>" . bulan($r->bulan);
+            $row[] = bulan($r->periode_id);
             $row[] = longdate_indo(substr($r->entri_at, 0, 10)) . "<br>(" . $userusul->nama . ")";
             $row[] = $status;
             $row[] = "<b>" . nominal($r->jumlah) . "</b>";
@@ -414,7 +429,7 @@ class Spj extends CI_Controller
             'title' => 'Entri Usul - SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/usul',
             'list_bidang' => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
-            'list_program' => $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran'))->result(),
+            'list_program' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'))->result(),
             'detail' => @$detail,
             'autoload_js' => [
                 'template/backend/vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js',
@@ -439,7 +454,7 @@ class Spj extends CI_Controller
         $kode_uraian = $this->crud->getWhere('ref_uraians', ['id' => $input['uraian_kegiatan']])->row();
 
         $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian($input['uraian_kegiatan'], $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian($input['uraian_kegiatan'], $this->session->userdata('is_perubahan'))->row()->total_pagu_awal : 0;
-        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($input['uraian_kegiatan'], 'SELESAI');
+        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($input['uraian_kegiatan'], ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
         $totalSisaPagu = ($totalPaguAwal - $totalRealisasiPagu);
 
         $data = [
@@ -465,7 +480,7 @@ class Spj extends CI_Controller
     {
         $jml = $this->input->post('jumlah');
         $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian($uraian_id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian($uraian_id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal : 0;
-        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($uraian_id, 'SELESAI');
+        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($uraian_id, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
         $totalSisaPagu = ($totalPaguAwal - $totalRealisasiPagu);
 
         echo json_encode(['jml' => get_only_numbers($jml), 'realisasi' => $totalSisaPagu]);

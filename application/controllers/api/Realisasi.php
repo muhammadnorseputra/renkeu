@@ -60,8 +60,8 @@ class Realisasi extends RestController
             $jumlah_tms = @$this->spj->TransaksiSpjBulananNonMs($i, 'TMS', $tahun_anggaran) != null ? @$this->spj->TransaksiSpjBulananNonMs($i, 'TMS', $tahun_anggaran) : 0;
             $jumlah_btl = @$this->spj->TransaksiSpjBulananNonMs($i, 'BTL', $tahun_anggaran) != null ? @$this->spj->TransaksiSpjBulananNonMs($i, 'BTL', $tahun_anggaran) : 0;
             $spj_ms[] = [bulan($i), (int) $jumlah];
-            $spj_tms[] = [bulan($i), $jumlah_tms];
-            $spj_btl[] = [bulan($i), $jumlah_btl];
+            $spj_tms[] = [bulan($i), (int) $jumlah_tms];
+            $spj_btl[] = [bulan($i), (int) $jumlah_btl];
         }
 
         // Realisasi By Part

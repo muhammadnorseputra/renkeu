@@ -55,17 +55,56 @@ class Programs extends CI_Controller
         $this->load->view('layout/app', $data);
     }
 
+    public function unor()
+    {
+        $db = $this->crud->get('ref_unors');
+
+        $btnAdd = '<div class="mb-3">
+        <button data-toggle="modal" data-target=".modal-unor" class="btn rounded-0 btn-info"><i class="fa fa-plus mr-2"></i> Tambah : Unor</button>
+                </div>
+                ';
+        $html = $btnAdd;
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover">';
+        $html .= '<thead><tr><th class="text-center">No</th><th>Judul</th><th>Hapus</th><th>Edit</th></tr></thead>';
+        $html .= '<tbody>';
+        $no = 1;
+        foreach ($db->result() as $r) :
+            $html .= '<tr>
+                <td class="text-center">
+                    ' . $no . '
+                </td>
+                <td>
+                    ' . $r->nama . '
+                </td>
+                <td width="5%" class="text-center">
+                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_unor') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+                </td>
+                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_unors") . '\',\'.modal-unor-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+            </tr>';
+            $no++;
+        endforeach;
+        $html .= '</tbody>';
+        $html .= '</table></div>';
+
+        if ($db->num_rows() > 0) :
+            $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
+        else :
+            $data = ['result' => $btnAdd, 'msg' => 'Data <b>Parts</b> Tidak Ditemukan', 'code' => 404];
+        endif;
+
+        echo json_encode($data);
+    }
+
     public function part()
     {
         $db = $this->crud->get('ref_parts');
 
         $btnAdd = '<div class="mb-3">
-        <button data-toggle="modal" data-target=".modal-unor" class="btn rounded-0 btn-info"><i class="fa fa-plus mr-2"></i> Tambah : Unor</button>
         <button data-toggle="modal" data-target=".modal-part" class="btn rounded-0 btn-primary"><i class="fa fa-plus mr-2"></i> Tambah : Part</button>
                 </div>
                 ';
         $html = $btnAdd;
-        $html .= '<table class="table table-condensed table-hover table-responsive">';
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover">';
         $html .= '<thead><tr><th class="text-center">No</th><th>Judul</th><th>Hapus</th><th>Edit</th></tr></thead>';
         $html .= '<tbody>';
         $no = 1;
@@ -85,7 +124,7 @@ class Programs extends CI_Controller
             $no++;
         endforeach;
         $html .= '</tbody>';
-        $html .= '</table>';
+        $html .= '</table></div>';
 
         if ($db->num_rows() > 0) :
             $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
@@ -96,9 +135,89 @@ class Programs extends CI_Controller
         echo json_encode($data);
     }
 
+    public function tujuan()
+    {
+        $db = $this->crud->getWhere('ref_tujuan', ['tahun' => $this->session->userdata('tahun_anggaran')]);
+
+        $btnAdd = '<div class="mb-3">
+        <button data-toggle="modal" data-target=".modal-tujuan" class="btn rounded-0 btn-info"><i class="fa fa-plus mr-2"></i> Tambah Tujuan</button>
+                </div>
+                ';
+        $html = $btnAdd;
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover">';
+        $html .= '<thead><tr><th class="text-center">No</th><th>Judul</th><th>Hapus</th><th>Edit</th></tr></thead>';
+        $html .= '<tbody>';
+        $no = 1;
+        foreach ($db->result() as $r) :
+            $html .= '<tr>
+                <td class="text-center">
+                    ' . $no . '
+                </td>
+                <td>
+                    ' . $r->nama . '
+                </td>
+                <td width="5%" class="text-center">
+                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_tujuan') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+                </td>
+                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_tujuan") . '\',\'.modal-tujuan-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+            </tr>';
+            $no++;
+        endforeach;
+        $html .= '</tbody>';
+        $html .= '</table></div>';
+
+        if ($db->num_rows() > 0) :
+            $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
+        else :
+            $data = ['result' => $btnAdd, 'msg' => 'Data <b>Tujuan</b> Tidak Ditemukan', 'code' => 404];
+        endif;
+
+        echo json_encode($data);
+    }
+
+    public function sasaran()
+    {
+        $db = $this->crud->getWhere('ref_sasaran', ['tahun' => $this->session->userdata('tahun_anggaran')]);
+
+        $btnAdd = '<div class="mb-3">
+        <button data-toggle="modal" data-target=".modal-sasaran" class="btn rounded-0 btn-primary"><i class="fa fa-plus mr-2"></i> Tambah Sasaran</button>
+                </div>
+                ';
+        $html = $btnAdd;
+        $html .= '<div class="table-responsive"><table class="table table-condensed table-hover">';
+        $html .= '<thead><tr><th class="text-center">No</th><th>Judul</th><th>Hapus</th><th>Edit</th></tr></thead>';
+        $html .= '<tbody>';
+        $no = 1;
+        foreach ($db->result() as $r) :
+            $html .= '<tr>
+                <td class="text-center">
+                    ' . $no . '
+                </td>
+                <td>
+                    ' . $r->nama . '
+                </td>
+                <td width="5%" class="text-center">
+                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_sasaran') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+                </td>
+                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_sasaran") . '\',\'.modal-sasaran-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+            </tr>';
+            $no++;
+        endforeach;
+        $html .= '</tbody>';
+        $html .= '</table></div>';
+
+        if ($db->num_rows() > 0) :
+            $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
+        else :
+            $data = ['result' => $btnAdd, 'msg' => 'Data <b>Sasaran</b> Tidak Ditemukan', 'code' => 404];
+        endif;
+
+        echo json_encode($data);
+    }
+
     public function program()
     {
-        $db = $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+        $db = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
         if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') :
             $btnAdd = '<div>
             <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
@@ -398,37 +517,29 @@ class Programs extends CI_Controller
             </td>';
 
             // Pagu Awal
-            if (!$this->session->userdata('is_perubahan')) {
-                $total_all_pagu += $totalPaguAwal;
-                $button_pagu = '<td width="10%" class="text-right">
+            $is_disabled_pagu_awal = $this->session->userdata('is_perubahan') === "1" ? 'disabled' : '';
+            $total_all_pagu += $totalPaguAwal;
+            $button_pagu = '<td width="10%" class="text-right"
                 <div class="text-right">
                 <b>' . nominal($totalPaguAwal) . '</b>
             </td>
             <td class="text-center">
-            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\',0)" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
+            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\',0)" type="button" class="btn btn-info btn-sm rounded m-0" ' . $is_disabled_pagu_awal . '><i class="fa fa-money"></i></button>
             </div>
             </td>';
-            } else {
-                $button_pagu = '<td></td>
-                <td></td>';
-            }
 
             // Pagu Perubahan
-            if ($this->session->userdata('is_perubahan')) {
+            $is_disabled_pagu_perubahan = $this->session->userdata('is_perubahan') === "0" ? 'disabled' : '';
 
-                $total_all_pagu_perubahan += $totalPaguPerubahan;
-                $button_pagu_perubahan = '<td width="10%" class="text-right">
+            $total_all_pagu_perubahan += $totalPaguPerubahan;
+            $button_pagu_perubahan = '<td width="10%" class="text-right">
                 <div class="text-right">
                 <b>' . nominal($totalPaguPerubahan) . '</b>
             </td>
             <td class="text-center">
-            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguPerubahan . '\',1)" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
+            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguPerubahan . '\',1)" type="button" class="btn btn-info btn-sm rounded m-0" ' . $is_disabled_pagu_perubahan . '><i class="fa fa-money"></i></button>
             </div>
             </td>';
-            } else {
-                $button_pagu_perubahan = '<td></td>
-                <td></td>';
-            }
             $html .= '<tr>
                 <td class="text-center">
                     ' . $no . '
@@ -469,6 +580,25 @@ class Programs extends CI_Controller
         echo json_encode($data);
     }
 
+    public function getTujuan()
+    {
+        $q = $this->input->post('q');
+
+        // $db = $this->crud->getLikes('ref_tujuan', ['nama' => $q]);
+        $db = $this->db->like('nama', $q)->where('tahun', $this->tahun_anggaran)->get('ref_tujuan');
+        $all = [];
+        if ($db->num_rows() > 0) :
+            foreach ($db->result() as $row) :
+                $data['id'] = $row->id;
+                $data['text'] = $row->id . " - " . $row->nama;
+                $all[] = $data;
+            endforeach;
+        else :
+            $all[] = ['id' => 0,  'text' => 'Maaf, Tujuan "' . strtoupper($q) . '" tidak ditemukan.'];
+        endif;
+        echo json_encode($all);
+    }
+
     public function getUnor()
     {
         $q = $this->input->post('q');
@@ -483,6 +613,24 @@ class Programs extends CI_Controller
             endforeach;
         else :
             $all[] = ['id' => 0,  'text' => 'Maaf, Unor "' . strtoupper($q) . '" tidak ditemukan.'];
+        endif;
+        echo json_encode($all);
+    }
+
+    public function getSasaran()
+    {
+        $q = $this->input->post('q');
+
+        $db = $this->crud->getLikes('ref_sasaran', ['nama' => $q]);
+        $all = [];
+        if ($db->num_rows() > 0) :
+            foreach ($db->result() as $row) :
+                $data['id'] = $row->id;
+                $data['text'] = $row->id . " - " . $row->nama;
+                $all[] = $data;
+            endforeach;
+        else :
+            $all[] = ['id' => 0,  'text' => 'Maaf, Sasaran "' . strtoupper($q) . '" tidak ditemukan.'];
         endif;
         echo json_encode($all);
     }
@@ -537,22 +685,27 @@ class Programs extends CI_Controller
         $partid = $this->session->userdata('part');
 
         // $db = $this->crud->getLikes('ref_programs', ['nama' => $q]);
-        if ($this->session->userdata('role') !== 'VERIFICATOR' && $this->session->userdata('role') !== 'SUPER_USER' && $this->session->userdata('role') !== 'SUPER_ADMIN' && $this->session->userdata('role') !== 'ADMIN') :
-            $db = $this->db->select('p.id,p.kode,p.nama')
+
+        if ($this->session->userdata('role') === 'USER') :
+            $db = $this->db->select('p.id,p.kode,p.nama,p.tahun')
                 ->from('ref_programs AS p')
-                ->join('ref_parts AS q', 'q.fid_program=p.id', 'left')
-                ->where('q.id', $partid)
-                ->where('p.tahun', $this->session->userdata('tahun_anggaran'))
-                ->group_by('p.id')
-                ->get();
-        else :
-            $db = $this->db->select('p.id,p.kode,p.nama')
-                ->from('ref_programs AS p')
-                ->join('ref_parts AS q', 'q.fid_program=p.id', 'left')
-                ->where('p.tahun', $this->session->userdata('tahun_anggaran'))
+                ->join('ref_parts AS q', "FIND_IN_SET({$partid}, p.fid_part) > 0", 'inner')
+                ->group_start()
                 ->like('p.nama', $q)
                 ->or_like('p.kode', $q)
                 ->group_by('p.id')
+                ->group_end()
+                ->where('p.tahun', $this->session->userdata('tahun_anggaran'))
+                ->get();
+        else:
+            $db = $this->db->select('p.id,p.kode,p.nama,p.tahun')
+                ->from('ref_programs AS p')
+                ->group_start()
+                ->like('p.nama', $q)
+                ->or_like('p.kode', $q)
+                ->group_by('p.id')
+                ->group_end()
+                ->where('p.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get();
         endif;
         $all = [];
@@ -572,7 +725,7 @@ class Programs extends CI_Controller
     {
         $this->load->model('ModelSelect2', 'select');
         $ch = [];
-        $db = $this->select->getChildKegiatan($q, $partid);
+        $db = $this->select->getChildKegiatan($q, $partid, $this->session->userdata('tahun_anggaran'));
         foreach ($db->result() as $k) {
             $data['id'] = $k->id;
             $data['text'] = $k->kode . " - " . $k->nama;
@@ -635,6 +788,40 @@ class Programs extends CI_Controller
             return false;
         }
 
+        if ($type === 'tujuan') {
+            $p = $this->input->post();
+            $data = [
+                'fid_unor' => $p['unor'],
+                'nama' => $p['tujuan'],
+                'tahun' => $this->session->userdata('tahun_anggaran')
+            ];
+            $db = $this->crud->insert('ref_tujuan', $data);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+            return false;
+        }
+
+        if ($type === 'sasaran') {
+            $p = $this->input->post();
+            $data = [
+                'fid_tujuan' => $p['tujuan'],
+                'nama' => $p['sasaran'],
+                'tahun' => $this->session->userdata('tahun_anggaran')
+            ];
+            $db = $this->crud->insert('ref_sasaran', $data);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+            return false;
+        }
+
         if ($type === 'part') {
             $p = $this->input->post();
             $data = [
@@ -674,7 +861,8 @@ class Programs extends CI_Controller
         if ($type === 'program') {
             $p = $this->input->post();
             $data = [
-                'fid_unor' => $p['unor'],
+                'fid_part' => implode(",", $p['bidang']),
+                'fid_sasaran' => $p['sasaran'],
                 'kode' => $p['kode_program'],
                 'nama' => $p['program'],
                 'tahun' => $this->session->userdata('tahun_anggaran')
@@ -886,6 +1074,40 @@ class Programs extends CI_Controller
             echo json_encode($msg);
         }
 
+        if ($tbl === 'ref_tujuan') {
+            $input = $this->input->post();
+            $data = [
+                'nama' => $input['tujuan'],
+            ];
+            $whr = [
+                'id' => $input['id']
+            ];
+            $db = $this->crud->update($tbl, $data, $whr);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+        }
+
+        if ($tbl === 'ref_sasaran') {
+            $input = $this->input->post();
+            $data = [
+                'nama' => $input['sasaran'],
+            ];
+            $whr = [
+                'id' => $input['id']
+            ];
+            $db = $this->crud->update($tbl, $data, $whr);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+        }
+
         // if ($tbl === 'ref_programs') {
         //     $input = $this->input->post();
         //     $data = [
@@ -958,14 +1180,17 @@ class Programs extends CI_Controller
 
         if ($tbl === 'ref_programs') {
             $input = $this->input->post();
-            if (isset($input['unor'])) {
+            if (isset($input['sasaran'])) {
                 $data = [
-                    'fid_unor' => $input['unor'],
+                    'fid_part' => implode(",", $input['bidang']),
+                    'fid_sasaran' => $input['sasaran'],
                     'kode' => $input['kode_program'],
-                    'nama' => $input['program']
+                    'nama' => $input['program'],
+
                 ];
             } else {
                 $data = [
+                    'fid_part' => implode(",", $input['bidang']),
                     'kode' => $input['kode_program'],
                     'nama' => $input['program']
                 ];

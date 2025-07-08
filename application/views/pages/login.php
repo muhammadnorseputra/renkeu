@@ -31,12 +31,9 @@
 </head>
 
 <body>
-
-
   <div class="d-lg-flex half">
     <div class="bg order-1 order-md-2" style="background-image: url('<?= base_url('template/assets/1-Tahulah-Pian-Tugu-Paringin_RVN.webp') ?>'); background-position:center; background-size: cover; background-repeat: no-repeat;"></div>
     <div class="contents order-2 order-md-1">
-
       <div class="container">
         <div class="row align-items-center justify-content-center">
           <div class="col-md-7">

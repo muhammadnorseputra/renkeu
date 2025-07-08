@@ -36,11 +36,9 @@ class Capaian extends CI_Controller
 
 	public function index()
 	{
-		$programs = $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
 		$data = [
 			'title' => 'Capaian Anggaran & Kinerja',
 			'content' => 'pages/anggaran_kinerja/capaian',
-			'programs' => $programs,
 			'autoload_js' => [
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
 				'template/custom-js/capaian.js',
@@ -52,7 +50,6 @@ class Capaian extends CI_Controller
 	public function cetak($periode_id)
 	{
 		$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
-		$programs = $this->target->program($this->session->userdata('part'));
 
 		$this->load->library('pdf');
 		$this->pdf->setPaper('legal', 'landscape');
@@ -60,7 +57,6 @@ class Capaian extends CI_Controller
 
 		$data = [
 			'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_nama,
-			'programs' => $programs,
 			'tw_id' => $periode_id,
 			'tw_nama' => $periode_nama
 		];
@@ -69,23 +65,76 @@ class Capaian extends CI_Controller
 
 	public function laporan()
 	{
+		$faktor = $this->realisasi->getFaktors($this->session->userdata('tahun_anggaran'));
 		$data = [
 			'title' => 'Laporan Anggaran & Kinerja',
 			'content' => 'pages/anggaran_kinerja/laporan',
 			'autoload_js' => [
 				'template/backend/vendors/select2/dist/js/select2.full.min.js',
+				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+				'template/custom-js/laporan.js',
 			],
 			'autoload_css' => [
 				'template/backend/vendors/select2/dist/css/select2.min.css',
-			]
+			],
+			'faktor' => $faktor
 		];
 		$this->load->view('layout/app', $data);
+	}
+
+	public function detail_faktor()
+	{
+		$id = $this->input->get('id');
+		$faktor = $this->realisasi->getFaktors($this->session->userdata('tahun_anggaran'), $id);
+		echo json_encode($faktor);
+	}
+
+	public function input_faktor()
+	{
+		$post = $this->input->post();
+
+		$insert = [
+			'pendorong' => $post['pendorong'],
+			'penghambat' => $post['penghambat'],
+			'tindak_lanjut' => $post['tindak_lanjut'],
+			'tahun' => $this->session->userdata('tahun_anggaran')
+		];
+
+		if ($post['id'] == "") {
+			$db = $this->crud->insert('t_faktors', $insert);
+			if ($db) {
+				$msg = 200;
+			} else {
+				$msg = 400;
+			}
+			echo json_encode($msg);
+			return false;
+			die();
+		}
+
+		$update = [
+			'pendorong' => $post['pendorong'],
+			'penghambat' => $post['penghambat'],
+			'tindak_lanjut' => $post['tindak_lanjut']
+		];
+
+		$whr = [
+			'id' => $post['id'],
+		];
+
+		$db = $this->crud->update('t_faktors', $update, $whr);
+		if ($db) {
+			$msg = 200;
+		} else {
+			$msg = 400;
+		}
+		echo json_encode($msg);
 	}
 
 	public function laporan_cetak()
 	{
 		$post = $this->input->post();
-		$programs = $this->target->program($this->session->userdata('part'));
+		$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
 
 		$this->load->library('pdf');
 		$this->pdf->setPaper('legal', 'landscape');

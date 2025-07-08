@@ -38,7 +38,7 @@ class Login extends CI_Controller
         endif;
 
         $data = [
-            'title' => 'Authentication - Emonev App'
+            'title' => 'Authentication - Digta Sunanpraja (Digitalisasi Penyusunan Laporan Capaian Kinerja)',
         ];
         $this->load->view('pages/login', $data);
     }

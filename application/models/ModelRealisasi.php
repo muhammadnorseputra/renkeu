@@ -33,12 +33,16 @@ class ModelRealisasi extends CI_Model
         $q = $this->db->get();
         return $q->row();
     }
-    public function getIndikator($whr)
+    public function getIndikator($whr, $part_id = null)
     {
-        $this->db->select('t.*,i.id AS indikator_id, i.nama');
+        $this->db->select('t.*,i.id AS indikator_id, i.nama, j.nama AS jenis_indikator, j.color');
         $this->db->from('ref_indikators AS i');
         $this->db->join('t_target AS t', 't.fid_indikator=i.id', 'left');
+        $this->db->join('ref_jenis_indikators AS j', 'i.fid_jenis_indikator=j.id', 'left');
         $this->db->where($whr);
+        if (!empty($part_id) && $this->session->userdata('role') === 'USER') {
+            $this->db->where("FIND_IN_SET('{$part_id}', i.fid_part) >", 0);
+        }
         $this->db->order_by('i.id', 'asc');
         $q = $this->db->get();
         return $q;
@@ -63,6 +67,33 @@ class ModelRealisasi extends CI_Model
         $this->db->where('sub.fid_kegiatan', $kegiatanId);
         $q = $this->db->get();
         return $q;
+    }
+    public function getRealisasiSasaran($periodeId, $sasaranId, $ta)
+    {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        $this->db->join('ref_programs AS r', 's.fid_program=r.id');
+        $this->db->join('ref_sasaran AS sa', 'r.fid_sasaran=sa.id');
+        $this->db->where('s.is_status', 'SELESAI');
+        $this->db->where('s.fid_periode', $periodeId);
+        $this->db->where('sa.id', $sasaranId);
+        $this->db->where('s.tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
+    public function getRealisasiTujuan($periodeId, $tujuanId, $ta)
+    {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        $this->db->join('ref_programs AS r', 's.fid_program=r.id');
+        $this->db->join('ref_sasaran AS sa', 'r.fid_sasaran=sa.id');
+        $this->db->join('ref_tujuan AS t', 'sa.fid_tujuan=t.id');
+        $this->db->where('s.is_status', 'SELESAI');
+        $this->db->where('s.fid_periode', $periodeId);
+        $this->db->where('t.id', $tujuanId);
+        $this->db->where('s.tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
     }
     public function getRealisasiProgram($periodeId, $programId)
     {
@@ -126,14 +157,15 @@ class ModelRealisasi extends CI_Model
     {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
-        if ($status === 'SELESAI'):
-            $this->db->where('is_status', 'SELESAI');
+        if (count($status) > 0):
+            $this->db->where_in('is_status', $status);
         else:
-            $this->db->where('is_status !=', 'SELESAI');
+            $this->db->where_in('is_status !=', $status);
         endif;
         $this->db->where('is_status !=', 'SELESAI_TMS');
         $this->db->where('is_status !=', 'SELESAI_BTL');
         $this->db->where('fid_uraian', $uraian_id);
+        $this->db->where('tahun', $this->session->userdata('tahun_anggaran'));
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
@@ -141,7 +173,7 @@ class ModelRealisasi extends CI_Model
     {
         $this->db->select_sum('persentase');
         $this->db->select_sum('eviden');
-        $this->db->select('tujuan, sasaran, eviden_jenis, eviden_link, faktor_pendorong, faktor_penghambat, tindak_lanjut');
+        $this->db->select('eviden_jenis, eviden_link, faktor_pendorong, faktor_penghambat, tindak_lanjut');
         $this->db->from('t_realisasi');
         $this->db->where(['fid_indikator' => $indikator_id, 'fid_periode' => $periode_id]);
         $q = $this->db->get();
@@ -157,5 +189,17 @@ class ModelRealisasi extends CI_Model
         $this->db->where(['fid_indikator' => $indikator_id]);
         $q = $this->db->get();
         return $q;
+    }
+
+    public function getFaktors($tahun, $id = "")
+    {
+        $this->db->select('*');
+        $this->db->from('t_faktors');
+        $this->db->where('tahun', $tahun);
+        if (!empty($id)) {
+            $this->db->where('id', $id);
+        }
+        $q = $this->db->get();
+        return $q->row();
     }
 }

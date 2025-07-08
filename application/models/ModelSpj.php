@@ -43,17 +43,20 @@ class ModelSpj extends CI_Model
 	}
 	public function inbox()
 	{
-		$this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan,uraian.nama AS nama_uraian, uraian.kode AS kode_uraian');
+		$this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan,uraian.nama AS nama_uraian, uraian.kode AS kode_uraian, p.id as periode_id');
 		$this->db->from('spj AS s');
+		$this->db->join('t_periode AS p', 's.fid_periode=p.id');
 		$this->db->join('ref_parts AS part', 's.fid_part=part.id');
 		$this->db->join('ref_programs AS program', 's.fid_program=program.id');
 		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
 		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
 		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
 		$this->db->where('s.entri_by_part', $this->session->userdata('part'));
+		$this->db->where('s.entri_by', $this->session->userdata('user_name'));
 		$this->db->where('s.is_status !=', 'SELESAI');
-		// $this->db->where('s.is_status !=', 'SELESAI_TMS');
-		// $this->db->where('s.is_status !=', 'SELESAI_BTL');
+		$this->db->where('s.is_status !=', 'SELESAI_TMS');
+		$this->db->where('s.is_status !=', 'SELESAI_BTL');
+		$this->db->order_by('s.id', 'desc');
 		$q = $this->db->get();
 		return $q;
 	}
@@ -102,32 +105,47 @@ class ModelSpj extends CI_Model
 
 	public function TransaksiSpjBulanan($bulan, $ta)
 	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj_riwayat');
-		$this->db->where('bulan', $bulan);
-		$this->db->where('tahun', $ta);
+		$this->db->select_sum('r.jumlah');
+		$this->db->from('spj_riwayat AS r');
+		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+		$this->db->where('p.id', $bulan);
+		$this->db->where('r.tahun', $ta);
+		$this->db->where('r.is_status', 'APPROVE');
 		$q = $this->db->get();
 		return $q->row()->jumlah;
 	}
 
 	public function TransaksiSpjBulananNonMs($bulan, $status, $ta)
 	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj_riwayat');
-		$this->db->where('bulan', $bulan);
-		$this->db->where('is_status', $status);
-		$this->db->where('tahun', $ta);
+		$this->db->select_sum('r.jumlah');
+		$this->db->from('spj_riwayat AS r');
+		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+		$this->db->where('p.id', $bulan);
+		$this->db->where('r.is_status', $status);
+		$this->db->where('r.tahun', $ta);
 		$q = $this->db->get();
 		return $q->row()->jumlah;
 	}
 
+	public function LimitTransaksiTriwulan($periode, $ta)
+	{
+		$implode = implode(",", $periode);
+		$this->db->select('total');
+		$this->db->from('t_pagu_limit');
+		$this->db->where('periode', $implode);
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->total ?? 0;
+	}
+
 	public function TransaksiTriwulan($triwulan, $ta)
 	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj_riwayat');
-		$this->db->where_in('bulan', $triwulan);
-		$this->db->where('is_status', 'APPROVE');
-		$this->db->where('tahun', $ta);
+		$this->db->select_sum('r.jumlah');
+		$this->db->from('spj_riwayat as r');
+		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+		$this->db->where_in('p.id', $triwulan);
+		$this->db->where('r.is_status', 'APPROVE');
+		$this->db->where('r.tahun', $ta);
 		$q = $this->db->get();
 		return $q->row()->jumlah;
 	}
@@ -246,7 +264,7 @@ class ModelSpj extends CI_Model
 	private function _datatables_verifikasi_selesai()
 	{
 
-		$this->db->select('spj_riwayat.*,t_periode.nama');
+		$this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id');
 		$this->db->from('spj_riwayat');
 		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
 		if ($this->session->userdata('role') != 'VERIFICATOR' && $this->session->userdata('role') != 'ADMIN' && $this->session->userdata('role') != 'SUPER_ADMIN' && $this->session->userdata('role') != 'SUPER_USER') {

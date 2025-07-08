@@ -39,7 +39,7 @@ class Bukujaga extends CI_Controller
         $data = [
             'title' => 'Buku Jaga Kegiatan',
             'content' => 'pages/spj/bukujaga',
-            'programs' => $this->target->program($this->session->userdata('part'), $this->session->userdata('tahun_anggaran')),
+            'programs' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran')),
             'autoload_js' => [
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
