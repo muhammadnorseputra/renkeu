@@ -39,7 +39,7 @@
           <div class="col-md-7">
             <!-- App Logo -->
             <?php if (getSetting('APPLogo') != '') : ?>
-              <center><img style="margin:30px;" src="<?= base_url('template/assets/logo.png') ?>" width="50" alt="Logo Application"></center>
+              <center><img style="margin:30px;" src="<?= base_url('template/assets/logo.png') ?>" width="120" alt="Logo Application"></center>
             <?php endif; ?>
             <?php if (getSetting('APPName') != '') : ?>
               <h3 class="text-center">Log In - <strong><?= getSetting('APPName') ?></strong></h3>
