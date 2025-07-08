@@ -359,7 +359,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     ?>
                                         <tr>
                                             <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                            <td class="bg-success border-bottom-0" rowspan="<?= @$toEnd ?>"></td>
+                                            <td rowspan="<?= @$toEnd ?>"></td>
                                             <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                             <?= $tr ?>
                                         </tr>

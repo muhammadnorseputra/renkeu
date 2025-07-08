@@ -24,7 +24,7 @@ class Target extends CI_Controller
 		parent::__construct();
 		cek_session();
 		//  CEK USER PRIVILAGES 
-		if (!privilages('priv_default') && !privilages('priv_anggarankinerja')):
+		if (!privilages('priv_default') && !privilages('priv_anggarankinerja') || !privilages('priv_target_kinerja')):
 			return show_404();
 		endif;
 

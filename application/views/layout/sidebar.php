@@ -49,7 +49,7 @@
                             <i class="fa fa-money"></i> Anggaran & Kinerja <span class="fa fa-chevron-down"></span>
                         </a>
                         <ul class="nav child_menu">
-                            <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN'])): ?>
+                            <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN', 'USER'])): ?>
                                 <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target Indikator">Target</a></li>
                             <?php endif; ?>
                             <li><a href="<?= base_url('app/realisasi') ?>" class="loadContent" title="Realisasi Indikator">Realisasi</a></li>

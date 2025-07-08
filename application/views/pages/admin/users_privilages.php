@@ -35,6 +35,7 @@
         $priv_riwayat_spj = !empty($cek_priv->priv_riwayat_spj) && $cek_priv->priv_riwayat_spj  == 'Y' ? 'checked' : '';
         $priv_bukujaga = !empty($cek_priv->priv_bukujaga) && $cek_priv->priv_bukujaga  == 'Y' ? 'checked' : '';
         $priv_anggarankinerja = !empty($cek_priv->priv_anggarankinerja) && $cek_priv->priv_anggarankinerja  == 'Y' ? 'checked' : '';
+        $priv_target_kinerja = !empty($cek_priv->priv_target_kinerja) && $cek_priv->priv_target_kinerja  == 'Y' ? 'checked' : '';
         ?>
         <?= form_open(base_url('app/users/privilages_update'), ['id' => 'f_privilage'], ['f_type' => 'privilage', 'uid' => encrypt_url($uid)]); ?>
         <table class="table table-bordered table-condensed">
@@ -96,6 +97,7 @@
               <th>Priv SPJ</th>
               <th>Priv Buku Jaga</th>
               <th>Priv Anggaran & Kinerja</th>
+              <th>Priv Target Kinerja</th>
             </tr>
           </thead>
           <tbody class="text-center">
@@ -109,6 +111,9 @@
               </td>
               <td>
                 <input type="checkbox" name="priv_anggarankinerja" value="Y" class="js-switch" <?= $priv_anggarankinerja ?> />
+              </td>
+              <td>
+                <input type="checkbox" name="priv_target_kinerja" value="Y" class="js-switch" <?= $priv_target_kinerja ?> />
               </td>
             </tr>
           </tbody>
