@@ -1288,22 +1288,22 @@ class Programs extends CI_Controller
             return false;
         }
 
-        if ($form === 'kodeuraian') {
-            $kode = $this->input->post('kode_uraian');
-            $db = $this->db->select('u.kode,k.fid_part')
-                ->from('ref_uraians AS u')
-                ->join('ref_kegiatans AS k', 'u.fid_kegiatan=k.id')
-                ->join('ref_parts AS p', 'k.fid_part=p.id')
-                ->where('k.fid_part', $this->session->userdata('part'))
-                ->where('u.kode', $kode)
-                ->get();
-            if ($db->num_rows() > 0) {
-                $this->output->set_status_header('400');
-            } else {
-                $this->output->set_status_header('200');
-            }
-            return false;
-        }
+        // if ($form === 'kodeuraian') {
+        //     $kode = $this->input->post('kode_uraian');
+        //     $db = $this->db->select('u.kode,k.fid_part')
+        //         ->from('ref_uraians AS u')
+        //         ->join('ref_kegiatans AS k', 'u.fid_kegiatan=k.id')
+        //         ->join('ref_parts AS p', 'k.fid_part=p.id')
+        //         ->where('k.fid_part', $this->session->userdata('part'))
+        //         ->where('u.kode', $kode)
+        //         ->get();
+        //     if ($db->num_rows() > 0) {
+        //         $this->output->set_status_header('400');
+        //     } else {
+        //         $this->output->set_status_header('200');
+        //     }
+        //     return false;
+        // }
 
         if ($form === 'kegiatan') {
             $kode = $this->input->get('kode_kegiatan');

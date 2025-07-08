@@ -428,7 +428,10 @@ class Anggarankinerja extends RestController
             if ($sub_kegiatan->num_rows() === 0) {
                 return $this->response([
                     'status' => false,
-                    'message' => 'Data Not Found'
+                    'message' => 'Data Not Found',
+                    'data' => [
+                        'sub_kegiatans' => []
+                    ]
                 ], RestController::HTTP_NOT_FOUND);
             }
             $data = [
@@ -443,7 +446,8 @@ class Anggarankinerja extends RestController
         } catch (Exception $e) {
             return $this->response([
                 'status' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'data' => []
             ], RestController::HTTP_BAD_REQUEST);
         }
     }

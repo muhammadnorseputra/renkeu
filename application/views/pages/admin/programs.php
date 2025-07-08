@@ -492,7 +492,7 @@
                 <div class="divider-dashed"></div>
                 <div class="form-group">
                     <label for="kode_uraian">Kode Uraian <span class="text-danger">*</span></label>
-                    <input type="text" id="kode_uraian" name="kode_uraian" class="form-control" required data-parsley-remote="<?= base_url('app/programs/cek_kode/kodeuraian') ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Kode Uraian sudah pernah digunakan !" data-parsley-pattern="^(([0-9.]?)*)+$" data-parsley-trigger="focusout">
+                    <input type="text" id="kode_uraian" name="kode_uraian" class="form-control" required data-parsley-pattern="^(([0-9.]?)*)+$" data-parsley-trigger="focusout">
                 </div>
                 <div class="form-group">
                     <label for="nama_uraian">Uraian <span class="text-danger">*</span></label>
