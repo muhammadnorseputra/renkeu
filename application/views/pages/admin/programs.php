@@ -496,7 +496,7 @@
                 </div>
                 <div class="form-group">
                     <label for="nama_uraian">Uraian <span class="text-danger">*</span></label>
-                    <input type="text" id="nama_uraian" name="nama_uraian" class="form-control" required data-parsley-whitespace="squish" data-parsley-remote="<?= base_url('app/programs/cek_kode/namauraian') ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Nama Uraian sudah pernah digunakan !" data-parsley-trigger="focusout">
+                    <input type="text" id="nama_uraian" name="nama_uraian" class="form-control" required data-parsley-trigger="focusout">
                 </div>
             </div>
             <div class="modal-footer">
