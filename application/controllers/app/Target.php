@@ -197,7 +197,7 @@ class Target extends CI_Controller
 	public function cetak($tahun)
 	{
 
-		$programs = $this->target->program(null, null, $this->session->userdata('part'));
+		$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
 
 		$this->load->library('pdf');
 		$this->pdf->setPaper('legal', 'landscape');

@@ -7,7 +7,8 @@
     <title><?= $title ?></title>
     <style>
         @page {
-            margin: 0.3cm 1cm 0.3cm 3.5cm;
+            /* margin: 0.3cm 1cm 0.3cm 3.5cm; */
+            margin: 0.3cm 1cm 0.3cm 1cm;
         }
 
         body {
@@ -50,7 +51,7 @@
 
         table {
             width: 100%;
-            page-break-before:auto;
+            page-break-before: auto;
         }
 
         thead {
@@ -80,6 +81,7 @@
         .text-center {
             text-align: center;
         }
+
         .text-right {
             text-align: right;
         }
@@ -95,30 +97,30 @@
         <table class="collapse">
             <tr>
                 <td colspan="3" class="text-center">
-                <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
-                <h3 style="margin:0; padding:0"> BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</h3>
+                    <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
+                    <h3 style="margin:0; padding:0"> BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</h3>
                     <h4 style="margin:0; padding:0"><?= strtoupper($title) ?> </h4>
                     <small><i>Dicetak : <?= longdate_indo(date('Y-m-d')) ?></i></small>
                 </td>
             </tr>
             <tr>
                 <td width="15%">Bidang/Bagian</td>
-                <td colspan="2"><?= $this->spj->getNama('ref_parts',$post['ref_part']) ?></td>
+                <td colspan="2"><?= $this->spj->getNama('ref_parts', $post['ref_part']) ?></td>
             </tr>
             <tr>
                 <td>Program</td>
-                <td width="15%"><?= $this->spj->getKode('ref_programs',$post['ref_program']) ?></td>
-                <td><?= $this->spj->getNama('ref_programs',$post['ref_program']) ?></td>
+                <td width="15%"><?= $this->spj->getKode('ref_programs', $post['ref_program']) ?></td>
+                <td><?= $this->spj->getNama('ref_programs', $post['ref_program']) ?></td>
             </tr>
             <tr>
                 <td>Kegiatan</td>
-                <td><?= $this->spj->getKode('ref_kegiatans',$post['ref_kegiatan']) ?></td>
-                <td><?= $this->spj->getNama('ref_kegiatans',$post['ref_kegiatan']) ?></td>
+                <td><?= $this->spj->getKode('ref_kegiatans', $post['ref_kegiatan']) ?></td>
+                <td><?= $this->spj->getNama('ref_kegiatans', $post['ref_kegiatan']) ?></td>
             </tr>
             <tr>
                 <td>Sub Kegiatan</td>
-                <td><?= $this->spj->getKode('ref_sub_kegiatans',$post['ref_subkegiatan']) ?></td>
-                <td><?= $this->spj->getNama('ref_sub_kegiatans',$post['ref_subkegiatan']) ?></td>
+                <td><?= $this->spj->getKode('ref_sub_kegiatans', $post['ref_subkegiatan']) ?></td>
+                <td><?= $this->spj->getNama('ref_sub_kegiatans', $post['ref_subkegiatan']) ?></td>
             </tr>
         </table>
 
@@ -138,50 +140,51 @@
                 </tr>
             </thead>
             <tbody>
-                <?php  
-                    $no=1;
-                    $total_pagu = 0;
-                    $total_realisasi_ls = 0;
-                    $total_realisasi_not_ls = 0;
-                    $total_sisa_anggaran = 0;
-                    foreach($uraians as $uraian):
+                <?php
+                $no = 1;
+                $total_pagu = 0;
+                $total_realisasi_ls = 0;
+                $total_realisasi_not_ls = 0;
+                $total_sisa_anggaran = 0;
+                foreach ($uraians as $uraian):
 
                 ?>
-                <tr>
-                    <td class="text-center"><?= $no ?></td>
-                    <td><?= $uraian->kode ?></td>
-                    <td class="text-nowrap"><?= $uraian->nama ?></td>
-                    <td class="text-right">
-                        <?php  
-                            $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id])->total_pagu_awal;
+                    <tr>
+                        <td class="text-center"><?= $no ?></td>
+                        <td><?= $uraian->kode ?></td>
+                        <td class="text-nowrap"><?= $uraian->nama ?></td>
+                        <td class="text-right">
+                            <?php
+                            $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id], $this->session->userdata('is_perubahan'))->total_pagu_awal;
                             $total_pagu += $pagu;
                             echo nominal($pagu);
-                        ?>
-                    </td>
-                    <td class="text-right">
-                        <?php 
-                            $realisasi_ls = @$this->bukujaga->getPaguRealisasiLs(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS'])->jumlah;
+                            ?>
+                        </td>
+                        <td class="text-right">
+                            <?php
+                            $realisasi_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('is_perubahan'))->jumlah;
                             $total_realisasi_ls += $realisasi_ls;
                             echo nominal($realisasi_ls);
-                        ?>
-                    </td>
-                    <td class="text-right">
-                    <?php 
-                            $realisasi_not_ls = @$this->bukujaga->getPaguRealisasiLs(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS'])->jumlah;
+                            ?>
+                        </td>
+                        <td class="text-right">
+                            <?php
+                            $realisasi_not_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('is_perubahan'))->jumlah;
                             $total_realisasi_not_ls += $realisasi_not_ls;
                             echo nominal($realisasi_not_ls);
-                        ?>
-                    </td>
-                    <td class="text-right">
-                        <?php  
-                            $realisasi = $realisasi_ls != 0 ? $realisasi_ls : $realisasi_not_ls;
-                            $sisa_anggaran = ($pagu-$realisasi);
+                            ?>
+                        </td>
+                        <td class="text-right">
+                            <?php
+                            $realisasi = ($realisasi_ls + $realisasi_not_ls);
+                            $sisa_anggaran = ($pagu - $realisasi);
                             $total_sisa_anggaran += $sisa_anggaran;
                             echo nominal($sisa_anggaran);
-                        ?>
-                    </td>
-                </tr>
-                <?php $no++; endforeach; ?>
+                            ?>
+                        </td>
+                    </tr>
+                <?php $no++;
+                endforeach; ?>
                 <tr>
                     <td colspan="3" class="text-right"><b>Total</b></td>
                     <td class="text-right"><b><?= nominal($total_pagu) ?></b></td>

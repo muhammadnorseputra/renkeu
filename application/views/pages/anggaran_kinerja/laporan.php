@@ -296,7 +296,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             $tr .= "
                                     <tr class='bg-secondary text-white'>
                                         <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . @$sum_realisasi . "</td>
                                     </tr>";
                                         }
                                     endforeach;

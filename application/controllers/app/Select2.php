@@ -79,4 +79,39 @@ class Select2 extends CI_Controller
         }
         echo json_encode($all);
     }
+
+    public function ajaxMarge()
+    {
+        $search = $this->input->get('searchTerm');
+        $refId = $this->input->get('refId');
+        $refPart = $this->input->get('refPart');
+
+        $grouped = [];
+        $rows = $this->select->marge($search, $refPart, $refId)->result();
+
+        foreach ($rows as $row) {
+            $grouped[$row->kegiatan_nama][] = [
+                'id' => $row->kegiatan_kode,
+                'text' => $row->kegiatan_nama
+            ];
+            $grouped[$row->sub_kegiatan_nama][] = [
+                'id' => $row->sub_kegiatan_kode,
+                'text' => $row->sub_kegiatan_nama
+            ];
+            $grouped[$row->uraian_nama][] = [
+                'id' => $row->uraian_kode,
+                'text' => $row->uraian_nama
+            ];
+        }
+
+        $results = [];
+        foreach ($grouped as $category => $items) {
+            $results[] = [
+                'text' => $category,
+                'children' => $items
+            ];
+        }
+
+        echo json_encode($results);
+    }
 }

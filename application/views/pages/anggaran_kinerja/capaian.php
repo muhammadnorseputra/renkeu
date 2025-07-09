@@ -320,7 +320,9 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             $tr .= "
                                     <tr class='bg-secondary text-white'>
                                         <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
+                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
+                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
                                         <td class='align-middle'>" . $FaktorPendorong . "</td>
                                         <td class='align-middle'>" . $FaktorPenghambat . "</td>
                                         <td class='align-middle'>" . $TindakLanjut . "</td>
@@ -492,7 +494,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                     $tr .= "";
                                                 } elseif ($key === 0) { //first
                                                     $tr .= "
-                                        <td class='align-middle text-nowrap'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
@@ -506,7 +508,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                 } else { //middle
                                                     $tr .= "
                                     <tr>
-                                        <td class='align-middle text-nowrap'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
                                         <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>

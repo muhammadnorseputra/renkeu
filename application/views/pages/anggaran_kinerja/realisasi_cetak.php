@@ -7,7 +7,8 @@
     <title><?= $title ?></title>
     <style>
         @page {
-            margin: 0.3cm 1cm 0.3cm 3.5cm;
+            /* margin: 0.3cm 1cm 0.3cm 3.5cm; */
+            margin: 0.8cm 1cm 1.5cm 1cm;
         }
 
         body {
@@ -31,7 +32,7 @@
         }
 
         #footer {
-            bottom: 0;
+            bottom: -30pt;
             border-top: 0.1pt solid #aaa;
         }
 
@@ -50,7 +51,7 @@
 
         table {
             width: 100%;
-            page-break-before:auto;
+            page-break-before: auto;
         }
 
         thead {

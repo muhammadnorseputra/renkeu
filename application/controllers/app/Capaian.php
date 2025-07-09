@@ -55,8 +55,10 @@ class Capaian extends CI_Controller
 		$this->pdf->setPaper('legal', 'landscape');
 		$this->pdf->filename = 'SIMEV - Cetak Capaian Anggaran & Kinerja - ' . $periode_nama;
 
+		$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
 		$data = [
 			'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_nama,
+			'programs' => $programs,
 			'tw_id' => $periode_id,
 			'tw_nama' => $periode_nama
 		];
@@ -134,7 +136,7 @@ class Capaian extends CI_Controller
 	public function laporan_cetak()
 	{
 		$post = $this->input->post();
-		$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
+		$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
 
 		$this->load->library('pdf');
 		$this->pdf->setPaper('legal', 'landscape');

@@ -7,7 +7,8 @@
     <title><?= $title ?></title>
     <style>
         @page {
-            margin: 0.3cm 1cm 0.3cm 3.5cm;
+            /* margin: 0.3cm 1cm 0.3cm 3.5cm; */
+            margin: 0.8cm 1cm 1.5cm 1cm;
         }
 
         body {
@@ -31,7 +32,7 @@
         }
 
         #footer {
-            bottom: 0;
+            bottom: -30pt;
             border-top: 0.1pt solid #aaa;
         }
 
@@ -50,7 +51,7 @@
 
         table {
             width: 100%;
-            page-break-before:auto;
+            page-break-before: auto;
         }
 
         thead {
@@ -96,7 +97,7 @@
         <table class="collapse">
             <tr>
                 <td colspan="5" class="text-center">
-                <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
+                    <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
                     <h3 style="margin:0; padding:0"> BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</h3>
                     <h4 style="margin:0; padding:0"><?= strtoupper($title) ?> </h4>
                     <small><i>Dicetak : <?= longdate_indo(date('Y-m-d')) ?></i></small>
@@ -142,13 +143,15 @@
                             $tr .= "";
                         } elseif ($key === 0) { //first
                             $tr .= "
-                                <td class='align-middle' rowspan='" . $rowspan . "'>" . $ip['nama'] . "</td>
-                                <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal) . "</td>
+                                <td class='align-middle'>" . $ip['nama'] . "</td>
+                                <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal) . "</td>
                                 <td class='align-middle text-center'>" . $indikator_input . "</td>
                             ";
                         } else { //middle
-                            $tr .= "<tr style='background-color: orange;'><td class='align-middle'>" . $ip['nama'] . "</td>
-                                <td class='align-middle text-center'>" . $indikator_input . "</td></tr>
+                            $tr .= "<tr style='background-color: orange;'>
+                                        <td class='align-middle'>" . $ip['nama'] . "</td>
+                                        <td class='align-middle text-center'>" . $indikator_input . "</td>
+                                    </tr>
                             ";
                         }
                     endforeach;
@@ -184,13 +187,12 @@
                             } elseif ($key === 0) { //first
                                 $tr .= "
                                 <td class='align-middle'>" . $ik['nama'] . "</td>
-                                <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal) . "</td>
+                                <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal) . "</td>
                                 <td class='align-middle text-center'>" . $indikator_input . "</td>";
                             } else { //middle
                                 $tr .= "<tr style='background-color: blue; color: white'>
                                 <td class='align-middle'>" . $ik['nama'] . "</td>
                                 <td class='align-middle text-center'>" . $indikator_input . "</td></tr>";
-                                
                             }
                         endforeach;
                         // endif;
@@ -221,7 +223,7 @@
                                 } elseif ($key === 0) { //first
                                     $tr .= "
                                         <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id)->row()->total_pagu_awal) . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . @nominal($this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal) . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input . "</td>";
                                 } else { //middle
                                     $tr .= "

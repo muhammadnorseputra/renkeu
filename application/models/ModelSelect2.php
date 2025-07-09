@@ -2,16 +2,29 @@
 
 class ModelSelect2 extends CI_Model
 {
+    public function marge($search, $refPart, $refId)
+    {
+        $this->db->select('k.id as kegiatan_id, k.kode as kegiatan_kode, k.nama as kegiatan_nama, s.id as sub_kegiatan_id, s.kode as sub_kegiatan_kode, s.nama as sub_kegiatan_nama, u.id as uraian_id, u.kode as uraian_kode, u.nama as uraian_nama');
+        $this->db->from('ref_kegiatans as k');
+        $this->db->join('ref_sub_kegiatans as s', 's.fid_kegiatan=k.id', 'left');
+        $this->db->join('ref_uraians as u', 'u.fid_sub_kegiatan=s.id', 'left');
+        if ($this->session->userdata('role') === 'USER'):
+            $this->db->where('k.fid_part', $refPart);
+        endif;
+        $this->db->where('k.fid_program', $refId);
+        if (!empty($search)) {
+            $this->db->like('u.kode', $search);
+            $this->db->or_like('u.nama', $search);
+        }
+        $q = $this->db->get();
+        return $q;
+    }
+
     public function getKegiatan($refPart, $refId, $search)
     {
         $this->db->select('id, kode, nama');
         $this->db->from('ref_kegiatans');
-        if (
-            $this->session->userdata('role') !== 'SUPER_ADMIN'
-            && $this->session->userdata('role') !== 'SUPER_USER'
-            && $this->session->userdata('role') !== 'VERIFICATOR'
-            && $this->session->userdata('role') !== 'ADMIN'
-        ):
+        if ($this->session->userdata('role') === 'USER'):
             $this->db->where('fid_part', $refPart);
         endif;
         $this->db->where('fid_program', $refId);

@@ -7,7 +7,8 @@
     <title><?= $title ?></title>
     <style>
         @page {
-            margin: 0.3cm 1cm 0.3cm 1cm;
+            /* margin: 0.3cm 1cm 0.3cm 1cm; */
+            margin: 0.8cm 1cm 1.5cm 1cm;
         }
 
         body {
@@ -31,7 +32,7 @@
         }
 
         #footer {
-            bottom: 0;
+            bottom: -30pt;
             border-top: 0.1pt solid #aaa;
         }
 
@@ -51,7 +52,7 @@
         table {
             width: 100%;
             font-size: 1em;
-            page-break-before:auto;
+            page-break-before: auto;
         }
 
         thead {
@@ -85,12 +86,15 @@
         .text-right {
             text-align: right;
         }
+
         .bg-warning {
             background-color: orange;
         }
+
         .bg-info {
             background-color: blue;
         }
+
         .text-white {
             color: #fff;
         }
@@ -103,7 +107,7 @@
         <p><?= $title ?> <span class="author">Dicetak oleh : <?= $this->users->profile_username($this->session->userdata('user_name'))->row()->nama ?></span></p>
     </div>
     <div id="content">
-        <table class="collapse">
+        <!-- <table class="collapse">
             <tr>
                 <td colspan="5" class="text-center">
                     <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
@@ -117,7 +121,7 @@
                 <td colspan="3"><?= $this->target->getNama('ref_parts', $this->session->userdata('part')) ?></td>
                 <td width="10%" class="text-center font-bold"><b><?= $tw_nama ?></b></td>
             </tr>
-        </table>
+        </table> -->
         <table class="collapse">
             <thead>
                 <tr class="text-center">
@@ -127,7 +131,7 @@
                     <th colspan="2" class="align-middle">Target</th>
                     <th colspan="2" class="align-middle">Realisasi</th>
                     <th colspan="2">Persentase Capaian %</th>
-                    <th colspan="4" class="align-middle">Aksi</th>
+                    <th colspan="4" class="align-middle">Faktor - Faktor</th>
                 </tr>
                 <tr class="text-center">
                     <th>Anggaran (Rp)</th>
@@ -160,7 +164,7 @@
                                 $indikator_input_view = $ip['persentase'] . "%";
                             }
 
-                            $target_anggaran = $this->target->getAlokasiPaguProgram($program->id)->row()->total_pagu_awal;
+                            $target_anggaran = $this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                             $target_kinerja = $indikator_input_count;
 
                             // Realisasi
@@ -207,7 +211,9 @@
                                 $tr .= "
                                     <tr class='bg-warning'>
                                         <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
+                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
+                                        <td class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
                                         <td class='align-middle'>" . $FaktorPendorong . "</td>
                                         <td class='align-middle'>" . $FaktorPenghambat . "</td>
                                         <td class='align-middle'>" . $TindakLanjut . "</td>
@@ -244,7 +250,7 @@
                                     $indikator_input_count = $ik['persentase'];
                                     $indikator_input_view = $ik['persentase'] . "%";
                                 }
-                                $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id)->row()->total_pagu_awal;
+                                $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                                 $target_kinerja = $indikator_input_count;
 
                                 // Realisasi
@@ -325,7 +331,7 @@
                                         $indikator_input_view = $isk['persentase'] . "%";
                                     }
 
-                                    $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id)->row()->total_pagu_awal;
+                                    $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                                     $target_kinerja = $indikator_input_count;
 
                                     // Realisasi
@@ -382,17 +388,27 @@
                                     }
                                 endforeach;
                             endif;
+
                         ?>
                             <tr>
                                 <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                                <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
                                 <?= $tr ?>
                             </tr>
                             <?php
-                            $row_all = $no_level_1 + $no_level_2 + $no_level_3;
-                            if ($row_all % 5 == 0) :
+                            if ($no_level_1 + 1 % 6 === 0) :
                             ?>
-                                <div style="page-break-before:always;">dasdsda</div>
+                                <tr style="page-break-before:always;"></tr>
+                            <?php endif; ?>
+                            <?php
+                            if ($no_level_2 + 1 % 6 === 0) :
+                            ?>
+                                <tr style="page-break-before:always;"></tr>
+                            <?php endif; ?>
+                            <?php
+                            if ($no_level_3 + 1 % 6 === 0) :
+                            ?>
+                                <tr style="page-break-before:always;"></tr>
                             <?php endif; ?>
                         <?php
                             $no_level_3++;
