@@ -81,25 +81,25 @@ class Realisasi extends CI_Controller
 	{
 		$post = $this->input->post();
 
-		$target = $this->target->getTarget($post['id']);
+		// $target = $this->target->getTarget($post['id']);
 
-		if (isset($post['persentase']) && $post['persentase'] > $target->persentase) {
-			echo json_encode([
-				'message' => 'Realisasi melebihi target persentase !',
-				'status' => false
-			]);
-			return false;
-			die();
-		}
+		// if (isset($post['persentase']) && $post['persentase'] > $target->persentase) {
+		// 	echo json_encode([
+		// 		'message' => 'Realisasi melebihi target persentase !',
+		// 		'status' => false
+		// 	]);
+		// 	return false;
+		// 	die();
+		// }
 
-		if (isset($post['jumlah_eviden']) &&  $post['jumlah_eviden'] > $target->eviden_jumlah) {
-			echo json_encode([
-				'message' => 'Realisasi melebihi target eviden !',
-				'status' => false
-			]);
-			return false;
-			die();
-		}
+		// if (isset($post['jumlah_eviden']) &&  $post['jumlah_eviden'] > $target->eviden_jumlah) {
+		// 	echo json_encode([
+		// 		'message' => 'Realisasi melebihi target eviden !',
+		// 		'status' => false
+		// 	]);
+		// 	return false;
+		// 	die();
+		// }
 
 		$insert = [
 			'tahun' => $this->session->userdata('tahun_anggaran'),

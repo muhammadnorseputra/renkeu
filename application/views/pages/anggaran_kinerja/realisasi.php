@@ -415,7 +415,10 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="persentase">Persentase Hasil (%) <span class="text-danger">*</span></label>
-                            <input type="number" name="persentase" id="persentase" class="form-control" required>
+                            <input type="text" name="persentase" id="persentase" class="form-control"
+                                data-parsley-pattern="^\d+(\.\d+)?$"
+                                data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
+                                required>
                         </div>
                     </div>
                     <div class="col-md-3">
