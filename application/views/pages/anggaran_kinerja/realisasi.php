@@ -424,7 +424,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="jumlah_eviden">Jumlah Eviden (Output) <span class="text-danger">*</span></label>
-                            <input type="number" name="jumlah_eviden" id="jumlah_eviden" class="form-control"
+                            <input type="text" name="jumlah_eviden" id="jumlah_eviden" class="form-control"
                                 data-parsley-pattern="^\d+(\.\d+)?$"
                                 data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
                                 required>
