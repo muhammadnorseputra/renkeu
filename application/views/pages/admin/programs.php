@@ -838,7 +838,6 @@
 <script>
     $(function() {
 
-
         // section edit modal
         var MODAL_UNOR = $(".modal-unor"),
             LIST_UNOR = MODAL_UNOR.find(".listUnor"),
@@ -1177,13 +1176,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_KEGIATAN.serialize();
-            // if(FORM_KEGIATAN.parsley().isValid()) {
-            $.post($url, $data, (response) => {
-                if (response === 200) {
-                    window.location.reload();
-                }
-            }, 'json');
-            // }
+            $button = $(this).find('button[type="submit"]');
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                return (err);
+            }
+            return false;
         });
 
         FORM_PROGRAM.parsley();
@@ -1191,13 +1196,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_PROGRAM.serialize();
-            // if(FORM_PROGRAM.parsley().isValid()) {
-            $.post($url, $data, (response) => {
-                if (response === 200) {
-                    window.location.reload();
-                }
-            }, 'json');
-            // }
+            $button = $(this).find('button[type="submit"]');
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                return alert(err);
+            }
+            return false;
         });
 
         FORM_SUBKEGIATAN.parsley();
@@ -1205,13 +1216,18 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_SUBKEGIATAN.serialize();
-            // if(FORM_SUBKEGIATAN.parsley().isValid()) {
-            $.post($url, $data, (response) => {
-                if (response === 200) {
-                    window.location.reload();
-                }
-            }, 'json');
-            // }
+            $button = $(this).find('button[type="submit"]');
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                return alert(err);
+            }
             return false;
         });
 
@@ -1220,14 +1236,18 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_URAIAN.serialize();
-            // if(FORM_URAIAN.parsley().isValid()) {
-            $.post($url, $data, (response) => {
-                if (response === 200) {
-                    window.location.reload();
-                    FORM_URAIAN[0].reset();
-                }
-            }, 'json');
-            // }
+            $button = $(this).find('button[type="submit"]');
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                return alert(err);
+            }
             return false;
         });
 
@@ -1236,12 +1256,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_TUJUAN.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_TUJUAN.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        window.location.reload();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            window.location.reload();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1251,12 +1278,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_SASARAN.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_SASARAN.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        window.location.reload();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            window.location.reload();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1266,12 +1300,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_PART.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_PART.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        window.location.reload();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            window.location.reload();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1281,14 +1322,21 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_UNOR.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_UNOR.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        // window.location.reload();
-                        listUnor();
-                        FORM_UNOR[0].reset();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            // window.location.reload();
+                            listUnor();
+                            FORM_UNOR[0].reset();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1297,12 +1345,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_UNOR_EDIT.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_UNOR_EDIT.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        window.location.reload();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            window.location.reload();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1311,12 +1366,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_PART_EDIT.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_PART_EDIT.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        window.location.reload();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            window.location.reload();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1325,12 +1387,20 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_TUJUAN_EDIT.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_TUJUAN_EDIT.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        window.location.reload();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            window.location.reload();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1339,12 +1409,19 @@
             e.preventDefault();
             $url = $(this).attr('action');
             $data = FORM_SASARAN_EDIT.serialize();
+            $button = $(this).find('button[type="submit"]');
             if (FORM_SASARAN_EDIT.parsley().isValid()) {
-                $.post($url, $data, (response) => {
-                    if (response === 200) {
-                        window.location.reload();
-                    }
-                }, 'json');
+                $button.html("processing ...").prop("disabled", true);
+                try {
+                    $.post($url, $data, (response) => {
+                        if (response === 200) {
+                            window.location.reload();
+                        }
+                    }, 'json');
+                } catch (err) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(err);
+                }
             }
             return false;
         });
@@ -1372,16 +1449,23 @@
             $form.on("submit", function(e) {
                 e.preventDefault();
                 $data = $(this).serializeArray();
+                $button = $(this).find('button[type="submit"]');
+                $button.html("processing ...").prop("disabled", true);
                 if ($(this).parsley().isValid()) {
                     $data.push({
                         "name": "id",
                         "value": id
                     });
-                    $.post(url, $data, (response) => {
-                        if (response === 200) {
-                            window.location.reload();
-                        }
-                    }, 'json');
+                    try {
+                        $.post(url, $data, (response) => {
+                            if (response === 200) {
+                                window.location.reload();
+                            }
+                        }, 'json');
+                    } catch (err) {
+                        $button.html('<i class="fa fa-save mr-2"></i>Simpan').prop("disabled", false);
+                        return alert(err);
+                    }
                 }
             })
         })

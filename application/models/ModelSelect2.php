@@ -2,20 +2,22 @@
 
 class ModelSelect2 extends CI_Model
 {
-    public function marge($search, $refPart, $refId)
+    public function getChildProgram($q)
     {
-        $this->db->select('k.id as kegiatan_id, k.kode as kegiatan_kode, k.nama as kegiatan_nama, s.id as sub_kegiatan_id, s.kode as sub_kegiatan_kode, s.nama as sub_kegiatan_nama, u.id as uraian_id, u.kode as uraian_kode, u.nama as uraian_nama');
-        $this->db->from('ref_kegiatans as k');
-        $this->db->join('ref_sub_kegiatans as s', 's.fid_kegiatan=k.id', 'left');
-        $this->db->join('ref_uraians as u', 'u.fid_sub_kegiatan=s.id', 'left');
-        if ($this->session->userdata('role') === 'USER'):
-            $this->db->where('k.fid_part', $refPart);
-        endif;
-        $this->db->where('k.fid_program', $refId);
-        if (!empty($search)) {
-            $this->db->like('u.kode', $search);
-            $this->db->or_like('u.nama', $search);
+        $this->db->select('u.id as uraian_id, u.kode as uraian_kode, u.nama as uraian_nama, p.nama as program_nama');
+        $this->db->from('ref_uraians as u');
+        $this->db->join('ref_sub_kegiatans as s', 'u.fid_sub_kegiatan=s.id');
+        $this->db->join('ref_kegiatans as k', 's.fid_kegiatan=k.id');
+        $this->db->join('ref_programs as p', 'k.fid_program=p.id');
+        // $this->db->where("FIND_IN_SET('{$part}', p.fid_part) >", 0);
+        // $this->db->where('p.tahun', $ta);
+        if (!empty($q)) {
+            $this->db->group_start();
+            $this->db->like('u.kode', $q);
+            $this->db->or_like('u.nama', $q);
+            $this->db->group_end();
         }
+        $this->db->group_by('u.id');
         $q = $this->db->get();
         return $q;
     }

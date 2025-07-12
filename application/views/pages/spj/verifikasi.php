@@ -245,22 +245,14 @@
                     ?>
                 </td>
             </tr>
-            <!-- <tr>
-                <td class="text-center" valign="middle">BTL <br> (Berkas Tidak Lengkap)</td>
-                <td colspan="2">
-                    <?=
-                    form_open(base_url('app/spj/verifikasi_proses'), ['id' => 'formVerifikasi', 'class' => 'form-horizontal', 'data-parsley-validate' => '', 'data-parsley-errors-messages-disabled' => ''], ['status' => 'BTL', 'token' => $detail->token]);
-                    ?>
-                    <?php
-                    $btl_keterangan = $detail->is_status == 'BTL' ? $detail->catatan : '';
-                    ?>
-                    <textarea name="catatan" id="catatan" cols="5" rows="2" class="form-control" placeholder="Masukan keterangan BTL"><?= $btl_keterangan ?></textarea>
-                    <button type="submit" class="btn btn-danger rounded-0 mt-2"><i class="fa fa-save mr-2"></i> Proses</button>
-                    <?=
-                    form_close();
-                    ?>
-                </td>
-            </tr> -->
+            <?php if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN' && privilages('priv_approve')): ?>
+                <tr>
+                    <td class="text-center" valign="middle">Approval <br> (Persetujuan Admin)</td>
+                    <td colspan="2">
+                        <button type="button" onclick="Selesai('<?= $detail->token ?>')" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-check-circle"></i> <br> Selesai</button>
+                    </td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>

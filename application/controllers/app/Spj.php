@@ -520,6 +520,7 @@ class Spj extends CI_Controller
                 'fid_kegiatan' => $input['ref_kegiatan'],
                 'fid_sub_kegiatan' => $input['ref_subkegiatan'],
                 'fid_uraian' => $input['ref_uraian'],
+                'is_perubahan' => $this->session->userdata('is_perubahan'),
                 'koderek' => $input['koderek'],
                 'bulan' => date("m"),
                 'tahun' => $input['tahun'],

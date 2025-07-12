@@ -31,11 +31,13 @@ class Settings extends CI_Controller
 
 	public function index()
 	{
-		$db = $this->db->order_by('order', 'asc')->get('t_settings');
+		$db_setting = $this->db->order_by('order', 'asc')->get('t_settings');
+		$db_periode = $this->db->get('t_periode');
 		$data = [
 			'title' => 'Settings',
 			'content' => 'pages/admin/settings',
-			'data' => $db,
+			'data' => $db_setting,
+			'db_periode' => $db_periode,
 			'autoload_js' => [
 				'template/backend/vendors/switchery/dist/switchery.min.js',
 				'template/custom-js/settings.js'
@@ -72,12 +74,34 @@ class Settings extends CI_Controller
 			];
 		}
 
-		$db = $this->crud->updateAll('t_settings', $data);
+		$db = $this->crud->updateAll('t_settings', $data, 'key');
 		if ($db) {
 			redirect(base_url('/app/settings/'), 'refresh');
 			return false;
 		}
 		redirect(base_url('/app/settings/'), 'refresh');
+	}
+
+	public function updatePeriode()
+	{
+		$p = $this->input->post();
+		$val = $p['val'];
+		$key = $p['key'];
+
+		$data = [];
+		foreach ($key as $k => $v) {
+			$data[] = [
+				'id' => $v,
+				'is_open' => @$val[$v] ? @$val[$v] : 'N'
+			];
+		}
+
+		$db = $this->crud->updateAll('t_periode', $data, 'id');
+		if ($db) {
+			redirect(base_url('/app/settings/?tab=%23periode'), 'refresh');
+			return false;
+		}
+		redirect(base_url('/app/settings/?tab=%23periode'), 'refresh');
 	}
 
 	public function update($key)

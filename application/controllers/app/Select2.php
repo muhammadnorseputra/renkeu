@@ -31,6 +31,45 @@ class Select2 extends CI_Controller
         $this->load->model('ModelSelect2', 'select');
     }
 
+    private function children($q)
+    {
+        $this->load->model('ModelSelect2', 'select');
+        $ch = [];
+        $db = $this->select->getChildProgram($q);
+        foreach ($db->result() as $k) {
+            $data['id'] = $k->uraian_id;
+            $data['text'] = $k->uraian_kode . " - " . $k->uraian_nama;
+            $ch[] = $data;
+        }
+        return $ch;
+    }
+
+    public function ajaxMultiProgram()
+    {
+        $q = $this->input->post('q');
+        $db = $this->db->select('k.*,p.nama AS partnama, p.id AS partid, k.nama as kegiatan_nama')
+            ->from('ref_kegiatans AS k')
+            ->join('ref_parts AS p', 'k.fid_part=p.id')
+            ->where('k.tahun', $this->session->userdata('tahun_anggaran'))
+            ->where('p.id', $this->session->userdata('part'))
+            ->group_by('p.id')
+            ->get();
+
+        if ($db->num_rows() > 0) :
+            $group = [];
+            // $db_part = $this->crud->get('ref_parts');
+            foreach ($db->result() as $row) :
+                $data['text'] = $row->partnama;
+                // $data['children'] = $this->ch_kegiatan($row->partid, $q);
+                $data['children'] = $this->children($q);
+                $group[] = $data;
+            endforeach;
+        else :
+            $group[] = ['id' => 0,  'text' => 'Maaf, Kegiatan "' . strtoupper($q) . '" tidak ditemukan.'];
+        endif;
+        echo json_encode($group);
+    }
+
     public function ajaxKegiatan()
     {
         $search = $this->input->post('searchTerm');
@@ -78,40 +117,5 @@ class Select2 extends CI_Controller
             $all[] = $data;
         }
         echo json_encode($all);
-    }
-
-    public function ajaxMarge()
-    {
-        $search = $this->input->get('searchTerm');
-        $refId = $this->input->get('refId');
-        $refPart = $this->input->get('refPart');
-
-        $grouped = [];
-        $rows = $this->select->marge($search, $refPart, $refId)->result();
-
-        foreach ($rows as $row) {
-            $grouped[$row->kegiatan_nama][] = [
-                'id' => $row->kegiatan_kode,
-                'text' => $row->kegiatan_nama
-            ];
-            $grouped[$row->sub_kegiatan_nama][] = [
-                'id' => $row->sub_kegiatan_kode,
-                'text' => $row->sub_kegiatan_nama
-            ];
-            $grouped[$row->uraian_nama][] = [
-                'id' => $row->uraian_kode,
-                'text' => $row->uraian_nama
-            ];
-        }
-
-        $results = [];
-        foreach ($grouped as $category => $items) {
-            $results[] = [
-                'text' => $category,
-                'children' => $items
-            ];
-        }
-
-        echo json_encode($results);
     }
 }

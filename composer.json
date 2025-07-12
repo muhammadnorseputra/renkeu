@@ -14,7 +14,8 @@
 		"php": ">=5.3.7",
 		"dompdf/dompdf": "*",
 		"chriskacerguis/codeigniter-restserver": "*",
-		"rakit/validation": "*"
+		"rakit/validation": "*",
+		"phpoffice/phpspreadsheet": "*"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

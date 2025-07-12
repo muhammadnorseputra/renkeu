@@ -1,4 +1,4 @@
-<?php  
+<?php
 $tab = isset($_GET['tab']) ? $_GET['tab'] : '#global';
 if (urldecode($tab) === '#global') {
     $global = 'active';
@@ -36,7 +36,7 @@ if (urldecode($tab) === '#periode') {
                     <div class="tab-pane fade <?= $global ?> <?= $is_show_global ?>" id="global" role="tabpanel" aria-labelledby="global-tab">
                         <h4>Pengaturan Global</h4>
                         <div class="table-responsive">
-                            <table class="table table-straped">
+                            <table class="table table-striped">
                                 <tbody>
                                     <?=
                                     form_open(base_url('/app/settings/updateAll'), ['id' => 'formSettings']);
@@ -75,7 +75,39 @@ if (urldecode($tab) === '#periode') {
                             </table>
                         </div>
                     </div>
-                    <div class="tab-pane fade <?= $periode ?> <?= $is_show_periode ?>" id="periode" role="tabpanel" aria-labelledby="periode-tab"></div>
+                    <div class="tab-pane fade <?= $periode ?> <?= $is_show_periode ?>" id="periode" role="tabpanel" aria-labelledby="periode-tab">
+                        <h4>Setting Periode</h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>CLOSE / OPEN</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?= form_open(base_url('/app/settings/updatePeriode'), ['id' => 'formSettingPeriode']); ?>
+                                    <?php foreach ($db_periode->result() as $p): ?>
+                                        <tr>
+                                            <td width="5%"><?= $p->id; ?></td>
+                                            <td><?= $p->nama; ?></td>
+                                            <td width="30%">
+                                                <?php $is_checked = $p->is_open === 'Y' ? 'checked' : ''; ?>
+                                                <?php $is_checked_value = $p->is_open === 'Y' ? 'Y' : 'N'; ?>
+                                                <input type="checkbox" name="val[<?= $p->id ?>]" value="<?= $is_checked_value ?>" class="js-switch" <?= $is_checked ?> />
+                                                <input type="hidden" name="key[]" value="<?= $p->id ?>">
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <tr class="bg-white">
+                                        <td colspan="4"><button type="submit" class="btn btn-primary rounded-0"><i class="fa fa-save mr-2"></i> Simpan Perubahan</button></td>
+                                    </tr>
+                                    <?= form_close() ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,19 +1,21 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (! defined('BASEPATH')) exit('No direct script access allowed');
 
-class ModelCrud extends CI_Model {
+class ModelCrud extends CI_Model
+{
 
-    public function get($table) {
+    public function get($table)
+    {
         return $this->db->get($table);
     }
 
-	public function getWhere($table,$where)
+    public function getWhere($table, $where)
     {
-       return $this->db->get_where($table,$where); 
+        return $this->db->get_where($table, $where);
     }
 
-    public function getWhereIn($table,$where)
+    public function getWhereIn($table, $where)
     {
-       return $this->db->where_in($where)->get($table); 
+        return $this->db->where_in($where)->get($table);
     }
 
     public function getLikes($table, $likes)
@@ -37,17 +39,15 @@ class ModelCrud extends CI_Model {
         return $this->db->update($table, $data);
     }
 
-    public function updateAll($table, $data)
+    public function updateAll($table, $data, $key)
     {
         // $this->db->where_in('key', $whr);
-        return $this->db->update_batch($table, $data, 'key');
+        return $this->db->update_batch($table, $data, $key);
     }
 
-    public function deleteWhere($table, $where) 
+    public function deleteWhere($table, $where)
     {
         $this->db->where($where);
         return $this->db->delete($table);
     }
-
-
 }

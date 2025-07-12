@@ -40,40 +40,16 @@ $("form#step-1").on("submit", function (e) {
 	e.preventDefault();
 	let _ = $(this),
 		action = _.attr("action"),
-		data = _.serialize();
+		data = _.serialize(),
+		$button = _.find('button[type="submit"]');
 	if (_.parsley().isValid()) {
+		$button.html("processing ...").prop("disabled", true);
 		$.blockUI({
 			message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
 			css: { backgroundColor: "transparent", borderColor: "transparent" },
 		});
 		setTimeout(function () {
-			$.post(
-				action,
-				data,
-				function (res) {
-					if (res.code === 200) {
-						window.location.replace(res.redirect);
-					}
-				},
-				"json"
-			);
-		}, 2000);
-	}
-});
-
-$("form#step-2").on("submit", function (e) {
-	e.preventDefault();
-	let _ = $(this),
-		action = _.attr("action"),
-		data = _.serialize();
-	let msg = "Apakah anda yakin akan mengirim usulan tersebut ?";
-	if (_.parsley().isValid()) {
-		if (confirm(msg)) {
-			$.blockUI({
-				message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
-				css: { backgroundColor: "transparent", borderColor: "transparent" },
-			});
-			setTimeout(function () {
+			try {
 				$.post(
 					action,
 					data,
@@ -84,6 +60,50 @@ $("form#step-2").on("submit", function (e) {
 					},
 					"json"
 				);
+			} catch (err) {
+				return alert(err);
+			} finally {
+				$button
+					.prop("disabled", false)
+					.html('<i class="fa fa-save mr-2"></i> Simpan & Lanjutkan');
+			}
+		}, 2000);
+	}
+});
+
+$("form#step-2").on("submit", function (e) {
+	e.preventDefault();
+	let _ = $(this),
+		action = _.attr("action"),
+		data = _.serialize(),
+		$button = _.find('button[type="submit"]');
+	let msg = "Apakah anda yakin akan mengirim usulan tersebut ?";
+	if (_.parsley().isValid()) {
+		$button.text("processing ...").prop("disabled", true);
+		if (confirm(msg)) {
+			$.blockUI({
+				message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+				css: { backgroundColor: "transparent", borderColor: "transparent" },
+			});
+			setTimeout(function () {
+				try {
+					$.post(
+						action,
+						data,
+						function (res) {
+							if (res.code === 200) {
+								window.location.replace(res.redirect);
+							}
+						},
+						"json"
+					);
+				} catch (err) {
+					return alert(err);
+				} finally {
+					$button
+						.prop("disabled", false)
+						.text('<i class="fa fa-save mr-2"></i> Kirim Usulan');
+				}
 			}, 2000);
 			return false;
 		}
@@ -112,47 +132,57 @@ $("form#formCariKode").on("submit", function (e) {
 	$("input[name='jumlah']").val("");
 	let _ = $(this),
 		action = _.attr("action"),
-		data = _.serialize();
+		data = _.serialize(),
+		$button = _.find('button[type="submit"]');
 	let $formStep = $("form#step-1");
 	let $modal = $("#modelSearchKode");
 	if (_.parsley().isValid()) {
-		$.post(
-			action,
-			data,
-			function (res) {
-				$formStep.find('input[name="koderek"]').val(res.kode);
-				$formStep.find('input[name="ref_part"]').val(res.part_id);
-				$formStep.find('input[name="ref_program"]').val(res.program_id);
-				$formStep.find('input[name="ref_kegiatan"]').val(res.kegiatan_id);
-				$formStep.find('input[name="ref_subkegiatan"]').val(res.subkegiatan_id);
-				$formStep.find('input[name="ref_uraian"]').val(res.uraian_id);
+		$button.text("processing ...").prop("disabled", true);
+		try {
+			$.post(
+				action,
+				data,
+				function (res) {
+					$formStep.find('input[name="koderek"]').val(res.kode);
+					$formStep.find('input[name="ref_part"]').val(res.part_id);
+					$formStep.find('input[name="ref_program"]').val(res.program_id);
+					$formStep.find('input[name="ref_kegiatan"]').val(res.kegiatan_id);
+					$formStep
+						.find('input[name="ref_subkegiatan"]')
+						.val(res.subkegiatan_id);
+					$formStep.find('input[name="ref_uraian"]').val(res.uraian_id);
 
-				$formStep
-					.find("h5#jumlah_max")
-					.html(
-						`Rp. ${rupiah(
-							res.pagu.total_sisa_pa
-						)} <i class="text-success fa fa-external-link-square"></i>`
+					$formStep
+						.find("h5#jumlah_max")
+						.html(
+							`Rp. ${rupiah(
+								res.pagu.total_sisa_pa
+							)} <i class="text-success fa fa-external-link-square"></i>`
+						);
+					$formStep
+						.find("h5#sisa_max")
+						.html(
+							`Rp. ${rupiah(
+								res.pagu.total_sisa_pa
+							)} <i class="text-danger fa fa-level-down"></i>`
+						);
+
+					$("input[name='jumlah']").attr(
+						"data-parsley-remote",
+						`${_uri}/app/spj/cek_jumlah_pengajuan/${res.uraian_id}`
 					);
-				$formStep
-					.find("h5#sisa_max")
-					.html(
-						`Rp. ${rupiah(
-							res.pagu.total_sisa_pa
-						)} <i class="text-danger fa fa-level-down"></i>`
-					);
+					$("input[name='jumlah']").attr("data-start", res.pagu.total_sisa_pa);
+					// $("input[name='jumlah']").attr('max', res.pagu.total_sisa_pa);
 
-				$("input[name='jumlah']").attr(
-					"data-parsley-remote",
-					`${_uri}/app/spj/cek_jumlah_pengajuan/${res.uraian_id}`
-				);
-				$("input[name='jumlah']").attr("data-start", res.pagu.total_sisa_pa);
-				// $("input[name='jumlah']").attr('max', res.pagu.total_sisa_pa);
-
-				$modal.modal("hide");
-			},
-			"json"
-		);
+					$modal.modal("hide");
+				},
+				"json"
+			);
+		} catch (err) {
+			alert(err);
+		} finally {
+			$button.prop("disabled", false).text("Pilih");
+		}
 	}
 });
 
@@ -180,6 +210,32 @@ $(function () {
 	).select2();
 
 	let $modal = $("#modelSearchKode");
+
+	$("select[name='uraian']").select2({
+		// minimumInputLength: 3,
+		width: "100%",
+		dropdownParent: $("#modelSearchKode"),
+		allowClear: false,
+		ajax: {
+			url: `${_uri}/app/select2/ajaxMultiProgram`,
+			type: "post",
+			dataType: "json",
+			delay: 200,
+			data: function (params) {
+				return {
+					q: params.term,
+				};
+			},
+			processResults: function (response) {
+				return {
+					results: response,
+				};
+			},
+			cache: false,
+		},
+		// templateResult: formatResults,
+		// templateSelection: formatResults
+	});
 
 	function select2Kegiatan(programId, partId) {
 		$("select[name='kegiatan']").select2({

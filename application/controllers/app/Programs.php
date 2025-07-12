@@ -44,7 +44,8 @@ class Programs extends CI_Controller
                 'template/backend/vendors/TreeTables-master/treeTable.js',
                 'template/custom-js/list.min.js',
                 'template/custom-js/rupiah.js',
-                'template/backend/vendors/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js'
+                'template/backend/vendors/jquery.inputmask/dist/min/jquery.inputmask.bundle.min.js',
+                'template/custom-js/blockUI/jquery.blockUI.js',
             ],
             'autoload_css' => [
                 'template/backend/vendors/select2/dist/css/select2.min.css',
