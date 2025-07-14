@@ -622,7 +622,8 @@ class Programs extends CI_Controller
     {
         $q = $this->input->post('q');
 
-        $db = $this->crud->getLikes('ref_sasaran', ['nama' => $q]);
+        // $db = $this->crud->getLikes('ref_sasaran', ['nama' => $q]);
+        $db = $this->db->where('tahun', $this->tahun_anggaran)->like('nama', $q)->get('ref_sasaran');
         $all = [];
         if ($db->num_rows() > 0) :
             foreach ($db->result() as $row) :
@@ -929,7 +930,7 @@ class Programs extends CI_Controller
                 'fid_sub_kegiatan' => $id,
                 'total_pagu_awal' => $jml,
                 'tahun' => $thn,
-                'created_at' => date('Y-m-d H:i:s'),
+                'created_at' => DateTimeInput(),
                 'created_by' => $this->session->userdata('user_name')
             ];
 
@@ -950,7 +951,7 @@ class Programs extends CI_Controller
                     'fid_uraian' => $id,
                     'total_pagu_awal' => $jml,
                     'tahun' => $thn,
-                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_at' => DateTimeInput() ,
                     'created_by' => $this->session->userdata('user_name')
                 ];
 
@@ -969,7 +970,7 @@ class Programs extends CI_Controller
                     'fid_uraian' => $id,
                     'total_pagu_awal' => $jml,
                     'tahun' => $thn,
-                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_at' => DateTimeInput() ,
                     'created_by' => $this->session->userdata('user_name')
                 ];
 

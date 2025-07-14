@@ -102,12 +102,12 @@ class Login extends CI_Controller
                 'pic' => $row->pic,
                 'role' => $row->role,
                 'jobdesk' => $row->jobdesk,
-                'check_in' => date('Y-m-d H:i:s'),
+                'check_in' => DateTimeInput(),
                 'check_out' => $row->check_out,
                 'tahun_anggaran' => $this->input->post('tahun', true),
                 'is_perubahan' => "0",
             );
-            $this->db->update('t_users', ['check_in' => date('Y-m-d H:i:s')], ['id' => $row->id]);
+            $this->db->update('t_users', ['check_in' => DateTimeInput()], ['id' => $row->id]);
             $this->session->set_userdata($data_session);
             $p_continue = $this->input->post('continue');
             $continue = isset($p_continue) ? $p_continue : base_url('app/dashboard');
@@ -123,7 +123,7 @@ class Login extends CI_Controller
         clearstatcache();
         $redirectTo = isset($_GET['continue']) ? "?continue=" . $_GET['continue'] : '';
         $data = array('user_name', 'user_id', 'csrf_token');
-        $this->db->update('t_users', ['check_out' => date('Y-m-d H:i:s')], ['id' => decrypt_url($this->session->userdata('user_id'))]);
+        $this->db->update('t_users', ['check_out' => DateTimeInput()], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
         $this->session->sess_destroy();
         redirect(base_url('/login' . $redirectTo));
@@ -134,7 +134,7 @@ class Login extends CI_Controller
         clearstatcache();
         $redirectTo = isset($_GET['continue']) ? "/lockscreen?continue=" . urlencode($_GET['continue']) : '/lockscreen';
         $data = array('user_id', 'csrf_token');
-        $this->db->update('t_users', ['check_out' => date('Y-m-d H:i:s')], ['id' => decrypt_url($this->session->userdata('user_id'))]);
+        $this->db->update('t_users', ['check_out' => DateTimeInput()], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
         redirect(base_url('/login' . $redirectTo));
     }

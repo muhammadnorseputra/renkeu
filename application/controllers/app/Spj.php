@@ -252,7 +252,7 @@ class Spj extends CI_Controller
                 'is_realisasi' => $input['is_realisasi'],
                 'catatan' => '',
                 'verify_by' => $this->session->userdata('user_name'),
-                'verify_at' => date('Y-m-d H:i:s'),
+                'verify_at' => DateTimeInput(),
             ];
             $db = $this->crud->update('spj', $update, $whr);
         } elseif ($input['status'] == 'TMS' || $input['status'] == 'BTL') {
@@ -263,7 +263,7 @@ class Spj extends CI_Controller
                 'catatan' => $input['catatan'],
                 'is_status' => $input['status'],
                 'verify_by' => $this->session->userdata('user_name'),
-                'verify_at' => date('Y-m-d H:i:s'),
+                'verify_at' => DateTimeInput(),
             ];
             $db = $this->crud->update('spj', $update, $whr);
         } else {
@@ -316,7 +316,7 @@ class Spj extends CI_Controller
         $update = [
             'is_status' => $is_status,
             'approve_by' => $this->session->userdata('user_name'),
-            'approve_at' => date('Y-m-d H:i:s'),
+            'approve_at' => DateTimeInput(),
         ];
 
         $insert = [
@@ -342,7 +342,7 @@ class Spj extends CI_Controller
             'is_realisasi' => @$detailUsul->is_realisasi,
             'catatan' => $detailUsul->catatan,
             'approve_by' => $is_status === 'SELESAI' ? $this->session->userdata('user_name') : $detailUsul->approve_by,
-            'approve_at' => $is_status === 'SELESAI' ? date('Y-m-d H:i:s') : $detailUsul->approve_at,
+            'approve_at' => $is_status === 'SELESAI' ? DateTimeInput()  : $detailUsul->approve_at,
             'entri_at' => $detailUsul->entri_at,
             'entri_by' => $detailUsul->entri_by,
             'entri_by_part' => $detailUsul->entri_by_part,
@@ -526,7 +526,7 @@ class Spj extends CI_Controller
                 'tahun' => $input['tahun'],
                 'uraian' => $input['uraian'],
                 'jumlah' => get_only_numbers($input['jumlah']),
-                'entri_at' => date('Y:m:d H:i:s'),
+                'entri_at' => DateTimeInput(),
                 'entri_by' => $this->session->userdata('user_name'),
                 'entri_by_part' => $this->session->userdata('part')
             ];

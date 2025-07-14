@@ -178,7 +178,7 @@ class Target extends CI_Controller
 				'eviden_jumlah' => $post['jumlah_eviden'],
 				'eviden_jenis' => $post['keterangan_eviden'],
 				'tahun' => $post['tahun'],
-				'update_at' => date('Y-m-d H:i:s'),
+				'update_at' => DateTimeInput(),
 				'update_by' => $this->session->userdata('user_name')
 			];
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);

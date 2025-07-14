@@ -233,7 +233,7 @@ class Users extends CI_Controller
                     'password' => sha1($p['pwd']),
                     'jobdesk' => $p['jobdesk'],
                     'role' => $p['role'],
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => DateTimeInput()
                 ];
                 $db = $this->users->insert('t_users', $data_insert);
                 if ($db) {
