@@ -454,13 +454,13 @@
                         </select>
                         <div id="help-block-uraian-kegiatan"></div>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="uraian">Pilih Uraian <span class="text-danger">*</span></label>
                         <select name="uraian" id="uraian" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-uraian">
                             <option value="">Pilih Uraian</option>
                         </select>
                         <div id="help-block-uraian"></div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Modal footer -->
