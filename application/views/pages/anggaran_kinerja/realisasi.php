@@ -57,6 +57,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                 foreach ($tujuan->result() as $t) :
                     $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id], $this->session->userdata('part'));
                     $tr = "";
+                    $rowspan = 1;
                     if ($indikator_tujuan->num_rows() > 0):
                         $indikator = $indikator_tujuan->result_array();
                         $toEnd = count($indikator);
@@ -197,13 +198,17 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         $no_level_1 = 1;
                         $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
                         foreach ($programs->result() as $program) :
-                            $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], $this->session->userdata('part'));
+                            if ($this->session->userdata('role') === 'USER') {
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], $this->session->userdata('part'));
+                            } else {
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], null);
+                            }
                             $tr = "";
                             if ($indikator_program->num_rows() > 0) :
                                 $indikator = $indikator_program->result_array();
                                 $toEnd = count($indikator);
                                 foreach ($indikator as $key => $ip) :
-                                    if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'USER') :
+                                    if ($this->session->userdata('role') === 'USER') :
                                         $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi(' . $ip['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
                                     else:
                                         $btn_input = "";
@@ -263,7 +268,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 <?= $tr ?>
                             </tr>
                             <?php
-                            if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('user_name') === 'kaban' || $this->session->userdata('role') === 'ADMIN') :
+                            if ($this->session->userdata('role') === 'ADMIN') :
                                 $kegiatans = $this->realisasi->kegiatans($program->id);
                             else :
                                 $kegiatans = $this->realisasi->kegiatans($program->id, $this->session->userdata('part'));
@@ -271,7 +276,14 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
 
                             $no_level_2 = 1;
                             foreach ($kegiatans->result() as $kegiatan) :
-                                $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], $this->session->userdata('part'));
+                                if ($this->session->userdata('role') === 'ADMIN') :
+                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], null);
+                                else:
+                                    $indikator_kegiatan = $this->realisasi->getIndikator(
+                                        ['fid_kegiatan' => $kegiatan->id],
+                                        $this->session->userdata('part')
+                                    );
+                                endif;
                                 $tr = "";
                                 if ($indikator_kegiatan->num_rows() > 0) :
                                     $indikator_keg = $indikator_kegiatan->result_array();
@@ -338,7 +350,11 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
                                 $no_level_3 = 1;
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
-                                    $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], $this->session->userdata('part'));
+                                    if ($this->session->userdata('role') === 'USER') :
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], $this->session->userdata('part'));
+                                    else:
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], null);
+                                    endif;
                                     $tr = "";
                                     if ($indikator_sub_kegiatan->num_rows() > 0) :
                                         $indikator_sub = $indikator_sub_kegiatan->result_array();

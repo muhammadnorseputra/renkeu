@@ -169,7 +169,7 @@
                                 $toEnd = count($indikator);
                                 foreach ($indikator as $key => $ip) :
 
-                                    if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'USER') :
+                                    if ($this->session->userdata('role') === 'USER') :
                                         $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $ip['indikator_id'] . '" data-label="Program" type="button"><i class="fa fa-trash"></i></button>';
                                         $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $ip['indikator_id'] . "/ref_programs") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                                     else :
@@ -217,7 +217,7 @@
                                 <td class="align-middle bg-success border-success" rowspan="<?= @$toEnd ?>"></td>
                                 <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?></td>
                                 <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                                    <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'USER') : ?>
+                                    <?php if ($this->session->userdata('role') === 'USER') : ?>
                                         <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $program->id ?>" data-label="Program" data-ref="ref_programs" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $program->nama ?>"><i class="fa fa-plus"></i></button>
                                     <?php endif; ?>
                                 </td>
@@ -238,7 +238,7 @@
                                     $indikator = $indikator_kegiatan->result_array();
                                     $toEnd = count($indikator);
                                     foreach ($indikator as $key => $ik) :
-                                        if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'USER') :
+                                        if ($this->session->userdata('role') === 'USER') :
                                             $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $ik['indikator_id'] . '" data-label="Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
                                             $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $ik['indikator_id'] . "/ref_kegiatans") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                                         else:
@@ -286,7 +286,7 @@
                                     <td class="align-middle bg-success border-success" rowspan="<?= @$toEnd ?>"></td>
                                     <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
                                     <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                                        <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'USER') : ?>
+                                        <?php if ($this->session->userdata('role') === 'USER') : ?>
                                             <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $kegiatan->id ?>" data-label="Kegiatan" data-ref="ref_kegiatans" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
                                         <?php endif; ?>
                                     </td>
@@ -302,7 +302,7 @@
                                         $indikator = $indikator_sub_kegiatan->result_array();
                                         $toEnd = count($indikator);
                                         foreach ($indikator as $key => $isk) :
-                                            if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'USER') :
+                                            if ($this->session->userdata('role') === 'USER') :
                                                 $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $isk['indikator_id'] . '" data-label="Sub Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
                                                 $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $isk['indikator_id'] . "/ref_sub_kegiatans") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                                             else:
@@ -349,7 +349,7 @@
                                         <td class="align-middle bg-success border-bottom-0" rowspan="<?= @$toEnd ?>"></td>
                                         <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                         <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                                            <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'USER') : ?>
+                                            <?php if ($this->session->userdata('role') === 'USER') : ?>
                                                 <button class="btn btn-sm btn-primary m-0 rounded" id="TambahIndikator" data-id="<?= $sub_kegiatan->id ?>" data-label="Sub Kegiatan" data-ref="ref_sub_kegiatans" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $sub_kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
                                             <?php endif; ?>
                                         </td>

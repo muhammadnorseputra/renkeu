@@ -64,6 +64,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                 foreach ($tujuan->result() as $t) :
                     $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id], $this->session->userdata('part'));
                     $tr = "";
+                    $rowspan = 1;
                     if ($indikator_tujuan->num_rows() > 0):
                         $indikator = $indikator_tujuan->result_array();
                         $toEnd = count($indikator);
@@ -274,7 +275,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                         $no_level_1 = 1;
                         $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
                         foreach ($programs->result() as $program) :
-                            $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], $this->session->userdata('part'));
+                            $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], null);
                             $tr = "";
                             if ($indikator_program->num_rows() > 0) :
                                 $indikator = $indikator_program->result_array();
@@ -319,7 +320,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     $FaktorPenghambat = $realisasi->faktor_penghambat === NULL ? '-' : $realisasi->faktor_penghambat;
                                     $TindakLanjut = $realisasi->tindak_lanjut === NULL ? '-' : $realisasi->tindak_lanjut;
 
-                                    if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'USER') :
+                                    if ($this->session->userdata('role') === 'USER') :
                                         $ButtonDisabled = $realisasi_anggaran === 0 || ($realisasi_kinerja === 0) ? 'disabled' : '';
                                         $ButtonInput = '<button class="btn btn-danger btn-sm" onclick="InputFaktor(' . $ip['indikator_id'] . ')" ' . $ButtonDisabled . '><i class="fa fa-pencil"></i></button>';
                                     else:
@@ -388,7 +389,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
 
                             $no_level_2 = 1;
                             foreach ($kegiatans->result() as $kegiatan) :
-                                $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], $this->session->userdata('part'));
+                                $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], null);
                                 $tr = "";
                                 if ($indikator_kegiatan->num_rows() > 0) :
                                     $indikator_keg = $indikator_kegiatan->result_array();
@@ -493,7 +494,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
                                 $no_level_3 = 1;
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
-                                    $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], $this->session->userdata('part'));
+                                    $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], null);
                                     $tr = "";
                                     if ($indikator_sub_kegiatan->num_rows() > 0) :
                                         $indikator_sub = $indikator_sub_kegiatan->result_array();

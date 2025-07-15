@@ -153,6 +153,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     </tr>";
                                 }
                             endforeach;
+                        else:
+                            $tr .= "
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>";
+                            for ($i = 1; $i <= 12; $i++) {
+                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                            }
+                            $tr .= "<tr></tr>";
                         endif;
                     ?>
                         <tr class="bg-warning">
@@ -226,6 +236,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     </tr>";
                                     }
                                 endforeach;
+                            else:
+                                $tr .= "
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>";
+                                for ($i = 1; $i <= 12; $i++) {
+                                    $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                    $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                }
+                                $tr .= "<tr></tr>";
                             endif;
                         ?>
                             <tr class="bg-success text-white">
@@ -237,7 +257,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             $no_level_1 = 1;
                             $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
                             foreach ($programs->result() as $program) :
-                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], $this->session->userdata('part'));
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], null);
                                 $tr = "";
                                 if ($indikator_program->num_rows() > 0) :
                                     $indikator = $indikator_program->result_array();
@@ -303,6 +323,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             $tr .= "</tr>";
                                         }
                                     endforeach;
+                                else:
+                                    $tr .= "
+                                    <td rowspan='" . $rowspan . "'></td>
+                                    <td rowspan='" . $rowspan . "'></td>
+                                    <td rowspan='" . $rowspan . "'></td>";
+                                    for ($i = 1; $i <= 12; $i++) {
+                                        $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                        $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                    }
+                                    $tr .= "<tr></tr>";
                                 endif;
                             ?>
                                 <tr class="bg-secondary text-white">
@@ -320,7 +350,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
 
                                 $no_level_2 = 1;
                                 foreach ($kegiatans->result() as $kegiatan) :
-                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], $this->session->userdata('part'));
+                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], null);
                                     $tr = "";
                                     if ($indikator_kegiatan->num_rows() > 0) :
                                         $indikator_keg = $indikator_kegiatan->result_array();
@@ -382,6 +412,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     </tr>";
                                             }
                                         endforeach;
+                                    else:
+                                        $tr .= "
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>";
+                                        for ($i = 1; $i <= 12; $i++) {
+                                            $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                            $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                        }
+                                        $tr .= "<tr></tr>";
                                     endif;
                                 ?>
                                     <tr class="bg-info text-white">
@@ -394,7 +434,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
                                     $no_level_3 = 1;
                                     foreach ($sub_kegiatans->result() as $sub_kegiatan) :
-                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], $this->session->userdata('part'));
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], null);
                                         $tr = "";
                                         if ($indikator_sub_kegiatan->num_rows() > 0) :
                                             $indikator_sub = $indikator_sub_kegiatan->result_array();
@@ -439,7 +479,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                     $tr .= "";
                                                 } elseif ($key === 0) { //first
                                                     $tr .= "
-                                        <td class='align-middle text-nowrap'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
                                                     for ($i = 1; $i <= 12; $i++) {
@@ -450,7 +490,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                 } else { //middle
                                                     $tr .= "
                                     <tr>
-                                        <td class='align-middle text-nowrap'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
                                                     for ($i = 1; $i <= 12; $i++) {
                                                         $tr .= "
@@ -458,6 +498,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                     }
                                                 }
                                             endforeach;
+                                        else:
+                                            $tr .= "
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>";
+                                            for ($i = 1; $i <= 12; $i++) {
+                                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
+                                            }
+                                            $tr .= "<tr></tr>";
                                         endif;
                                     ?>
                                         <tr>
