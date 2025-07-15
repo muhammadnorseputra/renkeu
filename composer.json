@@ -15,7 +15,12 @@
 		"dompdf/dompdf": "*",
 		"chriskacerguis/codeigniter-restserver": "*",
 		"rakit/validation": "*",
-		"phpoffice/phpspreadsheet": "*"
+		"phpoffice/phpspreadsheet": "^1.23"
+	},
+	"config": {
+		"platform": {
+			"php": "7.3"
+		}
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
