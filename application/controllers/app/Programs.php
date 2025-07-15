@@ -222,6 +222,7 @@ class Programs extends CI_Controller
         if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') :
             $btnAdd = '<div>
             <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
+            <a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/program') . '"><i class="fa fa-download"></i> Export</a>
             </div>
         ';
         else :
@@ -234,6 +235,7 @@ class Programs extends CI_Controller
         $html .= '<div class="table-responsive"><table class="table table-condensed table-hover table-bordered">';
         $html .= '<thead>
                     <tr>
+                        <th class="text-center text-white bg-danger">ID</th>
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Program</th>
@@ -258,6 +260,9 @@ class Programs extends CI_Controller
             </td>';
 
             $html .= '<tr>
+                <td class="text-center">
+                    ' . $r->id . '
+                </td>
                 <td class="text-center">
                     ' . $no . '
                 </td>
@@ -299,7 +304,9 @@ class Programs extends CI_Controller
         endif;
 
         $btnAdd = '<div>
-            <button data-toggle="modal" data-target=".modal-kegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
+            <button data-toggle="modal" data-target=".modal-kegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
+            <a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/kegiatan') . '"><i class="fa fa-download"></i> Export</a>
+            </div>
         ';
         $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
@@ -377,7 +384,9 @@ class Programs extends CI_Controller
                 ->get('ref_sub_kegiatans AS sub');
         endif;
         $btnAdd = '<div>
-                <button data-toggle="modal" data-target=".modal-subkegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
+                <button data-toggle="modal" data-target=".modal-subkegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
+                <a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/sub_kegiatan') . '"><i class="fa fa-download"></i> Export</a>
+                </div>
             ';
         $search = '<div class="col-6 col-md-3">Pencarian <input type="text" class="fuzzy-search form-control" /></div>';
         $pagging = '<div class="col-6 col-md-6">Halaman <ul class="pagination"></ul></div>';
@@ -472,7 +481,9 @@ class Programs extends CI_Controller
         endif;
 
         $btnAdd = '<div>
-            <button data-toggle="modal" data-target=".modal-uraian" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button></div>
+            <button data-toggle="modal" data-target=".modal-uraian" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
+            <a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/uraian') . '"><i class="fa fa-download"></i> Export</a>
+            </div>
         ';
         $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
@@ -951,7 +962,7 @@ class Programs extends CI_Controller
                     'fid_uraian' => $id,
                     'total_pagu_awal' => $jml,
                     'tahun' => $thn,
-                    'created_at' => DateTimeInput() ,
+                    'created_at' => DateTimeInput(),
                     'created_by' => $this->session->userdata('user_name')
                 ];
 
@@ -970,7 +981,7 @@ class Programs extends CI_Controller
                     'fid_uraian' => $id,
                     'total_pagu_awal' => $jml,
                     'tahun' => $thn,
-                    'created_at' => DateTimeInput() ,
+                    'created_at' => DateTimeInput(),
                     'created_by' => $this->session->userdata('user_name')
                 ];
 

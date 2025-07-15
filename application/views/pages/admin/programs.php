@@ -831,6 +831,8 @@
             pagination: [{
                 item: "<li class='page-item rounded-0'><a class='page page-link rounded-0' href='#'></a></li>"
             }],
+            searchDelay: 350,
+            indexAsync: true
         };
     })
 </script>

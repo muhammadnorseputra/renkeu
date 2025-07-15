@@ -84,7 +84,7 @@ class ModelTarget extends CI_Model
         $this->db->join('ref_jenis_indikators AS j', 'i.fid_jenis_indikator=j.id', 'left');
         $this->db->join('t_target AS t', 't.fid_indikator=i.id', 'left');
         $this->db->where($whr);
-        if (!empty($part_id) && $this->session->userdata('role') === 'USER') {
+        if (!empty($part_id)) {
             $this->db->where("FIND_IN_SET('{$part_id}', i.fid_part) >", 0);
         }
         $this->db->order_by('i.id', 'asc');
