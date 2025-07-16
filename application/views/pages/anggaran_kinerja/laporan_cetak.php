@@ -272,7 +272,7 @@
                     $no_level_0_1 = "#1";
                     $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
                     foreach ($sasaran->result() as $s) :
-                        $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id], $this->session->userdata('part'));
+                        $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id], null);
                         $tr = "";
                         if ($indikator_sasaran->num_rows() > 0):
                             $indikator = $indikator_sasaran->result_array();
