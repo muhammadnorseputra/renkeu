@@ -138,16 +138,11 @@ class Capaian extends CI_Controller
 	{
 		$tahun = $this->session->userdata('tahun_anggaran');
 
-		if ($this->session->userdata('role') === 'ADMIN'):
-			$programs = $this->target->program(null, null, $tahun);
-		else:
-			$programs = $this->target->program(null, $this->session->userdata('part'), $tahun);
-		endif;
-
+		$faktor = $this->realisasi->getFaktors($this->session->userdata('tahun_anggaran'));
 		$data = [
 			'title' => 'Laporan Anggaran & Kinerja - Tahun ' . $tahun,
-			'programs' => $programs,
-			'tahun' => $tahun
+			'tahun' => $tahun,
+			'faktor' => $faktor
 		];
 		$this->load->view('pages/anggaran_kinerja/laporan_cetak', $data);
 	}

@@ -516,7 +516,6 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                 </tbody>
             </table>
             <table class="table table-bordered">
-
                 <tbody>
                     <tr>
                         <th colspan="2">Faktor pendorong keberhasilan kinerja :</th>
