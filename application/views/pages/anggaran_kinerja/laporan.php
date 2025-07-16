@@ -386,9 +386,13 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     <tr class='bg-info text-white'>
                                         <td class='align-middle'>" . $ik['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td class='align-middle text-center'>" . $realisasi_kinerja . "</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                    </tr>";
+                                        ";
+                                                for ($i = 1; $i <= 12; $i++) {
+                                                    $tr .= "
+                                                <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>
+                                                            ";
+                                                }
+                                                $tr .= "</tr>";
                                             }
                                         endforeach;
                                     else:

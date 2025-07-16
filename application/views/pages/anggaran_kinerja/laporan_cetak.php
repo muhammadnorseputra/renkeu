@@ -325,10 +325,13 @@
                                     $tr .= "
                                     <tr class='bg-info text-white'>
                                         <td class='align-middle'>" . $ik['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td class='align-middle text-center'>" . $realisasi_kinerja . "</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                        <td>" . $ip['part_name'] . "</td>
+                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
+                                    for ($i = 1; $i <= 12; $i++) {
+                                        $tr .= "
+                                                <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>
+                                                            ";
+                                    }
+                                    $tr .= "<td>" . $ip['part_name'] . "</td>
                                     </tr>";
                                 }
                             endforeach;
