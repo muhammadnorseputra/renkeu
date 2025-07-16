@@ -323,7 +323,7 @@
                                     $tr .= "<td>" . $ip['part_name'] . "</td>";
                                 } else { //middle
                                     $tr .= "
-                                    <tr class='bg-info text-white'>
+                                    <tr  style='background-color: blue; color: white;'>
                                         <td class='align-middle'>" . $ik['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
                                     for ($i = 1; $i <= 12; $i++) {
