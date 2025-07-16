@@ -8,7 +8,7 @@
     <style>
         @page {
             size: landscape;
-            margin: 1cm;
+            margin: 1cm 1cm 1cm 0.8cm;
         }
 
         .page-break-after-this {
@@ -17,6 +17,8 @@
 
         body {
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            padding: 0;
+            margin: 0;
             font-size: 0.8em;
         }
 
