@@ -221,8 +221,8 @@
                     endif;
                 ?>
                     <tr style='background-color: orange;'>
-                        <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
-                        <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
+                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
+                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
                         <?= $tr ?>
                     </tr>
                     <?php
@@ -308,8 +308,8 @@
                         endif;
                     ?>
                         <tr style='background-color: blue; color: white;'>
-                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                            <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
+                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                            <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
                             <?= $tr ?>
                         </tr>
                         <?php
@@ -393,8 +393,8 @@
 
                         ?>
                             <tr>
-                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
+                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
                                 <?= $tr ?>
                             </tr>
                         <?php

@@ -5,7 +5,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
     <title><?= $title ?></title>
-    <style media="print">
+    <style>
         @page {
             size: landscape;
             margin: 1cm;
@@ -106,7 +106,7 @@
     <div id="content">
         <table class="collapse">
             <tr>
-                <td colspan="5" class="text-center">
+                <td colspan="7" class="text-center">
                     <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
                     <h3 style="margin:0; padding:0"> BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</h3>
                     <h4 style="margin:0; padding:0"><?= strtoupper($title) ?> </h4>
@@ -114,16 +114,16 @@
                 </td>
             </tr>
             <tr>
-                <td width="15%">Bidang/Bagian</td>
+                <td width="10%">Bidang/Bagian</td>
                 <td colspan="3"><?= $this->target->getNama('ref_parts', $this->session->userdata('part')) ?></td>
-                <td width="10%" class="text-center font-bold"><b><?= $tahun ?></b></td>
+                <td width="5%" class="text-center font-bold"><b><?= $tahun ?></b></td>
             </tr>
         </table>
         <table class="collapse">
             <thead>
                 <tr class="text-center">
                     <th rowspan="2" class="align-middle" width="2%">No</th>
-                    <th rowspan="2" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
+                    <th rowspan="2" class="align-middle">Program/Kegiatan/Sub Kegiatan</th>
                     <th rowspan="2" class="align-middle">Indikator Kinerja</th>
                     <th colspan="2" class="align-middle">Target</th>
 
@@ -139,7 +139,6 @@
                     <th colspan="2" class="align-middle">Oktober</th>
                     <th colspan="2" class="align-middle">November</th>
                     <th colspan="2" class="align-middle">Desember</th>
-
                     <th rowspan="2">Penanggung Jawab</th>
                 </tr>
                 <tr>
@@ -229,8 +228,7 @@
                             if (0 === --$toEnd) { //last
                                 $tr .= "";
                             } elseif ($key === 0) { //first
-                                $tr .= "
-                                        <td class='align-middle'>" . $ip['nama'] . "</td>
+                                $tr .= "<td class='align-middle'>" . $ip['nama'] . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
                                 for ($i = 1; $i <= 12; $i++) {
@@ -253,12 +251,13 @@
                         endforeach;
                     else:
                         $tr .= "
-                                <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
+                                <td rowspan='" . $rowspan . "' colspan='28'></td>
+                                <tr></tr>";
                     endif;
                 ?>
                     <tr style='background-color: orange;'>
-                        <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
-                        <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
+                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
+                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
                         <?= $tr ?>
                     </tr>
                     <?php
@@ -320,7 +319,7 @@
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran[$i]) . "</td>
                                         <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
                                     }
-                                    $tr .= "<td>" . $ip['part_name'] . "</td>";
+                                    $tr .= "<td>" . $ik['part_name'] . "</td>";
                                 } else { //middle
                                     $tr .= "
                                     <tr  style='background-color: blue; color: white;'>
@@ -331,8 +330,8 @@
                                                 <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>
                                                             ";
                                     }
-                                    $tr .= "<td>" . $ip['part_name'] . "</td>
-                                    </tr>";
+                                    $tr .= "<td>" . $ik['part_name'] . "</td>";
+                                    $tr .= "</tr>";
                                 }
                             endforeach;
                         else:
@@ -341,8 +340,8 @@
                         endif;
                     ?>
                         <tr style='background-color: blue; color: white;'>
-                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                            <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
+                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                            <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
                             <?= $tr ?>
                         </tr>
                         <?php
@@ -397,7 +396,7 @@
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran[$i]) . "</td>
                                         <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
                                         }
-                                        $tr .= "<td>" . $ip['part_name'] . "</td>";
+                                        $tr .= "<td>" . $isk['part_name'] . "</td>";
                                     } else { //middle
                                         $tr .= "
                                     <tr>
@@ -407,7 +406,8 @@
                                             $tr .= "
                                         <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
                                         }
-                                        $tr .= "<td>" . $ip['part_name'] . "</td>";
+                                        $tr .= "<td>" . $isk['part_name'] . "</td>";
+                                        $tr .= "</tr>";
                                     }
                                 endforeach;
                             else:
@@ -416,8 +416,8 @@
                             endif;
                         ?>
                             <tr>
-                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                 <?= $tr ?>
                             </tr>
                         <?php
