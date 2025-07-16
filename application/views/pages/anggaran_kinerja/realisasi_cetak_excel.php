@@ -105,8 +105,7 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                         $tr .= "
                         <td rowspan='" . $rowspan . "'></td>
                         <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <tr></tr>";
+                        <td rowspan='" . $rowspan . "'></td>";
                     endif;
                 ?>
                     <tr style='background-color: orange;'>
@@ -157,8 +156,7 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                             $tr .= "
                         <td rowspan='" . $rowspan . "'></td>
                         <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <tr></tr>";
+                        <td rowspan='" . $rowspan . "'></td>";
                         endif;
                     ?>
                         <tr style='background-color: blue; color: white'>
@@ -205,8 +203,7 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                 $tr .= "
                         <td rowspan='" . $rowspan . "'></td>
                         <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <tr></tr>";
+                        <td rowspan='" . $rowspan . "'></td>";
                             endif;
                         ?>
                             <tr>
