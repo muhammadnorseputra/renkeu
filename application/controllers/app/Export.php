@@ -335,13 +335,11 @@ class Export extends CI_Controller
 
     public function target($tahun)
     {
-        // if ($this->session->userdata('role') === 'ADMIN'):
-        //     $programs = $this->target->program(null, null, $tahun);
-        // else:
-        //     $programs = $this->target->program(null, $this->part, $tahun, $tahun);
-        // endif;
-
-        $programs = $this->target->program(null, null, $tahun);
+        if ($this->session->userdata('role') === 'ADMIN'):
+            $programs = $this->target->program(null, null, $tahun);
+        else:
+            $programs = $this->target->program(null, $this->part, $tahun, $tahun);
+        endif;
 
         $data = [
             'title' => 'Target Anggaran & Kinerja  - Tahun ' . $tahun,
@@ -355,13 +353,11 @@ class Export extends CI_Controller
     {
         $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
 
-        // if ($this->session->userdata('role') === 'ADMIN'):
-        //     $programs = $this->target->program(null, null, $this->tahun_anggaran);
-        // else:
-        //     $programs = $this->target->program(null, $this->part, $this->tahun_anggaran);
-        // endif;
-
-        $programs = $this->target->program(null, null, $this->tahun_anggaran);
+        if ($this->session->userdata('role') === 'ADMIN'):
+            $programs = $this->target->program(null, null, $this->tahun_anggaran);
+        else:
+            $programs = $this->target->program(null, $this->part, $this->tahun_anggaran);
+        endif;
 
         $data = [
             'title' => 'Realisasi Anggaran & Kinerja  - ' . $periode_nama,
@@ -376,13 +372,11 @@ class Export extends CI_Controller
     {
         $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
 
-        // if ($this->session->userdata('role') === 'ADMIN'):
-        //     $programs = $this->target->program(null, null, $this->tahun_anggaran);
-        // else:
-        //     $programs = $this->target->program(null, $this->part, $this->tahun_anggaran);
-        // endif;
-
-        $programs = $this->target->program(null, null, $this->tahun_anggaran);
+        if ($this->session->userdata('role') === 'ADMIN'):
+            $programs = $this->target->program(null, null, $this->tahun_anggaran);
+        else:
+            $programs = $this->target->program(null, $this->part, $this->tahun_anggaran);
+        endif;
 
         $data = [
             'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_nama,
