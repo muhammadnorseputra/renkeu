@@ -35,10 +35,11 @@ class ModelRealisasi extends CI_Model
     }
     public function getIndikator($whr, $part_id = null)
     {
-        $this->db->select('t.*,i.id AS indikator_id, i.nama, j.nama AS jenis_indikator, j.color');
+        $this->db->select('t.*,i.id AS indikator_id, i.nama, j.nama AS jenis_indikator, j.color, p.singkatan AS part_name');
         $this->db->from('ref_indikators AS i');
         $this->db->join('t_target AS t', 't.fid_indikator=i.id', 'left');
         $this->db->join('ref_jenis_indikators AS j', 'i.fid_jenis_indikator=j.id', 'left');
+        $this->db->join('ref_parts AS p', 'i.fid_part=p.id', 'left');
         $this->db->where($whr);
         if (!empty($part_id)) {
             $this->db->where("FIND_IN_SET('{$part_id}', i.fid_part) >", 0);

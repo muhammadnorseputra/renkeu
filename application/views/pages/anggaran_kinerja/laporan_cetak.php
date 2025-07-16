@@ -5,24 +5,28 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
     <title><?= $title ?></title>
-    <style>
+    <style media="print">
         @page {
-            margin: 0.3cm 1cm 0.3cm 1cm;
+            size: landscape;
+            margin: 1cm;
+        }
+
+        .page-break-after-this {
+            page-break-after: always;
         }
 
         body {
-            font-family: sans-serif;
-            margin: 1.5cm 0;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
             font-size: 0.8em;
         }
 
         #header,
         #footer {
-            position: fixed;
+            position: static;
             left: 0;
             right: 0;
-            color: #aaa;
-            font-size: 0.7em;
+            color: #333;
+            font-size: 0.8em;
         }
 
         #header {
@@ -33,6 +37,11 @@
         #footer {
             bottom: 0;
             border-top: 0.1pt solid #aaa;
+        }
+
+        #content {
+            margin-top: 1.5cm;
+            margin-bottom: 1.5cm;
         }
 
         span.page-number {
@@ -51,12 +60,11 @@
         table {
             width: 100%;
             page-break-before: auto;
-            font-size: 0.9em;
         }
 
         thead {
             background-color: #fff;
-            font-size: 0.8em;
+            font-size: 1em;
         }
 
         tbody {
@@ -65,7 +73,7 @@
 
         th,
         td {
-            padding: 3pt;
+            padding: 8pt;
             border: 1pt solid #aaa;
         }
 
@@ -78,6 +86,11 @@
             border: 1pt solid #aaa;
         }
 
+        /* Hindari pemisahan baris tabel yang buruk */
+        tbody tr {
+            page-break-inside: avoid;
+        }
+
         .text-center {
             text-align: center;
         }
@@ -88,11 +101,8 @@
     </style>
 </head>
 
-<body>
+<body onload="window.print()">
 
-    <div id="header">
-        <p><?= $title ?> <span class="author">Dicetak oleh : <?= $this->user->profile_username($this->session->userdata('user_name'))->row()->nama ?></span></p>
-    </div>
     <div id="content">
         <table class="collapse">
             <tr>
@@ -109,31 +119,69 @@
                 <td width="10%" class="text-center font-bold"><b><?= $tahun ?></b></td>
             </tr>
         </table>
-        <table class="collapse" id="indikator">
+        <table class="collapse">
             <thead>
                 <tr class="text-center">
                     <th rowspan="2" class="align-middle" width="2%">No</th>
-                    <th rowspan="2" class="align-middle sticky-col" width="10%">Program/Kegiatan/Sub Kegiatan</th>
+                    <th rowspan="2" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
                     <th rowspan="2" class="align-middle">Indikator Kinerja</th>
                     <th colspan="2" class="align-middle">Target</th>
-                    <?php
-                    foreach ($this->spj->getPeriodeAktif()->result() as $periode) :
-                    ?>
-                        <th colspan="2" class="align-middle" width="10%"><?= $periode->nama ?></th>
-                    <?php endforeach; ?>
-                    <th colspan="2">Persentase Capaian %</th>
+
+                    <th colspan="2" class="align-middle">Januari</th>
+                    <th colspan="2" class="align-middle">Februari</th>
+                    <th colspan="2" class="align-middle">Maret</th>
+                    <th colspan="2" class="align-middle">April</th>
+                    <th colspan="2" class="align-middle">Mei</th>
+                    <th colspan="2" class="align-middle">Juni</th>
+                    <th colspan="2" class="align-middle">Juli</th>
+                    <th colspan="2" class="align-middle">Agustus</th>
+                    <th colspan="2" class="align-middle">September</th>
+                    <th colspan="2" class="align-middle">Oktober</th>
+                    <th colspan="2" class="align-middle">November</th>
+                    <th colspan="2" class="align-middle">Desember</th>
+
+                    <th rowspan="2">Penanggung Jawab</th>
                 </tr>
-                <tr class="text-center">
-                    <th width="3%">A (Rp)</th>
-                    <th width="3%">K %</th>
-                    <?php
-                    foreach ($this->spj->getPeriodeAktif()->result() as $periode) :
-                    ?>
-                        <th width="2%">A (Rp)</th>
-                        <th width="2%">K %</th>
-                    <?php endforeach; ?>
-                    <th width="5%" class="align-middle">A (Rp)</th>
-                    <th width="5%" class="align-middle">K %</th>
+                <tr>
+                    <!-- Target Anggaran - Januari -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Januari -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Februari -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Maret -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - April -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Mei -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Juni -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Juli -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Agustus -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - September -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Oktober -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - November -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
+                    <!-- Target Anggaran - Desember -->
+                    <th class="align-middle text-center">A</th>
+                    <th class="align-middle text-center">K</th>
                 </tr>
             </thead>
             <tbody>
@@ -155,56 +203,60 @@
                                 $indikator_input_view = $ip['persentase'] . "%";
                             }
 
-                            $target_anggaran = $this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
+                            // Target Anggaran
+                            $target_anggaran = $this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                             $target_kinerja = $indikator_input_count;
 
-                            $rowspan = $toEnd++;
-                            // Looping triwulan
-                            $tr2 = "";
-                            foreach ($this->spj->getPeriodeAktif()->result() as $periode) :
-                                // Realisasi
-                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode->id, $ip['indikator_id'])->row();
+                            // Realisasi Anggaran & Kinerja Tahunan
+                            $realisasi_anggaran = [];
+                            $realisasi_kinerja = [];
+                            for ($i = 1; $i <= 12; $i++) {
+                                // Realisasi Kinerja
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $ip['indikator_id'])->row();
                                 if ($realisasi->persentase === "0") {
-                                    $sum_realisasi_count = $realisasi->eviden;
-                                    $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
+                                    $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
                                 } elseif ($realisasi->eviden === "0") {
-                                    $sum_realisasi_count = $realisasi->persentase;
-                                    $sum_realisasi_view = $realisasi->persentase . "%";
+                                    $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                 } else {
-                                    $sum_realisasi_count = 0;
-                                    $sum_realisasi_view = "-";
+                                    $realisasi_kinerja[$i] = "-";
                                 }
+                                // Realisasi Anggaran
+                                $realisasi_anggaran[$i] = $this->realisasi->getRealisasiProgram("$i", $program->id);
+                            }
 
-                                $realisasi_anggaran = $this->realisasi->getRealisasiProgram($periode->id, $program->id);
-                                $realisasi_kinerja = $sum_realisasi_count;
-                            endforeach;
 
-                            // Capaian
-                            @$capaian_anggaran = round(($realisasi_anggaran / $target_anggaran) * 100, 2);
-                            @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
-
+                            $rowspan = $toEnd++;
                             if (0 === --$toEnd) { //last
                                 $tr .= "";
                             } elseif ($key === 0) { //first
                                 $tr .= "
                                         <td class='align-middle'>" . $ip['nama'] . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>";
+                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
+                                for ($i = 1; $i <= 12; $i++) {
+                                    $tr .= "
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran[$i]) . "</td>
+                                        <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
+                                }
+                                $tr .= "<td>" . $ip['part_name'] . "</td>";
                             } else { //middle
                                 $tr .= "
-                                    <tr class='bg-warning'>
+                                    <tr style='background-color: orange;'>
                                         <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
-                                    </tr>";
+                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
+                                for ($i = 1; $i <= 12; $i++) {
+                                    $tr .= "<td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
+                                }
+                                $tr .= "<td>" . $ip['part_name'] . "</td>";
+                                $tr .= "</tr>";
                             }
                         endforeach;
+                    else:
+                        $tr .= "
+                                <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
                     endif;
                 ?>
-                    <tr class="bg-warning">
+                    <tr style='background-color: orange;'>
                         <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
                         <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
                         <?= $tr ?>
@@ -232,27 +284,27 @@
                                     $indikator_input_count = $ik['persentase'];
                                     $indikator_input_view = $ik['persentase'] . "%";
                                 }
-                                $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
+
+                                $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                                 $target_kinerja = $indikator_input_count;
 
-                                // Realisasi
-                                $realisasi = $this->realisasi->getRealisasiTahunanByIndikatorId($ik['indikator_id'])->row();
-                                if ($realisasi->persentase === "0") {
-                                    $sum_realisasi_count = $realisasi->eviden;
-                                    $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                } elseif ($realisasi->eviden === "0") {
-                                    $sum_realisasi_count = $realisasi->persentase;
-                                    $sum_realisasi_view = $realisasi->persentase . "%";
-                                } else {
-                                    $sum_realisasi_count = 0;
-                                    $sum_realisasi_view = "-";
+                                // Realisasi Anggaran & Kinerja Tahunan
+                                $realisasi_anggaran = [];
+                                $realisasi_kinerja = [];
+                                for ($i = 1; $i <= 12; $i++) {
+                                    // Realisasi Kinerja
+                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $ik['indikator_id'])->row();
+                                    if ($realisasi->persentase === "0") {
+                                        $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
+                                    } elseif ($realisasi->eviden === "0") {
+                                        $realisasi_kinerja[$i] = $realisasi->persentase . "%";
+                                    } else {
+                                        $realisasi_kinerja[$i] = "-";
+                                    }
+                                    // Realisasi Anggaran
+                                    $realisasi_anggaran[$i] = $this->realisasi->getRealisasiKegiatan("$i", $kegiatan->id);
                                 }
-                                $realisasi_anggaran = $this->realisasi->getRealisasiTahunanKegiatan($kegiatan->id);
-                                $realisasi_kinerja = $sum_realisasi_count;
 
-                                // Capaian
-                                @$capaian_anggaran = round(($realisasi_anggaran / $target_anggaran) * 100, 2);
-                                @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
 
 
                                 $rowspan = $toEnd++;
@@ -262,24 +314,30 @@
                                     $tr .= "
                                         <td class='align-middle'>" . $ik['nama'] . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>";
+                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
+                                    for ($i = 1; $i <= 12; $i++) {
+                                        $tr .= "
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran[$i]) . "</td>
+                                        <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
+                                    }
+                                    $tr .= "<td>" . $ip['part_name'] . "</td>";
                                 } else { //middle
                                     $tr .= "
                                     <tr class='bg-info text-white'>
                                         <td class='align-middle'>" . $ik['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
+                                        <td class='align-middle text-center'>" . $realisasi_kinerja . "</td>
                                         <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
+                                        <td>" . $ip['part_name'] . "</td>
                                     </tr>";
                                 }
                             endforeach;
+                        else:
+                            $tr .= "
+                                <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
                         endif;
                     ?>
-                        <tr class="bg-info text-white">
+                        <tr style='background-color: blue; color: white;'>
                             <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
                             <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
                             <?= $tr ?>
@@ -303,61 +361,55 @@
                                         $indikator_input_view = $isk['persentase'] . "%";
                                     }
 
-                                    $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal;
+                                    $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
                                     $target_kinerja = $indikator_input_count;
 
-                                    $rowspan = $toEnd++;
-                                    // Looping triwulan
-                                    $realisasi_anggaran = 0;
-                                    $realisasi_kinerja = 0;
-                                    $td_sub = "";
-                                    $td_sub_sub = "";
-                                    foreach ($this->spj->getPeriodeAktif()->result() as $periode) :
-                                        // Realisasi
-                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode->id, $isk['indikator_id'])->row();
+                                    // Realisasi Anggaran & Kinerja Tahunan
+                                    $realisasi_anggaran = [];
+                                    $realisasi_kinerja = [];
+                                    for ($i = 1; $i <= 12; $i++) {
+                                        // Realisasi Kinerja
+                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $isk['indikator_id'])->row();
                                         if ($realisasi->persentase === "0") {
-                                            $sum_realisasi_count = $realisasi->eviden;
-                                            $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
+                                            $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
                                         } elseif ($realisasi->eviden === "0") {
-                                            $sum_realisasi_count = $realisasi->persentase;
-                                            $sum_realisasi_view = $realisasi->persentase . "%";
+                                            $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                         } else {
-                                            $sum_realisasi_count = 0;
-                                            $sum_realisasi_view = "-";
+                                            $realisasi_kinerja[$i] = "-";
                                         }
+                                        // Realisasi Anggaran
+                                        $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSubKegiatan("$i", $sub_kegiatan->id);
+                                    }
 
-                                        $realisasi_anggaran = $this->realisasi->getRealisasiSubKegiatan($periode->id, $sub_kegiatan->id);
-                                        $realisasi_kinerja += $sum_realisasi_count;
-                                        $td_sub .= "<td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>";
-                                        $td_sub .= "<td class='align-middle text-center'>" . $sum_realisasi_view . "</td>";
-                                    endforeach;
-                                    // Capaian
-                                    @$capaian_anggaran = round(($realisasi_anggaran / $target_anggaran) * 100, 2);
-                                    @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
-
+                                    $rowspan = $toEnd++;
                                     if (0 === --$toEnd) { //last
                                         $tr .= "";
                                     } elseif ($key === 0) { //first
                                         $tr .= "
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
-                                        $tr .= $td_sub;
-                                        $tr .= "
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                        ";
+                                        for ($i = 1; $i <= 12; $i++) {
+                                            $tr .= "
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran[$i]) . "</td>
+                                        <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
+                                        }
+                                        $tr .= "<td>" . $ip['part_name'] . "</td>";
                                     } else { //middle
                                         $tr .= "
                                     <tr>
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>";
-                                        // $tr .= $td_sub;
-                                        $tr .= "
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                    </tr>";
+                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>";
+                                        for ($i = 1; $i <= 12; $i++) {
+                                            $tr .= "
+                                        <td class='align-middle text-center'>" . $realisasi_kinerja[$i] . "</td>";
+                                        }
+                                        $tr .= "<td>" . $ip['part_name'] . "</td>";
                                     }
                                 endforeach;
+                            else:
+                                $tr .= "
+                                <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
                             endif;
                         ?>
                             <tr>
@@ -365,12 +417,6 @@
                                 <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                 <?= $tr ?>
                             </tr>
-                            <?php
-                            $row_all = $no_level_1 + $no_level_2 + $no_level_3;
-                            if ($row_all % 5 == 0) :
-                            ?>
-                                <div style="page-break-before:always;"></div>
-                            <?php endif; ?>
                         <?php
                             $no_level_3++;
                         endforeach;
@@ -386,9 +432,6 @@
 
             </tbody>
         </table>
-    </div>
-    <div id="footer">
-        <p>Copyright <?= date('Y') ?> ::: SIMEV (<?= getSetting('version_app') ?>) <span class="page-number"></span></p>
     </div>
 </body>
 

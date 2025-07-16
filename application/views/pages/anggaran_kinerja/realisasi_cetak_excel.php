@@ -1,3 +1,7 @@
+<?php
+header("Content-type: application/vnd-ms-excel");
+header("Content-Disposition: attachment; filename=" . $title . ".xls");
+?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
@@ -5,90 +9,21 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
     <title><?= $title ?></title>
-    <style media="print">
-        @page {
-            size: landscape;
-            margin: 1cm;
-        }
-
-        .page-break-after-this {
-            page-break-after: always;
-        }
-
+    <style>
         body {
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            font-size: 0.8em;
-        }
-
-        #header,
-        #footer {
-            position: static;
-            left: 0;
-            right: 0;
-            color: #333;
-            font-size: 0.8em;
-        }
-
-        #header {
-            top: 0;
-            border-bottom: 0.1pt solid #aaa;
-        }
-
-        #footer {
-            bottom: 0;
-            border-top: 0.1pt solid #aaa;
-        }
-
-        #content {
-            margin-top: 1.5cm;
-            margin-bottom: 1.5cm;
-        }
-
-        span.page-number {
-            float: right;
-        }
-
-        span.page-number:before {
-            content: "Page " counter(page);
-        }
-
-        span.author {
-            float: right;
-            font-style: italic;
+            font-family: sans-serif;
         }
 
         table {
-            width: 100%;
-            page-break-before: auto;
-        }
-
-        thead {
-            background-color: #fff;
-            font-size: 1em;
-        }
-
-        tbody {
-            background-color: #fff;
-        }
-
-        th,
-        td {
-            padding: 8pt;
-            border: 1pt solid #aaa;
-        }
-
-        table.collapse {
+            margin: 10px auto;
             border-collapse: collapse;
-            border: 1pt solid #aaa;
         }
 
-        table.collapse td {
-            border: 1pt solid #aaa;
-        }
-
-        /* Hindari pemisahan baris tabel yang buruk */
-        tbody tr {
-            page-break-inside: avoid;
+        table th,
+        table td {
+            border: 1px solid #3c3c3c;
+            padding: 3px 8px;
+            vertical-align: middle;
         }
 
         .text-center {
@@ -101,8 +36,7 @@
     </style>
 </head>
 
-<body onload="window.print()">
-
+<body>
     <div id="content">
         <table class="collapse">
             <tr>
@@ -123,7 +57,7 @@
             <thead>
                 <tr class="text-center">
                     <th width="5%" rowspan="2" class="align-middle">No</th>
-                    <th rowspan="2" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
+                    <th rowspan="2" class="sticky-col">Program/Kegiatan/Sub Kegiatan</th>
                     <th rowspan="2" width="60%" class="align-middle">Indikator Kinerja</th>
                     <th colspan="2">Realisasi</th>
                 </tr>
@@ -156,14 +90,14 @@
                                 $tr .= "";
                             } elseif ($key === 0) { //first
                                 $tr .= "
-                                        <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiProgram($tw_id, $program->id)) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>";
+                                        <td>" . $ip['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($this->realisasi->getRealisasiProgram($tw_id, $program->id)) . "</td>
+                                        <td class='text-center'>" . $sum_realisasi . "</td>";
                             } else { //middle
                                 $tr .= "
                                     <tr style='background-color: orange;'>
-                                        <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td>" . $ip['nama'] . "</td>
+                                        <td class='text-center'>" . $sum_realisasi . "</td>
                                     </tr>";
                             }
                         endforeach;
@@ -176,8 +110,8 @@
                     endif;
                 ?>
                     <tr style='background-color: orange;'>
-                        <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
-                        <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
+                        <td class="text-center" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
+                        <td rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
                         <?= $tr ?>
                     </tr>
                     <?php
@@ -208,14 +142,14 @@
                                     $tr .= "";
                                 } elseif ($key === 0) { //first
                                     $tr .= "
-                                        <td class='align-middle'>" . $ik['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiKegiatan($tw_id, $kegiatan->id)) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>";
+                                        <td>" . $ik['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($this->realisasi->getRealisasiKegiatan($tw_id, $kegiatan->id)) . "</td>
+                                        <td class='text-center'>" . $sum_realisasi . "</td>";
                                 } else { //middle
                                     $tr .= "
                                     <tr style='background-color: blue; color: white'>
-                                        <td class='align-middle'>" . $ik['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td>" . $ik['nama'] . "</td>
+                                        <td class='text-center'>" . $sum_realisasi . "</td>
                                     </tr>";
                                 }
                             endforeach;
@@ -228,8 +162,8 @@
                         endif;
                     ?>
                         <tr style='background-color: blue; color: white'>
-                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                            <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
+                            <td class="text-center" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                            <td rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
                             <?= $tr ?>
                         </tr>
                         <?php
@@ -256,14 +190,14 @@
                                         $tr .= "";
                                     } elseif ($key === 0) { //first
                                         $tr .= "
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiSubKegiatan($tw_id, $sub_kegiatan->id)) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>";
+                                        <td>" . $isk['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($this->realisasi->getRealisasiSubKegiatan($tw_id, $sub_kegiatan->id)) . "</td>
+                                        <td class='text-center'>" . $sum_realisasi . "</td>";
                                     } else { //middle
                                         $tr .= "
                                     <tr>
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td>" . $isk['nama'] . "</td>
+                                        <td class='text-center'>" . $sum_realisasi . "</td>
                                     </tr>";
                                     }
                                 endforeach;
@@ -276,8 +210,8 @@
                             endif;
                         ?>
                             <tr>
-                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                                <td class="text-center" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                <td rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                 <?= $tr ?>
                             </tr>
 
@@ -296,7 +230,9 @@
             </tbody>
         </table>
     </div>
-
+    <div id="footer">
+        <p>Copyright <?= date('Y') ?> ::: SIMEV (<?= getSetting('version_app') ?>)</p>
+    </div>
 </body>
 
 </html>

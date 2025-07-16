@@ -51,18 +51,19 @@ class Capaian extends CI_Controller
 	{
 		$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
 
-		$this->load->library('pdf');
-		$this->pdf->setPaper('legal', 'landscape');
-		$this->pdf->filename = 'SIMEV - Cetak Capaian Anggaran & Kinerja - ' . $periode_nama;
+		if ($this->session->userdata('role') === 'ADMIN'):
+			$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
+		else:
+			$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+		endif;
 
-		$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
 		$data = [
 			'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_nama,
 			'programs' => $programs,
 			'tw_id' => $periode_id,
 			'tw_nama' => $periode_nama
 		];
-		$this->pdf->load_view('pages/anggaran_kinerja/capaian_cetak', $data);
+		$this->load->view('pages/anggaran_kinerja/capaian_cetak', $data);
 	}
 
 	public function laporan()
@@ -135,18 +136,19 @@ class Capaian extends CI_Controller
 
 	public function laporan_cetak()
 	{
-		$post = $this->input->post();
-		$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+		$tahun = $this->session->userdata('tahun_anggaran');
 
-		$this->load->library('pdf');
-		$this->pdf->setPaper('legal', 'landscape');
-		$this->pdf->filename = 'SIMEV - Laporan Anggaran & Kinerja - Tahun ' . $post['tahun'];
+		if ($this->session->userdata('role') === 'ADMIN'):
+			$programs = $this->target->program(null, null, $tahun);
+		else:
+			$programs = $this->target->program(null, $this->session->userdata('part'), $tahun);
+		endif;
 
 		$data = [
-			'title' => 'Laporan Anggaran & Kinerja - Tahun ' . $post['tahun'],
+			'title' => 'Laporan Anggaran & Kinerja - Tahun ' . $tahun,
 			'programs' => $programs,
-			'tahun' => $post['tahun']
+			'tahun' => $tahun
 		];
-		$this->pdf->load_view('pages/anggaran_kinerja/laporan_cetak', $data);
+		$this->load->view('pages/anggaran_kinerja/laporan_cetak', $data);
 	}
 }

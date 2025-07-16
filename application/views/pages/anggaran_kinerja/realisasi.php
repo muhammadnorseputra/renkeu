@@ -7,6 +7,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
         <h2><i class="fa fa-dollar mr-2"></i> Realisasi Anggaran & Kinerja - <?= $periode_nama ?></h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
             <li class="d-flex justify-content-center align-items-center mr-2"><a href="<?= base_url('app/realisasi/cetak/' . $periode_id) ?>" target="_blank" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
+            <li class="d-flex justify-content-center align-items-center mr-2"><a href="<?= base_url('app/export/realisasi/' . $periode_id) ?>" class="print-link text-info"><i class="fa fa-download"></i> Export</a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>

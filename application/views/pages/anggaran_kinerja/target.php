@@ -2,7 +2,8 @@
     <div class="x_title">
         <h2><i class="fa fa-dollar mr-2"></i> Target Anggaran & Kinerja</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
-            <li class="d-flex justify-content-center align-items-center mr-2"><a href="<?= base_url('app/target/cetak/' . date('Y')) ?>" target="_blank" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
+            <li class="d-flex justify-content-center align-items-center mr-2"><a href="<?= base_url('app/target/cetak/' . $this->session->userdata('tahun_anggaran')) ?>" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
+            <li class="d-flex justify-content-center align-items-center mr-2"><a href="<?= base_url('app/export/target/' . $this->session->userdata('tahun_anggaran')) ?>" class="print-link text-info"><i class="fa fa-download"></i> Export</a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>

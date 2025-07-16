@@ -148,11 +148,12 @@ class Realisasi extends CI_Controller
 	public function cetak($periode_id)
 	{
 		$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
-		$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
 
-		$this->load->library('pdf');
-		$this->pdf->setPaper('legal', 'landscape');
-		$this->pdf->filename = 'SIMEV - Cetak Realisasi Anggaran & Kinerja - ' . $periode_nama;
+		if ($this->session->userdata('role') === 'ADMIN'):
+			$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
+		else:
+			$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+		endif;
 
 		$data = [
 			'title' => 'Realisasi Anggaran & Kinerja  - ' . $periode_nama,
@@ -160,7 +161,7 @@ class Realisasi extends CI_Controller
 			'tw_id' => $periode_id,
 			'tw_nama' => $periode_nama
 		];
-		$this->pdf->load_view('pages/anggaran_kinerja/realisasi_cetak', $data);
+		$this->load->view('pages/anggaran_kinerja/realisasi_cetak', $data);
 	}
 
 	public function input_faktor()

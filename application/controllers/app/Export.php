@@ -5,6 +5,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Export extends CI_Controller
 {
@@ -40,8 +42,10 @@ class Export extends CI_Controller
         $this->load->model('ModelExport', 'export');
         $this->load->model('ModelCrud', 'crud');
         $this->load->model('ModelTarget', 'target');
+        $this->load->model('ModelRealisasi', 'realisasi');
         $this->tahun_anggaran = $this->session->userdata('tahun_anggaran');
         $this->part = $this->session->userdata('part');
+        $this->is_perubahan = $this->session->userdata('is_perubahan');
     }
 
     public function program()
@@ -327,5 +331,59 @@ class Export extends CI_Controller
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
+    }
+
+    public function target($tahun)
+    {
+        if ($this->session->userdata('role') === 'ADMIN'):
+            $programs = $this->target->program(null, null, $tahun);
+        else:
+            $programs = $this->target->program(null, $this->part, $tahun, $tahun);
+        endif;
+
+        $data = [
+            'title' => 'Target Anggaran & Kinerja  - Tahun ' . $tahun,
+            'programs' => $programs,
+            'tahun' => $tahun
+        ];
+        $this->load->view('pages/anggaran_kinerja/target_cetak_excel', $data);
+    }
+
+    public function realisasi($periode_id)
+    {
+        $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
+
+        if ($this->session->userdata('role') === 'ADMIN'):
+            $programs = $this->target->program(null, null, $this->tahun_anggaran);
+        else:
+            $programs = $this->target->program(null, $this->part, $this->tahun_anggaran);
+        endif;
+
+        $data = [
+            'title' => 'Realisasi Anggaran & Kinerja  - ' . $periode_nama,
+            'programs' => $programs,
+            'tw_id' => $periode_id,
+            'tw_nama' => $periode_nama
+        ];
+        $this->load->view('pages/anggaran_kinerja/realisasi_cetak_excel', $data);
+    }
+
+    public function capaian($periode_id)
+    {
+        $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
+
+        if ($this->session->userdata('role') === 'ADMIN'):
+            $programs = $this->target->program(null, null, $this->tahun_anggaran);
+        else:
+            $programs = $this->target->program(null, $this->part, $this->tahun_anggaran);
+        endif;
+
+        $data = [
+            'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_nama,
+            'programs' => $programs,
+            'tw_id' => $periode_id,
+            'tw_nama' => $periode_nama
+        ];
+        $this->load->view('pages/anggaran_kinerja/capaian_cetak_excel', $data);
     }
 }

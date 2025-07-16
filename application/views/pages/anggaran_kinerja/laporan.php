@@ -5,7 +5,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
     <div class="x_title">
         <h2><i class="fa fa-print mr-2"></i> Laporan Anggaran & Kinerja</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
-            <li class="d-flex justify-content-center align-items-center mr-2 "><a href="<?= base_url('app/capaian/cetak/' . $periode_id) ?>" target="_blank" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
+            <li class="d-flex justify-content-center align-items-center mr-2 "><a href="<?= base_url('app/capaian/laporan_cetak') ?>" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
@@ -155,14 +155,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             endforeach;
                         else:
                             $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>";
-                            for ($i = 1; $i <= 12; $i++) {
-                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                            }
-                            $tr .= "<tr></tr>";
+                                <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                         endif;
                     ?>
                         <tr class="bg-warning">
@@ -238,14 +231,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 endforeach;
                             else:
                                 $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>";
-                                for ($i = 1; $i <= 12; $i++) {
-                                    $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                                    $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                                }
-                                $tr .= "<tr></tr>";
+                                <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                             endif;
                         ?>
                             <tr class="bg-success text-white">
@@ -325,14 +311,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     endforeach;
                                 else:
                                     $tr .= "
-                                    <td rowspan='" . $rowspan . "'></td>
-                                    <td rowspan='" . $rowspan . "'></td>
-                                    <td rowspan='" . $rowspan . "'></td>";
-                                    for ($i = 1; $i <= 12; $i++) {
-                                        $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                                        $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                                    }
-                                    $tr .= "<tr></tr>";
+                                <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                                 endif;
                             ?>
                                 <tr class="bg-secondary text-white">
@@ -500,14 +479,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             endforeach;
                                         else:
                                             $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>";
-                                            for ($i = 1; $i <= 12; $i++) {
-                                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                                                $tr .= "<td rowspan='" . $rowspan . "'></td>";
-                                            }
-                                            $tr .= "<tr></tr>";
+                                <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                                         endif;
                                     ?>
                                         <tr>

@@ -1,3 +1,7 @@
+<?php
+header("Content-type: application/vnd-ms-excel");
+header("Content-Disposition: attachment; filename=" . $title . ".xls");
+?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
 
@@ -5,90 +9,21 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
     <title><?= $title ?></title>
-    <style media="print">
-        @page {
-            size: landscape;
-            margin: 1cm;
-        }
-
-        .page-break-after-this {
-            page-break-after: always;
-        }
-
+    <style>
         body {
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            font-size: 0.8em;
-        }
-
-        #header,
-        #footer {
-            position: static;
-            left: 0;
-            right: 0;
-            color: #333;
-            font-size: 0.8em;
-        }
-
-        #header {
-            top: 0;
-            border-bottom: 0.1pt solid #aaa;
-        }
-
-        #footer {
-            bottom: 0;
-            border-top: 0.1pt solid #aaa;
-        }
-
-        #content {
-            margin-top: 1.5cm;
-            margin-bottom: 1.5cm;
-        }
-
-        span.page-number {
-            float: right;
-        }
-
-        span.page-number:before {
-            content: "Page " counter(page);
-        }
-
-        span.author {
-            float: right;
-            font-style: italic;
+            font-family: sans-serif;
         }
 
         table {
-            width: 100%;
-            page-break-before: auto;
-        }
-
-        thead {
-            background-color: #fff;
-            font-size: 1em;
-        }
-
-        tbody {
-            background-color: #fff;
-        }
-
-        th,
-        td {
-            padding: 8pt;
-            border: 1pt solid #aaa;
-        }
-
-        table.collapse {
+            margin: 10px auto;
             border-collapse: collapse;
-            border: 1pt solid #aaa;
         }
 
-        table.collapse td {
-            border: 1pt solid #aaa;
-        }
-
-        /* Hindari pemisahan baris tabel yang buruk */
-        tbody tr {
-            page-break-inside: avoid;
+        table th,
+        table td {
+            border: 1px solid #3c3c3c;
+            padding: 3px 8px;
+            vertical-align: middle;
         }
 
         .text-center {
@@ -98,14 +33,26 @@
         .text-right {
             text-align: right;
         }
+
+        .bg-warning {
+            background-color: orange;
+        }
+
+        .bg-info {
+            background-color: blue;
+        }
+
+        .text-white {
+            color: #fff;
+        }
     </style>
 </head>
 
-<body onload="window.print()">
+<body>
     <div id="content">
         <table class="collapse">
             <tr>
-                <td colspan="5" class="text-center">
+                <td colspan="12" class="text-center">
                     <h2 style="margin:0; padding:0">PEMERINTAH KAB. BALANGAN</h2>
                     <h3 style="margin:0; padding:0"> BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</h3>
                     <h4 style="margin:0; padding:0"><?= strtoupper($title) ?> </h4>
@@ -114,7 +61,7 @@
             </tr>
             <tr>
                 <td width="15%">Bidang/Bagian</td>
-                <td colspan="3"><?= $this->target->getNama('ref_parts', $this->session->userdata('part')) ?></td>
+                <td colspan="10"><?= $this->target->getNama('ref_parts', $this->session->userdata('part')) ?></td>
                 <td width="10%" class="text-center font-bold"><b><?= $tw_nama ?></b></td>
             </tr>
         </table>
@@ -122,12 +69,12 @@
             <thead>
                 <tr class="text-center">
                     <th rowspan="2" class="align-middle">No</th>
-                    <th rowspan="2" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
+                    <th rowspan="2" class="sticky-col">Program/Kegiatan/Sub Kegiatan</th>
                     <th rowspan="2" class="align-middle">Indikator Kinerja</th>
                     <th colspan="2" class="align-middle">Target</th>
                     <th colspan="2" class="align-middle">Realisasi</th>
                     <th colspan="2">Persentase Capaian %</th>
-                    <th colspan="4" class="align-middle">Faktor - Faktor</th>
+                    <th colspan="3" class="align-middle">Faktor - Faktor</th>
                 </tr>
                 <tr class="text-center">
                     <th>Anggaran (Rp)</th>
@@ -193,35 +140,46 @@
                                 $tr .= "";
                             } elseif ($key === 0) { //first
                                 $tr .= "
-                                        <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                        <td class='align-middle'>" . $FaktorPendorong . "</td>
-                                        <td class='align-middle'>" . $FaktorPenghambat . "</td>
-                                        <td class='align-middle'>" . $TindakLanjut . "</td>";
+                                        <td>" . $ip['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($target_anggaran) . "</td>
+                                        <td class='text-center'>" . $indikator_input_view . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($realisasi_anggaran) . "</td>
+                                        <td class='text-center'>" . $sum_realisasi_view . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-center'>" . $capaian_anggaran . " (%)</td>
+                                        <td class='text-center'>" . $capaian_kinerja . " (%)</td>
+                                        <td>" . $FaktorPendorong . "</td>
+                                        <td>" . $FaktorPenghambat . "</td>
+                                        <td>" . $TindakLanjut . "</td>";
                             } else { //middle
                                 $tr .= "
-                                    <tr style='background-color: orange;'>
-                                        <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle'>" . $FaktorPendorong . "</td>
-                                        <td class='align-middle'>" . $FaktorPenghambat . "</td>
-                                        <td class='align-middle'>" . $TindakLanjut . "</td>
+                                    <tr style='background-color: orange; color: black;'>
+                                        <td>" . $ip['nama'] . "</td>
+                                        <td class='text-center'>" . $indikator_input_view . "</td>
+                                        <td class='text-center'>" . $sum_realisasi_view . "</td>
+                                        <td class='text-center'>" . $capaian_anggaran . " (%)</td>
+                                        <td>" . $FaktorPendorong . "</td>
+                                        <td>" . $FaktorPenghambat . "</td>
+                                        <td>" . $TindakLanjut . "</td>
                                     </tr>";
                             }
                         endforeach;
                     else:
-                        $tr .= "<td colspan='10'></td>";
+                        $tr .= "
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <tr></tr>";
                     endif;
                 ?>
-                    <tr style='background-color: orange;'>
-                        <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
+                    <tr style='background-color: orange; color: black;'>
+                        <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
                         <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
                         <?= $tr ?>
                     </tr>
@@ -280,35 +238,46 @@
                                     $tr .= "";
                                 } elseif ($key === 0) { //first
                                     $tr .= "
-                                        <td class='align-middle'>" . $ik['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                        <td class='align-middle'>" . $FaktorPendorong . "</td>
-                                        <td class='align-middle'>" . $FaktorPenghambat . "</td>
-                                        <td class='align-middle'>" . $TindakLanjut . "</td>";
+                                        <td>" . $ik['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($target_anggaran) . "</td>
+                                        <td class='text-center'>" . $indikator_input_view . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($realisasi_anggaran) . "</td>
+                                        <td class='text-center'>" . $sum_realisasi_view . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-center'>" . $capaian_anggaran . " (%)</td>
+                                        <td class='text-center'>" . $capaian_kinerja . " (%)</td>
+                                        <td>" . $FaktorPendorong . "</td>
+                                        <td>" . $FaktorPenghambat . "</td>
+                                        <td>" . $TindakLanjut . "</td>";
                                 } else { //middle
                                     $tr .= "
-                                    <tr class='bg-info text-white'>
-                                        <td class='align-middle'>" . $ik['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                        <td class='align-middle'>" . $FaktorPendorong . "</td>
-                                        <td class='align-middle'>" . $FaktorPenghambat . "</td>
-                                        <td class='align-middle'>" . $TindakLanjut . "</td>
+                                    <tr style='background-color: blue; color: white'>
+                                        <td>" . $ik['nama'] . "</td>
+                                        <td class='text-center'>" . $indikator_input_view . "</td>
+                                        <td class='text-center'>" . $sum_realisasi_view . "</td>
+                                        <td class='text-center'>" . $capaian_kinerja . " (%)</td>
+                                        <td>" . $FaktorPendorong . "</td>
+                                        <td>" . $FaktorPenghambat . "</td>
+                                        <td>" . $TindakLanjut . "</td>
                                     </tr>";
                                 }
                             endforeach;
                         else:
-                            $tr .= "<td colspan='10'></td>";
+                            $tr .= "
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <tr></tr>";
                         endif;
                     ?>
-                        <tr style='background-color: blue; color: white;'>
-                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                        <tr style='background-color: blue; color: white'>
+                            <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
                             <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
                             <?= $tr ?>
                         </tr>
@@ -364,36 +333,47 @@
                                         $tr .= "";
                                     } elseif ($key === 0) { //first
                                         $tr .= "
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . $capaian_anggaran . " (%)</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                        <td class='align-middle'>" . $FaktorPendorong . "</td>
-                                        <td class='align-middle'>" . $FaktorPenghambat . "</td>
-                                        <td class='align-middle'>" . $TindakLanjut . "</td>";
+                                        <td>" . $isk['nama'] . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($target_anggaran) . "</td>
+                                        <td class='text-center'>" . $indikator_input_view . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-right'>" . nominal($realisasi_anggaran) . "</td>
+                                        <td class='text-center'>" . $sum_realisasi_view . "</td>
+                                        <td rowspan='" . $rowspan . "' class='text-center'>" . $capaian_anggaran . " (%)</td>
+                                        <td class='text-center'>" . $capaian_kinerja . " (%)</td>
+                                        <td>" . $FaktorPendorong . "</td>
+                                        <td>" . $FaktorPenghambat . "</td>
+                                        <td>" . $TindakLanjut . "</td>";
                                     } else { //middle
                                         $tr .= "
                                     <tr>
-                                        <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td class='align-middle text-center'>" . $indikator_input_view . "</td>
-                                        <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
-                                        <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
-                                        <td class='align-middle'>" . $FaktorPendorong . "</td>
-                                        <td class='align-middle'>" . $FaktorPenghambat . "</td>
-                                        <td class='align-middle'>" . $TindakLanjut . "</td>
+                                        <td>" . $isk['nama'] . "</td>
+                                        <td class='text-center'>" . $indikator_input_view . "</td>
+                                        <td class='text-center'>" . $sum_realisasi_view . "</td>
+                                        <td class='text-center'>" . $capaian_kinerja . " (%)</td>
+                                        <td>" . $FaktorPendorong . "</td>
+                                        <td>" . $FaktorPenghambat . "</td>
+                                        <td>" . $TindakLanjut . "</td>
                                     </tr>";
                                     }
                                 endforeach;
                             else:
-                                $tr .= "<td colspan='10'></td>";
+                                $tr .= "
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <td rowspan='" . $rowspan . "'></td>
+                                <tr></tr>";
                             endif;
 
                         ?>
                             <tr>
-                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
                                 <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
                                 <?= $tr ?>
                             </tr>
@@ -412,6 +392,9 @@
 
             </tbody>
         </table>
+    </div>
+    <div id="footer">
+        <p>Copyright <?= date('Y') ?> ::: SIMEV (<?= getSetting('version_app') ?>)</p>
     </div>
 </body>
 

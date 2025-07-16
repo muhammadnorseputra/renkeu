@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use Dompdf\Dompdf;
+
 class Target extends CI_Controller
 {
 
@@ -197,18 +199,19 @@ class Target extends CI_Controller
 	public function cetak($tahun)
 	{
 
-		$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
-
-		$this->load->library('pdf');
-		$this->pdf->setPaper('legal', 'landscape');
-		$this->pdf->filename = 'SIMEV - Cetak Target Anggaran & Kinerja - Tahun ' . $tahun;
+		if ($this->session->userdata('role') === 'ADMIN'):
+			$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
+		else:
+			$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+		endif;
 
 		$data = [
 			'title' => 'Target Anggaran & Kinerja  - Tahun ' . $tahun,
 			'programs' => $programs,
 			'tahun' => $tahun
 		];
-		$this->pdf->load_view('pages/anggaran_kinerja/target_cetak', $data);
+
+		$this->load->view('pages/anggaran_kinerja/target_cetak', $data);
 	}
 
 	public function hapus()
