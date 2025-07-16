@@ -122,10 +122,17 @@
         <table class="collapse">
             <thead>
                 <tr class="text-center">
-                    <th rowspan="2" class="align-middle" width="2%">No</th>
-                    <th rowspan="2" class="align-middle">Program/Kegiatan/Sub Kegiatan</th>
-                    <th rowspan="2" class="align-middle">Indikator Kinerja</th>
-                    <th colspan="2" class="align-middle">Target</th>
+                    <th rowspan="3" class="align-middle">No</th>
+                    <th rowspan="3" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
+                    <th rowspan="3" class="align-middle">Indikator Kinerja</th>
+                    <th colspan="2" class="align-middle">Target Tahun <?= $this->session->userdata('tahun_anggaran'); ?></th>
+                    <th colspan="24" class="align-middle">Realisasi</th>
+                    <th rowspan="3"> Penanggung Jawab </th>
+                </tr>
+                <tr class="text-center">
+                    <!-- Target Anggaran -->
+                    <th class="align-middle" rowspan="2">Anggaran (Rp)</th>
+                    <th class="align-middle" rowspan="2">Kinerja %</th>
 
                     <th colspan="2" class="align-middle">Januari</th>
                     <th colspan="2" class="align-middle">Februari</th>
@@ -139,12 +146,13 @@
                     <th colspan="2" class="align-middle">Oktober</th>
                     <th colspan="2" class="align-middle">November</th>
                     <th colspan="2" class="align-middle">Desember</th>
-                    <th rowspan="2">Penanggung Jawab</th>
+
+                    <!-- <th class="align-middle" width="10%" rowspan="2">Faktor Pendorong</th>
+                        <th class="align-middle" width="10%" rowspan="2">Faktor Penghambat</th>
+                        <th class="align-middle" width="10%" rowspan="2">Tindak Lanjut</th> -->
+
                 </tr>
                 <tr>
-                    <!-- Target Anggaran - Januari -->
-                    <th class="align-middle text-center">A</th>
-                    <th class="align-middle text-center">K</th>
                     <!-- Target Anggaran - Januari -->
                     <th class="align-middle text-center">A</th>
                     <th class="align-middle text-center">K</th>
