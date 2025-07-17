@@ -42,13 +42,21 @@
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="persentase">Peserntase % <span class="text-danger">*</span></label>
-                    <input type="number" name="persentase" id="persentase" class="form-control" required value="<?= $row->persentase ?>">
+                    <input type="text" name="persentase" id="persentase" class="form-control"
+                        data-parsley-pattern="^\d+(\.\d+)?$"
+                        data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
+                        required
+                        value="<?= $row->persentase ?>">
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     <label for="jumlah_eviden">Jumlah Eviden <span class="text-danger">*</span></label>
-                    <input type="number" name="jumlah_eviden" id="jumlah_eviden" class="form-control" required value="<?= $row->eviden_jumlah ?>">
+                    <input type="text" name="jumlah_eviden" id="jumlah_eviden" class="form-control"
+                        data-parsley-pattern="^\d+(\.\d+)?$"
+                        data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
+                        required
+                        value="<?= $row->eviden_jumlah ?>">
                 </div>
             </div>
             <div class="col-md-3">
