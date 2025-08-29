@@ -69,8 +69,6 @@ class Login extends CI_Controller
             $this->session->unset_userdata('csrf_token');
             show_error('This request rejected');
             return false;
-        // $json_msg = ['valid' => false, 'msg' => 'Token Invalid', 'redirect' => base_url('console')];
-        // return false;   
         endif;
 
         if (!empty($this->session->userdata('user_id'))):
@@ -81,40 +79,39 @@ class Login extends CI_Controller
         $password = trim($this->security->xss_clean($this->input->post('pwd', true)));
 
         $pwd = sha1($password);
-        // $where = array(
-        //     'username' => $username,
-        //     'password' => $pwd,
-        //     // 'is_block' => 'N'
-        // );
         $cek = $this->auth->cek_login('t_users', $username, $pwd);
-        if ($cek->num_rows() > 0) {
-            foreach ($cek->result() as $key) {
-                $row = $key;
-            }
-            $data_session = array(
-                'user_id' => encrypt_url($row->id),
-                'user_name' => $username,
-                'unor' => $row->fid_unor,
-                'part' => $row->fid_part, // Bidang / Bagian
-                'nip' => $row->nip,
-                'nohp' => $row->nohp,
-                'nama' => $row->nama,
-                'pic' => $row->pic,
-                'role' => $row->role,
-                'jobdesk' => $row->jobdesk,
-                'check_in' => DateTimeInput(),
-                'check_out' => $row->check_out,
-                'tahun_anggaran' => $this->input->post('tahun', true),
-                'is_perubahan' => "0",
-            );
-            $this->db->update('t_users', ['check_in' => DateTimeInput()], ['id' => $row->id]);
-            $this->session->set_userdata($data_session);
-            $p_continue = $this->input->post('continue');
-            $continue = isset($p_continue) ? $p_continue : base_url('app/dashboard');
-            $json_msg = ['valid' => true, 'msg' => 'Auth success.', 'redirect' => $continue];
-        } else {
+
+        if ($cek->num_rows() <= 0) {
             $json_msg = ['valid' => false, 'msg' => 'Auth gagal, akun tidak ditemukan.', 'redirect' => base_url('lockscreen')];
+            echo json_encode($json_msg);
+            return false;
         }
+
+
+        foreach ($cek->result() as $key) {
+            $row = $key;
+        }
+        $data_session = array(
+            'user_id' => encrypt_url($row->id),
+            'user_name' => $username,
+            'unor' => $row->fid_unor,
+            'part' => $row->fid_part, // Bidang / Bagian
+            'nip' => $row->nip,
+            'nohp' => $row->nohp,
+            'nama' => $row->nama,
+            'pic' => $row->pic,
+            'role' => $row->role,
+            'jobdesk' => $row->jobdesk,
+            'check_in' => DateTimeInput(),
+            'check_out' => $row->check_out,
+            'tahun_anggaran' => $this->input->post('tahun', true),
+            'is_perubahan' => "0",
+        );
+        $this->db->update('t_users', ['check_in' => DateTimeInput()], ['id' => $row->id]);
+        $this->session->set_userdata($data_session);
+        $p_continue = $this->input->post('continue');
+        $continue = isset($p_continue) ? $p_continue : base_url('app/dashboard');
+        $json_msg = ['valid' => true, 'msg' => 'Auth success.', 'redirect' => $continue];
         echo json_encode($json_msg);
     }
 

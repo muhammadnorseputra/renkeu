@@ -26,8 +26,8 @@
 <div class="row">
     <div class="col-md-12">
         <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
+            <table class="table jambo_table bulk_action table-bordered">
+                <thead class="top-0" style="position: sticky; top: 0; z-index: 1;">
                     <tr>
                         <th rowspan="2" class="align-middle text-center">No</th>
                         <th rowspan="2" class="align-middle text-center">Kode Rekening</th>
@@ -57,21 +57,21 @@
                             <td class="text-nowrap"><?= $uraian->nama ?></td>
                             <td class="text-right">
                                 <?php
-                                $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id], $this->session->userdata('is_perubahan'))->total_pagu_awal;
+                                $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id], $this->session->userdata('tahun_anggaran'), $this->session->userdata('is_perubahan'))->total_pagu_awal;
                                 $total_pagu += $pagu;
                                 echo nominal($pagu);
                                 ?>
                             </td>
                             <td class="text-right">
                                 <?php
-                                $realisasi_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('is_perubahan'))->jumlah;
+                                $realisasi_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('tahun_anggaran'))->jumlah;
                                 $total_realisasi_ls += $realisasi_ls;
                                 echo nominal($realisasi_ls);
                                 ?>
                             </td>
                             <td class="text-right">
                                 <?php
-                                $realisasi_not_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('is_perubahan'))->jumlah;
+                                $realisasi_not_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('tahun_anggaran'))->jumlah;
                                 $total_realisasi_not_ls += $realisasi_not_ls;
                                 echo nominal($realisasi_not_ls);
                                 ?>

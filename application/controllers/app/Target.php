@@ -166,23 +166,44 @@ class Target extends CI_Controller
 		$db = $this->crud->update('ref_indikators', $data, $whr);
 		if ($db) {
 			$msg = 200;
+
+			// Insert
 			$insert = [
+				'is_jenis' => (int) $post['is_jenis'],
 				'fid_indikator' => $post['id'],
-				'persentase' => $post['persentase'],
-				'eviden_jumlah' => $post['jumlah_eviden'],
-				'eviden_jenis' => $post['keterangan_eviden'],
 				'tahun' => $post['tahun'],
 				'created_by' => $this->session->userdata('user_name')
 			];
 
+			// Update 
 			$update = [
-				'persentase' => $post['persentase'],
-				'eviden_jumlah' => $post['jumlah_eviden'],
-				'eviden_jenis' => $post['keterangan_eviden'],
+				'is_jenis' => (int) $post['is_jenis'],
 				'tahun' => $post['tahun'],
 				'update_at' => DateTimeInput(),
 				'update_by' => $this->session->userdata('user_name')
 			];
+
+			// jika jenis = persentase
+			if((int) $post['is_jenis'] === 1) {
+				$insert = array_merge($insert, [
+					'persentase' => $post['persentase']
+				]);
+				$update = array_merge($update, [
+					'persentase' => $post['persentase']
+				]);
+			}
+			// jika jenis = jumlah
+			if((int) $post['is_jenis'] === 2) {
+				$insert = array_merge($insert, [
+					'eviden_jumlah' => $post['jumlah_eviden'],
+					'eviden_jenis'  => $post['keterangan_eviden']
+				]);
+				$update = array_merge($update, [
+					'eviden_jumlah' => $post['jumlah_eviden'],
+					'eviden_jenis'  => $post['keterangan_eviden']
+				]);
+			}
+			
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
 			if ($dbcek->num_rows() > 0) {
 				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id']]);

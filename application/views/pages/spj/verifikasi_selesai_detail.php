@@ -75,7 +75,7 @@ if($detail->is_status === 'ENTRI') {
                         SPJ Bulan
                     </td>
                     <td colspan="2">
-                        <?= bulan($detail->bulan) ?> / <?= $detail->tahun ?>
+                        <?= bulan($detail->fid_periode) ?> / <?= $detail->tahun ?>
                     </td>
             </tr>
             <tr>

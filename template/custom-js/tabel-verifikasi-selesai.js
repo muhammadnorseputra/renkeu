@@ -1,4 +1,6 @@
+
 var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
+	stateSave: true, // ini menyimpan filter, search, pagination
 	processing: true,
 	serverSide: true,
 	paging: true,
@@ -6,10 +8,10 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 	info: true,
 	searching: true,
 	deferRender: true,
-	// "pagingType": "full_numbers",
+	pagingType: "full_numbers",
 	responsive: true,
 	datatype: "json",
-	// "scrollY": "800px",
+	// scrollY: "",
 	scrollCollapse: true,
 	lengthMenu: [
 		[10, 25, 50, -1],
@@ -22,7 +24,7 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 	},
 	columnDefs: [
 		{
-			targets: [0,1,2,3,4,5,6,7],
+			targets: [0, 1, 2, 3, 4, 5, 6, 7,8],
 			orderable: false,
 			className: "text-left",
 		},

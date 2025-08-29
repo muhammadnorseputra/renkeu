@@ -304,6 +304,7 @@ class Users extends CI_Controller
                 'priv_bukujaga' => !empty($p['priv_bukujaga']) ? $p['priv_bukujaga'] : "N",
                 'priv_anggarankinerja' => !empty($p['priv_anggarankinerja']) ? $p['priv_anggarankinerja'] : "N",
                 'priv_target_kinerja' => !empty($p['priv_target_kinerja']) ? $p['priv_target_kinerja'] : "N",
+                'priv_verify_kinerja' => !empty($p['priv_verify_kinerja']) ? $p['priv_verify_kinerja'] : "N",
             ];
             $tbl = 't_privilages';
             $cek_privilage = $this->users->get_privilages_count($tbl, $uid);

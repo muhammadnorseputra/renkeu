@@ -10,41 +10,41 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
 
     <title><?= $title ?></title>
     <style>
-        body {
-            font-family: sans-serif;
-        }
+    body {
+        font-family: sans-serif;
+    }
 
-        table {
-            margin: 10px auto;
-            border-collapse: collapse;
-        }
+    table {
+        margin: 10px auto;
+        border-collapse: collapse;
+    }
 
-        table th,
-        table td {
-            border: 1px solid #3c3c3c;
-            padding: 3px 8px;
-            vertical-align: middle;
-        }
+    table th,
+    table td {
+        border: 1px solid #3c3c3c;
+        padding: 3px 8px;
+        vertical-align: middle;
+    }
 
-        .text-center {
-            text-align: center;
-        }
+    .text-center {
+        text-align: center;
+    }
 
-        .text-right {
-            text-align: right;
-        }
+    .text-right {
+        text-align: right;
+    }
 
-        .bg-warning {
-            background-color: orange;
-        }
+    .bg-warning {
+        background-color: orange;
+    }
 
-        .bg-info {
-            background-color: blue;
-        }
+    .bg-info {
+        background-color: blue;
+    }
 
-        .text-white {
-            color: #fff;
-        }
+    .text-white {
+        color: #fff;
+    }
     </style>
 </head>
 
@@ -62,7 +62,7 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
             <tr>
                 <td width="15%">Bidang/Bagian</td>
                 <td colspan="10"><?= $this->target->getNama('ref_parts', $this->session->userdata('part')) ?></td>
-                <td width="10%" class="text-center font-bold"><b><?= $tw_nama ?></b></td>
+                <td width="10%" class="text-center font-bold"><b>s/d <?= $periode_end_name ?></b></td>
             </tr>
         </table>
         <table class="collapse">
@@ -111,11 +111,11 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                             $target_kinerja = $indikator_input_count;
 
                             // Realisasi
-                            $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $ip['indikator_id'])->row();
-                            if ($realisasi->persentase === "0") {
+                            $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_start, $periode_end, $ip['indikator_id'], $tahun_anggaran)->row();
+                            if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                 $sum_realisasi_count = $realisasi->eviden;
                                 $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                            } elseif ($realisasi->eviden === "0") {
+                            } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                 $sum_realisasi_count = $realisasi->persentase;
                                 $sum_realisasi_view = $realisasi->persentase . "%";
                             } else {
@@ -123,7 +123,7 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                 $sum_realisasi_view = "-";
                             }
 
-                            $realisasi_anggaran = $this->realisasi->getRealisasiProgram($tw_id, $program->id);
+                            $realisasi_anggaran = $this->realisasi->getRealisasiProgram($periode_start, $periode_end, $program->id);
                             $realisasi_kinerja = $sum_realisasi_count;
 
                             // Capaian
@@ -131,9 +131,10 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                             @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
 
                             // Aksi
-                            $FaktorPendorong = $realisasi->faktor_pendorong === NULL ? '-' : $realisasi->faktor_pendorong;
-                            $FaktorPenghambat = $realisasi->faktor_penghambat === NULL ? '-' : $realisasi->faktor_penghambat;
-                            $TindakLanjut = $realisasi->tindak_lanjut === NULL ? '-' : $realisasi->tindak_lanjut;
+                            $faktors = $this->realisasi->faktor($ip['indikator_id'], $periode_end);
+                            $FaktorPendorong = $faktors->faktor_pendorong ?? '-';
+                            $FaktorPenghambat = $faktors->faktor_penghambat ?? '-';
+                            $TindakLanjut = $faktors->tindak_lanjut ?? '-';
 
                             $rowspan = $toEnd++;
                             if (0 === --$toEnd) { //last
@@ -178,12 +179,12 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                 <tr></tr>";
                     endif;
                 ?>
-                    <tr style='background-color: orange; color: black;'>
-                        <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
-                        <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
-                        <?= $tr ?>
-                    </tr>
-                    <?php
+                <tr style='background-color: orange; color: black;'>
+                    <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 ?></td>
+                    <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $program->nama ?> </td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                     if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('user_name') === 'kaban') :
                         $kegiatans = $this->realisasi->kegiatans($program->id);
                     else :
@@ -210,18 +211,18 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                 $target_kinerja = $indikator_input_count;
 
                                 // Realisasi
-                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $ik['indikator_id'])->row();
-                                if ($realisasi->persentase === "0") {
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_start, $periode_end, $ik['indikator_id'], $tahun_anggaran)->row();
+                                if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                     $sum_realisasi_count = $realisasi->eviden;
                                     $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                } elseif ($realisasi->eviden === "0") {
+                                } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                     $sum_realisasi_count = $realisasi->persentase;
                                     $sum_realisasi_view = $realisasi->persentase . "%";
                                 } else {
                                     $sum_realisasi_count = 0;
                                     $sum_realisasi_view = "-";
                                 }
-                                $realisasi_anggaran = $this->realisasi->getRealisasiKegiatan($tw_id, $kegiatan->id);
+                                $realisasi_anggaran = $this->realisasi->getRealisasiKegiatan($periode_start, $periode_end, $kegiatan->id);
                                 $realisasi_kinerja = $sum_realisasi_count;
 
                                 // Capaian
@@ -229,9 +230,10 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                 @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
 
                                 // Aksi
-                                $FaktorPendorong = $realisasi->faktor_pendorong === NULL ? '-' : $realisasi->faktor_pendorong;
-                                $FaktorPenghambat = $realisasi->faktor_penghambat === NULL ? '-' : $realisasi->faktor_penghambat;
-                                $TindakLanjut = $realisasi->tindak_lanjut === NULL ? '-' : $realisasi->tindak_lanjut;
+                                $faktors = $this->realisasi->faktor($ip['indikator_id'], $periode_end);
+                                $FaktorPendorong = $faktors->faktor_pendorong ?? '-';
+                                $FaktorPenghambat = $faktors->faktor_penghambat ?? '-';
+                                $TindakLanjut = $faktors->tindak_lanjut ?? '-';
 
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
@@ -276,12 +278,12 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                 <tr></tr>";
                         endif;
                     ?>
-                        <tr style='background-color: blue; color: white'>
-                            <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                            <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
-                            <?= $tr ?>
-                        </tr>
-                        <?php
+                <tr style='background-color: blue; color: white'>
+                    <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                    <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                         $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
                         $no_level_3 = 1;
                         foreach ($sub_kegiatans->result() as $sub_kegiatan) :
@@ -304,11 +306,11 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                     $target_kinerja = $indikator_input_count;
 
                                     // Realisasi
-                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $isk['indikator_id'])->row();
-                                    if ($realisasi->persentase === "0") {
+                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_start, $periode_end, $isk['indikator_id'], $tahun_anggaran)->row();
+                                    if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                         $sum_realisasi_count = $realisasi->eviden;
                                         $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                    } elseif ($realisasi->eviden === "0") {
+                                    } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                         $sum_realisasi_count = $realisasi->persentase;
                                         $sum_realisasi_view = $realisasi->persentase . "%";
                                     } else {
@@ -316,7 +318,7 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                         $sum_realisasi_view = "-";
                                     }
 
-                                    $realisasi_anggaran = $this->realisasi->getRealisasiSubKegiatan($tw_id, $sub_kegiatan->id);
+                                    $realisasi_anggaran = $this->realisasi->getRealisasiSubKegiatan($periode_start, $periode_end, $sub_kegiatan->id);
                                     $realisasi_kinerja = $sum_realisasi_count;
 
                                     // Capaian
@@ -324,9 +326,10 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                                     @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
 
                                     // Aksi
-                                    $FaktorPendorong = $realisasi->faktor_pendorong === NULL ? '-' : $realisasi->faktor_pendorong;
-                                    $FaktorPenghambat = $realisasi->faktor_penghambat === NULL ? '-' : $realisasi->faktor_penghambat;
-                                    $TindakLanjut = $realisasi->tindak_lanjut === NULL ? '-' : $realisasi->tindak_lanjut;
+                                    $faktors = $this->realisasi->faktor($ip['indikator_id'], $periode_end);
+                                    $FaktorPendorong = $faktors->faktor_pendorong ?? '-';
+                                    $FaktorPenghambat = $faktors->faktor_penghambat ?? '-';
+                                    $TindakLanjut = $faktors->tindak_lanjut ?? '-';
 
                                     $rowspan = $toEnd++;
                                     if (0 === --$toEnd) { //last
@@ -372,16 +375,17 @@ header("Content-Disposition: attachment; filename=" . $title . ".xls");
                             endif;
 
                         ?>
-                            <tr>
-                                <td style="text-align: center;" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
-                                <?= $tr ?>
-                            </tr>
-                        <?php
+                <tr>
+                    <td style="text-align: center;" rowspan="<?= $toEnd ?>">
+                        <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                    <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                             $no_level_3++;
                         endforeach;
                         ?>
-                    <?php
+                <?php
                         $no_level_2++;
                     endforeach;
                     ?>

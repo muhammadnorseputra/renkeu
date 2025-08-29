@@ -62,8 +62,18 @@
             $uraian = '';
             $is_active_uraian = false;
         }
+
+        if (urldecode($tab) === '#limit') {
+            $is_show_limit = "show";
+            $limit = 'active';
+            $is_active_limit = true;
+        } else {
+            $is_show_limit = "";
+            $limit = '';
+            $is_active_limit = false;
+        }
         ?>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <ul class="nav nav-tabs" id="myTab" role="tablist" style="overflow-x: auto; display: flex; flex-wrap: nowrap;">
             <?php
             if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
             ?>
@@ -84,9 +94,16 @@
             <li class="nav-item mr-2">
                 <a class="nav-link pb-4 font-weight-bold <?= $subkegiatan ?>" title="Sub Kegiatan" style="font-size:16px;" id="subkegiatan-tab" data-toggle="tab" href="#subkegiatan" role="tab" aria-controls="subkegiatan" aria-selected="<?= $is_active_subkegiatan ?>"><span class="fa fa-file-o mr-2 text-success"></span> Sub Kegiatan</a>
             </li>
-            <li class="nav-item mr-2">
-                <a class="nav-link pb-4 font-weight-bold <?= $uraian ?>" title="Uraian Kegiatan" style="font-size:16px;" id="uraian-tab" data-toggle="tab" href="#uraian" role="tab" aria-controls="uraian" aria-selected="<?= $is_active_uraian ?>"><span class="fa fa-files-o mr-2 text-info"></span> Uraian Kegiatan</a>
-            </li>
+            <?php if (getSetting('ENTRI_URAIAN')): ?>
+                <li class="nav-item mr-2">
+                    <a class="nav-link pb-4 font-weight-bold <?= $uraian ?>" title="Uraian Kegiatan" style="font-size:16px;" id="uraian-tab" data-toggle="tab" href="#uraian" role="tab" aria-controls="uraian" aria-selected="<?= $is_active_uraian ?>"><span class="fa fa-files-o mr-2 text-info"></span> Uraian Kegiatan</a>
+                </li>
+            <?php endif; ?>
+            <?php if (getSetting('ENTRI_ANGKAS')): ?>
+                <li class="nav-item">
+                    <a class="nav-link pb-4 font-weight-bold <?= $limit ?>" title="Limit Anggaran" style="font-size:16px;" id="limit-tab" data-toggle="tab" href="#limit" role="tab" aria-controls="limit" aria-selected="<?= $is_active_limit ?>"><span class="fa fa-file-o mr-2 text-info"></span>Angkas</a>
+                </li>
+            <?php endif; ?>
         </ul>
         <div class="x_panel" style="border-top:0">
             <div class="x_content">
@@ -109,6 +126,7 @@
                     <div class="tab-pane <?= $kegiatan ?> <?= $is_show_kegiatan ?>" id="kegiatan" role="tabpanel" aria-labelledby="kegiatan-tab"></div>
                     <div class="tab-pane <?= $subkegiatan ?> <?= $is_show_subkegiatan ?>" id="subkegiatan" role="tabpanel" aria-labelledby="subkegiatan-tab"></div>
                     <div class="tab-pane <?= $uraian ?> <?= $is_show_uraian ?>" id="uraian" role="tabpanel" aria-labelledby="uraian-tab"></div>
+                    <div class="tab-pane <?= $limit ?> <?= $is_show_limit ?>" id="limit" role="tabpanel" aria-labelledby="limit-tab"></div>
                 </div>
             </div>
         </div>
@@ -154,7 +172,7 @@
                 <div class="form-group">
                     <label for="program">Pilih Program <span class="text-danger">*</span></label>
                     <select name="program" id="program" required data-parsley-errors-container="#help-block-program"></select>
-                    <div id="help-block-program"></div>
+                    <div id="help-block-program" class="help-block"></div>
                 </div>
                 <div class="form-group">
                     <label for="part-nama">Nama Badan / Bidang / Bagian <span class="text-danger">*</span></label>
@@ -263,7 +281,7 @@
                 <div class="form-group">
                     <label for="program">Pilih Program <span class="text-danger">*</span></label>
                     <select name="program" id="program" required data-parsley-errors-container="#help-block-program"></select>
-                    <div id="help-block-program"></div>
+                    <div id="help-block-program" class="help-block"></div>
                 </div>
                 <div class="form-group">
                     <label for="part-nama">Nama Badan / Bidang / Bagian <span class="text-danger">*</span></label>
@@ -297,7 +315,7 @@
                 <div class="form-group">
                     <label for="unor">Pilih Unor <span class="text-danger">*</span></label>
                     <select name="unor" id="unor" required data-parsley-errors-container="#help-block-unor"></select>
-                    <div id="help-block-unor"></div>
+                    <div id="help-block-unor" class="help-block"></div>
                 </div>
                 <div class="form-group">
                     <label for="tujuan-nama">Isi Tujuan <span class="text-danger">*</span></label>
@@ -327,7 +345,7 @@
                 <div class="form-group">
                     <label for="tujuan">Pilih Tujuan <span class="text-danger">*</span></label>
                     <select name="tujuan" id="tujuan" required data-parsley-errors-container="#help-block-tujuan"></select>
-                    <div id="help-block-tujuan"></div>
+                    <div id="help-block-tujuan" class="help-block"></div>
                 </div>
                 <div class="form-group">
                     <label for="sasaran-nama">Isi Sasaran <span class="text-danger">*</span></label>
@@ -357,7 +375,7 @@
                 <div class="form-group">
                     <label for="sasaran">Pilih Sasaran <span class="text-danger">*</span></label>
                     <select name="sasaran" id="sasaran" required data-parsley-errors-container="#help-block-sasaran"></select>
-                    <div id="help-block-sasaran"></div>
+                    <div id="help-block-sasaran" class="help-block"></div>
                 </div>
                 <div class="divider-dashed"></div>
                 <div class="form-group">
@@ -371,7 +389,7 @@
                 <div class="form-group">
                     <label for="bidang">Pilih Bidang <span class="text-danger">*</span></label>
                     <select name="bidang[]" id="bidang" multiple="multiple" required data-parsley-errors-container="#help-block-bidang"></select>
-                    <div id="help-block-bidang"></div>
+                    <div id="help-block-bidang" class="help-block"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -403,7 +421,7 @@
                 <div class="form-group">
                     <label for="program">Pilih Program <span class="text-danger">*</span></label>
                     <select name="program" id="program" required data-parsley-errors-container="#help-block-program"></select>
-                    <div id="help-block-program"></div>
+                    <div id="help-block-program" class="help-block"></div>
                 </div>
                 <div class="divider-dashed"></div>
                 <div class="form-group">
@@ -438,7 +456,7 @@
                 <div class="form-group">
                     <label for="kegiatan">Pilih Kegiatan <span class="text-danger">*</span></label>
                     <select name="kegiatan" id="kegiatan" required data-parsley-errors-container="#help-block-kegiatan"></select>
-                    <div id="help-block-kegiatan"></div>
+                    <div id="help-block-kegiatan" class="help-block"></div>
                 </div>
                 <div class="divider-dashed"></div>
                 <div class="form-group">
@@ -482,12 +500,12 @@
                 <div class="form-group">
                     <label for="kegiatan">Pilih Kegiatan <span class="text-danger">*</span></label>
                     <select name="kegiatan" id="kegiatan" required data-parsley-errors-container="#help-block-kegiatan"></select>
-                    <div id="help-block-kegiatan"></div>
+                    <div id="help-block-kegiatan" class="help-block"></div>
                 </div>
                 <div class="form-group">
                     <label for="subkegiatan">Pilih Sub Kegiatan <span class="text-danger">*</span></label>
                     <select name="subkegiatan" id="subkegiatan" style="width:100%" required data-parsley-errors-container="#help-block-subkegiatan"></select>
-                    <div id="help-block-subkegiatan"></div>
+                    <div id="help-block-subkegiatan" class="help-block"></div>
                 </div>
                 <div class="divider-dashed"></div>
                 <div class="form-group">
@@ -533,6 +551,117 @@
     </div>
 </div>
 
+<!-- Modal Tambah Limit Anggaran -->
+<div class="modal fade modal-limit" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?= form_open(base_url('app/programs/input_limit'), ['id' => 'formLimit', 'data-parsley-validate' => '']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Input Anggaran KAS</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="uraian">Cari Uraian <span class="text-danger">*</span></label>
+                    <select name="uraian" id="uraian" required data-parsley-errors-container="#help-block-uraian"></select>
+                    <div id="help-block-uraian" class="help-block"></div>
+                </div>
+                <div class="row my-4">
+                    <div class="col-md-12 d-flex flex-wrap">
+                        <div id="total-pagu-awal" class="p-3 mr-2 mb-2 shadow rounded-xl border border-success">0</div>
+                        <div id="sisa-limit-uraian" class="p-3 mr-2 mb-2 shadow rounded-xl border border-warning">0</div>
+                        <div id="total-limit-uraian" class="p-3 mb-2 shadow rounded-xl border border-danger">0</div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="jumlah">Jumlah KAS</label>
+                            <input type="text" name="jumlah" id="jumlah" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="periode">Periode <span class="text-danger">*</span></label>
+                            <select name="periode[]" id="periode" multiple="multiple" required
+                                data-parsley-errors-container="#help-block-periode">
+                            </select>
+                            <div id="help-block-periode" class="help-block"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i class="fa fa-close mr-2"></i>Batal</button>
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
+
+<!-- Modal Update Limit Anggaran -->
+<div class="modal fade modal-update-limit" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+        <?= form_open(base_url('app/programs/update_limit'), ['id' => 'formUpdateLimit', 'data-parsley-validate' => ''], ['id' => '', 'uraian_id' => '']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Perbaharui Limit</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="jumlah">Jumlah Limit</label>
+                    <input type="text" name="jumlah" id="jumlah" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i class="fa fa-close mr-2"></i>Batal</button>
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
+
+<!-- Modal Rekonsiliasi Anggaran -->
+<div class="modal fade modal-rekon" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+        <?= form_open_multipart(base_url('app/programs/rekon_anggaran'), ['id' => 'formRekonAnggaran', 'data-parsley-validate' => '']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Rekonsiliasi Anggaran</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="anggaran">Utk. Anggaran</label>
+                    <select name="anggaran" id="anggaran" required class="form-control" data-parsley-errors-container="#help-block-anggaran" aria-readonly="true" disabled>
+                        <option value="">-- Anggaran --</option>
+                        <option value="1" <?= $this->session->userdata('is_perubahan') === "1" ? "selected" : ""; ?>>Perubahan</option>
+                        <option value="0" <?= $this->session->userdata('is_perubahan') === "0" ? "selected" : ""; ?>>Murni</option>
+                    </select>
+                    <div id="help-block-anggaran" class="help-block"></div>
+                </div>
+                <div class="form-group">
+                    <label for="excelFile">Pilih File Excel</label>
+                    <input type="file" class="form-control form-control-file" id="excelFile" name="file" accept=".xlsx,.xls" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i class="fa fa-close mr-2"></i>Batal</button>
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Submit</button>
+            </div>
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
 <script>
     $(function() {
         async function getListTujuan() {
@@ -582,8 +711,14 @@
             const res = await req.json();
             return res;
         }
+
+        async function getListLimit() {
+            const req = await fetch(`${_uri}/app/programs/uraian_limit`);
+            const res = await req.json();
+            return res;
+        }
         // Initial load
-        $('.listTujuan,.listSasaran,.listPart,#kegiatan,#subkegiatan,#uraian,#program').html(`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`);
+        $('.listTujuan,.listSasaran,.listPart,#kegiatan,#subkegiatan,#uraian,#program,#limit').html(`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`);
         // Get Tab Active
         let tab_active = urlParams.get('tab');
         // if tab active same as url
@@ -639,6 +774,17 @@
                 $('#uraian').html(data.result);
                 NProgress.done()
                 var uraianList = new List('listUraian', option);
+            });
+        } else if (tab_active === '#limit') {
+            getListLimit().then((data) => {
+                if (data.code === 404) {
+                    $('#limit').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('#limit').html(data.result);
+                NProgress.done()
+                var listLimit = new List('listLimit', option);
             });
         } else if (tab_active === '#tujuan_sasaran') {
             getListTujuan().then((data) => {
@@ -824,10 +970,34 @@
                 var uraianList = new List('listUraian', option);
             });
         })
+
+        $(document).on("click", "#myTab a[href='#limit']", function(e) {
+            let _ = $(this),
+                href = _.attr('href');
+            // console.log(_.attr('href'))
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', href);
+            history.pushState({}, "", url);
+            document.title = _.attr('title');
+            NProgress.start();
+            // window.location.replace(url);
+            getListLimit().then((data) => {
+                if (data.code === 404) {
+                    $('#limit').html(`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`);
+                    NProgress.done()
+                    return false;
+                }
+                $('#limit').html(data.result);
+                NProgress.done();
+                var listLimit = new List('listLimit', option);
+            });
+        })
+
         var option = {
             valueNames: ['nama', 'kode'],
             searchColumns: ['nama', 'kode'],
-            page: 5,
+            page: 10,
+            pagination: true,
             pagination: [{
                 item: "<li class='page-item rounded-0'><a class='page page-link rounded-0' href='#'></a></li>"
             }],
@@ -879,7 +1049,25 @@
         var MODAL_URAIAN = $(".modal-uraian"),
             FORM_URAIAN = MODAL_URAIAN.find("form#formUraian");
 
+        var MODAL_LIMIT = $(".modal-limit"),
+            FORM_LIMIT = MODAL_LIMIT.find("form#formLimit");
+
+        var MODAL_UPDATE_LIMIT = $(".modal-update-limit"),
+            FORM_UPDATE_LIMIT = MODAL_UPDATE_LIMIT.find("form#formUpdateLimit");
+
+        var MODAL_REKON_ANGGARAN = $(".modal-rekon"),
+            FORM_REKON_ANGGARAN = MODAL_REKON_ANGGARAN.find("form#formRekonAnggaran");
+
         // $(":input").inputmask();
+        $('input[name="jumlah"]').inputmask("decimal", {
+            radixPoint: ",",
+            groupSeparator: ",",
+            digits: 2,
+            autoGroup: true,
+            rightAlign: false,
+            prefix: ''
+        });
+
         let total_pagu = MODAL_SUBKEGIATAN.find('input[name="total_pagu"]');
         $(total_pagu).inputmask("decimal", {
             radixPoint: ",",
@@ -1112,6 +1300,126 @@
             });
         });
 
+        // select uraian
+        $('select[name="uraian"]').select2({
+            placeholder: 'Cari Uraian',
+            // allowClear: true,
+            // maximumSelectionLength: 1,
+            width: "100%",
+            // theme: "classic",
+            // dropdownParent: MODAL_SUBKEGIATAN,
+            // templateResult: formatUserSelect2,
+            escapeMarkup: function(markup) {
+                return markup;
+            },
+            ajax: {
+                delay: 350,
+                method: 'post',
+                url: '<?= base_url("app/programs/getUraian") ?>',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: params.term, // search term
+                    };
+                },
+                cache: true,
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data
+                    };
+                },
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+
+        // Format angka jadi Rupiah
+        function formatRupiah(angka) {
+            return Number(angka || 0).toLocaleString("id-ID");
+        }
+
+        // Balikannya: hapus titik, spasi, koma, lalu jadi Number
+        function unformatRupiah(rupiah) {
+            return Number(String(rupiah).replace(/[^0-9]/g, ""));
+        }
+
+        $("select#uraian").on("change", function() {
+
+            let $totalLPagu = MODAL_LIMIT.find("#total-pagu-awal")
+            let $totalLimit = MODAL_LIMIT.find("#total-limit-uraian")
+            let $sisaLimit = MODAL_LIMIT.find("#sisa-limit-uraian")
+            let $jml_limit = MODAL_LIMIT.find("input[name='jumlah']")
+
+
+            $.ajax({
+                method: 'post',
+                dataType: 'json',
+                url: `${_uri}/app/programs/sisaLimit`,
+                beforeSend: function() {
+                    $totalLPagu.html(`Loading ...`);
+                    $totalLimit.html(`Loading ...`);
+                    $sisaLimit.html(`Loading ...`);
+                },
+                data: {
+                    id: $(this).val() || ''
+                },
+                success: function(res) {
+                    let paguAwal = Number(res?.total_pagu_awal || 0).toLocaleString("id-ID");
+                    let total = Number(res?.total_limit.total_limit || 0).toLocaleString("id-ID");
+                    let sisa = Number(res?.sisa_limit || 0).toLocaleString("id-ID");
+                    $totalLPagu.html(`Total Pagu <br> <h4>Rp. ${paguAwal}</h4>`);
+                    $totalLimit.html(`Total Angkas <br><h4>Rp. ${total}</h4>`);
+                    $sisaLimit.html(`Sisa Pagu <br> <h4>Rp. ${sisa}</h4>`);
+
+                    $jml_limit.on("keyup", function(e) {
+                        let hitung_sisa = (res?.sisa_limit - unformatRupiah($(this).val()));
+                        $sisaLimit.html(`Sisa Pagu <br> <h4>Rp. ${formatRupiah(hitung_sisa)}</h4>`);
+                        let hitung_total_limit = (Number(res?.total_limit?.total_limit || 0) + (unformatRupiah($(this).val())))
+                        $totalLimit.html(`Total Angkas <br> <h4>Rp. ${formatRupiah(hitung_total_limit)}</h4>`);
+                    })
+
+                },
+                error: function(err) {
+                    return alert(err.responseText)
+                }
+            })
+            // reset form after change uraian
+            $('select#periode').val(null).trigger('change')
+            $jml_limit.val(0);
+        })
+
+        // select periode
+        $("select#periode").select2({
+            placeholder: "Pilih Periode",
+            allowClear: false,
+            tags: false,
+            tokenSeparators: [",", " "],
+            // maximumSelectionLength: 1,
+            width: "100%",
+            // theme: "classic",
+            // dropdownParent: MODAL_KEGIATAN,
+            ajax: {
+                delay: 250,
+                method: "post",
+                url: `${_uri}/app/select2/ajaxPeriode`,
+                dataType: "json",
+                data: function(params) {
+                    return {
+                        q: params.term, // search term
+                        uraian_id: $("select#uraian").val() || '' // kirim ID uraian
+                    };
+                },
+                cache: true,
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data,
+                    };
+                },
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            },
+        });
+
         MODAL_PROGRAM.on('hidden.bs.modal', function(e) {
             FORM_PROGRAM[0].reset()
             FORM_PROGRAM.parsley().reset();
@@ -1171,6 +1479,23 @@
             FORM_URAIAN.parsley().reset();
             $('select[name="kegiatan"]').val('').trigger('change');
             $('select[name="sub_kegiatan"]').val('').trigger('change');
+        })
+
+        MODAL_LIMIT.on('hidden.bs.modal', function(e) {
+            FORM_LIMIT[0].reset()
+            FORM_LIMIT.parsley().reset();
+            $('select#periode').val('').trigger('change');
+            $('select#uraian').val('').trigger('change');
+        })
+
+        MODAL_UPDATE_LIMIT.on('hidden.bs.modal', function(e) {
+            FORM_UPDATE_LIMIT[0].reset()
+            FORM_UPDATE_LIMIT.parsley().reset();
+        })
+
+        MODAL_REKON_ANGGARAN.on('hidden.bs.modal', function(e) {
+            FORM_REKON_ANGGARAN[0].reset()
+            FORM_REKON_ANGGARAN.parsley().reset();
         })
 
         FORM_KEGIATAN.parsley();
@@ -1252,6 +1577,93 @@
             }
             return false;
         });
+
+        FORM_LIMIT.parsley();
+        FORM_LIMIT.on("submit", function(e) {
+            e.preventDefault();
+            $url = $(this).attr('action');
+            $data = FORM_LIMIT.serialize();
+            $button = $(this).find('button[type="submit"]');
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response.status) {
+                        return window.location.reload();
+                    }
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(response.message);
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                return alert(err);
+            }
+            return false;
+        });
+
+        FORM_UPDATE_LIMIT.parsley();
+        FORM_UPDATE_LIMIT.on("submit", function(e) {
+            e.preventDefault();
+            $url = $(this).attr('action');
+            $data = FORM_UPDATE_LIMIT.serialize();
+            $button = $(this).find('button[type="submit"]');
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response.status) {
+                        return window.location.reload();
+                    }
+                    $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                    return alert(response.message);
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                return alert(err);
+            }
+            return false;
+        });
+
+        FORM_REKON_ANGGARAN.parsley();
+        FORM_REKON_ANGGARAN.on("submit", function(e) {
+            e.preventDefault();
+
+            let $form = $(this);
+            let $url = $form.attr('action');
+            let $button = $form.find('button[type="submit"]');
+
+            // Gunakan FormData untuk file + data
+            let formData = new FormData(this);
+
+            $button.html("processing ...").prop("disabled", true);
+
+            try {
+                $.ajax({
+                    url: $url,
+                    type: "POST",
+                    data: formData,
+                    processData: false, // penting: jangan ubah data
+                    contentType: false, // penting: biar browser set otomatis multipart/form-data
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.status) {
+                            alert(response.message);
+                            return window.location.reload();
+                        }
+                        $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                        alert(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                        alert("Terjadi kesalahan: " + error);
+                    }
+                });
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                alert("Error: " + err);
+            }
+
+            return false;
+        });
+
 
         FORM_TUJUAN.parsley();
         FORM_TUJUAN.on("submit", function(e) {
@@ -1439,6 +1851,17 @@
         // }).addMessage('en', 'cekcode', 'Kode Sub Kegiatan sudah pernah digunakan !');
 
     })
+
+    function UpdateLimit(id, paguLimit, uraian_id) {
+        let $modal = $(".modal-update-limit"),
+            $form = $modal.find("form#formUpdateLimit");
+        $modal.modal('show');
+        $modal.on('shown.bs.modal', function(e) {
+            $form.find('input[name="id"]').val(id);
+            $form.find('input[name="uraian_id"]').val(uraian_id);
+            $form.find('input[name="jumlah"]').val(formatRupiah(paguLimit));
+        })
+    }
 
     function InputPagu(id, url, paguAwal, is_perubahan) {
         let $modal = $(".modal-alokasipagu"),

@@ -118,4 +118,45 @@ class Select2 extends CI_Controller
         }
         echo json_encode($all);
     }
+
+    public function ajaxPeriode()
+    {
+        $q = $this->input->post('q');
+        $uraian_id = $this->input->post('uraian_id');
+
+        $cek_periode = $this->select->cekPeriodeByUraian($uraian_id);
+        $disabled_ids = [];
+        if ($cek_periode->num_rows() > 0) {
+            foreach ($cek_periode->result() as $row) {
+                // Pecah tiap string jadi array
+                $ids = explode(',', $row->periode); // sesuaikan nama kolom
+                // Bersihkan spasi dan ubah ke integer
+                $ids = array_map('intval', array_map('trim', $ids));
+                // Gabungkan ke array utama
+                $disabled_ids = array_merge($disabled_ids, $ids);
+            }
+        }
+
+        // Hapus duplikat kalau ada
+        $disabled_ids = array_unique($disabled_ids);
+
+        $db = $this->select->getPeriode($q);
+        $all = [];
+        if ($db->num_rows() > 0) :
+            foreach ($db->result() as $row) :
+                $cek_periode = $this->select->cekPeriodeByUraian($uraian_id);
+                if (in_array($row->id, $disabled_ids)) {
+                    $data['disabled'] = true;
+                } else {
+                    $data['disabled'] = false;
+                }
+                $data['id'] = $row->id;
+                $data['text'] = $row->nama;
+                $all[] = $data;
+            endforeach;
+        else :
+            $all[] = ['id' => 0,  'text' => 'Maaf, Periode "' . strtoupper($q) . '" tidak ditemukan.'];
+        endif;
+        echo json_encode($all);
+    }
 }

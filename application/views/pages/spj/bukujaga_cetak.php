@@ -155,7 +155,7 @@
                         <td class="text-nowrap"><?= $uraian->nama ?></td>
                         <td class="text-right">
                             <?php
-                            $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id], $this->session->userdata('is_perubahan'))->total_pagu_awal;
+                            $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id], $this->session->userdata('tahun_anggaran'),  $this->session->userdata('is_perubahan'))->total_pagu_awal;
                             $total_pagu += $pagu;
                             echo nominal($pagu);
                             ?>

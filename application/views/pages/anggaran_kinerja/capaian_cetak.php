@@ -6,98 +6,98 @@
 
     <title><?= $title ?></title>
     <style media="print">
-        @page {
-            size: landscape;
-            margin: 1cm;
-        }
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
 
-        .page-break-after-this {
-            page-break-after: always;
-        }
+    .page-break-after-this {
+        page-break-after: always;
+    }
 
-        body {
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            font-size: 0.8em;
-        }
+    body {
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: 0.8em;
+    }
 
-        #header,
-        #footer {
-            position: static;
-            left: 0;
-            right: 0;
-            color: #333;
-            font-size: 0.8em;
-        }
+    #header,
+    #footer {
+        position: static;
+        left: 0;
+        right: 0;
+        color: #333;
+        font-size: 0.8em;
+    }
 
-        #header {
-            top: 0;
-            border-bottom: 0.1pt solid #aaa;
-        }
+    #header {
+        top: 0;
+        border-bottom: 0.1pt solid #aaa;
+    }
 
-        #footer {
-            bottom: 0;
-            border-top: 0.1pt solid #aaa;
-        }
+    #footer {
+        bottom: 0;
+        border-top: 0.1pt solid #aaa;
+    }
 
-        #content {
-            margin-top: 1.5cm;
-            margin-bottom: 1.5cm;
-        }
+    #content {
+        margin-top: 1.5cm;
+        margin-bottom: 1.5cm;
+    }
 
-        span.page-number {
-            float: right;
-        }
+    span.page-number {
+        float: right;
+    }
 
-        span.page-number:before {
-            content: "Page " counter(page);
-        }
+    span.page-number:before {
+        content: "Page "counter(page);
+    }
 
-        span.author {
-            float: right;
-            font-style: italic;
-        }
+    span.author {
+        float: right;
+        font-style: italic;
+    }
 
-        table {
-            width: 100%;
-            page-break-before: auto;
-        }
+    table {
+        width: 100%;
+        page-break-before: auto;
+    }
 
-        thead {
-            background-color: #fff;
-            font-size: 1em;
-        }
+    thead {
+        background-color: #fff;
+        font-size: 1em;
+    }
 
-        tbody {
-            background-color: #fff;
-        }
+    tbody {
+        background-color: #fff;
+    }
 
-        th,
-        td {
-            padding: 8pt;
-            border: 1pt solid #aaa;
-        }
+    th,
+    td {
+        padding: 8pt;
+        border: 1pt solid #aaa;
+    }
 
-        table.collapse {
-            border-collapse: collapse;
-            border: 1pt solid #aaa;
-        }
+    table.collapse {
+        border-collapse: collapse;
+        border: 1pt solid #aaa;
+    }
 
-        table.collapse td {
-            border: 1pt solid #aaa;
-        }
+    table.collapse td {
+        border: 1pt solid #aaa;
+    }
 
-        /* Hindari pemisahan baris tabel yang buruk */
-        tbody tr {
-            page-break-inside: avoid;
-        }
+    /* Hindari pemisahan baris tabel yang buruk */
+    tbody tr {
+        page-break-inside: avoid;
+    }
 
-        .text-center {
-            text-align: center;
-        }
+    .text-center {
+        text-align: center;
+    }
 
-        .text-right {
-            text-align: right;
-        }
+    .text-right {
+        text-align: right;
+    }
     </style>
 </head>
 
@@ -115,7 +115,7 @@
             <tr>
                 <td width="15%">Bidang/Bagian</td>
                 <td colspan="3"><?= $this->target->getNama('ref_parts', $this->session->userdata('part')) ?></td>
-                <td width="10%" class="text-center font-bold"><b><?= $tw_nama ?></b></td>
+                <td width="10%" class="text-center font-bold"><b>s/d <?= $periode_end_name ?></b></td>
             </tr>
         </table>
         <table class="collapse">
@@ -164,11 +164,11 @@
                             $target_kinerja = $indikator_input_count;
 
                             // Realisasi
-                            $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $ip['indikator_id'])->row();
-                            if ($realisasi->persentase === "0") {
+                            $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_start, $periode_end, $ip['indikator_id'], $tahun_anggaran)->row();
+                            if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                 $sum_realisasi_count = $realisasi->eviden;
                                 $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                            } elseif ($realisasi->eviden === "0") {
+                            } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                 $sum_realisasi_count = $realisasi->persentase;
                                 $sum_realisasi_view = $realisasi->persentase . "%";
                             } else {
@@ -176,7 +176,7 @@
                                 $sum_realisasi_view = "-";
                             }
 
-                            $realisasi_anggaran = $this->realisasi->getRealisasiProgram($tw_id, $program->id);
+                            $realisasi_anggaran = $this->realisasi->getRealisasiProgram($periode_start, $periode_end, $program->id);
                             $realisasi_kinerja = $sum_realisasi_count;
 
                             // Capaian
@@ -184,9 +184,10 @@
                             @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
 
                             // Aksi
-                            $FaktorPendorong = $realisasi->faktor_pendorong === NULL ? '-' : $realisasi->faktor_pendorong;
-                            $FaktorPenghambat = $realisasi->faktor_penghambat === NULL ? '-' : $realisasi->faktor_penghambat;
-                            $TindakLanjut = $realisasi->tindak_lanjut === NULL ? '-' : $realisasi->tindak_lanjut;
+                            $faktors = $this->realisasi->faktor($ip['indikator_id'], $periode_end);
+                            $FaktorPendorong = $faktors->faktor_pendorong ?? '-';
+                            $FaktorPenghambat = $faktors->faktor_penghambat ?? '-';
+                            $TindakLanjut = $faktors->tindak_lanjut ?? '-';
 
                             $rowspan = $toEnd++;
                             if (0 === --$toEnd) { //last
@@ -220,12 +221,12 @@
                         $tr .= "<td colspan='10'></td>";
                     endif;
                 ?>
-                    <tr style='background-color: orange;'>
-                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
-                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
-                        <?= $tr ?>
-                    </tr>
-                    <?php
+                <tr style='background-color: orange;'>
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
+                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                     if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('user_name') === 'kaban') :
                         $kegiatans = $this->realisasi->kegiatans($program->id);
                     else :
@@ -252,18 +253,18 @@
                                 $target_kinerja = $indikator_input_count;
 
                                 // Realisasi
-                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $ik['indikator_id'])->row();
-                                if ($realisasi->persentase === "0") {
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_start, $periode_end, $ik['indikator_id'], $tahun_anggaran)->row();
+                                if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                     $sum_realisasi_count = $realisasi->eviden;
                                     $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                } elseif ($realisasi->eviden === "0") {
+                                } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                     $sum_realisasi_count = $realisasi->persentase;
                                     $sum_realisasi_view = $realisasi->persentase . "%";
                                 } else {
                                     $sum_realisasi_count = 0;
                                     $sum_realisasi_view = "-";
                                 }
-                                $realisasi_anggaran = $this->realisasi->getRealisasiKegiatan($tw_id, $kegiatan->id);
+                                $realisasi_anggaran = $this->realisasi->getRealisasiKegiatan($periode_start, $periode_end, $kegiatan->id);
                                 $realisasi_kinerja = $sum_realisasi_count;
 
                                 // Capaian
@@ -271,9 +272,10 @@
                                 @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
 
                                 // Aksi
-                                $FaktorPendorong = $realisasi->faktor_pendorong === NULL ? '-' : $realisasi->faktor_pendorong;
-                                $FaktorPenghambat = $realisasi->faktor_penghambat === NULL ? '-' : $realisasi->faktor_penghambat;
-                                $TindakLanjut = $realisasi->tindak_lanjut === NULL ? '-' : $realisasi->tindak_lanjut;
+                                $faktors = $this->realisasi->faktor($ik['indikator_id'], $periode_end);
+                                $FaktorPendorong = $faktors->faktor_pendorong ?? '-';
+                                $FaktorPenghambat = $faktors->faktor_penghambat ?? '-';
+                                $TindakLanjut = $faktors->tindak_lanjut ?? '-';
 
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
@@ -307,12 +309,13 @@
                             $tr .= "<td colspan='10'></td>";
                         endif;
                     ?>
-                        <tr style='background-color: blue; color: white;'>
-                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                            <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
-                            <?= $tr ?>
-                        </tr>
-                        <?php
+                <tr style='background-color: blue; color: white;'>
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                    </td>
+                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                         $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
                         $no_level_3 = 1;
                         foreach ($sub_kegiatans->result() as $sub_kegiatan) :
@@ -335,11 +338,11 @@
                                     $target_kinerja = $indikator_input_count;
 
                                     // Realisasi
-                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $isk['indikator_id'])->row();
-                                    if ($realisasi->persentase === "0") {
+                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_start, $periode_end, $isk['indikator_id'], $tahun_anggaran)->row();
+                                    if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                         $sum_realisasi_count = $realisasi->eviden;
                                         $sum_realisasi_view = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                    } elseif ($realisasi->eviden === "0") {
+                                    } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                         $sum_realisasi_count = $realisasi->persentase;
                                         $sum_realisasi_view = $realisasi->persentase . "%";
                                     } else {
@@ -347,7 +350,7 @@
                                         $sum_realisasi_view = "-";
                                     }
 
-                                    $realisasi_anggaran = $this->realisasi->getRealisasiSubKegiatan($tw_id, $sub_kegiatan->id);
+                                    $realisasi_anggaran = $this->realisasi->getRealisasiSubKegiatan($periode_start, $periode_end, $sub_kegiatan->id);
                                     $realisasi_kinerja = $sum_realisasi_count;
 
                                     // Capaian
@@ -355,9 +358,10 @@
                                     @$capaian_kinerja = round(($realisasi_kinerja / $target_kinerja) * 100, 2);
 
                                     // Aksi
-                                    $FaktorPendorong = $realisasi->faktor_pendorong === NULL ? '-' : $realisasi->faktor_pendorong;
-                                    $FaktorPenghambat = $realisasi->faktor_penghambat === NULL ? '-' : $realisasi->faktor_penghambat;
-                                    $TindakLanjut = $realisasi->tindak_lanjut === NULL ? '-' : $realisasi->tindak_lanjut;
+                                    $faktors = $this->realisasi->faktor($isk['indikator_id'], $periode_end);
+                                    $FaktorPendorong = $faktors->faktor_pendorong ?? '-';
+                                    $FaktorPenghambat = $faktors->faktor_penghambat ?? '-';
+                                    $TindakLanjut = $faktors->tindak_lanjut ?? '-';
 
                                     $rowspan = $toEnd++;
                                     if (0 === --$toEnd) { //last
@@ -392,16 +396,17 @@
                             endif;
 
                         ?>
-                            <tr>
-                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
-                                <?= $tr ?>
-                            </tr>
-                        <?php
+                <tr>
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                        <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?> </td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                             $no_level_3++;
                         endforeach;
                         ?>
-                    <?php
+                <?php
                         $no_level_2++;
                     endforeach;
                     ?>

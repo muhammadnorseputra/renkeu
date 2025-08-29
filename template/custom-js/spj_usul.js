@@ -1,3 +1,6 @@
+let $formStep = $("form#step-1");
+let $modal = $("#modelSearchKode");
+
 var getStep = urlParams.get("step");
 if (getStep == "") {
 	isStep = 0;
@@ -55,8 +58,10 @@ $("form#step-1").on("submit", function (e) {
 					data,
 					function (res) {
 						if (res.code === 200) {
-							window.location.replace(res.redirect);
+							return window.location.replace(res.redirect);
 						}
+						window.location.reload();
+						return alert(res.msg);
 					},
 					"json"
 				);
@@ -121,11 +126,20 @@ function newRealisasi(start, end) {
 		.find("h5#sisa_max")
 		.html(`Rp. ${convert} <i class="text-danger fa fa-level-down"></i>`);
 }
+function newLimit(start, end) {
+	var jml = start - end;
+	var convert = rupiah(jml);
+	return $("form#step-1")
+		.find("h5#angkas")
+		.html(`Rp. ${convert} <i class="text-danger fa fa-level-down"></i>`);
+}
 
 $("input[name='jumlah']").on("keyup", function (e) {
 	let start = $(this).attr("data-start");
-	let end = $(this).val();
-	return newRealisasi(start, end.split(".").join(""));
+	let start_limit = $(this).attr("data-start-limit");
+	let jml = $(this).val();
+	newRealisasi(start, jml.split(".").join(""));
+	newLimit(start_limit, jml.split(".").join(""));
 });
 $("form#formCariKode").on("submit", function (e) {
 	e.preventDefault();
@@ -134,8 +148,7 @@ $("form#formCariKode").on("submit", function (e) {
 		action = _.attr("action"),
 		data = _.serialize(),
 		$button = _.find('button[type="submit"]');
-	let $formStep = $("form#step-1");
-	let $modal = $("#modelSearchKode");
+
 	if (_.parsley().isValid()) {
 		$button.text("processing ...").prop("disabled", true);
 		try {
@@ -143,6 +156,13 @@ $("form#formCariKode").on("submit", function (e) {
 				action,
 				data,
 				function (res) {
+					$formStep.find("#loadKegiatan").show().html(`
+						<ul class="list-unstyled d-lg-flex flex-column justify-content-start font-weight-bold">
+                                <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-warning mr-2 fa-2x" aria-hidden="true"></i> ${res.nama_kegiatan}</li>
+                                <li class="d-inline-flex align-items-center my-2"><i class="fa fa-file-code-o text-info mr-2 fa-2x" aria-hidden="true"></i> ${res.nama_subkegiatan}</li>
+                                <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-success ml-md- mr-2 fa-2x" aria-hidden="true"></i> ${res.nama_uraian} <i class="fa fa-check-circle text-success ml-2"></i></li>
+                            </ul>
+						`);
 					$formStep.find('input[name="koderek"]').val(res.kode);
 					$formStep.find('input[name="ref_part"]').val(res.part_id);
 					$formStep.find('input[name="ref_program"]').val(res.program_id);
@@ -167,18 +187,20 @@ $("form#formCariKode").on("submit", function (e) {
 							)} <i class="text-danger fa fa-level-down"></i>`
 						);
 
-					$("input[name='jumlah']").attr(
-						"data-parsley-remote",
-						`${_uri}/app/spj/cek_jumlah_pengajuan/${res.uraian_id}`
-					);
-					$("input[name='jumlah']").attr("data-start", res.pagu.total_sisa_pa);
-					// $("input[name='jumlah']").attr('max', res.pagu.total_sisa_pa);
-
+					$formStep
+						.find('select[name="periode"]')
+						.prop("disabled", false)
+						.val("")
+						.trigger("change");
+					$formStep.find('select[name="tahun"]').prop("disabled", false);
 					$modal.modal("hide");
 				},
 				"json"
 			);
 		} catch (err) {
+			$formStep.find("#loadKegiatan").hide().html("");
+			$formStep.find('select[name="periode"]').prop("disabled", true);
+			$formStep.find('select[name="tahun"]').prop("disabled", true);
 			alert(err);
 		} finally {
 			$button.prop("disabled", false).text("Pilih");
@@ -196,7 +218,44 @@ function formatResults(res) {
 	var $data = `${res.kode} - ${res.text}`;
 	return $data;
 }
+function cekAngkas(uraian_id, periode_id) {
+	$.getJSON(
+		`${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`,
+		function (res) {
+			if (res.code === 200) {
+				$("h5#angkas").html(
+					`Rp. ${rupiah(res.sisa)} <i class="text-danger fa fa-level-down"></i>`
+				);
+				$("input[name='jumlah']").attr({
+					"data-start": res.sisa_pa,
+					"data-start-limit": res.sisa,
+				});
+			} else {
+				$("h5#angkas").html(
+					`Rp. 0 <i class="text-danger fa fa-level-down"></i>`
+				);
+			}
+		}
+	);
+}
+$("select[name='periode']").on("change", function () {
+	let _ = $(this);
+	let uraian_id = $formStep.find('input[name="ref_uraian"]').val();
+	let periode_id = _.val();
+	cekAngkas(uraian_id, periode_id);
+	$("input[name='jumlah']").attr({
+		"data-parsley-remote": `${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`,
+		"data-parsley-remote-trigger": "focusout,change",
+		"data-parsley-remote-reverse": "false",
+		"data-parsley-remote-options": '{ "type": "POST" }',
+		"data-parsley-remote-message":
+			"Jumlah yang dimasukan melebihi batas maksimum.",
+		"data-parsley-pattern": "^(([0-9.]?)*)+$",
+		disabled: false,
+	});
 
+	$formStep.find('textarea[name="uraian"]').prop("disabled", false);
+});
 $(function () {
 	$(
 		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan'],select[name='uraian_kegiatan']"

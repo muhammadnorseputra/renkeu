@@ -69,20 +69,26 @@ class ModelRealisasi extends CI_Model
         $q = $this->db->get();
         return $q;
     }
-    public function getRealisasiSasaran($periodeId, $sasaranId, $ta)
+    public function getRealisasiSasaran($periode_start = '', $periode_end = '', $sasaranId, $ta)
     {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
         $this->db->join('ref_programs AS r', 's.fid_program=r.id');
         $this->db->join('ref_sasaran AS sa', 'r.fid_sasaran=sa.id');
         $this->db->where('s.is_status', 'SELESAI');
-        $this->db->where('s.fid_periode', $periodeId);
+        if (!empty($periode_start) && !empty($periode_end)) {
+            $this->db->where('s.fid_periode >=', $periode_start);
+            $this->db->where('s.fid_periode <=', $periode_end);
+        }
+        if (!empty($periode_start) && empty($periode_end)) {
+            $this->db->where('s.fid_periode', $periode_start);
+        }
         $this->db->where('sa.id', $sasaranId);
         $this->db->where('s.tahun', $ta);
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
-    public function getRealisasiTujuan($periodeId, $tujuanId, $ta)
+    public function getRealisasiTujuan($periode_start = '', $periode_end = '', $tujuanId, $ta)
     {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
@@ -90,18 +96,30 @@ class ModelRealisasi extends CI_Model
         $this->db->join('ref_sasaran AS sa', 'r.fid_sasaran=sa.id');
         $this->db->join('ref_tujuan AS t', 'sa.fid_tujuan=t.id');
         $this->db->where('s.is_status', 'SELESAI');
-        $this->db->where('s.fid_periode', $periodeId);
+        if (!empty($periode_start) && !empty($periode_end)) {
+            $this->db->where('s.fid_periode >=', $periode_start);
+            $this->db->where('s.fid_periode <=', $periode_end);
+        }
+        if (!empty($periode_start) && empty($periode_end)) {
+            $this->db->where('s.fid_periode', $periode_start);
+        }
         $this->db->where('t.id', $tujuanId);
         $this->db->where('s.tahun', $ta);
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
-    public function getRealisasiProgram($periodeId, $programId)
+    public function getRealisasiProgram($periode_start = '', $periode_end = '', $programId)
     {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
         $this->db->where('is_status', 'SELESAI');
-        $this->db->where('fid_periode', $periodeId);
+        if (!empty($periode_start) && !empty($periode_end)) {
+            $this->db->where('s.fid_periode >=', $periode_start);
+            $this->db->where('s.fid_periode <=', $periode_end);
+        }
+        if (!empty($periode_start) && empty($periode_end)) {
+            $this->db->where('s.fid_periode', $periode_start);
+        }
         $this->db->where('fid_program', $programId);
         $q = $this->db->get();
         return $q->row()->jumlah;
@@ -116,12 +134,18 @@ class ModelRealisasi extends CI_Model
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
-    public function getRealisasiKegiatan($periodeId, $kegiatanId)
+    public function getRealisasiKegiatan($periode_start = '', $periode_end = '', $kegiatanId)
     {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
         $this->db->where('is_status', 'SELESAI');
-        $this->db->where('fid_periode', $periodeId);
+        if (!empty($periode_start) && !empty($periode_end)) {
+            $this->db->where('s.fid_periode >=', $periode_start);
+            $this->db->where('s.fid_periode <=', $periode_end);
+        }
+        if (!empty($periode_start) && empty($periode_end)) {
+            $this->db->where('s.fid_periode', $periode_start);
+        }
         $this->db->where('fid_kegiatan', $kegiatanId);
         $q = $this->db->get();
         return $q->row()->jumlah;
@@ -135,12 +159,18 @@ class ModelRealisasi extends CI_Model
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
-    public function getRealisasiSubKegiatan($periodeId, $subKegiatanId)
+    public function getRealisasiSubKegiatan($periode_start = '', $periode_end = '', $subKegiatanId)
     {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
         $this->db->where('is_status', 'SELESAI');
-        $this->db->where('fid_periode', $periodeId);
+        if (!empty($periode_start) && !empty($periode_end)) {
+            $this->db->where('s.fid_periode >=', $periode_start);
+            $this->db->where('s.fid_periode <=', $periode_end);
+        }
+        if (!empty($periode_start) && empty($periode_end)) {
+            $this->db->where('s.fid_periode', $periode_start);
+        }
         $this->db->where('fid_sub_kegiatan', $subKegiatanId);
         $q = $this->db->get();
         return $q->row()->jumlah;
@@ -170,13 +200,50 @@ class ModelRealisasi extends CI_Model
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
-    public function getRealisasiByIndikatorId($periode_id, $indikator_id)
+    public function getRealisasiByPeriode($uraian_id, $status, $periode)
+    {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj AS s');
+        if (count($status) > 0):
+            $this->db->where_in('is_status', $status);
+        else:
+            $this->db->where_in('is_status !=', $status);
+        endif;
+        $this->db->where('is_status !=', 'SELESAI_TMS');
+        $this->db->where('is_status !=', 'SELESAI_BTL');
+        $this->db->where('fid_uraian', $uraian_id);
+        $this->db->where('tahun', $this->session->userdata('tahun_anggaran'));
+        $this->db->where_in("fid_periode", $periode);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
+    public function getRealisasiByIndikatorId($periode_start = '', $periode_end = '', $indikator_id, $ta)
     {
         $this->db->select_sum('persentase');
         $this->db->select_sum('eviden');
-        $this->db->select('eviden_jenis, eviden_link, faktor_pendorong, faktor_penghambat, tindak_lanjut');
+        $this->db->select('eviden_jenis, eviden_link, faktor_pendorong, faktor_penghambat, tindak_lanjut, is_jenis, status');
         $this->db->from('t_realisasi');
-        $this->db->where(['fid_indikator' => $indikator_id, 'fid_periode' => $periode_id]);
+        $this->db->where('fid_indikator', $indikator_id);
+        if (!empty($periode_start) && !empty($periode_end)) {
+            $this->db->where('fid_periode >=', $periode_start);
+            $this->db->where('fid_periode <=', $periode_end);
+            $this->db->where('status', 'SETUJU');
+        }
+        if (!empty($periode_start) && empty($periode_end)) {
+            $this->db->where('fid_periode', $periode_start);
+        }
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q;
+    }
+
+    public function getAkumulasiRealisasi($tahun, $indikator_id)
+    {
+        $this->db->select_sum('persentase');
+        $this->db->select_sum('eviden');
+        $this->db->select('eviden_jenis, eviden_link, faktor_pendorong, faktor_penghambat, tindak_lanjut, status');
+        $this->db->from('t_realisasi');
+        $this->db->where(['fid_indikator' => $indikator_id, 'tahun' => $tahun, 'status' => 'SETUJU']);
         $q = $this->db->get();
         return $q;
     }
@@ -202,5 +269,25 @@ class ModelRealisasi extends CI_Model
         }
         $q = $this->db->get();
         return $q->row();
+    }
+
+    public function faktor($indikator_id, $periode)
+    {
+        $this->db->select('faktor_pendorong, faktor_penghambat, tindak_lanjut');
+        $this->db->from('t_realisasi');
+        $this->db->where('fid_indikator', $indikator_id);
+        $this->db->where('fid_periode', $periode);
+        $this->db->where('status', 'SETUJU');
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    public function isStatusVerifikasi($periode_id, $indikator_id)
+    {
+        $this->db->select('status');
+        $this->db->from('t_realisasi');
+        $this->db->where(['fid_periode' => $periode_id, 'fid_indikator' => $indikator_id]);
+        $q = $this->db->get();
+        return $q->row()->status ?? 'ENTRI';
     }
 }

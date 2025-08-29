@@ -38,6 +38,7 @@ class Realisasi extends CI_Controller
 		$data = [
 			'title' => 'Realisasi Anggaran & Kinerja',
 			'content' => 'pages/anggaran_kinerja/realisasi',
+			'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
 			'autoload_js' => [
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
 				'template/custom-js/realisasi.js',
@@ -102,6 +103,7 @@ class Realisasi extends CI_Controller
 		// }
 
 		$insert = [
+			'is_jenis' => $post['is_jenis'],
 			'tahun' => $this->session->userdata('tahun_anggaran'),
 			'fid_indikator' => $post['id'],
 			'fid_periode' => $post['periode'],
@@ -109,14 +111,21 @@ class Realisasi extends CI_Controller
 			'eviden' => isset($post['jumlah_eviden']) ? $post['jumlah_eviden'] : 0,
 			'eviden_link' => $post['link'],
 			'eviden_jenis' => $post['keterangan_eviden'],
+			'status' => 'VERIFIKASI', // Default status
+			'entri_by' => $this->session->userdata('user_name'),
+			'entri_at' => DateTimeInput(),
 		];
 
 		$update = [
+			'is_jenis' => $post['is_jenis'],
 			'tahun' => $this->session->userdata('tahun_anggaran'),
 			'persentase' => isset($post['persentase']) ? $post['persentase'] : 0,
 			'eviden' => isset($post['jumlah_eviden']) ? $post['jumlah_eviden'] : 0,
 			'eviden_jenis' => $post['keterangan_eviden'],
 			'eviden_link' => $post['link'],
+			'status' => 'VERIFIKASI',
+			'update_by' => $this->session->userdata('user_name'),
+			'update_at' => DateTimeInput(),
 		];
 
 		$whr = [
@@ -159,7 +168,8 @@ class Realisasi extends CI_Controller
 			'title' => 'Realisasi Anggaran & Kinerja  - ' . $periode_nama,
 			'programs' => $programs,
 			'tw_id' => $periode_id,
-			'tw_nama' => $periode_nama
+			'tw_nama' => $periode_nama,
+			'tahun_anggaran' => $this->session->userdata('tahun_anggaran')
 		];
 		$this->load->view('pages/anggaran_kinerja/realisasi_cetak', $data);
 	}
@@ -184,6 +194,94 @@ class Realisasi extends CI_Controller
 		} else {
 			$msg = 400;
 		}
+		echo json_encode($msg);
+	}
+
+	public function detailNote()
+	{
+		$id = $this->input->get('id');
+		$periode = $this->input->get('periode');
+		$db = $this->crud->getWhere('t_realisasi', ['fid_indikator' => $id, 'fid_periode' => $periode]);
+
+
+		if ($db->num_rows()  === 0) {
+			return $data = null;
+		}
+
+		$data = [
+			'note' => $db->row()->catatan_verify,
+			'status' => $db->row()->status
+		];
+		echo json_encode($data);
+	}
+
+	function detailVerifikasi()
+	{
+		$id = $this->input->get('id');
+		$periode = $this->input->get('periode');
+		$db = $this->crud->getWhere('t_realisasi', ['fid_indikator' => $id, 'fid_periode' => $periode]);
+		$periode = $this->crud->getWhere('t_periode', ['id' => $periode]);
+		$indikator = $this->crud->getWhere('ref_indikators', ['id' => $id]);
+		if ($db->num_rows()  === 0) {
+			return $data = null;
+		}
+
+		$data = [
+			'periode' => $periode->row(),
+			'realisasi' => $db->row(),
+			'indikator' => $indikator->row(),
+		];
+		echo json_encode($data);
+	}
+
+	function verifikasi()
+	{
+		$post = $this->input->post();
+		$whr = [
+			'fid_indikator' => $post['id'],
+			'fid_periode' => $post['periode']
+		];
+		if ($post['verifikasi_status'] === 'SETUJU') {
+			$update = [
+				'status' => 'SETUJU',
+				'verify_by' => $this->session->userdata('user_name'),
+				'verify_at' => DateTimeInput(),
+			];
+			$db = $this->crud->update('t_realisasi', $update, $whr);
+			if ($db) {
+				$msg = [
+					'message' => 'Realisasi berhasil diverifikasi !',
+					'status' => true
+				];
+			} else {
+				$msg = [
+					'message' => 'Realisasi gagal diverifikasi !',
+					'status' => false
+				];
+			}
+		}
+
+		if ($post['verifikasi_status'] === 'ENTRI_ULANG') {
+			$update = [
+				'status' => 'ENTRI_ULANG',
+				'catatan_verify' => $post['catatan'],
+				'verify_by' => $this->session->userdata('user_name'),
+				'verify_at' => DateTimeInput(),
+			];
+			$db = $this->crud->update('t_realisasi', $update, $whr);
+			if ($db) {
+				$msg = [
+					'message' => 'Realisasi berhasil ditolak !',
+					'status' => true
+				];
+			} else {
+				$msg = [
+					'message' => 'Realisasi gagal ditolak !',
+					'status' => false
+				];
+			}
+		}
+
 		echo json_encode($msg);
 	}
 }

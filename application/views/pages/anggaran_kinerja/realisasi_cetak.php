@@ -142,13 +142,14 @@
                         $indikator = $indikator_program->result_array();
                         $toEnd = count($indikator);
                         foreach ($indikator as $key => $ip) :
-                            $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $ip['indikator_id'])->row();
-                            if ($realisasi->persentase === "0") {
-                                $sum_realisasi = $realisasi->eviden;
-                            } elseif ($realisasi->eviden === "0") {
+                            $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($tw_id, $ip['indikator_id']);
+                            $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, null, $ip['indikator_id'], $tahun_anggaran)->row();
+                            if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-" && $realisasi->status === 'SETUJU') {
+                                $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
+                            } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-" && $realisasi->status === 'SETUJU') {
                                 $sum_realisasi = $realisasi->persentase . "%";
                             } else {
-                                $sum_realisasi = "-";
+                                $sum_realisasi = $isStatusVerifikasi;
                             }
 
                             $rowspan = $toEnd++;
@@ -157,7 +158,7 @@
                             } elseif ($key === 0) { //first
                                 $tr .= "
                                         <td class='align-middle'>" . $ip['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiProgram($tw_id, $program->id)) . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiProgram($tw_id, null, $program->id)) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>";
                             } else { //middle
                                 $tr .= "
@@ -168,11 +169,7 @@
                             }
                         endforeach;
                     else:
-                        $tr .= "
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <tr></tr>";
+                        $tr .= "<td colspan='3' rowspan='" . $rowspan . "'></td><tr></tr>";
                     endif;
                 ?>
                     <tr style='background-color: orange;'>
@@ -195,13 +192,14 @@
                             $indikator_keg = $indikator_kegiatan->result_array();
                             $toEnd = count($indikator_keg);
                             foreach ($indikator_keg as $key => $ik) :
-                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $ik['indikator_id'])->row();
-                                if ($realisasi->persentase === "0") {
-                                    $sum_realisasi = $realisasi->eviden;
-                                } elseif ($realisasi->eviden === "0") {
+                                $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($tw_id, $ik['indikator_id']);
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, null, $ik['indikator_id'], $tahun_anggaran)->row();
+                                if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-" && $realisasi->status === 'SETUJU') {
+                                    $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
+                                } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-" && $realisasi->status === 'SETUJU') {
                                     $sum_realisasi = $realisasi->persentase . "%";
                                 } else {
-                                    $sum_realisasi = "-";
+                                    $sum_realisasi = $isStatusVerifikasi;
                                 }
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
@@ -209,7 +207,7 @@
                                 } elseif ($key === 0) { //first
                                     $tr .= "
                                         <td class='align-middle'>" . $ik['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiKegiatan($tw_id, $kegiatan->id)) . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiKegiatan($tw_id, null, $kegiatan->id)) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>";
                                 } else { //middle
                                     $tr .= "
@@ -220,15 +218,12 @@
                                 }
                             endforeach;
                         else:
-                            $tr .= "
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <tr></tr>";
+                            $tr .= "<td colspan='3' rowspan='" . $rowspan . "'></td><tr></tr>";
                         endif;
                     ?>
                         <tr style='background-color: blue; color: white'>
-                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                            </td>
                             <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
                             <?= $tr ?>
                         </tr>
@@ -242,13 +237,14 @@
                                 $indikator_sub = $indikator_sub_kegiatan->result_array();
                                 $toEnd = count($indikator_sub);
                                 foreach ($indikator_sub as $key => $isk) :
-                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, $isk['indikator_id'])->row();
-                                    if ($realisasi->persentase === "0") {
+                                    $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($tw_id, $isk['indikator_id']);
+                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId($tw_id, null, $isk['indikator_id'], $tahun_anggaran)->row();
+                                    if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-" && $realisasi->status === 'SETUJU') {
                                         $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                    } elseif ($realisasi->eviden === "0") {
+                                    } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-" && $realisasi->status === 'SETUJU') {
                                         $sum_realisasi = $realisasi->persentase . "%";
                                     } else {
-                                        $sum_realisasi = "-";
+                                        $sum_realisasi = $isStatusVerifikasi;
                                     }
 
                                     $rowspan = $toEnd++;
@@ -257,7 +253,7 @@
                                     } elseif ($key === 0) { //first
                                         $tr .= "
                                         <td class='align-middle'>" . $isk['nama'] . "</td>
-                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiSubKegiatan($tw_id, $sub_kegiatan->id)) . "</td>
+                                        <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiSubKegiatan($tw_id, null, $sub_kegiatan->id)) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>";
                                     } else { //middle
                                         $tr .= "
@@ -268,15 +264,12 @@
                                     }
                                 endforeach;
                             else:
-                                $tr .= "
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <tr></tr>";
+                                $tr .= "<td colspan='3' rowspan='" . $rowspan . "'></td><tr></tr>";
                             endif;
                         ?>
                             <tr>
-                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>">
+                                    <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
                                 <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                 <?= $tr ?>
                             </tr>

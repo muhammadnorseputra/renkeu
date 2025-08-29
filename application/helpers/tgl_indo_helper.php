@@ -256,6 +256,50 @@ if (! function_exists('waktu_plus_satu_jam')) {
     }
 }
 
+if (!function_exists('bulan_range')) {
+    function bulan_range($input)
+    {
+        // Daftar bulan
+        $bulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
+        // Pecah input menjadi array angka
+        $angka = explode(',', $input);
+
+        // Bersihkan dan pastikan angka valid
+        $angka = array_map('intval', $angka);
+        $angka = array_filter($angka, function($val) use ($bulan) {
+            return isset($bulan[$val]);
+        });
+
+        // Ambil nama bulan
+        $nama_bulan = array_map(function($val) use ($bulan) {
+            return $bulan[$val];
+        }, $angka);
+
+        // Jika hanya 1 bulan, tampilkan langsung
+        if (count($nama_bulan) == 1) {
+            return $nama_bulan[0];
+        }
+
+        // Gabung dengan tanda hubung
+        return implode(' - ', $nama_bulan);
+    }
+}
+
+
 // RUN
 // echo shortdate_indo('2017-09-5');
 // echo "<br/>";

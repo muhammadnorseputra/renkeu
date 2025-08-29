@@ -133,7 +133,7 @@
                 <div class="col-md-3 col-sm-12 ">
                     <div>
                         <div class="x_title">
-                            <h4>Top New Realisasi</h4>
+                            <h4>Realisasi Terbaru</h4>
                             <div class="clearfix"></div>
                         </div>
                         <ul class="list-unstyled top_profiles scroll-view">
@@ -156,9 +156,9 @@
                                         <img class="aero" src="<?= base_url('template/assets/picture_akun/' . $profile->pic) ?>" alt="<?= $profile->username ?>" width="25">
                                     </a>
                                     <div class="media-body">
-                                        <a class="title" href="#" data-toggle="tooltip" data-placement="right" title="<?= ucwords(strtolower($profile->nama)) ?>"><small><?= $top->singkatan; ?></small></a>
+                                        <a class="title" href="#" data-toggle="tooltip" data-placement="right" title="<?= ucwords(strtolower($profile->nama)) ?>"><small><?= $top->singkatan; ?> | <?= longdate_indo($tglsql) ?></small></a>
                                         <p><strong>Rp. <?= nominal($top->jumlah) ?> </strong></p>
-                                        <p><small><?= longdate_indo($tglsql) ?></small><span style="float:right"><?= $status ?></span></p>
+                                        <p><small><?= $profile->nama ?></small><span style="float:right"><?= $status ?></span></p>
                                     </div>
                                 </li>
                             <?php endforeach; ?>
@@ -218,16 +218,16 @@
                 fillColor: "#fff"
             },
         };
-        let SPJBTL = {
-            label: "Realisasi SPJ BTL",
-            data: <?= $chart['spj_btl'] ?>,
-            lines: {
-                fillColor: "rgba(255, 165, 0, 0.12)"
-            },
-            points: {
-                fillColor: "#fff"
-            },
-        };
+        // let SPJBTL = {
+        //     label: "Realisasi SPJ BTL",
+        //     data: <?= $chart['spj_btl'] ?>,
+        //     lines: {
+        //         fillColor: "rgba(255, 165, 0, 0.12)"
+        //     },
+        //     points: {
+        //         fillColor: "#fff"
+        //     },
+        // };
         let options = {
             grid: {
                 show: !0,
@@ -296,7 +296,7 @@
             },
         };
 
-        $.plot($("#chart_transaksi"), [SPJMS, SPJTMS, SPJBTL], options);
+        $.plot($("#chart_transaksi"), [SPJMS, SPJTMS], options);
 
         // Pie Charts
         var DataPieParts = {
@@ -378,23 +378,23 @@
                     ],
                     borderWidth: 1
                 },
-                {
-                    label: 'BTL',
-                    data: <?= $chart['spj_count_btl'] ?>,
-                    backgroundColor: [
-                        'rgba(255, 102, 0, 0.2)',
-                        'rgba(255, 102, 0, 0.2)',
-                        'rgba(255, 102, 0, 0.2)',
-                        'rgba(255, 102, 0, 0.2)',
-                    ],
-                    borderColor: [
-                        'rgb(255, 102, 0)',
-                        'rgb(255, 102, 0)',
-                        'rgb(255, 102, 0)',
-                        'rgb(255, 102, 0)',
-                    ],
-                    borderWidth: 1
-                }
+                // {
+                //     label: 'BTL',
+                //     data: <?= $chart['spj_count_btl'] ?>,
+                //     backgroundColor: [
+                //         'rgba(255, 102, 0, 0.2)',
+                //         'rgba(255, 102, 0, 0.2)',
+                //         'rgba(255, 102, 0, 0.2)',
+                //         'rgba(255, 102, 0, 0.2)',
+                //     ],
+                //     borderColor: [
+                //         'rgb(255, 102, 0)',
+                //         'rgb(255, 102, 0)',
+                //         'rgb(255, 102, 0)',
+                //         'rgb(255, 102, 0)',
+                //     ],
+                //     borderWidth: 1
+                // }
             ]
         };
         const config = {

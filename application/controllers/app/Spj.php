@@ -39,6 +39,7 @@ class Spj extends CI_Controller
             'content' => 'pages/spj/index',
             'autoload_js' => [
                 'template/custom-js/list.min.js',
+                'template/custom-js/list-state.js',
                 'template/custom-js/spj.js',
                 'template/backend/vendors/datatables.net/js/jquery.dataTables.min.js',
                 'template/backend/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js',
@@ -58,15 +59,15 @@ class Spj extends CI_Controller
     {
         $db = $this->spj->inbox();
 
-        $btnAdd = '<div>
-        <button class="btn btn-primary rounded-0" onclick="window.location.href=\'' . base_url("app/spj/buatusul") . '\'"><i class="fa fa-plus mr-2"></i> Buat Usul SPJ</button>
+        $btnAdd = '<div class="col-md-3 mt-3">
+        <button class="btn btn-primary rounded-0 float-right" onclick="window.location.href=\'' . base_url("app/spj/buatusul") . '\'"><i class="fa fa-plus mr-2"></i> Tambah Usulan</button>
                 </div>
                 ';
-        $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
+        $search = '<div class="col-5 col-md-3">Pencarian <input type="search" class="search form-control" placeholder="Ketik nama rincian..." /></div>';
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
 
-        $html = '<div id="spjList"><div class="row mb-3">' . $search . $pagging . $btnAdd . "</div>";
-        $html .= '<table class="table table-condensed table-hover table-responsive">';
+        $html = '<div id="spjList"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
+        $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action">';
         $html .= '<thead>
                     <tr>
                         <th class="text-center" width="5%">No</th>
@@ -152,7 +153,7 @@ class Spj extends CI_Controller
             $no++;
         endforeach;
         $html .= '</tbody>';
-        $html .= '</table></div>';
+        $html .= '</table></div></div>';
 
         if ($db->num_rows() > 0):
             $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
@@ -388,6 +389,7 @@ class Spj extends CI_Controller
             $no++;
             $row = array();
             $row[] = $no;
+            $row[] = $r->nomor_pembukuan;
             $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian;
             $row[] = '<b>' . $r->nama_part . '</b> <br>' . $r->nama_program . ' <br/>  ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br> <b>' . $r->nama_uraian . '</b>';
             $row[] = bulan($r->periode_id);
@@ -453,7 +455,8 @@ class Spj extends CI_Controller
         $kode_subkegiatan = $this->crud->getWhere('ref_sub_kegiatans', ['id' => $input['sub_kegiatan']])->row();
         $kode_uraian = $this->crud->getWhere('ref_uraians', ['id' => $input['uraian_kegiatan']])->row();
 
-        $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian($input['uraian_kegiatan'], $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian($input['uraian_kegiatan'], $this->session->userdata('is_perubahan'))->row()->total_pagu_awal : 0;
+        // Pagu Awal
+        $totalPaguAwal = $this->target->getAlokasiPaguUraian($input['uraian_kegiatan'], $this->session->userdata('is_perubahan'))->row()->total_pagu_awal ?? 0;
         $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($input['uraian_kegiatan'], ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
         $totalSisaPagu = ($totalPaguAwal - $totalRealisasiPagu);
 
@@ -464,37 +467,81 @@ class Spj extends CI_Controller
             'subkegiatan_id' => $input['sub_kegiatan'],
             'uraian_id' => $input['uraian_kegiatan'],
             'kode_kegiatan' => $kode_kegiatan->kode,
+            'nama_kegiatan' => $kode_kegiatan->nama,
             'kode_subkegiatan' => $kode_subkegiatan->kode,
+            'nama_subkegiatan' => $kode_subkegiatan->nama,
             'kode_uraian' => $kode_uraian->kode,
+            'nama_uraian' => $kode_uraian->nama,
             'kode' => $kode_kegiatan->kode . "." . $kode_subkegiatan->kode . "." . $kode_uraian->kode,
             'pagu' => [
                 'total_pa' => $totalPaguAwal,
                 'realisasi_pa' => $totalRealisasiPagu,
-                'total_sisa_pa' => (int) $totalSisaPagu
+                'total_sisa_pa' => (int) $totalSisaPagu,
             ]
         ];
         echo json_encode($data);
     }
 
-    public function cek_jumlah_pengajuan($uraian_id)
+    public function cek_jumlah_pengajuan($uraian_id, $jml)
     {
-        $jml = $this->input->post('jumlah');
-        $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian($uraian_id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian($uraian_id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal : 0;
+        // perhitungan limit pagu
+        $totalPaguAwal = $this->target->getAlokasiPaguUraian($uraian_id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal ?? 0;
         $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($uraian_id, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
         $totalSisaPagu = ($totalPaguAwal - $totalRealisasiPagu);
 
-        echo json_encode(['jml' => get_only_numbers($jml), 'realisasi' => $totalSisaPagu]);
         if (get_only_numbers($jml) > $totalSisaPagu) {
-            $this->output->set_status_header('400');
-        } else {
-            $this->output->set_status_header('200');
+            return false;
         }
-        return false;
+
+        return $totalSisaPagu;
+    }
+
+    public function cek_angkas($uraian_id, $periode_id)
+    {
+        $jml = $this->input->post('jumlah');
+
+        // perhitungan sisa pagu
+        $sisa_pa = $this->cek_jumlah_pengajuan($uraian_id, $jml);
+
+        // perhitungan limit pagu
+        $totalLimit = $this->spj->getLimitPagu($uraian_id, $periode_id)->row();
+        $totalRealisasiPaguByPeriode = $this->realisasi->getRealisasiByPeriode($uraian_id, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI'], explode(",", @$totalLimit->periode));
+        $sisa_limit = (@$totalLimit->total - $totalRealisasiPaguByPeriode);
+
+        if ((get_only_numbers($jml) > $sisa_limit) || $sisa_pa === false) {
+            echo json_encode(['jml' => get_only_numbers($jml), 'sisa' => $sisa_limit, 'sisa_pa' => $sisa_pa, 'code' => 400]);
+            return $this->output->set_status_header('400');
+        }
+
+        echo json_encode(['jml' => get_only_numbers($jml), 'sisa' => $sisa_limit, 'sisa_pa' => $sisa_pa, 'code' => 200]);
+        return $this->output->set_status_header('200');
     }
 
     public function prosesusul()
     {
         $input = $this->input->post();
+
+        // Limit Pagu
+        $search_periode = $input['periode'];
+        $totalLimit = $this->spj->getLimitPagu($input['ref_uraian'], $search_periode)->row();
+        $totalRealisasiPaguByPeriode = $this->realisasi->getRealisasiByPeriode($input['ref_uraian'], ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI'], explode(",", @$totalLimit->periode));
+        $totalSisaLimit = (@$totalLimit->total - $totalRealisasiPaguByPeriode);
+
+        if (get_only_numbers($input['jumlah']) > $totalSisaLimit) {
+            $status = [
+                'msg' => 'Gagal, SPJ melebihi batas anggaran KAS : '. nominal(@$totalLimit->total),
+                'code' => 400,
+                'data' => [
+                    'total_limit' => $totalLimit,
+                    'total_realisasi' => $totalRealisasiPaguByPeriode,
+                    'total_sisa_limit' => $totalSisaLimit
+                ]
+            ];
+            echo json_encode($status);
+            return false;
+            die();
+        }
+
         if (!empty($input['token'])) {
             $data = [
                 'fid_periode' => $input['periode'],
@@ -535,7 +582,12 @@ class Spj extends CI_Controller
         }
 
         if ($db) {
-            $status = ['msg' => 'Oke', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=1&status=entri&token=' . $isToken)];
+            $status = ['msg' => 'Oke', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=1&status=entri&token=' . $isToken),
+                'data' => [
+                    'total_limit' => $totalLimit,
+                    'total_realisasi' => $totalRealisasiPaguByPeriode,
+                    'total_sisa_limit' => $totalSisaLimit
+                ]];
         } else {
             $status = ['msg' => 'Gagal', 'code' => 400];
         }

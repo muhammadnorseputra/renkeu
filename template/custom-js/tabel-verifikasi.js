@@ -1,4 +1,5 @@
 var tableVerifikasiSpj = $("#table-spj").DataTable({
+	stateSave: true, // ini menyimpan filter, search, pagination
 	processing: true,
 	serverSide: true,
 	paging: true,
@@ -22,7 +23,7 @@ var tableVerifikasiSpj = $("#table-spj").DataTable({
 	},
 	columnDefs: [
 		{
-			targets: [0,1,2,3,4,5],
+			targets: [0, 1, 2, 3, 4, 5],
 			orderable: false,
 			className: "text-left",
 		},

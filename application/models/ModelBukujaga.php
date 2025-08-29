@@ -10,12 +10,13 @@ class ModelBukujaga extends CI_Model
         $q = $this->db->get();
         return $q;
     }
-    public function getPagu($whr, $ta)
+    public function getPagu($whr, $ta, $is_perubahan)
     {
         $this->db->select('total_pagu_awal');
         $this->db->from('t_pagu');
         $this->db->where($whr);
-        $this->db->where('is_perubahan', $ta);
+        $this->db->where('is_perubahan', $is_perubahan);
+        $this->db->where('tahun', $ta);
         $q = $this->db->get();
         return $q->row();
     }
@@ -24,7 +25,7 @@ class ModelBukujaga extends CI_Model
         $this->db->select_sum('jumlah');
         $this->db->from('spj');
         $this->db->where($whr);
-        $this->db->where('is_perubahan', $ta);
+        $this->db->where('tahun', $ta);
         $q = $this->db->get();
         return $q->row();
     }

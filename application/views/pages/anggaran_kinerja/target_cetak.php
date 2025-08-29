@@ -143,11 +143,15 @@
                         $indikator = $indikator_program->result_array();
                         $toEnd = count($indikator);
                         foreach ($indikator as $key => $ip) :
-                            if ($ip['persentase'] === "0") {
+                            
+                            if ($ip['is_jenis'] === "2") {
                                 $indikator_input = $ip['eviden_jumlah'] . " " . $ip['eviden_jenis'];
-                            } else {
+                            } elseif($ip['is_jenis'] === "1") {
                                 $indikator_input = $ip['persentase'] . "%";
+                            } else {
+                                $indikator_input = "~";
                             }
+
                             $rowspan = $toEnd++;
                             if ($key === --$toEnd) { //last
                                 $tr .= "";
@@ -166,10 +170,8 @@
                             }
                         endforeach;
                     else:
-                        $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <tr></tr>";
+                        $tr .= "<td colspan='3' rowspan='" . $rowspan . "'></td>
+                                <tr></tr>";
                     endif;
                 ?>
                     <tr style='background-color: orange;'>
@@ -191,11 +193,15 @@
                             $indikator_keg = $indikator_kegiatan->result_array();
                             $toEnd = count($indikator_keg);
                             foreach ($indikator_keg as $key => $ik) :
-                                if ($ik['persentase'] === "0") {
+
+                                if ($ik['is_jenis'] === "2") {
                                     $indikator_input = $ik['eviden_jumlah'] . " " . $ik['eviden_jenis'];
-                                } else {
+                                } elseif ($ik['is_jenis'] === "1") {
                                     $indikator_input = $ik['persentase'] . "%";
+                                } else {
+                                    $indikator_input = "~";
                                 }
+
                                 $rowspan = $toEnd++;
                                 if ($key === --$toEnd) { //last
                                     $tr .= "";
@@ -211,14 +217,13 @@
                                 }
                             endforeach;
                         else:
-                            $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
+                            $tr .= "<td colspan='3' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                         endif;
                     ?>
                         <tr style='background-color: blue; color: white'>
-                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                            <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                            </td>
                             <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $kegiatan->nama ?></td>
                             <?= $tr ?>
                         </tr>
@@ -232,11 +237,15 @@
                                 $indikator = $indikator_sub_kegiatan->result_array();
                                 $toEnd = count($indikator);
                                 foreach ($indikator as $key => $isk) :
-                                    if ($isk['persentase'] === "0") {
+                                    
+                                    if ($isk['is_jenis'] === "2") {
                                         $indikator_input = $isk['eviden_jumlah'] . " " . $isk['eviden_jenis'];
-                                    } else {
+                                    } elseif ($isk['is_jenis'] === "1") {
                                         $indikator_input = $isk['persentase'] . "%";
+                                    } else {
+                                        $indikator_input = "~";
                                     }
+
                                     $rowspan = $toEnd++;
                                     if (0 === --$toEnd) { //last
                                         $tr .= "";
@@ -254,14 +263,13 @@
                                     }
                                 endforeach;
                             else:
-                                $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
+                                $tr .= "<td colspan='3' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                             endif;
                         ?>
                             <tr>
-                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                <td class="text-center align-middle" rowspan="<?= $toEnd ?>">
+                                    <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
                                 <td class="align-middle" rowspan="<?= $toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                 <?= $tr ?>
                             </tr>

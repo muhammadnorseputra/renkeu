@@ -6,100 +6,100 @@
 
     <title><?= $title ?></title>
     <style>
-        @page {
-            size: landscape;
-            margin: 1cm 1cm 1cm 0.8cm;
-        }
+    @page {
+        size: landscape;
+        margin: 1cm 1cm 1cm 0.8cm;
+    }
 
-        .page-break-after-this {
-            page-break-after: always;
-        }
+    .page-break-after-this {
+        page-break-after: always;
+    }
 
-        body {
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            padding: 0;
-            margin: 0;
-            font-size: 0.8em;
-        }
+    body {
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        padding: 0;
+        margin: 0;
+        font-size: 0.8em;
+    }
 
-        #header,
-        #footer {
-            position: static;
-            left: 0;
-            right: 0;
-            color: #333;
-            font-size: 0.8em;
-        }
+    #header,
+    #footer {
+        position: static;
+        left: 0;
+        right: 0;
+        color: #333;
+        font-size: 0.8em;
+    }
 
-        #header {
-            top: 0;
-            border-bottom: 0.1pt solid #aaa;
-        }
+    #header {
+        top: 0;
+        border-bottom: 0.1pt solid #aaa;
+    }
 
-        #footer {
-            bottom: 0;
-            border-top: 0.1pt solid #aaa;
-        }
+    #footer {
+        bottom: 0;
+        border-top: 0.1pt solid #aaa;
+    }
 
-        #content {
-            margin-top: 1.5cm;
-            margin-bottom: 1.5cm;
-        }
+    #content {
+        margin-top: 1.5cm;
+        margin-bottom: 1.5cm;
+    }
 
-        span.page-number {
-            float: right;
-        }
+    span.page-number {
+        float: right;
+    }
 
-        span.page-number:before {
-            content: "Page " counter(page);
-        }
+    span.page-number:before {
+        content: "Page "counter(page);
+    }
 
-        span.author {
-            float: right;
-            font-style: italic;
-        }
+    span.author {
+        float: right;
+        font-style: italic;
+    }
 
-        table {
-            width: 100%;
-            page-break-before: auto;
-        }
+    table {
+        width: 100%;
+        page-break-before: auto;
+    }
 
-        thead {
-            background-color: #fff;
-            font-size: 1em;
-        }
+    thead {
+        background-color: #fff;
+        font-size: 1em;
+    }
 
-        tbody {
-            background-color: #fff;
-        }
+    tbody {
+        background-color: #fff;
+    }
 
-        th,
-        td {
-            padding: 8pt;
-            border: 1pt solid #aaa;
-        }
+    th,
+    td {
+        padding: 8pt;
+        border: 1pt solid #aaa;
+    }
 
-        table.collapse {
-            border-collapse: collapse;
-            border: 1pt solid #aaa;
-        }
+    table.collapse {
+        border-collapse: collapse;
+        border: 1pt solid #aaa;
+    }
 
-        table.collapse td {
-            border: 1pt solid #aaa;
-        }
+    table.collapse td {
+        border: 1pt solid #aaa;
+    }
 
-        /* Hindari pemisahan baris tabel yang buruk */
-        tbody tr {
-            page-break-inside: avoid;
-        }
+    /* Hindari pemisahan baris tabel yang buruk */
+    tbody tr {
+        page-break-inside: avoid;
+    }
 
-        .text-center {
-            text-align: center;
-        }
+    .text-center {
+        text-align: center;
+    }
 
-        .text-right {
-            text-align: right;
-        }
+    .text-right {
+        text-align: right;
+    }
     </style>
 </head>
 
@@ -128,7 +128,8 @@
                     <th rowspan="3" class="align-middle">Tujuan & Sasaran</th>
                     <th rowspan="3" class="align-middle">Program/Kegiatan/Sub Kegiatan</th>
                     <th rowspan="3" class="align-middle">Indikator Kinerja</th>
-                    <th colspan="2" class="align-middle">Target Tahun <?= $this->session->userdata('tahun_anggaran'); ?></th>
+                    <th colspan="2" class="align-middle">Target Tahun <?= $tahun; ?>
+                    </th>
                     <th colspan="24" class="align-middle">Realisasi</th>
                     <th rowspan="3"> Penanggung Jawab </th>
                 </tr>
@@ -223,16 +224,16 @@
                             $realisasi_kinerja = [];
                             for ($i = 1; $i <= 12; $i++) {
                                 // Realisasi Kinerja Januari
-                                $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $r['indikator_id'])->row();
-                                if ($realisasi->persentase === "0") {
+                                $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $r['indikator_id'], $tahun)->row();
+                                if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                     $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                } elseif ($realisasi->eviden === "0") {
+                                } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                     $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                 } else {
                                     $realisasi_kinerja[$i] = "-";
                                 }
                                 // Realisasi Anggaran Januari
-                                $realisasi_anggaran[$i] = $this->realisasi->getRealisasiTujuan("$i", $t->id, $this->session->userdata('tahun_anggaran'));
+                                $realisasi_anggaran[$i] = $this->realisasi->getRealisasiTujuan("$i", null, $t->id, $tahun);
                             }
 
                             $rowspan = $toEnd++;
@@ -263,12 +264,12 @@
                                 <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
                     endif;
                 ?>
-                    <tr style='background-color: orange;'>
-                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
-                        <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama ?> </td>
-                        <?= $tr ?>
-                    </tr>
-                    <?php
+                <tr style='background-color: orange;'>
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
+                    <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama ?> </td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                     $no_level_0_1 = "#1";
                     $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
                     foreach ($sasaran->result() as $s) :
@@ -296,16 +297,16 @@
                                 $realisasi_kinerja = [];
                                 for ($i = 1; $i <= 12; $i++) {
                                     // Realisasi Kinerja Januari
-                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $r['indikator_id'])->row();
-                                    if ($realisasi->persentase === "0") {
+                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $r['indikator_id'], $tahun)->row();
+                                    if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                         $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                    } elseif ($realisasi->eviden === "0") {
+                                    } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                         $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                     } else {
                                         $realisasi_kinerja[$i] = "-";
                                     }
                                     // Realisasi Anggaran Januari
-                                    $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSasaran("$i", $t->id, $this->session->userdata('tahun_anggaran'));
+                                    $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSasaran("$i", null, $t->id, $this->session->userdata('tahun_anggaran'));
                                 }
                                 $rowspan = $toEnd++;
                                 if (0 === --$toEnd) { //last
@@ -335,12 +336,12 @@
                                 <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
                         endif;
                     ?>
-                        <tr style="background-color: green; color: white">
-                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0_1 ?></td>
-                            <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $s->nama ?> </td>
-                            <?= $tr ?>
-                        </tr>
-                        <?php
+                <tr style="background-color: green; color: white">
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0_1 ?></td>
+                    <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $s->nama ?> </td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                         $no_level_1 = 1;
 
                         if ($this->session->userdata('role') === 'ADMIN'):
@@ -374,16 +375,16 @@
                                     $realisasi_kinerja = [];
                                     for ($i = 1; $i <= 12; $i++) {
                                         // Realisasi Kinerja
-                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $ip['indikator_id'])->row();
-                                        if ($realisasi->persentase === "0") {
+                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $ip['indikator_id'], $tahun)->row();
+                                        if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                             $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                        } elseif ($realisasi->eviden === "0") {
+                                        } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                             $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                         } else {
                                             $realisasi_kinerja[$i] = "-";
                                         }
                                         // Realisasi Anggaran
-                                        $realisasi_anggaran[$i] = $this->realisasi->getRealisasiProgram("$i", $program->id);
+                                        $realisasi_anggaran[$i] = $this->realisasi->getRealisasiProgram("$i", null, $program->id);
                                     }
 
 
@@ -418,13 +419,13 @@
                                 <tr></tr>";
                             endif;
                         ?>
-                            <tr style='background-color: gray; color: white'>
-                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
-                                <td rowspan="<?= @$toEnd ?>"></td>
-                                <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
-                                <?= $tr ?>
-                            </tr>
-                            <?php
+                <tr style='background-color: gray; color: white'>
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
+                    <td rowspan="<?= @$toEnd ?>"></td>
+                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                             if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('user_name') === 'kaban') :
                                 $kegiatans = $this->realisasi->kegiatans($program->id);
                             else :
@@ -456,16 +457,16 @@
                                         $realisasi_kinerja = [];
                                         for ($i = 1; $i <= 12; $i++) {
                                             // Realisasi Kinerja
-                                            $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $ik['indikator_id'])->row();
-                                            if ($realisasi->persentase === "0") {
+                                            $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $ik['indikator_id'], $tahun)->row();
+                                            if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                                 $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                            } elseif ($realisasi->eviden === "0") {
+                                            } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                                 $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                             } else {
                                                 $realisasi_kinerja[$i] = "-";
                                             }
                                             // Realisasi Anggaran
-                                            $realisasi_anggaran[$i] = $this->realisasi->getRealisasiKegiatan("$i", $kegiatan->id);
+                                            $realisasi_anggaran[$i] = $this->realisasi->getRealisasiKegiatan("$i", null, $kegiatan->id);
                                         }
 
 
@@ -503,13 +504,14 @@
                                 <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
                                 endif;
                             ?>
-                                <tr style='background-color: blue; color: white;'>
-                                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                                    <td rowspan="<?= @$toEnd ?>"></td>
-                                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
-                                    <?= $tr ?>
-                                </tr>
-                                <?php
+                <tr style='background-color: blue; color: white;'>
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                    </td>
+                    <td rowspan="<?= @$toEnd ?>"></td>
+                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                                 $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
                                 $no_level_3 = 1;
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
@@ -536,16 +538,16 @@
                                             $realisasi_kinerja = [];
                                             for ($i = 1; $i <= 12; $i++) {
                                                 // Realisasi Kinerja
-                                                $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $isk['indikator_id'])->row();
-                                                if ($realisasi->persentase === "0") {
+                                                $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $isk['indikator_id'], $tahun)->row();
+                                                if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                                     $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                                } elseif ($realisasi->eviden === "0") {
+                                                } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                                     $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                                 } else {
                                                     $realisasi_kinerja[$i] = "-";
                                                 }
                                                 // Realisasi Anggaran
-                                                $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSubKegiatan("$i", $sub_kegiatan->id);
+                                                $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSubKegiatan("$i", null, $sub_kegiatan->id);
                                             }
 
                                             $rowspan = $toEnd++;
@@ -580,25 +582,26 @@
                                 <td rowspan='" . $rowspan . "' colspan='28'></td><tr></tr>";
                                     endif;
                                 ?>
-                                    <tr>
-                                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                        <td rowspan="<?= @$toEnd ?>"></td>
-                                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
-                                        <?= $tr ?>
-                                    </tr>
-                                <?php
+                <tr>
+                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                        <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                    <td rowspan="<?= @$toEnd ?>"></td>
+                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                                     $no_level_3++;
                                 endforeach;
                                 ?>
-                            <?php
+                <?php
                                 $no_level_2++;
                             endforeach;
                             ?>
-                        <?php
+                <?php
                             $no_level_1++;
                         endforeach;
                         ?>
-                    <?php
+                <?php
                         $no_level_0_1++;
                     endforeach;
                     ?>

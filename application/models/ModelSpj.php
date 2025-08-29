@@ -127,15 +127,33 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function LimitTransaksiTriwulan($periode, $ta)
+	public function LimitTransaksiTriwulan($tahun)
 	{
-		$implode = implode(",", $periode);
-		$this->db->select('total');
-		$this->db->from('t_pagu_limit');
-		$this->db->where('periode', $implode);
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->total ?? 0;
+		$query = $this->db->query("
+				SELECT 
+					SUM(CASE 
+						WHEN FIND_IN_SET('1', periode) 
+						OR FIND_IN_SET('2', periode) 
+						OR FIND_IN_SET('3', periode) 
+						THEN total ELSE 0 END) AS triwulan_1,
+					SUM(CASE 
+						WHEN FIND_IN_SET('4', periode) 
+						OR FIND_IN_SET('5', periode) 
+						OR FIND_IN_SET('6', periode) 
+						THEN total ELSE 0 END) AS triwulan_2,
+					SUM(CASE 
+						WHEN FIND_IN_SET('7', periode) 
+						OR FIND_IN_SET('8', periode) 
+						OR FIND_IN_SET('9', periode) 
+						THEN total ELSE 0 END) AS triwulan_3,
+					SUM(CASE 
+						WHEN FIND_IN_SET('10', periode) 
+						OR FIND_IN_SET('11', periode) 
+						OR FIND_IN_SET('12', periode) 
+						THEN total ELSE 0 END) AS triwulan_4
+				FROM t_pagu_limit WHERE tahun = $tahun
+			");
+		return $query->row();
 	}
 
 	public function TransaksiTriwulan($triwulan, $ta)
@@ -172,6 +190,16 @@ class ModelSpj extends CI_Model
 		return $q->num_rows();
 	}
 
+	public function getLimitPagu($uraian_id, $periode_id)
+	{
+		$this->db->select('total, periode');
+		$this->db->from('t_pagu_limit');
+		$this->db->where('fid_uraian', $uraian_id);
+		$this->db->where("FIND_IN_SET('{$periode_id}', periode) >", 0);
+		$q = $this->db->get();
+		return $q;
+	}
+
 
 	// -------------------------------- datatable-verifikasi --------------------------//
 	// set table
@@ -181,7 +209,7 @@ class ModelSpj extends CI_Model
 	//set column field database for datatable searchable 
 	protected $column_search = array('kegiatan.koderek');
 	// default order 
-	protected $order = array('s.id' => 'desc');
+	protected $order = array('s.entri_at' => 'asc');
 	// default select 
 	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
 
@@ -255,11 +283,11 @@ class ModelSpj extends CI_Model
 	// ----------------- datatable-verifikasi-selesai --------------------------//
 
 	//set column field database for datatable orderable
-	protected $column_order_verifikasi_selesai = array(null);
+	protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwayat.fid_periode', 'spj_riwayat.jumlah', 'spj_riwayat.entri_at');
 	//set column field database for datatable searchable 
-	protected $column_search_verifikasi_selesai = array('spj_riwayat.nama_uraian', 'spj_riwayat.nama_sub_kegiatan', 'spj_riwayat.nama_kegiatan', 'spj_riwayat.koderek');
+	protected $column_search_verifikasi_selesai = array('spj_riwayat.nama_uraian', 'spj_riwayat.nama_sub_kegiatan', 'spj_riwayat.nama_kegiatan', 'spj_riwayat.kode_uraian', 'spj_riwayat.kode_kegiatan', 'spj_riwayat.kode_sub_kegiatan');
 	// default order 
-	protected $order_verifikasi_selesai = array('id' => 'desc');
+	protected $order_verifikasi_selesai = array('spj_riwayat.entri_at' => 'desc');
 
 	private function _datatables_verifikasi_selesai()
 	{
@@ -267,7 +295,7 @@ class ModelSpj extends CI_Model
 		$this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id');
 		$this->db->from('spj_riwayat');
 		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
-		if ($this->session->userdata('role') != 'VERIFICATOR' && $this->session->userdata('role') != 'ADMIN' && $this->session->userdata('role') != 'SUPER_ADMIN' && $this->session->userdata('role') != 'SUPER_USER') {
+		if ($this->session->userdata('role') === 'USER') {
 			$this->db->where('entri_by_part', $this->session->userdata('part'));
 		}
 
@@ -319,7 +347,7 @@ class ModelSpj extends CI_Model
 
 	public function make_count_all_verifikasi_selesai()
 	{
-		$this->db->from('spj_riwayat');
+		$this->_datatables_verifikasi_selesai();
 		return $this->db->count_all_results();
 	}
 	// -------------------------------- end-datatable --------------------------//

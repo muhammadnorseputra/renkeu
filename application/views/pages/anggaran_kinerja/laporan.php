@@ -5,7 +5,9 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
     <div class="x_title">
         <h2><i class="fa fa-print mr-2"></i> Laporan Anggaran & Kinerja</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
-            <li class="d-flex justify-content-center align-items-center mr-2 "><a href="<?= base_url('app/capaian/laporan_cetak') ?>" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
+            <li class="d-flex justify-content-center align-items-center mr-2 "><a
+                    href="<?= base_url('app/capaian/laporan_cetak') ?>" class="print-link text-primary"
+                    target="_blank"><i class="fa fa-print"></i> Cetak</a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
@@ -19,7 +21,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                         <th rowspan="3" class="align-middle">Tujuan & Sasaran</th>
                         <th rowspan="3" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
                         <th rowspan="3" class="align-middle">Indikator Kinerja</th>
-                        <th colspan="2" class="align-middle">Target Tahun <?= $this->session->userdata('tahun_anggaran'); ?></th>
+                        <th colspan="2" class="align-middle">Target Tahun
+                            <?= $tahun; ?></th>
                         <th colspan="24" class="align-middle">Realisasi</th>
                         <!-- <th colspan="3"> Faktor - Faktor </th> -->
                     </tr>
@@ -89,7 +92,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
 
                     <?php
                     $no_level_0 = "#";
-                    $tujuan = $this->target->getTujuan(['t.tahun' => $this->session->userdata('tahun_anggaran')]);
+                    $tujuan = $this->target->getTujuan(['t.tahun' => $tahun]);
                     foreach ($tujuan->result() as $t) :
                         $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id], $this->session->userdata('part'));
                         $tr = "";
@@ -107,7 +110,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 }
 
                                 // Target Anggaran
-                                $target_anggaran = $this->target->getAlokasiPaguTujuan($t->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
+                                $target_anggaran = $this->target->getAlokasiPaguTujuan($t->id, $this->session->userdata('is_perubahan'), $tahun)->row()->total_pagu_awal;
                                 $target_kinerja = $indikator_input_count;
 
                                 // Realisasi Anggaran & Kinerja Tahunan
@@ -115,16 +118,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 $realisasi_kinerja = [];
                                 for ($i = 1; $i <= 12; $i++) {
                                     // Realisasi Kinerja Januari
-                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $r['indikator_id'])->row();
-                                    if ($realisasi->persentase === "0") {
+                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $r['indikator_id'], $tahun)->row();
+                                    if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                         $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                    } elseif ($realisasi->eviden === "0") {
+                                    } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                         $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                     } else {
                                         $realisasi_kinerja[$i] = "-";
                                     }
                                     // Realisasi Anggaran Januari
-                                    $realisasi_anggaran[$i] = $this->realisasi->getRealisasiTujuan("$i", $t->id, $this->session->userdata('tahun_anggaran'));
+                                    $realisasi_anggaran[$i] = $this->realisasi->getRealisasiTujuan("$i", null, $t->id, $tahun);
                                 }
 
                                 // Aksi
@@ -158,14 +161,14 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                         endif;
                     ?>
-                        <tr class="bg-warning">
-                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
-                            <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama ?> </td>
-                            <?= $tr ?>
-                        </tr>
-                        <?php
+                    <tr class="bg-warning">
+                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
+                        <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama ?> </td>
+                        <?= $tr ?>
+                    </tr>
+                    <?php
                         $no_level_0_1 = "#1";
-                        $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
+                        $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $tahun]);
                         foreach ($sasaran->result() as $s) :
                             $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id], null);
                             $tr = "";
@@ -183,7 +186,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     }
 
                                     // Target Anggaran
-                                    $target_anggaran = $this->target->getAlokasiPaguSasaran($s->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
+                                    $target_anggaran = $this->target->getAlokasiPaguSasaran($s->id, $this->session->userdata('is_perubahan'), $tahun)->row()->total_pagu_awal;
                                     $target_kinerja = $indikator_input_count;
 
                                     // Realisasi Anggaran & Kinerja Tahunan
@@ -191,16 +194,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     $realisasi_kinerja = [];
                                     for ($i = 1; $i <= 12; $i++) {
                                         // Realisasi Kinerja Januari
-                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $r['indikator_id'])->row();
-                                        if ($realisasi->persentase === "0") {
+                                        $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $r['indikator_id'], $tahun)->row();
+                                        if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                             $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                        } elseif ($realisasi->eviden === "0") {
+                                        } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                             $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                         } else {
                                             $realisasi_kinerja[$i] = "-";
                                         }
                                         // Realisasi Anggaran Januari
-                                        $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSasaran("$i", $t->id, $this->session->userdata('tahun_anggaran'));
+                                        $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSasaran("$i", null, $t->id, $tahun);
                                     }
 
                                     // Aksi
@@ -234,14 +237,14 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                             endif;
                         ?>
-                            <tr class="bg-success text-white">
-                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0_1 ?></td>
-                                <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $s->nama ?> </td>
-                                <?= $tr ?>
-                            </tr>
-                            <?php
+                    <tr class="bg-success text-white">
+                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0_1 ?></td>
+                        <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $s->nama ?> </td>
+                        <?= $tr ?>
+                    </tr>
+                    <?php
                             $no_level_1 = 1;
-                            $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
+                            $programs = $this->target->program($s->id, $this->session->userdata('part'), $tahun);
                             foreach ($programs->result() as $program) :
                                 $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], null);
                                 $tr = "";
@@ -259,7 +262,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                         }
 
                                         // Target Anggaran
-                                        $target_anggaran = $this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
+                                        $target_anggaran = $this->target->getAlokasiPaguProgram($program->id, $this->session->userdata('is_perubahan'), $tahun)->row()->total_pagu_awal;
                                         $target_kinerja = $indikator_input_count;
 
                                         // Realisasi Anggaran & Kinerja Tahunan
@@ -267,16 +270,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                         $realisasi_kinerja = [];
                                         for ($i = 1; $i <= 12; $i++) {
                                             // Realisasi Kinerja
-                                            $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $ip['indikator_id'])->row();
-                                            if ($realisasi->persentase === "0") {
+                                            $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $ip['indikator_id'], $tahun)->row();
+                                            if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                                 $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                            } elseif ($realisasi->eviden === "0") {
+                                            } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                                 $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                             } else {
                                                 $realisasi_kinerja[$i] = "-";
                                             }
                                             // Realisasi Anggaran
-                                            $realisasi_anggaran[$i] = $this->realisasi->getRealisasiProgram("$i", $program->id);
+                                            $realisasi_anggaran[$i] = $this->realisasi->getRealisasiProgram("$i", null, $program->id);
                                         }
 
 
@@ -314,13 +317,13 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                                 endif;
                             ?>
-                                <tr class="bg-secondary text-white">
-                                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
-                                    <td rowspan="<?= @$toEnd ?>"></td>
-                                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
-                                    <?= $tr ?>
-                                </tr>
-                                <?php
+                    <tr class="bg-secondary text-white">
+                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
+                        <td rowspan="<?= @$toEnd ?>"></td>
+                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
+                        <?= $tr ?>
+                    </tr>
+                    <?php
                                 if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('user_name') === 'kaban') :
                                     $kegiatans = $this->realisasi->kegiatans($program->id);
                                 else :
@@ -343,7 +346,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                 $indikator_input_count = $ik['persentase'];
                                                 $indikator_input_view = $ik['persentase'] . "%";
                                             }
-                                            $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
+                                            $target_anggaran = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $this->session->userdata('is_perubahan'), $tahun)->row()->total_pagu_awal;
                                             $target_kinerja = $indikator_input_count;
 
                                             // Realisasi Anggaran & Kinerja Tahunan
@@ -351,16 +354,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             $realisasi_kinerja = [];
                                             for ($i = 1; $i <= 12; $i++) {
                                                 // Realisasi Kinerja
-                                                $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $ik['indikator_id'])->row();
-                                                if ($realisasi->persentase === "0") {
+                                                $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $ik['indikator_id'], $tahun)->row();
+                                                if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                                     $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                                } elseif ($realisasi->eviden === "0") {
+                                                } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                                     $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                                 } else {
                                                     $realisasi_kinerja[$i] = "-";
                                                 }
                                                 // Realisasi Anggaran
-                                                $realisasi_anggaran[$i] = $this->realisasi->getRealisasiKegiatan("$i", $kegiatan->id);
+                                                $realisasi_anggaran[$i] = $this->realisasi->getRealisasiKegiatan("$i", null, $kegiatan->id);
                                             }
 
                                             // Aksi
@@ -407,13 +410,14 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                         $tr .= "<tr></tr>";
                                     endif;
                                 ?>
-                                    <tr class="bg-info text-white">
-                                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
-                                        <td rowspan="<?= @$toEnd ?>"></td>
-                                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
-                                        <?= $tr ?>
-                                    </tr>
-                                    <?php
+                    <tr class="bg-info text-white">
+                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                            <?= $no_level_1 . "." . $no_level_2 ?></td>
+                        <td rowspan="<?= @$toEnd ?>"></td>
+                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
+                        <?= $tr ?>
+                    </tr>
+                    <?php
                                     $sub_kegiatans = $this->realisasi->sub_kegiatans($kegiatan->id);
                                     $no_level_3 = 1;
                                     foreach ($sub_kegiatans->result() as $sub_kegiatan) :
@@ -432,7 +436,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                     $indikator_input_view = $isk['persentase'] . "%";
                                                 }
 
-                                                $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal;
+                                                $target_anggaran = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $this->session->userdata('is_perubahan'), $tahun)->row()->total_pagu_awal;
                                                 $target_kinerja = $indikator_input_count;
 
                                                 // Realisasi Anggaran & Kinerja Tahunan
@@ -440,16 +444,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                 $realisasi_kinerja = [];
                                                 for ($i = 1; $i <= 12; $i++) {
                                                     // Realisasi Kinerja
-                                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", $isk['indikator_id'])->row();
-                                                    if ($realisasi->persentase === "0") {
+                                                    $realisasi = $this->realisasi->getRealisasiByIndikatorId("$i", null, $isk['indikator_id'], $tahun)->row();
+                                                    if ($realisasi->persentase === "0" && $realisasi->eviden_jenis !== "-") {
                                                         $realisasi_kinerja[$i] = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                                    } elseif ($realisasi->eviden === "0") {
+                                                    } elseif ($realisasi->eviden === "0" && $realisasi->eviden_jenis === "-") {
                                                         $realisasi_kinerja[$i] = $realisasi->persentase . "%";
                                                     } else {
                                                         $realisasi_kinerja[$i] = "-";
                                                     }
                                                     // Realisasi Anggaran
-                                                    $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSubKegiatan("$i", $sub_kegiatan->id);
+                                                    $realisasi_anggaran[$i] = $this->realisasi->getRealisasiSubKegiatan("$i", null, $sub_kegiatan->id);
                                                 }
 
                                                 // Aksi
@@ -486,26 +490,27 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 <td rowspan='" . $rowspan . "' colspan='27'></td><tr></tr>";
                                         endif;
                                     ?>
-                                        <tr>
-                                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                            <td rowspan="<?= @$toEnd ?>"></td>
-                                            <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
-                                            <?= $tr ?>
-                                        </tr>
+                    <tr>
+                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                            <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                        <td rowspan="<?= @$toEnd ?>"></td>
+                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                        <?= $tr ?>
+                    </tr>
 
-                                    <?php
+                    <?php
                                         $no_level_3++;
                                     endforeach;
                                     ?>
-                                <?php
+                    <?php
                                     $no_level_2++;
                                 endforeach;
                                 ?>
-                            <?php
+                    <?php
                                 $no_level_1++;
                             endforeach;
                             ?>
-                        <?php
+                    <?php
                             $no_level_0_1++;
                         endforeach;
                         ?>
@@ -523,9 +528,10 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                     <tr>
                         <td><?= $faktor->pendorong ?? "-"; ?></td>
                         <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'): ?>
-                            <td width="5%" class="valign-middle text-center">
-                                <button class="btn btn-sm btn-primary m-0" onclick="InputFaktor('<?= @$faktor->id ?>')"><i class="fa fa-edit"></i></button>
-                            </td>
+                        <td width="5%" class="valign-middle text-center">
+                            <button class="btn btn-sm btn-primary m-0" onclick="InputFaktor('<?= @$faktor->id ?>')"><i
+                                    class="fa fa-edit"></i></button>
+                        </td>
                         <?php endif; ?>
                     </tr>
                     <tr>
@@ -534,9 +540,10 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                     <tr>
                         <td><?= $faktor->penghambat ?? "-"; ?></td>
                         <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'): ?>
-                            <td width="5%" class="valign-middle text-center">
-                                <button class="btn btn-sm btn-primary m-0" onclick="InputFaktor('<?= @$faktor->id ?>')" data-id=""><i class="fa fa-edit"></i></button>
-                            </td>
+                        <td width="5%" class="valign-middle text-center">
+                            <button class="btn btn-sm btn-primary m-0" onclick="InputFaktor('<?= @$faktor->id ?>')"
+                                data-id=""><i class="fa fa-edit"></i></button>
+                        </td>
                         <?php endif; ?>
                     </tr>
                     <tr>
@@ -549,9 +556,10 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             <?= $faktor->tindak_lanjut ?? "-"; ?>
                         </td>
                         <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'): ?>
-                            <td width="5%" class="valign-middle text-center">
-                                <button class="btn btn-sm btn-primary m-0" onclick="InputFaktor('<?= @$faktor->id ?>')" data-id=""><i class="fa fa-edit"></i></button>
-                            </td>
+                        <td width="5%" class="valign-middle text-center">
+                            <button class="btn btn-sm btn-primary m-0" onclick="InputFaktor('<?= @$faktor->id ?>')"
+                                data-id=""><i class="fa fa-edit"></i></button>
+                        </td>
                         <?php endif; ?>
                     </tr>
                 </tbody>
@@ -561,7 +569,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
 </div>
 
 <!-- Modal Faktor -->
-<div class="modal fade modal-faktor" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+<div class="modal fade modal-faktor" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <?= form_open(base_url("app/capaian/input_faktor"), ['id' => 'formFaktor', 'data-parsley-validate' => '']); ?>
         <input type="hidden" name="id">
@@ -574,19 +583,23 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
             <div class="modal-body">
                 <div class="form-group">
                     <label for="pendorong">Faktor Pendorong <span class="text-danger">*</span></label>
-                    <textarea name="pendorong" id="pendorong" cols="30" rows="5" class="form-control" required></textarea>
+                    <textarea name="pendorong" id="pendorong" cols="30" rows="5" class="form-control"
+                        required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="penghambat">Faktor Penghambat <span class="text-danger">*</span></label>
-                    <textarea name="penghambat" id="penghambat" cols="30" rows="5" class="form-control" required></textarea>
+                    <textarea name="penghambat" id="penghambat" cols="30" rows="5" class="form-control"
+                        required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="tindak_lanjut">Tindak Lanjut <span class="text-danger">*</span></label>
-                    <textarea name="tindak_lanjut" id="tindak_lanjut" cols="30" rows="5" class="form-control" required></textarea>
+                    <textarea name="tindak_lanjut" id="tindak_lanjut" cols="30" rows="5" class="form-control"
+                        required></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i class="fa fa-close mr-2"></i>Batal</button>
+                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i
+                        class="fa fa-close mr-2"></i>Batal</button>
                 <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
             </div>
         </div>

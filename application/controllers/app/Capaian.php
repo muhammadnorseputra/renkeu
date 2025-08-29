@@ -39,6 +39,7 @@ class Capaian extends CI_Controller
 		$data = [
 			'title' => 'Capaian Anggaran & Kinerja',
 			'content' => 'pages/anggaran_kinerja/capaian',
+			'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
 			'autoload_js' => [
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
 				'template/custom-js/capaian.js',
@@ -47,9 +48,10 @@ class Capaian extends CI_Controller
 		$this->load->view('layout/app', $data);
 	}
 
-	public function cetak($periode_id)
+	public function cetak($periode_start, $periode_end)
 	{
-		$periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
+		$periode_start_name = $this->realisasi->getPeriodeById($periode_start)->row()->nama;
+		$periode_end_name = $this->realisasi->getPeriodeById($periode_end)->row()->nama;
 
 		if ($this->session->userdata('role') === 'ADMIN'):
 			$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
@@ -58,20 +60,25 @@ class Capaian extends CI_Controller
 		endif;
 
 		$data = [
-			'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_nama,
+			'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_start_name . ' s/d ' . $periode_end_name,
 			'programs' => $programs,
-			'tw_id' => $periode_id,
-			'tw_nama' => $periode_nama
+			'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
+			'periode_start' => $periode_start,
+			'periode_end' => $periode_end,
+			'periode_start_name' => $periode_start_name,
+			'periode_end_name' => $periode_end_name
 		];
 		$this->load->view('pages/anggaran_kinerja/capaian_cetak', $data);
 	}
 
 	public function laporan()
 	{
-		$faktor = $this->realisasi->getFaktors($this->session->userdata('tahun_anggaran'));
+		$tahun = $this->session->userdata('tahun_anggaran');
+		$faktor = $this->realisasi->getFaktors($tahun);
 		$data = [
 			'title' => 'Laporan Anggaran & Kinerja',
 			'content' => 'pages/anggaran_kinerja/laporan',
+			'tahun' => $tahun,
 			'autoload_js' => [
 				'template/backend/vendors/select2/dist/js/select2.full.min.js',
 				'template/backend/vendors/parsleyjs/dist/parsley.min.js',

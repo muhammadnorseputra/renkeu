@@ -5,7 +5,7 @@
         <strong><i class="fa fa-lock mr-2"></i> Verifikasi </strong>, Usulan SPJ kamu dalam tahap verifikasi.
     </div>
 <?php endif; ?>
-<?php if (isset($detail->catatan) && @$detail->is_status === 'ENTRI'): ?>
+<?php if (isset($detail->catatan) && @$detail->is_status === 'ENTRI' && !empty($detail->catatan)): ?>
     <div class="alert alert-warning rounded-0 border text-dark d-flex justify-content-start align-items-start" role="alert">
         <i class="fa fa-exclamation-triangle mr-2 mt-1 text-danger"></i>
         <div><strong>Catatan Verifikator : </strong> <br> <?= !empty($detail->catatan) ? $detail->catatan : '-' ?></div>
@@ -67,41 +67,49 @@
             <input type="hidden" name="ref_uraian" value="<?= @$detail->fid_uraian ?>">
             <div class="col-md-10 center-margin">
                 <div class="input-group">
-                    <label for="koderek" class="row col-md-12">Kode Rekening <span class="text-danger ml-1 mr-1">*</span></label>
-                    <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" onclick="showModalSearchKode()" <?= $disabled_status ?> class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-light rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Kode</button>
+                    <label for="koderek" class="row col-md-12">Kode <span class="text-danger ml-1 mr-1">*</span></label>
+                    <input type="text" value="<?= @$detail->koderek ?>" readonly name="koderek" id="koderek" onclick="showModalSearchKode()" <?= $disabled_status ?> class="form-control col-md-6" required="required" data-parsley-errors-container="#help-block-koderek"> <button type="button" class="btn btn-light rounded-0 ml-1" data-toggle="modal" data-target="#modelSearchKode" <?= $disabled_status ?>><i class="fa fa-search"></i> Cari Rincian</button>
                     <div id="help-block-koderek" class="row col-md-12"></div>
                 </div>
                 <?php if (!empty($detail->fid_kegiatan)): ?>
                     <div class="row">
                         <div class="col-md-12" id="loadKegiatan">
-                            <ul class="list-unstyled d-lg-flex justify-content-start font-weight-bold">
+                            <ul class="list-unstyled d-lg-flex flex-column justify-content-start font-weight-bold">
                                 <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-warning mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_kegiatans', $detail->fid_kegiatan) ?></li>
-                                <li class="d-inline-flex align-items-center mx-md-2"><i class="fa fa-file-code-o text-info ml-md-2 mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_sub_kegiatans', $detail->fid_sub_kegiatan) ?></li>
+                                <li class="d-inline-flex align-items-center my-2"><i class="fa fa-file-code-o text-info mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_sub_kegiatans', $detail->fid_sub_kegiatan) ?></li>
                                 <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-success ml-md- mr-2 fa-2x" aria-hidden="true"></i> <?= @$this->spj->getNama('ref_uraians', $detail->fid_uraian) ?> <i class="fa fa-check-circle text-success ml-2"></i></li>
                             </ul>
                         </div>
                     </div>
+                <?php else: ?>
+                    <div class="row">
+                        <div class="col-md-12" id="loadKegiatan"></div>
+                    </div>
                 <?php endif; ?>
+                <div class="divider-dashed"></div>
                 <div class="row">
                     <div class="col-12 col-md-3">
                         <div class="form-group">
-                            <label class="col-form-label label-align" for="bulan">SPJ Periode</label>
-                            <select name="periode" id="periode" class="form-control rounded-0" required <?= $disabled_status ?>>
+                            <label class="col-form-label label-align" for="bulan">SPJ Periode <span class="text-danger">*</span></label>
+                            <select name="periode" id="periode" class="form-control rounded-0" required <?= $disabled_status; ?>
+                                data-parsley-errors-container="#help-block-bulan">
+                                <option value="">-- Pilih Periode --</option>
                                 <?php
                                 foreach ($this->spj->getPeriode()->result() as $periode) :
                                     $is_status = $periode->is_open === 'Y' ? 'OPEN' : 'CLOSE';
                                     $disabled = $periode->is_open !== 'Y' ? 'disabled' : '';
+                                    $selected = (isset($detail->fid_periode) && $detail->fid_periode == $periode->id) ? 'selected' : '';
                                 ?>
-                                    <option value="<?= $periode->id ?>" <?= $disabled ?>><?= $periode->nama ?> (<?= $is_status ?>)</option>
+                                    <option value="<?= $periode->id ?>" <?= $disabled ?> <?= $selected; ?>><?= $periode->nama ?> (<?= $is_status ?>)</option>
                                 <?php endforeach; ?>
                             </select>
-                            <div id="help-block-bulan" class="row col-md-12"></div>
+                            <div id="help-block-bulan"></div>
                         </div>
                     </div>
                     <div class="col-12 col-md-3">
                         <div class="form-group">
-                            <label class="col-form-label label-align" for="tahun">SPJ Tahun</label>
-                            <select name="tahun" id="tahun" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-tahun" <?= $disabled_status ?>>
+                            <label class="col-form-label label-align" for="tahun">SPJ Tahun <span class="text-danger">*</span></label>
+                            <select name="tahun" id="tahun" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-tahun" <?= $disabled_status; ?>>
                                 <option value="">Pilih Tahun</option>
                                 <?php
                                 $year = date('Y');
@@ -120,33 +128,50 @@
                     </div>
                 </div>
                 <?php
+                // Hitung total pagu dan sisa pagu
                 $totalPaguAwal = !empty($this->target->getAlokasiPaguUraian(@$detail->fid_uraian, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal) ? $this->target->getAlokasiPaguUraian(@$detail->fid_uraian)->row()->total_pagu_awal : 0;
                 $totalRealisasiPagu =  $totalPaguAwal - $this->realisasi->getRealisasiTahunanUraian(@$detail->fid_uraian, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
                 $totalSisaPagu = ($totalRealisasiPagu - @$detail->jumlah);
+                // Hitung sisa angkas / limit
+                $totalLimit = $this->spj->getLimitPagu(@$detail->fid_uraian, @$detail->fid_periode)->row();
+                $totalRealisasiPaguByPeriode = $this->realisasi->getRealisasiByPeriode(@$detail->fid_uraian, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI'], explode(",", @$totalLimit->periode));
+                $totalSisaLimit = (@$totalLimit->total - $totalRealisasiPaguByPeriode);
                 ?>
                 <div class="divider-dashed"></div>
                 <div class="form-group d-flex">
-                    <div class="pr-5 border-right">
+                    <div class="pr-5  p-3 shadow rounded">
                         <b>Jumlah Maksimum</b>
                         <h5 id="jumlah_max">Rp. <?= nominal($totalPaguAwal) ?></h5>
                     </div>
-                    <div class="pl-5">
+                    <div class="ml-3 p-3 rounded shadow">
                         <b>Sisa Anggaran</b>
                         <h5 id="sisa_max">Rp. <?= nominal($totalRealisasiPagu) ?></h5>
+                    </div>
+                    <div class="ml-3 p-3 rounded shadow">
+                        <b>Sisa Angkas</b>
+                        <h5 id="angkas">Rp. <?= nominal($totalSisaLimit) ?></h5>
                     </div>
                 </div>
                 <div class="divider-dashed"></div>
 
                 <div class="form-group">
                     <label for="jumlah" class="row col-md-12">Jumlah <span class="text-danger ml-1 mr-1">*</span></label>
-                    <input type="text" value="<?= @nominal($detail->jumlah) ?>" data-start="<?= $totalRealisasiPagu ?>" name="jumlah" id="jumlah" class="form-control col-md-6" required data-parsley-errors-container="#help-block-jumlah" data-parsley-remote="<?= base_url('app/spj/cek_jumlah_pengajuan/' . @$detail->fid_uraian) ?>" data-parsley-remote-reverse="false" data-parsley-remote-options='{ "type": "POST" }' data-parsley-remote-message="Jumlah yang dimasukan melebihi batas maksimum." data-parsley-pattern="^(([0-9.]?)*)+$" data-parsley-trigger="focusout" <?= $disabled_status ?>>
+                    <input type="text" value="<?= @nominal($detail->jumlah) ?>"
+                        data-start="<?= $totalRealisasiPagu ?>"
+                        data-start-limit="<?= $totalSisaLimit ?>"
+                        name="jumlah"
+                        id="jumlah"
+                        class="form-control col-md-6"
+                        required
+                        data-parsley-errors-container="#help-block-jumlah"
+                        <?= $disabled_status; ?>>
                     <div id="help-block-jumlah" class="row col-md-12"></div>
                 </div>
 
                 <div class="clearfix"></div>
                 <div class="form-group">
                     <label class="col-form-label label-align" for="uraian">Uraian/Untuk Pembayaran/Keterangan Kwitansi <span class="text-danger">*</span></label>
-                    <textarea name="uraian" id="uraian" cols="30" rows="5" class="form-control" required="required" <?= $disabled_status ?>><?= @$detail->uraian ?></textarea>
+                    <textarea name="uraian" id="uraian" cols="30" rows="5" class="form-control" required="required" <?= $disabled_status; ?>><?= @$detail->uraian ?></textarea>
                 </div>
 
                 <button class="btn btn-danger rounded-0 pull-left mt-3" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-arrow-left mr-3"></i> Kembali </button>
@@ -165,9 +190,44 @@
             <?= form_open(base_url('app/spj/proseseviden'), ['id' => 'step-2', 'class' => 'form-horizontal form-label-left', 'data-parsley-validate' => '']); ?>
             <input type="hidden" name="token" value="<?= @$detail->token ?>">
             <div class="col-md-10 center-margin">
-                <div class="alert alert-warning rounded-0" role="alert">
+                <div class="alert alert-info rounded-0" role="alert">
                     <strong>Penting :</strong> Usahakan link yang diberikan berstatus publik, dapat diakses saat pengecekan oleh verifikator.
                 </div>
+                <ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pertama-tab" data-toggle="tab" href="#pertama" role="tab" aria-controls="pertama" aria-selected="false">Scan SPPD</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="pertama" role="tabpanel" aria-labelledby="pertama-tab">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <ol>
+                                    <li>Kuitansi bendahara</li>
+                                    <li>NPD</li>
+                                    <li>Undangan (bila ada)</li>
+                                    <li>Telaah staf</li>
+                                    <li>Surat Tugas</li>
+                                    <li>SPPD</li>
+                                    <li>Laporan perjadin dan foto (lampirannya)</li>
+                                    <li>Rincian perjalanan dinas</li>
+                                    <li>Surat pernyataan riil</li>
+                                    <li>Bukti dukung bill hotel, tiket pesawat, boarding dll</li>
+                                </ol>
+                            </div>
+                            <div class="col-md-5">
+                                <ul>
+                                    <li>Tanggal pada SPJ diisi semua (kuitansi dll)</li>
+                                    <li>Untuk sppd di scan bolak balik (Untuk sppd bolak baliknya urut halamannya. Lembar depan dan lembar belakang.)</li>
+                                    <li>Untuk scanan kuitansi bendahara WAJIB di halaman pertama untuk semua SPJ</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10 center-margin">
+
                 <div class="form-group">
                     <label class="col-form-label label-align" for="link">Link Berkas <span class="text-danger">*</span></label>
                     <textarea name="link" id="link" cols="30" rows="3" class="form-control" required="required" <?= $disabled_status ?>><?= @$detail->berkas_link ?></textarea>
@@ -246,8 +306,8 @@
                                         <?= strtoupper($spj->nama_sub_kegiatan) ?>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="bg-light text-dark text-center" colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
+                                <tr class="bg-light text-dark text-center">
+                                    <td colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -292,8 +352,8 @@
                                         <?= $spj->berkas_link ?> <br>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="bg-light text-dark text-center" colspan="3">Detail Verificator</td>
+                                <tr class="bg-light text-dark text-center">
+                                    <td colspan="3">Detail Verificator</td>
                                 </tr>
                                 <tr>
                                     <td colspan="3">
@@ -315,8 +375,8 @@
                         </div>
                         <table class="table table-bordered">
                             <tbody>
-                                <tr>
-                                    <td class="bg-light text-dark text-center" colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
+                                <tr class="bg-light text-dark text-center">
+                                    <td colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -361,8 +421,8 @@
                                         <?= $spj->berkas_link ?> <br>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="bg-light text-dark text-center" colspan="3">Detail Verificator</td>
+                                <tr class="bg-light text-dark text-center">
+                                    <td colspan="3">Detail Verificator</td>
                                 </tr>
                                 <tr>
                                     <td colspan="3">

@@ -363,14 +363,16 @@ class Export extends CI_Controller
             'title' => 'Realisasi Anggaran & Kinerja  - ' . $periode_nama,
             'programs' => $programs,
             'tw_id' => $periode_id,
-            'tw_nama' => $periode_nama
+            'tw_nama' => $periode_nama,
+            'tahun_anggaran' => $this->tahun_anggaran
         ];
         $this->load->view('pages/anggaran_kinerja/realisasi_cetak_excel', $data);
     }
 
-    public function capaian($periode_id)
+    public function capaian($periode_start, $periode_end)
     {
-        $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
+        $periode_start_name = $this->realisasi->getPeriodeById($periode_start)->row()->nama;
+        $periode_end_name = $this->realisasi->getPeriodeById($periode_end)->row()->nama;
 
         if ($this->session->userdata('role') === 'ADMIN'):
             $programs = $this->target->program(null, null, $this->tahun_anggaran);
@@ -379,10 +381,13 @@ class Export extends CI_Controller
         endif;
 
         $data = [
-            'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_nama,
+            'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_start_name . ' s/d ' . $periode_end_name,
             'programs' => $programs,
-            'tw_id' => $periode_id,
-            'tw_nama' => $periode_nama
+            'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
+            'periode_start' => $periode_start,
+            'periode_end' => $periode_end,
+            'periode_start_name' => $periode_start_name,
+            'periode_end_name' => $periode_end_name
         ];
         $this->load->view('pages/anggaran_kinerja/capaian_cetak_excel', $data);
     }

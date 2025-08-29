@@ -2,8 +2,12 @@
     <div class="x_title">
         <h2><i class="fa fa-dollar mr-2"></i> Target Anggaran & Kinerja</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
-            <li class="d-flex justify-content-center align-items-center mr-2"><a href="<?= base_url('app/target/cetak/' . $this->session->userdata('tahun_anggaran')) ?>" class="print-link text-primary"><i class="fa fa-print"></i> Cetak</a></li>
-            <li class="d-flex justify-content-center align-items-center mr-2"><a href="<?= base_url('app/export/target/' . $this->session->userdata('tahun_anggaran')) ?>" class="print-link text-info"><i class="fa fa-download"></i> Export</a></li>
+            <li class="d-flex justify-content-center align-items-center mr-2"><a
+                    href="<?= base_url('app/target/cetak/' . $this->session->userdata('tahun_anggaran')) ?>"
+                    class="print-link text-primary" target="_blank"><i class="fa fa-print"></i> Cetak</a></li>
+            <li class="d-flex justify-content-center align-items-center mr-2"><a
+                    href="<?= base_url('app/export/target/' . $this->session->userdata('tahun_anggaran')) ?>"
+                    class="print-link text-info"><i class="fa fa-download"></i> Export</a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
@@ -47,10 +51,12 @@
                             endif;
 
                             // Output Indikator Presentase
-                            if ($r['persentase'] === "0") {
+                            if ($r['is_jenis'] === "2") {
                                 $indikator_input = $r['eviden_jumlah'] . " " . $r['eviden_jenis'];
-                            } else {
+                            } elseif($r['is_jenis'] === "1") {
                                 $indikator_input = $r['persentase'] . "%";
+                            } else {
+                                $indikator_input = "~";
                             }
 
                             // Rowspan untuk Indikator
@@ -75,11 +81,7 @@
                             }
                         endforeach;
                     else:
-                        $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
+                        $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                     endif;
                 ?>
@@ -88,7 +90,9 @@
                         <td class="text-left" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama; ?></td>
                         <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
                             <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') : ?>
-                                <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $t->id ?>" data-label="Tujuan" data-ref="ref_tujuan" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $t->nama ?>"><i class="fa fa-plus"></i></button>
+                                <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $t->id ?>"
+                                    data-label="Tujuan" data-ref="ref_tujuan" data-toggle="tooltip" data-placement="top"
+                                    title="Tambah Indikator : <?= $t->nama ?>"><i class="fa fa-plus"></i></button>
                             <?php endif; ?>
                         </td>
                         <?= $tr; ?>
@@ -113,10 +117,12 @@
                                 endif;
 
                                 // Output Indikator Presentase
-                                if ($rs['persentase'] === "0") {
+                                if ($rs['is_jenis'] === "2") {
                                     $indikator_input = $rs['eviden_jumlah'] . " " . $rs['eviden_jenis'];
-                                } else {
+                                } elseif ($rs['is_jenis'] === "1") {
                                     $indikator_input = $rs['persentase'] . "%";
+                                } else {
+                                    $indikator_input = "~";
                                 }
 
                                 // Rowspan untuk Indikator
@@ -141,11 +147,7 @@
                                 }
                             endforeach;
                         else:
-                            $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
+                            $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                         endif;
                     ?>
@@ -154,7 +156,9 @@
                             <td class="text-left text-wrap" rowspan="<?= @$toEnd ?>" colspan="2"><?= $s->nama; ?></td>
                             <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
                                 <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') : ?>
-                                    <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $s->id ?>" data-label="Sasaran" data-ref="ref_sasaran" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $s->nama ?>"><i class="fa fa-plus"></i></button>
+                                    <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $s->id ?>"
+                                        data-label="Sasaran" data-ref="ref_sasaran" data-toggle="tooltip" data-placement="top"
+                                        title="Tambah Indikator : <?= $s->nama ?>"><i class="fa fa-plus"></i></button>
                                 <?php endif; ?>
                             </td>
                             <?= $tr; ?>
@@ -178,10 +182,12 @@
                                         $button_ubah = '';
                                     endif;
 
-                                    if ($ip['persentase'] === "0") {
+                                    if ($ip['is_jenis'] === "2") {
                                         $indikator_input = $ip['eviden_jumlah'] . " " . $ip['eviden_jenis'];
-                                    } else {
+                                    } elseif ($ip['is_jenis'] === "1") {
                                         $indikator_input = $ip['persentase'] . "%";
+                                    } else {
+                                        $indikator_input = "~";
                                     }
 
                                     $rowspan = $toEnd++;
@@ -205,11 +211,7 @@
                                     }
                                 endforeach;
                             else:
-                                $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
+                                $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                             endif;
                         ?>
@@ -219,7 +221,10 @@
                                 <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?></td>
                                 <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
                                     <?php if ($this->session->userdata('role') === 'USER') : ?>
-                                        <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $program->id ?>" data-label="Program" data-ref="ref_programs" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $program->nama ?>"><i class="fa fa-plus"></i></button>
+                                        <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator"
+                                            data-id="<?= $program->id ?>" data-label="Program" data-ref="ref_programs"
+                                            data-toggle="tooltip" data-placement="top"
+                                            title="Tambah Indikator : <?= $program->nama ?>"><i class="fa fa-plus"></i></button>
                                     <?php endif; ?>
                                 </td>
                                 <?= $tr ?>
@@ -247,10 +252,12 @@
                                             $button_ubah = '';
                                         endif;
 
-                                        if ($ik['persentase'] === "0") {
+                                        if ($ik['is_jenis'] === "2") {
                                             $indikator_input = $ik['eviden_jumlah'] . " " . $ik['eviden_jenis'];
-                                        } else {
+                                        } elseif ($ik['is_jenis'] === "1") {
                                             $indikator_input = $ik['persentase'] . "%";
+                                        } else {
+                                            $indikator_input = "~";
                                         }
 
                                         $rowspan = $toEnd++;
@@ -274,21 +281,21 @@
                                         }
                                     endforeach;
                                 else:
-                                    $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
+                                    $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                                 endif;
                             ?>
                                 <tr class="bg-info text-white">
-                                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?></td>
+                                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                                    </td>
                                     <td class="align-middle bg-success border-success" rowspan="<?= @$toEnd ?>"></td>
                                     <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
                                     <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
                                         <?php if ($this->session->userdata('role') === 'USER') : ?>
-                                            <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $kegiatan->id ?>" data-label="Kegiatan" data-ref="ref_kegiatans" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
+                                            <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator"
+                                                data-id="<?= $kegiatan->id ?>" data-label="Kegiatan" data-ref="ref_kegiatans"
+                                                data-toggle="tooltip" data-placement="top"
+                                                title="Tambah Indikator : <?= $kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
                                         <?php endif; ?>
                                     </td>
                                     <?= $tr ?>
@@ -310,11 +317,15 @@
                                                 $button_hapus = '';
                                                 $button_ubah = '';
                                             endif;
-                                            if ($isk['persentase'] === "0") {
+
+                                            if ($isk['is_jenis'] === "2") {
                                                 $indikator_input = $isk['eviden_jumlah'] . " " . $isk['eviden_jenis'];
-                                            } else {
+                                            } elseif ($isk['is_jenis'] === "1") {
                                                 $indikator_input = $isk['persentase'] . "%";
+                                            } else {
+                                                $indikator_input = "~";
                                             }
+
                                             $rowspan = $toEnd++;
                                             if (0 === --$toEnd) { //last
                                                 $tr .= "";
@@ -336,22 +347,22 @@
                                             }
                                         endforeach;
                                     else:
-                                        $tr .= "<td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
-                                        <td rowspan='" . $rowspan . "'></td>
+                                        $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                                     endif;
                                 ?>
                                     <tr>
-                                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                                            <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
 
                                         <td class="align-middle bg-success border-bottom-0" rowspan="<?= @$toEnd ?>"></td>
                                         <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
                                         <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
                                             <?php if ($this->session->userdata('role') === 'USER') : ?>
-                                                <button class="btn btn-sm btn-primary m-0 rounded" id="TambahIndikator" data-id="<?= $sub_kegiatan->id ?>" data-label="Sub Kegiatan" data-ref="ref_sub_kegiatans" data-toggle="tooltip" data-placement="top" title="Tambah Indikator : <?= $sub_kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
+                                                <button class="btn btn-sm btn-primary m-0 rounded" id="TambahIndikator"
+                                                    data-id="<?= $sub_kegiatan->id ?>" data-label="Sub Kegiatan" data-ref="ref_sub_kegiatans"
+                                                    data-toggle="tooltip" data-placement="top"
+                                                    title="Tambah Indikator : <?= $sub_kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
                                             <?php endif; ?>
                                         </td>
                                         <?= $tr ?>
@@ -382,7 +393,8 @@
 </div>
 
 <!-- Modal Tambah Indikator -->
-<div class="modal fade modal-indikator" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+<div class="modal fade modal-indikator" role="dialog" tabindex="-1" data-backdrop="static" data-keyboard="false"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <?= form_open(base_url("app/target/tambah_indikator"), ['id' => 'formIndikator', 'data-parsley-validate' => '']); ?>
         <input type="hidden" name="id">
@@ -413,18 +425,22 @@
                     <label for="perubahan">Target Pada Anggaran ?</label>
                     <select name="perubahan" id="perubahan" class="form-control" readonly>
                         <option value="">Pilih</option>
-                        <option value="1" <?= $this->session->userdata('is_perubahan') == 1 ? 'selected' : ''; ?>>Perubahan</option>
-                        <option value="0" <?= $this->session->userdata('is_perubahan') == 0 ? 'selected' : ''; ?>>Murni</option>
+                        <option value="1" <?= $this->session->userdata('is_perubahan') == 1 ? 'selected' : ''; ?>>
+                            Perubahan</option>
+                        <option value="0" <?= $this->session->userdata('is_perubahan') == 0 ? 'selected' : ''; ?>>Murni
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="bidang">Penanggung Jawab <span class="text-danger">*</span></label>
-                    <select name="bidang[]" id="bidang" multiple="multiple" required data-parsley-errors-container="#help-block-bidang"></select>
+                    <select name="bidang[]" id="bidang" multiple="multiple" required
+                        data-parsley-errors-container="#help-block-bidang"></select>
                     <div id="help-block-bidang"></div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i class="fa fa-close mr-2"></i>Batal</button>
+                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i
+                        class="fa fa-close mr-2"></i>Batal</button>
                 <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
             </div>
         </div>

@@ -1,7 +1,8 @@
 <div class="row">
   <div class="col-md-12">
     <?php if ($this->session->flashdata('pesan') <> '') : ?>
-      <div class="alert alert-<?= $this->session->flashdata('pesan_type') ?> alert-dismissible fade show" role="alert">
+      <div class="alert alert-<?= $this->session->flashdata('pesan_type') ?> alert-dismissible fade show"
+        role="alert">
         <span class="alert-icon"><i class="ni ni-bell-55"></i></span>
         <span class="alert-text"><?= $this->session->flashdata('pesan') ?></span>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -36,6 +37,7 @@
         $priv_bukujaga = !empty($cek_priv->priv_bukujaga) && $cek_priv->priv_bukujaga  == 'Y' ? 'checked' : '';
         $priv_anggarankinerja = !empty($cek_priv->priv_anggarankinerja) && $cek_priv->priv_anggarankinerja  == 'Y' ? 'checked' : '';
         $priv_target_kinerja = !empty($cek_priv->priv_target_kinerja) && $cek_priv->priv_target_kinerja  == 'Y' ? 'checked' : '';
+        $priv_verify_kinerja = !empty($cek_priv->priv_verify_kinerja) && $cek_priv->priv_verify_kinerja  == 'Y' ? 'checked' : '';
         ?>
         <?= form_open(base_url('app/users/privilages_update'), ['id' => 'f_privilage'], ['f_type' => 'privilage', 'uid' => encrypt_url($uid)]); ?>
         <table class="table table-bordered table-condensed">
@@ -52,16 +54,20 @@
             <tr>
               <th scope="row">Pilih</th>
               <td>
-                <input type="checkbox" name="priv_default" value="Y" class="js-switch" <?= $priv_default ?> />
+                <input type="checkbox" name="priv_default" value="Y" class="js-switch"
+                  <?= $priv_default ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_users" value="Y" class="js-switch" <?= $priv_users ?> />
+                <input type="checkbox" name="priv_users" value="Y" class="js-switch"
+                  <?= $priv_users ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_settings" value="Y" class="js-switch" <?= $priv_settings ?> />
+                <input type="checkbox" name="priv_settings" value="Y" class="js-switch"
+                  <?= $priv_settings ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_notify" value="Y" class="js-switch" <?= $priv_notify ?> />
+                <input type="checkbox" name="priv_notify" value="Y" class="js-switch"
+                  <?= $priv_notify ?> />
               </td>
             </tr>
           </tbody>
@@ -78,16 +84,20 @@
             <tr>
               <th scope="row">Pilih</th>
               <td>
-                <input type="checkbox" name="priv_programs" value="Y" class="js-switch" <?= $priv_programs ?> />
+                <input type="checkbox" name="priv_programs" value="Y" class="js-switch"
+                  <?= $priv_programs ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_approve" value="Y" class="js-switch" <?= $priv_approve ?> />
+                <input type="checkbox" name="priv_approve" value="Y" class="js-switch"
+                  <?= $priv_approve ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_verifikasi" value="Y" class="js-switch" <?= $priv_verifikasi ?> />
+                <input type="checkbox" name="priv_verifikasi" value="Y" class="js-switch"
+                  <?= $priv_verifikasi ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_riwayat_spj" value="Y" class="js-switch" <?= $priv_riwayat_spj ?> />
+                <input type="checkbox" name="priv_riwayat_spj" value="Y" class="js-switch"
+                  <?= $priv_riwayat_spj ?> />
               </td>
             </tr>
           </tbody>
@@ -107,20 +117,39 @@
                 <input type="checkbox" name="priv_spj" value="Y" class="js-switch" <?= $priv_spj ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_bukujaga" value="Y" class="js-switch" <?= $priv_bukujaga ?> />
+                <input type="checkbox" name="priv_bukujaga" value="Y" class="js-switch"
+                  <?= $priv_bukujaga ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_anggarankinerja" value="Y" class="js-switch" <?= $priv_anggarankinerja ?> />
+                <input type="checkbox" name="priv_anggarankinerja" value="Y" class="js-switch"
+                  <?= $priv_anggarankinerja ?> />
               </td>
               <td>
-                <input type="checkbox" name="priv_target_kinerja" value="Y" class="js-switch" <?= $priv_target_kinerja ?> />
+                <input type="checkbox" name="priv_target_kinerja" value="Y" class="js-switch"
+                  <?= $priv_target_kinerja ?> />
+              </td>
+            </tr>
+          </tbody>
+          <thead class="text-center">
+            <tr>
+              <th>#</th>
+              <th>Priv Verify Kinerja</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            <tr>
+              <th scope="row">Pilih</th>
+              <td>
+                <input type="checkbox" name="priv_verify_kinerja" value="Y" class="js-switch"
+                  <?= $priv_verify_kinerja ?> />
               </td>
             </tr>
           </tbody>
         </table>
         <div class="divider-dashed"></div>
         <button type="submit" role="button" class="btn btn-success rounded-0">Perbaharui</button>
-        <button type="button" role="button" onclick="window.location.href='<?= base_url('app/users') ?>'" class="btn btn-danger rounded-0">Kembali</button>
+        <button type="button" role="button" onclick="window.location.href='<?= base_url('app/users') ?>'"
+          class="btn btn-danger rounded-0">Kembali</button>
         <?= form_close(); ?>
       </div>
     </div>

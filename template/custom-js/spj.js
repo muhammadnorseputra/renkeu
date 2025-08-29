@@ -70,7 +70,7 @@ $(function () {
 	var option = {
 		valueNames: ["nama"],
 		searchColumns: ["nama", "kode"],
-		page: 8,
+		page: 10,
 		pagination: [
 			{
 				item: "<li class='page-item rounded-0'><a class='page page-link rounded-0' href='#'></a></li>",

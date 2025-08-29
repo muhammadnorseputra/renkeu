@@ -9,11 +9,32 @@ var options = {
 	doneLabel: "Selesai",
 	dontShowAgainLabel: "Jangan lihat ini lagi.",
 };
-var intro = introJs(".x_panel")
-	.setOption("dontShowAgain", true)
-	.setOptions(options)
-	.start();
+if (!localStorage.getItem('introSeen')) {
+	var intro = introJs(".x_panel")
+		.setOption("dontShowAgain", true)
+		.setOptions(options)
+		.start();
+	// Simpan state bahwa tour sudah ditampilkan
+	localStorage.setItem("introSeen", "true");
 
+	// Ambil step terakhir dari localStorage
+	var savedStep = localStorage.getItem("introStep");
+	if (savedStep !== null) {
+		intro.goToStep(parseInt(savedStep));
+	}
+
+	// Simpan step terakhir saat berubah
+	intro.onchange(function (targetElement) {
+		var currentStep = this._currentStep; // step index
+		localStorage.setItem("introStep", currentStep);
+	});
+
+	intro.onexit(function () {
+		localStorage.removeItem("introStep"); // reset kalau tour selesai
+	});
+
+	intro.start();
+}
 function showModal() {
 	$modal.modal("show");
 }
