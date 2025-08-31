@@ -4,7 +4,7 @@
     <?= $this->users->part_detail($this->session->userdata('part')); ?> <br>
 </div>
 <!-- Panel Chart -->
-<div class="row">
+<div class="row" id="panel">
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-bullhorn"></i></div>
@@ -58,7 +58,7 @@
 </div>
 <div class="clearfix"></div>
 <!-- Transaction Chart -->
-<div class="row">
+<div class="row" id="tour_chart_transaksi">
     <div class="col-md-12">
         <div class="x_panel">
             <div class="x_title">
@@ -171,7 +171,7 @@
     </div>
 </div>
 <!-- Parts Chart -->
-<div class="row">
+<div class="row" id="tour_chart_part">
     <div class="col-md-12">
         <div class="x_panel">
             <div class="x_title">

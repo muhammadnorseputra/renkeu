@@ -60,7 +60,7 @@ class Spj extends CI_Controller
         $db = $this->spj->inbox();
 
         $btnAdd = '<div class="col-md-3 mt-3">
-        <button class="btn btn-primary rounded-0 float-right" onclick="window.location.href=\'' . base_url("app/spj/buatusul") . '\'"><i class="fa fa-plus mr-2"></i> Tambah Usulan</button>
+        <button class="btn btn-primary rounded-0 float-right btn-block" onclick="window.location.href=\'' . base_url("app/spj/buatusul") . '\'"><i class="fa fa-plus mr-2"></i> Buat Usulan Baru</button>
                 </div>
                 ';
         $search = '<div class="col-5 col-md-3">Pencarian <input type="search" class="search form-control" placeholder="Ketik nama rincian..." /></div>';

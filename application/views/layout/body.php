@@ -28,7 +28,7 @@
         <nav class="nav navbar-nav">
           <ul class="navbar-right">
 
-            <li class="nav-item dropdown open" style="padding-left: 15px;">
+            <li class="nav-item dropdown open" style="padding-left: 15px;" id="profile">
               <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
                 <!-- <img src="<?= base_url('template/assets/picture_akun/' . $this->session->userdata('pic')) ?>" alt="<?= $this->session->userdata('user_name'); ?>"><?= $this->session->userdata('nama'); ?> -->
                 <?= $this->session->userdata('nama'); ?>
@@ -99,16 +99,16 @@
               </ul>
             </li>
 
-            <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px">
+            <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px" id="is_perubahan">
               <?= form_open(base_url('app/dashboard/statuspagu'), ['class' => 'd-flex justify-content-center align-items-center m-0 p-0'], ['redirectTo' => current_url()]) ?>
-              <select name="is_perubahan" id="is_perubahan" class="form-control form-control-sm">
+              <select name=" is_perubahan" id="is_perubahan" class="form-control form-control-sm">
                 <option value="0" <?= $this->session->userdata('is_perubahan') === "0" ? 'selected' : '' ?>>MURNI</option>
                 <option value="1" <?= $this->session->userdata('is_perubahan') === "1" ? 'selected' : '' ?>>PERUBAHAN</option>
               </select>
               <button class="btn btn-sm btn-primary" type="submit">Simpan</button>
               <?= form_close() ?>
             </li>
-            <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px">
+            <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px" id="tahun_anggaran">
               <h5 style="margin:0; padding: 0">TA. <?= $this->session->userdata('tahun_anggaran'); ?></h5>
             </li>
           </ul>

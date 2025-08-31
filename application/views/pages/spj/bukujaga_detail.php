@@ -59,40 +59,68 @@
                                 <?php
                                 $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id], $this->session->userdata('tahun_anggaran'), $this->session->userdata('is_perubahan'))->total_pagu_awal;
                                 $total_pagu += $pagu;
-                                echo nominal($pagu);
                                 ?>
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($pagu); ?></span>
+                                </div>
                             </td>
                             <td class="text-right">
                                 <?php
                                 $realisasi_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('tahun_anggaran'))->jumlah;
                                 $total_realisasi_ls += $realisasi_ls;
-                                echo nominal($realisasi_ls);
                                 ?>
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($realisasi_ls); ?></span>
+                                </div>
                             </td>
                             <td class="text-right">
                                 <?php
                                 $realisasi_not_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('tahun_anggaran'))->jumlah;
                                 $total_realisasi_not_ls += $realisasi_not_ls;
-                                echo nominal($realisasi_not_ls);
                                 ?>
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($realisasi_not_ls); ?></span>
+                                </div>
                             </td>
                             <td class="text-right">
                                 <?php
                                 $realisasi = ($realisasi_ls + $realisasi_not_ls);
                                 $sisa_anggaran = ($pagu - $realisasi);
                                 $total_sisa_anggaran += $sisa_anggaran;
-                                echo nominal($sisa_anggaran);
+                                // Tentukan class berdasarkan nilai
+                                if ($sisa_anggaran < 0) {
+                                    $warnaClass = 'text-danger';
+                                } elseif ($sisa_anggaran > 0) {
+                                    $warnaClass = 'text-success';
+                                } else {
+                                    $warnaClass = ''; // tidak ada class, jadi tetap warna hitam default
+                                }
                                 ?>
+                                <div class="d-flex justify-content-between  <?= $warnaClass ?>">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($sisa_anggaran); ?></span>
+                                </div>
                             </td>
                         </tr>
                     <?php $no++;
                     endforeach; ?>
                     <tr>
                         <td colspan="3" class="text-right"><b>Total</b></td>
-                        <td class="text-right"><b><?= nominal($total_pagu) ?></b></td>
-                        <td class="text-right"><b><?= nominal($total_realisasi_ls) ?></b></td>
-                        <td class="text-right"><b><?= nominal($total_realisasi_not_ls) ?></b></td>
-                        <td class="text-right"><b><?= nominal($total_sisa_anggaran) ?></b></td>
+                        <td class="text-right">
+                            <div class="d-flex justify-content-between"><b>Rp.</b> <b><?= nominal($total_pagu) ?></b></div>
+                        </td>
+                        <td class="text-right">
+                            <div class="d-flex justify-content-between"><b>Rp.</b> <b><?= nominal($total_realisasi_ls) ?></b></div>
+                        </td>
+                        <td class="text-right">
+                            <div class="d-flex justify-content-between"><b>Rp.</b> <b><?= nominal($total_realisasi_not_ls) ?></b></div>
+                        </td>
+                        <td class="text-right">
+                            <div class="d-flex justify-content-between"><b>Rp.</b> <b><?= nominal($total_sisa_anggaran) ?></b></div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

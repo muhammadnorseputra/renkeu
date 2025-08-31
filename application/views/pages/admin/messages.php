@@ -1,96 +1,97 @@
 <div class="row">
-    <div class="col-md-12">
-    <div class="x_panel">
-        <div class="x_title">
-        <h2>Tabel Notify</h2>
-        <ul class="nav navbar-right panel_toolbox">
-            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-            </li>
-        </ul>
-        <div class="clearfix"></div>
-        </div>
-        <div class="x_content">
-        <div class="row">
-            <!-- CONTENT -->
-            <div class="col-sm-12">
-				<div class="card-box table-responsive">
-					<table id="table-messages" class="table table-condensed dt-responsive nowrap" cellspacing="0" width="100%">
-						<thead>
-							<tr>
-								<th class="text-center">No</th>
-								<th>Status</th>
-								<th>Mode</th>
-                                <th>To</th>
-								<th>Message</th>
-								<th class="block">Aksi</th>
-							</tr>
-						</thead>
-					</table>
+	<div class="col-md-12">
+		<div class="x_panel">
+			<div class="x_title">
+				<h2>Tabel Notify</h2>
+				<ul class="nav navbar-right panel_toolbox">
+					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="x_content">
+				<div class="row">
+					<!-- CONTENT -->
+					<div class="col-sm-12">
+						<div class="card-box table-responsive">
+							<table id="table-messages" class="table jambo_table bulk_action dt-responsive nowrap" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th class="text-center">No</th>
+										<th>Status</th>
+										<th>Mode</th>
+										<th>To</th>
+										<th>Message</th>
+										<th class="block">Aksi</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+					<!-- /CONTENT -->
 				</div>
-            </div>
-            <!-- /CONTENT -->
-        </div>
-        </div>
-    </div>
-    </div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- compose -->
 <div class="compose col-md-6">
 	<div class="compose-header">
-	New Message
-	<button type="button" class="close compose-close">
-		<span>×</span>
-	</button>
+		New Message
+		<button type="button" class="close compose-close">
+			<span>×</span>
+		</button>
 	</div>
 
 	<div class="compose-body">
 		<?= form_open(base_url('app/messages/insert'), ['id' => 'formMessage', 'class' => 'form-horizontal form-label-left']); ?>
-			<div class="form-group row">
-				<div class="col-md-6">
-					<label class="control-label">Pilih Type <span class="text-danger">*</span></label>
-					<select name="type" class="form-control" required="required">
-						<option value="">Choose option</option>
-						<option value="SUCCESS">Success</option>
-						<option value="WARNING">Penting</option>
-						<option value="INFO">Info</option>
-						<option value="DANGER">Sangat Penting</option>
-					</select>
-				</div>
-				<div class="col-md-6">
-					<label class="control-label">Pilih Mode <span class="text-danger">*</span></label>
-					<select name="mode" id="mode" class="form-control" required="required">
-						<option value="">Choose option</option>
-						<option value="GLOBAL">Global</option>
-						<option value="PRIVATE_ALL">Private All</option>
-						<option value="PRIVATE">Private</option>
-					</select>
-				</div>
+		<div class="form-group row">
+			<div class="col-md-6">
+				<label class="control-label">Pilih Type <span class="text-danger">*</span></label>
+				<select name="type" class="form-control" required="required">
+					<option value="">Choose option</option>
+					<option value="SUCCESS">Success</option>
+					<option value="WARNING">Penting</option>
+					<option value="INFO">Info</option>
+					<option value="DANGER">Sangat Penting</option>
+				</select>
 			</div>
-			<div class="form-group row">
-				<div class="d-none" id="select_user">
-					<label for="user">To</label>
-					<select name="user" id="user" required="required" class="select2_single form-control" tabindex="-1"></select>
-				</div>
+			<div class="col-md-6">
+				<label class="control-label">Pilih Mode <span class="text-danger">*</span></label>
+				<select name="mode" id="mode" class="form-control" required="required">
+					<option value="">Choose option</option>
+					<option value="GLOBAL">Global</option>
+					<option value="PRIVATE_ALL">Private All</option>
+					<option value="PRIVATE">Private</option>
+				</select>
 			</div>
-			<div class="divider-dashed"></div>
-			<div class="form-group row">
-				<textarea required="required" name="message" id="message" class="resizable_textarea form-control border-0" cols="30" rows="10" placeholder="Ketik pesan anda disini ..."></textarea>
+		</div>
+		<div class="form-group row">
+			<div class="d-none" id="select_user">
+				<label for="user">To</label>
+				<select name="user" id="user" required="required" class="select2_single form-control" tabindex="-1"></select>
 			</div>
-			<div class="divider-dashed"></div>
-			
-			<div class="form-group my-3 row">
-				<div class="col-md-2">
-					<label for="aktif">Status Aktif</label> <div class="clearfix"></div>
-					<input data-parsley-validate-if-empty="true" type="checkbox" name="aktif" value="Y" class="js-switch" id="aktif" checked/>
-				</div>
+		</div>
+		<div class="divider-dashed"></div>
+		<div class="form-group row">
+			<textarea required="required" name="message" id="message" class="resizable_textarea form-control border-0" cols="30" rows="10" placeholder="Ketik pesan anda disini ..."></textarea>
+		</div>
+		<div class="divider-dashed"></div>
+
+		<div class="form-group my-3 row">
+			<div class="col-md-2">
+				<label for="aktif">Status Aktif</label>
+				<div class="clearfix"></div>
+				<input data-parsley-validate-if-empty="true" type="checkbox" name="aktif" value="Y" class="js-switch" id="aktif" checked />
 			</div>
+		</div>
 		<?= form_close() ?>
 	</div>
 
 	<div class="compose-footer py-3 bg-light">
-	<button id="send" class="btn btn-success rounded-0" type="button"><i class="fa fa-send"></i> Simpan</button>
-	<button class="btn btn-danger rounded-0 compose-close" type="button"><i class="fa fa-close"></i> Batal</button>
+		<button id="send" class="btn btn-success rounded-0" type="button"><i class="fa fa-send"></i> Simpan</button>
+		<button class="btn btn-danger rounded-0 compose-close" type="button"><i class="fa fa-close"></i> Batal</button>
 	</div>
 </div>
 <!-- /compose -->
@@ -98,6 +99,7 @@
 	$(function() {
 
 		var tableMessage = $("#table-messages").DataTable({
+			stateSave: true,
 			"processing": true,
 			"serverSide": true,
 			"paging": true,
@@ -119,14 +121,13 @@
 				"url": `${_uri}/app/messages/ajax`,
 				"type": "POST"
 			},
-			"columnDefs": [
-				{
+			"columnDefs": [{
 					"targets": [0],
 					"orderable": false,
 					"className": "text-center",
 					"width": '5%',
-					"createdCell": function (td, cellData, rowData, row, col) {
-						if ( rowData[1] === 'Unpublish' ) {
+					"createdCell": function(td, cellData, rowData, row, col) {
+						if (rowData[1] === 'Unpublish') {
 							$(td).addClass('bg-danger text-white cursor-disabled').css({
 								cursor: 'not-allowed',
 								opacity: 0.3,
@@ -160,12 +161,12 @@
 					"width": '8%'
 				},
 				{
-					"targets": [1,4],
+					"targets": [1, 4],
 					"orderable": false,
 					"className": "text-left"
 				},
 			],
-			
+
 			// "createdRow": function( row, data, dataIndex ) {
 			// 	if ( data[1] === "N" ) {
 			// 		$(row).addClass('bg-light text-secondary cursor-disabled').css({
@@ -177,22 +178,21 @@
 			// console.log(row);
 			// },
 			"dom": 'Bfrtlip',
-			"buttons": [
-				{
+			"buttons": [{
 					text: '<i class="fa fa-send mr-2"></i>Send Message',
 					className: 'btn btn-success rounded-0 pull-left btn-compose',
 				},
 				{
 					text: '<i class="fa fa-repeat mr-2"></i>Reload',
 					className: 'btn btn-secondary rounded-0 pull-left',
-					action: function ( e, dt, node, config ) {
+					action: function(e, dt, node, config) {
 						dt.ajax.reload();
 					}
 				},
 				{
 					text: '<i class="fa fa-filter"></i>',
 					className: 'btn btn-info rounded-0 pull-left',
-					action: function ( e, dt, node, config ) {
+					action: function(e, dt, node, config) {
 						console.log('oke')
 					}
 				},
@@ -205,9 +205,9 @@
 				"infoFiltered": "(filtered from _MAX_ total records)",
 				"search": "Cari Pesan :",
 				"paginate": {
-						"previous": `<i class="fa fa-long-arrow-left"></i>`,
-						"next": `<i class="fa fa-long-arrow-right"></i>`
-					},
+					"previous": `<i class="fa fa-long-arrow-left"></i>`,
+					"next": `<i class="fa fa-long-arrow-right"></i>`
+				},
 				"emptyTable": "No matching records found, please filter this data"
 			},
 		});
@@ -215,8 +215,8 @@
 		$(document).on("change", "[name='mode']", function(e) {
 			e.preventDefault();
 			let _ = $(this),
-			value = _.val();
-			if(value === 'PRIVATE') {
+				value = _.val();
+			if (value === 'PRIVATE') {
 				$('#select_user').attr("class", "col-md-12 d-block");
 				$('select[name="user"]').attr("required", "required");
 				return false;
@@ -251,14 +251,14 @@
 				method: 'post',
 				url: '<?= base_url("app/users/getAll") ?>',
 				dataType: 'json',
-				data: function (params) {
+				data: function(params) {
 					return {
 						q: params.term, // search term
 					};
 				},
 				cache: true,
-				processResults: function (data) {
-				// Transforms the top-level key of the response object from 'items' to 'results'
+				processResults: function(data) {
+					// Transforms the top-level key of the response object from 'items' to 'results'
 					return {
 						results: data
 					};
@@ -274,19 +274,21 @@
 			$('#select_user').attr("class", "col-md-2 d-none");
 		}
 
-		
+
 		$(document).on("click", "button#send", function(e) {
 			e.preventDefault();
 			let _ = $(this),
-			compose = $(".compose"),
-			form  = $("#formMessage");
+				compose = $(".compose"),
+				form = $("#formMessage");
 			let $url = form.attr('action'),
-			$data = form.serialize();
+				$data = form.serialize();
 
-			form.parsley().validate({force: true});
-			if(form.parsley().isValid()) {
+			form.parsley().validate({
+				force: true
+			});
+			if (form.parsley().isValid()) {
 				$.post($url, $data, function(result) {
-					if(result.status === 200) {
+					if (result.status === 200) {
 						reset(form[0]);
 						tableMessage.ajax.reload();
 						compose.slideToggle();
@@ -299,19 +301,18 @@
 		$(document).on("click", "button#btnHapus", function(e) {
 			e.preventDefault();
 			let _ = this,
-			id = _.dataset.uid,
-			url = _.dataset.url,
-			warm = "Apakah anda yakin akan menghapus pesan tersebut secara permanent ?";
+				id = _.dataset.uid,
+				url = _.dataset.url,
+				warm = "Apakah anda yakin akan menghapus pesan tersebut secara permanent ?";
 
 			let whr = {
 				id: id
 			};
 
-			if(confirm(warm)) {
+			if (confirm(warm)) {
 				$.post(url, whr, (res) => tableMessage.ajax.reload(), 'json');
 				return false;
 			}
 		})
 	})
-
 </script>

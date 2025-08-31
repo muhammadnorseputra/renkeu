@@ -15,7 +15,8 @@
 		"dompdf/dompdf": "*",
 		"chriskacerguis/codeigniter-restserver": "*",
 		"rakit/validation": "*",
-		"phpoffice/phpspreadsheet": "^1.23"
+		"phpoffice/phpspreadsheet": "^1.23",
+		"chillerlan/php-qrcode": "*"
 	},
 	"config": {
 		"platform": {

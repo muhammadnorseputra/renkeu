@@ -1,4 +1,4 @@
-<div class="left_col scroll-view">
+<div class="left_col scroll-view" id="tour_navbar">
     <div class="navbar nav_title" style="border-bottom: 1px solid #666; padding-left: 13px;">
         <a href="<?= base_url('/') ?>" class="site_title">
             <?php if (getSetting('APPLogo') != ''): ?>
@@ -88,7 +88,8 @@
                         <li><a href="<?= base_url('app/users') ?>"><i class="fa fa-users"></i> Users</a></li>
                     <?php endif; ?>
                     <?php if (privilages('priv_notify')): ?>
-                        <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Notify</a></li>
+                        <li><a href="<?= base_url('app/whatsapp') ?>"><i class="fa fa-envelope"></i> Whatsapp Notify</a></li>
+                        <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Web Notify</a></li>
                         <li><a href="<?= base_url('app/settings') ?>"><i class="fa fa-cogs"></i> Settings</a></li>
                     <?php endif; ?>
                 </ul>

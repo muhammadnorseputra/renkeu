@@ -119,7 +119,8 @@ class Dashboard extends CI_Controller
 				'template/backend/vendors/Flot/jquery.flot.categories.js',
 				'template/backend/vendors/Flot/jquery.flot.tooltip.js',
 				'template/backend/vendors/DateJS/build/date.js',
-				'template/backend/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js'
+				'template/backend/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js',
+				'template/custom-js/dashboard.js'
 			]
 		];
 		$this->load->view('layout/app', $data);
