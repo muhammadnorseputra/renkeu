@@ -119,10 +119,11 @@ class Login extends CI_Controller
     {
         clearstatcache();
         // Simpan nilai is_perubahan sebelum session dihapus
-        $is_perubahan = $this->session->userdata('is_perubahan');
         
         $redirectTo = isset($_GET['continue']) ? "?continue=" . $_GET['continue'] : '';
         $data = array('user_name', 'user_id', 'csrf_token');
+        $is_perubahan = $this->session->userdata('is_perubahan');
+
         $this->db->update('t_users', ['check_out' => DateTimeInput()], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
         $this->session->sess_destroy();
@@ -136,11 +137,13 @@ class Login extends CI_Controller
     {
         clearstatcache();
         // Simpan nilai is_perubahan sebelum session dihapus
-        $is_perubahan = $this->session->userdata('is_perubahan');
         $redirectTo = isset($_GET['continue']) ? "/lockscreen?continue=" . urlencode($_GET['continue']) : '/lockscreen';
         $data = array('user_id', 'csrf_token');
+        $is_perubahan = $this->session->userdata('is_perubahan');
+        
         $this->db->update('t_users', ['check_out' => DateTimeInput()], ['id' => decrypt_url($this->session->userdata('user_id'))]);
         $this->session->unset_userdata($data);
+        
         // Set kembali session is_perubahan
         $this->session->set_userdata('is_perubahan', $is_perubahan);
         redirect(base_url('/login' . $redirectTo));

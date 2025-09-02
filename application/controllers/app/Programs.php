@@ -1004,7 +1004,11 @@ class Programs extends CI_Controller
             ->join('ref_kegiatans AS k', 'u.fid_kegiatan=k.id', 'inner')
             ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
             ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
-            ->like('u.nama', $q)
+            ->where('k.fid_part', $this->session->userdata('part'))
+            ->group_start()
+                ->like('u.nama', $q)
+                ->or_like('u.kode', $q)
+            ->group_end()
             ->group_by('u.fid_kegiatan')
             ->group_by('u.fid_sub_kegiatan')
             ->get();
