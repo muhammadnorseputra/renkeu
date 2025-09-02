@@ -1059,24 +1059,32 @@
             FORM_REKON_ANGGARAN = MODAL_REKON_ANGGARAN.find("form#formRekonAnggaran");
 
         // $(":input").inputmask();
-        $('input[name="jumlah"]').inputmask("decimal", {
-            radixPoint: ",",
-            groupSeparator: ",",
-            digits: 2,
-            autoGroup: true,
-            rightAlign: false,
-            prefix: ''
-        });
+        // $('input[name="jumlah"]').inputmask("decimal", {
+        //     alias: "numeric",
+        //     groupSeparator: ".",
+        //     autoGroup: true,
+        //     digits: 0,
+        //     digitsOptional: false,
+        //     prefix: "",
+        //     placeholder: "0",
+        //     rightAlign: false,
+        //     allowMinus: false,
+        //     integerDigits: 15 // batas maksimal angka, bisa diubah
+        // });
 
-        let total_pagu = MODAL_SUBKEGIATAN.find('input[name="total_pagu"]');
-        $(total_pagu).inputmask("decimal", {
-            radixPoint: ",",
-            groupSeparator: ",",
-            digits: 2,
-            autoGroup: true,
-            rightAlign: false,
-            prefix: ''
-        });
+        // let total_pagu = MODAL_SUBKEGIATAN.find('input[name="total_pagu"]');
+        // $(total_pagu).inputmask("decimal", {
+        //     alias: "numeric",
+        //     groupSeparator: ".",
+        //     autoGroup: true,
+        //     digits: 0,
+        //     digitsOptional: false,
+        //     prefix: "",
+        //     placeholder: "0",
+        //     rightAlign: false,
+        //     allowMinus: false,
+        //     integerDigits: 15 // batas maksimal angka, bisa diubah
+        // });
 
         $('select#part, select#kegiatan, select#subkegiatan').each(function() {
             $(this).select2({

@@ -43,7 +43,9 @@ class Whatsapp extends CI_Controller {
         ]);
 
         if ($validation->fails()) {
-            $this->session->set_flashdata('error', $validation->errors()->firstOfAll());
+            $errors = $validation->errors()->firstOfAll();
+            $errorString = implode('<br>', $errors); // gabung dengan <br> biar rapi di view
+            $this->session->set_flashdata('error', $errorString);
             return redirect('app/whatsapp');
         }
 
