@@ -45,7 +45,7 @@
               }
               ?>
               <div id="message"></div>
-              <?= form_open(base_url('login/cek_akun'), ['autocomplete' => 'off', 'id' => 'f_login', 'class' => 'toggle-disabled'], ['token' => $this->session->csrf_token, 'continue' => $urlRef, 'username' => $this->session->userdata('user_name')]); ?>
+              <?= form_open(base_url('login/cek_akun'), ['autocomplete' => 'off', 'id' => 'f_login', 'class' => 'toggle-disabled'], ['token' => $this->session->csrf_token, 'continue' => $urlRef, 'username' => $this->session->userdata('user_name'), 'tahun' => $this->session->userdata('tahun_anggaran')]); ?>
               <div class="form-group first mb-4">
                 <label for="pwd">Password</label>
                 <input type="password" name="pwd" autocomplete="off" id="pwd" class="form-control" data-sanitize="trim" data-validation="required">
