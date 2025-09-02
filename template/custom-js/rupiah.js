@@ -17,7 +17,10 @@ function formatRupiah(angka, prefix)
 }
 
 /* Tanpa Rupiah */
-var tanpa_rupiah = document.getElementById("jumlah");
-tanpa_rupiah.addEventListener("keyup", function (e) {
-	tanpa_rupiah.value = formatRupiah(this.value);
+var tanpa_rupiah = document.querySelectorAll("input[name='jumlah']");
+// Tambahkan event listener ke setiap input
+tanpa_rupiah.forEach(function (input) {
+	input.addEventListener("keyup", function () {
+		input.value = formatRupiah(this.value);
+	});
 });

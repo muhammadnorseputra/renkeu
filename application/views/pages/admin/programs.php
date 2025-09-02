@@ -616,7 +616,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="jumlah">Jumlah Limit</label>
+                    <label for="jumlah">Jumlah KAS</label>
                     <input type="text" name="jumlah" id="jumlah" class="form-control" required>
                 </div>
             </div>
@@ -1058,7 +1058,6 @@
         var MODAL_REKON_ANGGARAN = $(".modal-rekon"),
             FORM_REKON_ANGGARAN = MODAL_REKON_ANGGARAN.find("form#formRekonAnggaran");
 
-        // $(":input").inputmask();
         // $('input[name="jumlah"]').inputmask("decimal", {
         //     alias: "numeric",
         //     groupSeparator: ".",
