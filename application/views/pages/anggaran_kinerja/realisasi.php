@@ -550,8 +550,13 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <textarea name="nama" id="nama" cols="30" rows="4" class="form-control" disabled></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="link">Link Bukti Dukung</label>
-                    <textarea name="link" id="link" cols="30" rows="4" class="form-control"></textarea>
+                    <label for="link">Link Bukti Dukung <span class="text-danger">*</span></label>
+                    <textarea name="link" id="link" cols="30" rows="4" class="form-control" 
+                        required
+                        data-parsley-pattern="^(https?:\/\/).+"
+                        data-parsley-pattern-message="URL harus diawali dengan http:// atau https://"
+                        data-parsley-trigger="change">
+                    </textarea>
                 </div>
                 <div class="row">
                     <div class="col-md-3" id="formPersentase" style="display:none;">

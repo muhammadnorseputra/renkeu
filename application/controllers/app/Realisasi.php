@@ -102,6 +102,15 @@ class Realisasi extends CI_Controller
 		// 	die();
 		// }
 
+		if($post['is_jenis'] === "0"):
+			// Tambahkan validasi atau logika khusus untuk jenis 0 di sini
+			echo json_encode([
+				'message' => 'Jenis realisasi belum ditentukan !',
+				'status' => false
+			]);
+			return false; // Contoh: hentikan eksekusi jika jenis adalah 0
+		endif;
+
 		$insert = [
 			'is_jenis' => $post['is_jenis'],
 			'tahun' => $this->session->userdata('tahun_anggaran'),
