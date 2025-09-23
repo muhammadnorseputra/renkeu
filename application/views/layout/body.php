@@ -100,15 +100,9 @@
             </li>
 
             <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px" id="is_perubahan">
-              <?= form_open(base_url('app/dashboard/statuspagu'), ['class' => 'd-flex justify-content-center align-items-center m-0 p-0'], ['redirectTo' => current_url()]) ?>
-              <select name=" is_perubahan" id="is_perubahan" class="form-control form-control-sm">
-                <option value="0" <?= $this->session->userdata('is_perubahan') === "0" ? 'selected' : '' ?>>MURNI</option>
-                <option value="1" <?= $this->session->userdata('is_perubahan') === "1" ? 'selected' : '' ?>>PERUBAHAN</option>
-              </select>
-              <button class="btn btn-sm btn-primary" type="submit">Simpan</button>
-              <?= form_close() ?>
+              <h5 style="margin:0; padding: 0"><?= ($this->session->userdata('is_perubahan') === '1') ? '<span class="badge badge-info blink-fade">Perubahan</span>' : '<span class="badge badge-success blink-fade">Murni</span>'; ?></h5>
             </li>
-            <li style="margin-right: 15px; border-right: 1px solid #000; padding-right: 10px" id="tahun_anggaran">
+            <li style=" padding-right: 10px" id="tahun_anggaran">
               <h5 style="margin:0; padding: 0">TA. <?= $this->session->userdata('tahun_anggaran'); ?></h5>
             </li>
           </ul>

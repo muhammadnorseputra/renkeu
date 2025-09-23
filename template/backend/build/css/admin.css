@@ -5,3 +5,26 @@
     margin-bottom: 8px;
     display: block;
 }
+
+.blink-fade {
+  animation: blink-fade 2s ease-in-out infinite;
+  -webkit-animation: blink-fade 2s ease-in-out infinite;
+}
+
+@keyframes blink-fade {
+  0%   { opacity: 1; }
+  45%  { opacity: 0; }
+  55%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@-webkit-keyframes blink-fade {
+  0%   { opacity: 1; }
+  45%  { opacity: 0; }
+  55%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blink-fade { animation: none; -webkit-animation: none; }
+}

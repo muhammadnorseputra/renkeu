@@ -112,3 +112,25 @@ function addStatusFilterSpjSelesai(table, columnIndex) {
 	});
 }
 
+function Rollback(token) { 
+	if (confirm("Yakin ingin rollback data SPJ ini?")) {
+		$.ajax({
+			url: `${_uri}/app/spj/rollback`,
+			type: "POST",
+			data: { token: token },
+			dataType: "json",
+			success: function (data) {
+				if (data.code == 200) {
+					alert(data.pesan);
+					tableVerifikasiSpjSelesai.ajax.reload();
+				} else {
+					alert(data.pesan);
+				}
+			},
+			error: function (xhr, status, error) {
+				alert("Terjadi kesalahan: " + error);
+			},
+		});
+	}
+	return false;
+}

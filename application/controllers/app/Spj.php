@@ -73,12 +73,12 @@ class Spj extends CI_Controller
                         <th class="text-center" width="5%">No</th>
                         <th>Kode</th>
                         <th>Kegiatan/Sub Kegiatan/Uraian</th>
-                        <th>Utk. SPJ Bulan</th>
-                        <th>Jumlah (Rp)</th>
+                        <th width="10%">SPJ Bulan</th>
+                        <th width="12%">Jumlah (Rp)</th>
                         <th>Status</th>
-                        <th>Tgl. Entri</th>
-                        <th>Eviden</th>
-                        <th colspan="3" class="text-center">Aksi</th>
+                        <th width="15%">Tanggal Entri <span class="sort" data-sort="entri_at">Sort</span></th>
+                        <th>Berkas</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                     </thead>';
         $html .= '<tbody class="list">';
@@ -126,23 +126,23 @@ class Spj extends CI_Controller
                     ' . $no . '
                 </td>
                 <td class="kode">
-                ' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian . '
+                ' .$r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian . '
                 </td>
                 <td class="nama">
-                ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br><b>' . $r->nama_uraian . '</b>
+                ' . $r->nama_sub_kegiatan . ' <br>- <b>' . $r->nama_uraian . '</b>
                 </td>
-                <td class="text-center">
+                <td>
                     ' . bulan(strtoupper($r->periode_id)) . '
                 </td>
                 <td>
-                    <b>' . nominal($r->jumlah) . '</b>
+                    <b class="text-success">Rp. ' . nominal($r->jumlah) . '</b>
                 </td>
                 <td>
                     ' . $status . ' <br> ' . $catatan . '
                 </td>
                 <td>
-                    ' . date_indo(substr($r->entri_at, 0, 10)) . '
-                </td>
+                    <i class="fa fa-calendar mr-1"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o mr-1'></i> " . substr($r->entri_at, 10, 6).
+                '</td>
                 <td width="5%" class="text-center">
                     ' . $link . '
                 </td>
@@ -429,6 +429,12 @@ class Spj extends CI_Controller
 
     private function generate_button($r)
     {
+        if($this->session->userdata('role') === 'VERIFICATOR'):
+        $btn_rollback = '<a class="dropdown-item d-flex justify-content-between" href="#" onclick="Rollback(\'' . $r->token . '\')">
+                                Rollback <i class="fa fa-repeat text-danger"></i></a>';
+        else:
+        $btn_rollback = '';
+        endif;
         return '<div class="dropdown">
                             <button class="btn btn-sm btn-icon-only text-dark bg-white rounded" type="button" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               action <i class="fa fa-ellipsis-v ml-3"></i>
@@ -440,9 +446,7 @@ class Spj extends CI_Controller
                               <a class="dropdown-item d-flex justify-content-between" href="' . $r->berkas_link . '" target="_blank">
                                 Berkas <i class="fa fa-link"></i>
                               </a>
-                              <a id="resspwd" data-path="users/resspwd/' . encrypt_url($r->id) . '" data-uid="' . encrypt_url($r->id) . '" class="dropdown-item d-flex justify-content-between" href="!#resspwd">
-                                Rollback <i class="fa fa-repeat text-danger"></i>
-                              </a>
+                              '.$btn_rollback.'
                             </div>
                         </div>';
     }
@@ -662,6 +666,20 @@ class Spj extends CI_Controller
             $msg = 200;
         } else {
             $msg = 400;
+        }
+        echo json_encode($msg);
+    }
+
+    public function rollback()
+    {
+        $token = $this->input->post('token');
+        $db = $this->crud->update('spj', ['is_status' => 'VERIFIKASI'], ['token' => $token]);
+        
+        if ($db) {
+            $msg = ['pesan' => 'Oke', 'code' => 200];
+            $this->crud->deleteWhere('spj_riwayat', ['token' => $token]);
+        } else {
+            $msg = ['pesan' => 'Gagal', 'code' => 400];
         }
         echo json_encode($msg);
     }

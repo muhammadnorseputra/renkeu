@@ -53,6 +53,7 @@ class ModelSpj extends CI_Model
 		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
 		$this->db->where('s.entri_by_part', $this->session->userdata('part'));
 		$this->db->where('s.entri_by', $this->session->userdata('user_name'));
+		$this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
 		$this->db->where('s.is_status !=', 'SELESAI');
 		$this->db->where('s.is_status !=', 'SELESAI_TMS');
 		$this->db->where('s.is_status !=', 'SELESAI_BTL');
@@ -221,6 +222,7 @@ class ModelSpj extends CI_Model
 		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
 		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
 		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
+		$this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
 		if ($this->session->userdata('role') === 'ADMIN'):
 			$this->db->where_in('is_status', ['VERIFIKASI_ADMIN', 'APPROVE', 'TMS', 'BTL']);
 		else:
@@ -301,6 +303,7 @@ protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwaya
 		$this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id');
 		$this->db->from('spj_riwayat');
 		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
+		$this->db->where('spj_riwayat.tahun', $this->session->userdata('tahun_anggaran'));
 		if ($this->session->userdata('role') === 'USER') {
 			$this->db->where('entri_by_part', $this->session->userdata('part'));
 		}
