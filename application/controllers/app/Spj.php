@@ -72,13 +72,13 @@ class Spj extends CI_Controller
                     <tr>
                         <th class="text-center" width="5%">No</th>
                         <th>Kode</th>
-                        <th>Kegiatan/Sub Kegiatan/Uraian</th>
+                        <th>Uraian</th>
                         <th width="8%">SPJ Bulan</th>
                         <th width="8%">Jumlah (Rp)</th>
                         <th>Status</th>
                         <th width="18%">Tanggal Entri <span class="sort" data-sort="entri_at">Sort</span></th>
                         <th>Berkas</th>
-                        <th class="text-center" colspan="2">Aksi</th>
+                        <th class="text-center" colspan="3">Aksi</th>
                     </tr>
                     </thead>';
         $html .= '<tbody class="list">';
