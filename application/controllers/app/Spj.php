@@ -170,56 +170,7 @@ class Spj extends CI_Controller
         $data = array();
         $no = @$_POST['start'];
 
-        // Ambil nilai pencarian global
-        $search_value = @$_POST['search']['value'];
-
-        // Ambil nilai pencarian per kolom (jika ada)
-        $column_search = [];
-        for ($i = 0; $i < count($_POST['columns']); $i++) {
-            if (!empty($_POST['columns'][$i]['search']['value'])) {
-                $column_search[$i] = $_POST['columns'][$i]['search']['value'];
-            }
-        }
-
         foreach ($db as $r) {
-
-            if ($search_value) {
-                // Cek apakah pencarian global cocok dengan kolom yang diinginkan
-                if (
-                    strpos(strtolower($r->kode_uraian), strtolower($search_value)) === false &&
-                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false &&
-                    strpos(strtolower($r->nama_part), strtolower($search_value)) === false
-                ) {
-                    continue;
-                }
-            }
-
-            // Pencarian per kolom (jika ada)
-            $is_match = true;
-            foreach ($column_search as $index => $search_term) {
-                switch ($index) {
-                    case 1: // Nama Part (contoh kolom ke-1)
-                        if (strpos(strtolower($r->kode_uraian), strtolower($search_term)) === false) {
-                            $is_match = false;
-                        }
-                        break;
-                    case 2: // Periode (contoh kolom ke-2)
-                        if (strpos(strtolower($r->nama_uraian), strtolower($search_term)) === false) {
-                            $is_match = false;
-                        }
-                        break;
-                    case 4: // Periode (contoh kolom ke-2)
-                        if (strpos(strtolower($r->nama_part), strtolower($search_term)) === false) {
-                            $is_match = false;
-                        }
-                        break;
-                        // Tambahkan lebih banyak kasus berdasarkan kolom yang ingin dicari
-                }
-            }
-
-            if (!$is_match) {
-                continue; // Lewatkan baris ini jika tidak cocok dengan pencarian
-            }
 
             $userusul = $this->users->profile_username($r->entri_by)->row();
 
@@ -423,62 +374,7 @@ class Spj extends CI_Controller
         $data = array();
         $no = @$_POST['start'];
 
-        // Ambil nilai pencarian global
-        $search_value = @$_POST['search']['value'];
-
-        // Ambil nilai pencarian per kolom (jika ada)
-        $column_search = [];
-        for ($i = 0; $i < count($_POST['columns']); $i++) {
-            if (!empty($_POST['columns'][$i]['search']['value'])) {
-                $column_search[$i] = $_POST['columns'][$i]['search']['value'];
-            }
-        }
-
         foreach ($db as $r) {
-
-            if ($search_value) {
-                // Cek apakah pencarian global cocok dengan kolom yang diinginkan
-                if (
-                    strpos(strtolower($r->nomor_pembukuan), strtolower($search_value)) === false &&
-                    strpos(strtolower($r->kode_uraian), strtolower($search_value)) === false &&
-                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false &&
-                    strpos(strtolower($r->nama_part), strtolower($search_value)) === false
-                ) {
-                    continue;
-                }
-            }
-
-            // Pencarian per kolom (jika ada)
-            $is_match = true;
-            foreach ($column_search as $index => $search_term) {
-                switch ($index) {
-                    case 1: // Kode Uraian (contoh kolom ke-0)
-                        if (strpos(strtolower($r->nomor_pembukuan), strtolower($search_term)) === false) {
-                            $is_match = false;
-                        }
-                        break;
-                    case 2: // Nama Part (contoh kolom ke-1)
-                        if (strpos(strtolower($r->kode_uraian), strtolower($search_term)) === false) {
-                            $is_match = false;
-                        }
-                        break;
-                    case 3: // Periode (contoh kolom ke-2)
-                        if (strpos(strtolower($r->nama_uraian), strtolower($search_term)) === false) {
-                            $is_match = false;
-                        }
-                        break;
-                    case 4: // Periode (contoh kolom ke-2)
-                        if (strpos(strtolower($r->nama_part), strtolower($search_term)) === false) {
-                            $is_match = false;
-                        }
-                        break;
-                        // Tambahkan lebih banyak kasus berdasarkan kolom yang ingin dicari
-                }
-            }
-
-            if (!$is_match) {
-                continue; // Lewatkan baris ini jika tidak cocok dengan pencarian
-            }
 
             $userusul = $this->users->profile_username($r->entri_by)->row();
             $status = $this->generate_status($r->is_status);

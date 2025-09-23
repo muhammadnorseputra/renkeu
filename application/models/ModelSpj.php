@@ -227,6 +227,34 @@ class ModelSpj extends CI_Model
 			$this->db->where_in('is_status', ['VERIFIKASI']);
 		endif;
 
+		// Pencarian global
+		if (!empty($_POST['search']['value'])) {
+			$search = strtolower($_POST['search']['value']);
+			$this->db->group_start()
+				->like('LOWER(uraian.kode)', $search)
+				->or_like('LOWER(uraian.nama)', $search)
+				->or_like('LOWER(part.nama)', $search)
+				->group_end();
+		}
+
+		// Pencarian per kolom
+		foreach ($_POST['columns'] as $index => $col) {
+			if (!empty($col['search']['value'])) {
+				$search_term = strtolower($col['search']['value']);
+				switch ($index) {
+					case 1:
+						$this->db->like('LOWER(uraian.kode)', $search_term);
+						break;
+					case 2:
+						$this->db->like('LOWER(uraian.nama)', $search_term);
+						break;
+					case 4:
+						$this->db->like('LOWER(part.nama)', $search_term);
+						break;
+				}
+			}
+		}
+
 		if (isset($_POST['order'])) // here order processing
 		{
 			$this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
@@ -275,6 +303,38 @@ protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwaya
 		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
 		if ($this->session->userdata('role') === 'USER') {
 			$this->db->where('entri_by_part', $this->session->userdata('part'));
+		}
+
+		// Pencarian global
+		if (!empty($_POST['search']['value'])) {
+			$search = strtolower($_POST['search']['value']);
+			$this->db->group_start()
+				->like('LOWER(spj_riwayat.nomor_pembukuan)', $search)
+				->or_like('LOWER(spj_riwayat.kode_uraian)', $search)
+				->or_like('LOWER(spj_riwayat.nama_uraian)', $search)
+				->or_like('LOWER(spj_riwayat.nama_part)', $search)
+				->group_end();
+		}
+
+		// Pencarian per kolom
+		foreach ($_POST['columns'] as $index => $col) {
+			if (!empty($col['search']['value'])) {
+				$search_term = strtolower($col['search']['value']);
+				switch ($index) {
+					case 1:
+						$this->db->like('LOWER(spj_riwayat.nomor_pembukuan)', $search_term);
+						break;
+					case 2:
+						$this->db->like('LOWER(spj_riwayat.kode_uraian)', $search_term);
+						break;
+					case 3:
+						$this->db->like('LOWER(spj_riwayat.nama_uraian)', $search_term);
+						break;
+					case 4: // kolom status
+						$this->db->where('LOWER(spj_riwayat.nama_part)', $search_term);
+						break;
+				}
+			}
 		}
 
 		if (isset($_POST['order'])) // here order processing

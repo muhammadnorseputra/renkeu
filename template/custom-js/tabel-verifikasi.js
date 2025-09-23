@@ -83,18 +83,18 @@ function addStatusFilterSPJ(table, columnIndex) {
 
 	// buat element select
 	var filterSelect = $(`
-		<label style="margin-left:10px;">
-			Hanya Tampilkan:
-			<select id="statusFilterSPJ" class="form-control form-control-sm" style="display:inline-block; width:auto; margin-left:5px;">
-				<option value="">Semua</option>
-			</select>
-		</label>
-	`);
+        <label style="margin-left:10px;">
+            Hanya Tampilkan:
+            <select id="statusFilterSPJ" class="form-control form-control-sm" style="display:inline-block; width:auto; margin-left:5px;">
+                <option value="">Semua</option>
+            </select>
+        </label>
+    `);
 
 	// sisipkan ke samping search box
 	$("#table-spj_wrapper .dataTables_filter").append(filterSelect);
 
-	// ambil data unik dari kolom
+	// ambil data unik dari kolom (ambil text saja, bukan HTML)
 	api
 		.column(columnIndex)
 		.data()
@@ -102,13 +102,28 @@ function addStatusFilterSPJ(table, columnIndex) {
 		.sort()
 		.each(function (d) {
 			if (d) {
-				$("#statusFilterSPJ").append(`<option value="${d}">${d}</option>`);
+				// ambil plain text dari HTML badge
+				var text = $("<div>").html(d).text().trim();
+				if ($("#statusFilterSPJ option[value='" + text + "']").length === 0) {
+					$("#statusFilterSPJ").append(
+						`<option value="${text}">${text}</option>`
+					);
+				}
 			}
 		});
 
 	// event listener
 	$("#statusFilterSPJ").on("change", function () {
-		api.column(columnIndex).search(this.value).draw();
+		var val = $(this).val();
+		if (val) {
+			// exact match (regex ^...$)
+			api
+				.column(columnIndex)
+				.search(val, true, false)
+				.draw();
+		} else {
+			api.column(columnIndex).search("").draw();
+		}
 	});
 }
 
