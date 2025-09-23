@@ -8,7 +8,7 @@ var tableVerifikasiSpj = $("#table-spj").DataTable({
 	searching: true,
 	deferRender: true,
 	// "pagingType": "full_numbers",
-	responsive: true,
+	responsive: false,
 	orderCellsTop: true,
 	datatype: "json",
 	// "scrollY": "800px",

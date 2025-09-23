@@ -187,7 +187,8 @@ class Spj extends CI_Controller
                 // Cek apakah pencarian global cocok dengan kolom yang diinginkan
                 if (
                     strpos(strtolower($r->kode_uraian), strtolower($search_value)) === false &&
-                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false
+                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false &&
+                    strpos(strtolower($r->nama_part), strtolower($search_value)) === false
                 ) {
                     continue;
                 }
@@ -204,6 +205,11 @@ class Spj extends CI_Controller
                         break;
                     case 2: // Periode (contoh kolom ke-2)
                         if (strpos(strtolower($r->nama_uraian), strtolower($search_term)) === false) {
+                            $is_match = false;
+                        }
+                        break;
+                    case 4: // Periode (contoh kolom ke-2)
+                        if (strpos(strtolower($r->nama_part), strtolower($search_term)) === false) {
                             $is_match = false;
                         }
                         break;
@@ -247,7 +253,7 @@ class Spj extends CI_Controller
             $row['kode'] = '<br>'. $r->kode_uraian;
             $row['uraian'] = $r->nama_sub_kegiatan .'<br> - <b>' . $r->nama_uraian . '</b>';
             $row['periode'] = bulan($r->fid_periode);
-            $row['bidang'] = '<b>' . $r->nama_part . '</b>';
+            $row['bidang'] = $r->nama_part;
             $row['userinfo'] = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
             $row['status'] = $status;
             $row['jumlah'] = "<b class='text-success'> Rp. " . nominal($r->jumlah) . "</b>";
@@ -435,7 +441,8 @@ class Spj extends CI_Controller
                 if (
                     strpos(strtolower($r->nomor_pembukuan), strtolower($search_value)) === false &&
                     strpos(strtolower($r->kode_uraian), strtolower($search_value)) === false &&
-                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false
+                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false &&
+                    strpos(strtolower($r->nama_part), strtolower($search_value)) === false
                 ) {
                     continue;
                 }
@@ -460,6 +467,11 @@ class Spj extends CI_Controller
                             $is_match = false;
                         }
                         break;
+                    case 4: // Periode (contoh kolom ke-2)
+                        if (strpos(strtolower($r->nama_part), strtolower($search_term)) === false) {
+                            $is_match = false;
+                        }
+                        break;
                         // Tambahkan lebih banyak kasus berdasarkan kolom yang ingin dicari
                 }
             }
@@ -480,7 +492,7 @@ class Spj extends CI_Controller
             $row['kode_uraian'] = "<br>" . $r->kode_uraian;
             // $row[] = '<b>' . $r->nama_part . '</b> <br>' . $r->nama_program . ' <br/>  ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br> <b>' . $r->nama_uraian . '</b>';
             $row['nama_uraian'] = $r->nama_sub_kegiatan.'<br> - <b>' . $r->nama_uraian . '</b>';
-            $row['bidang'] = '<b>' . $r->nama_part . '</b>';
+            $row['bidang'] = $r->nama_part;
             $row['periode'] = bulan($r->periode_id);
             $row['userinfo'] = '<i class="fa fa-calendar"></i> ' .longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
             $row['tgl_approve'] = '<i class="fa fa-calendar"></i> '.longdate_indo(substr($r->approve_at, 0, 10)). ' <br> <i class="fa fa-clock-o"></i>'. substr($r->approve_at, 10, 6);

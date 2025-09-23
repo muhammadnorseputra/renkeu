@@ -12,7 +12,7 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 	orderCellsTop: true,
 	deferRender: true,
 	pagingType: "full_numbers",
-	responsive: true,
+	responsive: false,
 	datatype: "json",
 	// scrollY: "",
 	order: [[7, "desc"]], //default order
