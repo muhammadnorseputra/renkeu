@@ -205,13 +205,11 @@ class ModelSpj extends CI_Model
 	// set table
 	protected $table = 'spj AS s';
 	//set column field database for datatable orderable
-	protected $column_order = array(null);
-	//set column field database for datatable searchable 
-	protected $column_search = array('kegiatan.koderek');
+	protected $column_order = array(null,'uraian.kode', null, 's.fid_periode',null,'s.entri_at');
 	// default order 
-	protected $order = array('s.entri_at' => 'asc');
+	protected $order = array('s.created_at');
 	// default select 
-	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
+	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian');
 
 	private function _datatables()
 	{
@@ -222,31 +220,12 @@ class ModelSpj extends CI_Model
 		$this->db->join('ref_programs AS program', 's.fid_program=program.id');
 		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
 		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
+		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
 		if ($this->session->userdata('role') === 'ADMIN'):
 			$this->db->where_in('is_status', ['VERIFIKASI_ADMIN', 'APPROVE', 'TMS', 'BTL']);
 		else:
 			$this->db->where_in('is_status', ['VERIFIKASI']);
 		endif;
-		$i = 0;
-
-		foreach ($this->column_search as $item) // loop column 
-		{
-			if (@$_POST['search']['value']) // if datatable send POST for search
-			{
-
-				if ($i === 0) // first loop
-				{
-					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-					$this->db->like($item, $_POST['search']['value']);
-				} else {
-					$this->db->or_like($item, $_POST['search']['value']);
-				}
-
-				if (count($this->column_search) - 1 == $i) //last loop
-					$this->db->group_end(); //close bracket
-			}
-			$i++;
-		}
 
 		if (isset($_POST['order'])) // here order processing
 		{
@@ -275,7 +254,7 @@ class ModelSpj extends CI_Model
 
 	public function make_count_all()
 	{
-		$this->db->from($this->table);
+		$this->_datatables();
 		return $this->db->count_all_results();
 	}
 	// -------------------------------- end-datatable --------------------------//
@@ -283,11 +262,10 @@ class ModelSpj extends CI_Model
 	// ----------------- datatable-verifikasi-selesai --------------------------//
 
 	//set column field database for datatable orderable
-	protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwayat.fid_periode', 'spj_riwayat.jumlah', 'spj_riwayat.entri_at');
-	//set column field database for datatable searchable 
-	protected $column_search_verifikasi_selesai = array('spj_riwayat.nama_uraian', 'spj_riwayat.nama_sub_kegiatan', 'spj_riwayat.nama_kegiatan', 'spj_riwayat.kode_uraian', 'spj_riwayat.kode_kegiatan', 'spj_riwayat.kode_sub_kegiatan');
+protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwayat.nomor_pembukuan', 'spj_riwayat.kode_uraian', 'spj_riwayat.nama_uraian','spj_riwayat.nama_bidang','spj_riwayat.fid_periode', 'spj_riwayat.entri_at', 'spj_riwayat.approve_at', 'spj_riwayat.is_status', 'spj_riwayat.jumlah');
+
 	// default order 
-	protected $order_verifikasi_selesai = array('spj_riwayat.entri_at' => 'desc');
+	protected $order_verifikasi_selesai = array('spj_riwayat.approve_at' => 'desc');
 
 	private function _datatables_verifikasi_selesai()
 	{
@@ -297,27 +275,6 @@ class ModelSpj extends CI_Model
 		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
 		if ($this->session->userdata('role') === 'USER') {
 			$this->db->where('entri_by_part', $this->session->userdata('part'));
-		}
-
-		$i = 0;
-
-		foreach ($this->column_search_verifikasi_selesai as $item) // loop column 
-		{
-			if (@$_POST['search']['value']) // if datatable send POST for search
-			{
-
-				if ($i === 0) // first loop
-				{
-					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-					$this->db->like($item, $_POST['search']['value']);
-				} else {
-					$this->db->or_like($item, $_POST['search']['value']);
-				}
-
-				if (count($this->column_search_verifikasi_selesai) - 1 == $i) //last loop
-					$this->db->group_end(); //close bracket
-			}
-			$i++;
 		}
 
 		if (isset($_POST['order'])) // here order processing

@@ -169,14 +169,59 @@ class Spj extends CI_Controller
         $db = $this->spj->make_datatables();
         $data = array();
         $no = @$_POST['start'];
+
+        // Ambil nilai pencarian global
+        $search_value = @$_POST['search']['value'];
+
+        // Ambil nilai pencarian per kolom (jika ada)
+        $column_search = [];
+        for ($i = 0; $i < count($_POST['columns']); $i++) {
+            if (!empty($_POST['columns'][$i]['search']['value'])) {
+                $column_search[$i] = $_POST['columns'][$i]['search']['value'];
+            }
+        }
+
         foreach ($db as $r) {
+
+            if ($search_value) {
+                // Cek apakah pencarian global cocok dengan kolom yang diinginkan
+                if (
+                    strpos(strtolower($r->kode_uraian), strtolower($search_value)) === false &&
+                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false
+                ) {
+                    continue;
+                }
+            }
+
+            // Pencarian per kolom (jika ada)
+            $is_match = true;
+            foreach ($column_search as $index => $search_term) {
+                switch ($index) {
+                    case 1: // Nama Part (contoh kolom ke-1)
+                        if (strpos(strtolower($r->kode_uraian), strtolower($search_term)) === false) {
+                            $is_match = false;
+                        }
+                        break;
+                    case 2: // Periode (contoh kolom ke-2)
+                        if (strpos(strtolower($r->nama_uraian), strtolower($search_term)) === false) {
+                            $is_match = false;
+                        }
+                        break;
+                        // Tambahkan lebih banyak kasus berdasarkan kolom yang ingin dicari
+                }
+            }
+
+            if (!$is_match) {
+                continue; // Lewatkan baris ini jika tidak cocok dengan pencarian
+            }
+
             $userusul = $this->users->profile_username($r->entri_by)->row();
 
             if ($r->is_status === 'VERIFIKASI_ADMIN' || $r->is_status === 'TMS' || $r->is_status === 'BTL' || privilages('priv_approve')) {
                 $selesai = '<button type="button" onclick="Selesai(\'' . $r->token . '\')" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-check-circle"></i> <br> Selesai</button>';
                 $detail = '<button onclick="window.location.href = \'' . base_url('app/spj/verifikasi_usul/' . $r->token) . '\'" type="button" class="btn btn-sm btn-warning m-0 rounded-0"><i class="fa fa-pencil"></i> <br> Ubah</button>';
             } else {
-                $detail = '<button onclick="window.location.href = \'' . base_url('app/spj/verifikasi_usul/' . $r->token) . '\'" type="button" class="btn btn-sm btn-primary m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
+                $detail = '<button onclick="window.location.href = \'' . base_url('app/spj/verifikasi_usul/' . $r->token) . '\'" type="button" class="btn btn-sm btn-link m-0 rounded-0"><i class="fa fa-check-circle"></i> Verifikasi</button>';
                 $selesai = '';
             }
 
@@ -198,12 +243,15 @@ class Spj extends CI_Controller
 
             $no++;
             $row = array();
-            $row[] = $no;
-            $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan;
-            $row[] = '<b>' . $r->nama_part . '</b> <br>' . $r->nama_program . ' <br/>  ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan;
-            $row[] = longdate_indo(substr($r->entri_at, 0, 10)) . "<br>(" . $userusul->nama . ")<hr>" . $status;
-            $row[] = "<b>" . nominal($r->jumlah) . "</b>";
-            $row[] = $detail . " " . $selesai;
+            $row['no'] = $no;
+            $row['kode'] = '<br>'. $r->kode_uraian;
+            $row['uraian'] = $r->nama_sub_kegiatan .'<br> - <b>' . $r->nama_uraian . '</b>';
+            $row['periode'] = bulan($r->fid_periode);
+            $row['bidang'] = '<b>' . $r->nama_part . '</b>';
+            $row['userinfo'] = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
+            $row['status'] = $status;
+            $row['jumlah'] = "<b class='text-success'> Rp. " . nominal($r->jumlah) . "</b>";
+            $row['action'] = $detail . " " . $selesai;
             $data[] = $row;
         }
 
@@ -368,35 +416,77 @@ class Spj extends CI_Controller
         $db = $this->spj->make_datatables_verifikasi_selesai();
         $data = array();
         $no = @$_POST['start'];
+
+        // Ambil nilai pencarian global
+        $search_value = @$_POST['search']['value'];
+
+        // Ambil nilai pencarian per kolom (jika ada)
+        $column_search = [];
+        for ($i = 0; $i < count($_POST['columns']); $i++) {
+            if (!empty($_POST['columns'][$i]['search']['value'])) {
+                $column_search[$i] = $_POST['columns'][$i]['search']['value'];
+            }
+        }
+
         foreach ($db as $r) {
 
-            if ($r->is_status === 'ENTRI') {
-                $status = '<span class="badge p-2 badge-secondary"><i class="fa fa-edit mr-2"></i> ENTRI</span>';
-            } elseif ($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN') {
-                $status = '<span class="badge p-2 badge-primary"><i class="fa fa-lock mr-2"></i> VERIFIKASI</span>';
-            } elseif ($r->is_status === 'APPROVE') {
-                $status = '<span class="badge p-2 badge-success"><i class="fa fa-check-circle mr-2"></i> APPROVE</span>';
-            } elseif ($r->is_status === 'BTL') {
-                $status = '<span class="badge p-2 badge-danger"><i class="fa fa-close mr-2"></i> BTL</span>';
-            } elseif ($r->is_status === 'TMS') {
-                $status = '<span class="badge p-2 badge-danger"><i class="fa fa-close mr-2"></i> TMS</span>';
-            } else {
-                $status = '<span class="badge p-2 badge-success"><i class="fa fa-check-circle mr-2"></i> SELESAI</span>';
+            if ($search_value) {
+                // Cek apakah pencarian global cocok dengan kolom yang diinginkan
+                if (
+                    strpos(strtolower($r->nomor_pembukuan), strtolower($search_value)) === false &&
+                    strpos(strtolower($r->kode_uraian), strtolower($search_value)) === false &&
+                    strpos(strtolower($r->nama_uraian), strtolower($search_value)) === false
+                ) {
+                    continue;
+                }
+            }
+
+            // Pencarian per kolom (jika ada)
+            $is_match = true;
+            foreach ($column_search as $index => $search_term) {
+                switch ($index) {
+                    case 1: // Kode Uraian (contoh kolom ke-0)
+                        if (strpos(strtolower($r->nomor_pembukuan), strtolower($search_term)) === false) {
+                            $is_match = false;
+                        }
+                        break;
+                    case 2: // Nama Part (contoh kolom ke-1)
+                        if (strpos(strtolower($r->kode_uraian), strtolower($search_term)) === false) {
+                            $is_match = false;
+                        }
+                        break;
+                    case 3: // Periode (contoh kolom ke-2)
+                        if (strpos(strtolower($r->nama_uraian), strtolower($search_term)) === false) {
+                            $is_match = false;
+                        }
+                        break;
+                        // Tambahkan lebih banyak kasus berdasarkan kolom yang ingin dicari
+                }
+            }
+
+            if (!$is_match) {
+                continue; // Lewatkan baris ini jika tidak cocok dengan pencarian
             }
 
             $userusul = $this->users->profile_username($r->entri_by)->row();
+            $status = $this->generate_status($r->is_status);
+            $button = $this->generate_button($r);
 
             $no++;
             $row = array();
-            $row[] = $no;
-            $row[] = $r->nomor_pembukuan;
-            $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian;
-            $row[] = '<b>' . $r->nama_part . '</b> <br>' . $r->nama_program . ' <br/>  ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br> <b>' . $r->nama_uraian . '</b>';
-            $row[] = bulan($r->periode_id);
-            $row[] = longdate_indo(substr($r->entri_at, 0, 10)) . "<br>(" . $userusul->nama . ")";
-            $row[] = $status;
-            $row[] = "<b>" . nominal($r->jumlah) . "</b>";
-            $row[] = '<button onclick="window.location.href = \'' . base_url('app/spj/verifikasi_selesai_detail/' . $r->token) . '\'" type="button" class="btn btn-sm btn-primary m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
+            $row['no'] = $no;
+            $row['no_buku'] = $r->nomor_pembukuan;
+            // $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian;
+            $row['kode_uraian'] = "<br>" . $r->kode_uraian;
+            // $row[] = '<b>' . $r->nama_part . '</b> <br>' . $r->nama_program . ' <br/>  ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br> <b>' . $r->nama_uraian . '</b>';
+            $row['nama_uraian'] = $r->nama_sub_kegiatan.'<br> - <b>' . $r->nama_uraian . '</b>';
+            $row['bidang'] = '<b>' . $r->nama_part . '</b>';
+            $row['periode'] = bulan($r->periode_id);
+            $row['userinfo'] = '<i class="fa fa-calendar"></i> ' .longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
+            $row['tgl_approve'] = '<i class="fa fa-calendar"></i> '.longdate_indo(substr($r->approve_at, 0, 10)). ' <br> <i class="fa fa-clock-o"></i>'. substr($r->approve_at, 10, 6);
+            $row['status'] = $status;
+            $row['jumlah'] = $r->is_status === 'APPROVE' ? "<b class='text-success'> Rp. " . nominal((int) $r->jumlah) . "</b>" : "<b class='text-danger'> Rp. " . nominal((int) $r->jumlah) . "</b>";
+            $row['action'] = $button;
             $data[] = $row;
         }
 
@@ -408,6 +498,45 @@ class Spj extends CI_Controller
         );
         //output to json format
         echo json_encode($output);
+    }
+
+    private function generate_status($status_code)
+    {
+        switch ($status_code) {
+            case 'ENTRI':
+                return '<span class="badge p-2 badge-secondary"><i class="fa fa-edit mr-2"></i> ENTRI</span>';
+            case 'VERIFIKASI':
+            case 'VERIFIKASI_ADMIN':
+                return '<span class="badge p-2 badge-primary"><i class="fa fa-lock mr-2"></i> VERIFIKASI</span>';
+            case 'APPROVE':
+                return '<span class="badge p-2 badge-success"><i class="fa fa-check-circle mr-2"></i> APPROVE</span>';
+            case 'BTL':
+                return '<span class="badge p-2 badge-danger"><i class="fa fa-close mr-2"></i> BTL</span>';
+            case 'TMS':
+                return '<span class="badge p-2 badge-danger"><i class="fa fa-close mr-2"></i> TMS</span>';
+            default:
+                return '<span class="badge p-2 badge-success"><i class="fa fa-check-circle mr-2"></i> SELESAI</span>';
+        }
+    }
+
+    private function generate_button($r)
+    {
+        return '<div class="dropdown">
+                            <button class="btn btn-sm btn-icon-only text-dark bg-white rounded" type="button" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              action <i class="fa fa-ellipsis-v ml-3"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                              <a class="dropdown-item d-flex justify-content-between" href="' . base_url('app/spj/verifikasi_selesai_detail/' . $r->token) . '">
+                                Detail <i class="fa fa-eye"></i>
+                              </a>
+                              <a class="dropdown-item d-flex justify-content-between" href="' . $r->berkas_link . '" target="_blank">
+                                Berkas <i class="fa fa-link"></i>
+                              </a>
+                              <a id="resspwd" data-path="users/resspwd/' . encrypt_url($r->id) . '" data-uid="' . encrypt_url($r->id) . '" class="dropdown-item d-flex justify-content-between" href="!#resspwd">
+                                Rollback <i class="fa fa-repeat text-danger"></i>
+                              </a>
+                            </div>
+                        </div>';
     }
 
     public function verifikasi_selesai_detail($token)
@@ -529,7 +658,7 @@ class Spj extends CI_Controller
 
         if (get_only_numbers($input['jumlah']) > $totalSisaLimit) {
             $status = [
-                'msg' => 'Gagal, SPJ melebihi batas anggaran KAS : '. nominal(@$totalLimit->total),
+                'msg' => 'Gagal, SPJ melebihi batas anggaran KAS : ' . nominal(@$totalLimit->total),
                 'code' => 400,
                 'data' => [
                     'total_limit' => $totalLimit,
@@ -582,12 +711,16 @@ class Spj extends CI_Controller
         }
 
         if ($db) {
-            $status = ['msg' => 'Oke', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=1&status=entri&token=' . $isToken),
+            $status = [
+                'msg' => 'Oke',
+                'code' => 200,
+                'redirect' => base_url('app/spj/buatusul?step=1&status=entri&token=' . $isToken),
                 'data' => [
                     'total_limit' => $totalLimit,
                     'total_realisasi' => $totalRealisasiPaguByPeriode,
                     'total_sisa_limit' => $totalSisaLimit
-                ]];
+                ]
+            ];
         } else {
             $status = ['msg' => 'Gagal', 'code' => 400];
         }

@@ -181,4 +181,10 @@ class ModelTarget extends CI_Model
         $q = $this->db->get();
         return $q->row();
     }
+
+    public function getTargetValue($indikator_id, $periode_id, $tahun)
+    {
+        return $this->db->select('persentase, eviden_jumlah, eviden_jenis')->from('t_target')->where(['fid_indikator' => $indikator_id, 'fid_periode' => $periode_id, 'tahun' => $tahun])
+        ->get();
+    }
 }

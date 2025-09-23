@@ -31,6 +31,7 @@ class Target extends CI_Controller
 		endif;
 
 		$this->load->model('ModelTarget', 'target');
+		$this->load->model('ModelSpj', 'spj');
 		$this->load->model('ModelCrud', 'crud');
 	}
 
@@ -117,15 +118,18 @@ class Target extends CI_Controller
 		echo json_encode($msg);
 	}
 
-	public function ubah($id, $table)
+	public function ubah($id, $table, $periode_id)
 	{
-		$row = $this->target->getIndikator(['i.id' => $id]);
+		$row = $this->target->getIndikator(['i.id' => $id, 'i.fid_periode' => $periode_id]);
+		$periode = $this->crud->get('t_periode');
 		$jenis_indikator = $this->crud->get('ref_jenis_indikators');
 		$data = [
 			'title' => 'Ubah Indikator',
 			'content' => 'pages/anggaran_kinerja/indikator_ubah',
 			'id_indikator' => $id,
 			'table' => $table,
+			'periode' => $periode,
+			'periode_id' => $periode_id,
 			'jenis_indikator' => $jenis_indikator,
 			'row' => $row->row(),
 			'autoload_js' => [
@@ -160,7 +164,8 @@ class Target extends CI_Controller
 		}
 
 		$whr = [
-			'id' => $post['id']
+			'id' => $post['id'],
+			'fid_periode' => $post['periode_id']
 		];
 
 		$db = $this->crud->update('ref_indikators', $data, $whr);
@@ -206,7 +211,7 @@ class Target extends CI_Controller
 			
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
 			if ($dbcek->num_rows() > 0) {
-				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id']]);
+				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id'], 'fid_periode' => $post['periode_id']]);
 			} else {
 				$this->crud->insert('t_target', $insert);
 			}

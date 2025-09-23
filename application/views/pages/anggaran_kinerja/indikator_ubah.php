@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12">
-        <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikatorUbah', 'data-parsley-validate' => ''], ['id' => $id_indikator]); ?>
+        <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikatorUbah', 'data-parsley-validate' => ''], ['id' => $id_indikator, 'periode_id' => $periode_id]); ?>
         <div class="form-group">
             <label class="col-form-label label-align" for="tahun">Target Tahun</label>
             <select name="tahun" id="tahun" class="form-control" required="required" data-parsley-errors-container="#help-block-tahun">
@@ -33,10 +33,17 @@
             <select name="bidang[]" id="bidang" multiple="multiple" required data-parsley-errors-container="#help-block-bidang"></select>
             <div id="help-block-bidang"></div>
         </div>
+
+        <div class="form-group">
+            <label for="periode">Periode <span class="text-danger">*</span></label>
+            <select name="periode[]" id="periode" multiple="multiple" required
+                data-parsley-errors-container="#help-block-periode">
+            </select>
+            <div id="help-block-periode" class="help-block"></div>
+        </div>
         <div class="form-group">
             <label for="nama">Nama Indikator <span class="text-danger">*</span></label>
-            <!-- <input type="text" name="nama" id="nama" class="form-control" required value="<?= $row->nama ?>"> -->
-            <textarea name="nama" id="nama" cols="30" rows="6" class="form-control" required><?= $row->nama ?></textarea>
+            <input name="nama" id="nama" class="form-control" value="<?= $row->nama ?>" required>
         </div>
         <div class="row">
             <div class="col-md-2">

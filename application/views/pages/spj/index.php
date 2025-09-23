@@ -60,10 +60,24 @@ if (urldecode($tab) === '#selesai') {
                                         <tr>
                                             <th class="text-center align-middle" width="5%">No</th>
                                             <th>Kode</th>
-                                            <th>Bidang/Program/Kegiatan/Sub Kegiatan</th>
-                                            <th>Tanggal/User/Status/Usulan</th>
-                                            <th>Jumlah (Rp)</th>
+                                            <th>Uraian</th>
+                                            <th>SPJ Periode/Bulan</th>
+                                            <th>Bidang/Bagian</th>
+                                            <th>User Usul</th>
+                                            <th>Status</th>
+                                            <th data-priority="2">Jumlah (Rp)</th>
+                                            <th data-priority="1"></th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center align-middle" width="5%">#</th>
+                                            <th class="filterhead"></th>
+                                            <th class="filterhead"></th>
                                             <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th data-priority="2"></th>
+                                            <th data-priority="1"></th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -79,12 +93,27 @@ if (urldecode($tab) === '#selesai') {
                                             <th class="text-center" width="5%">No. Urut</th>
                                             <th>No. BKU</th>
                                             <th>Kode</th>
-                                            <th>Bidang/Program/Kegiatan/Sub Kegiatan</th>
+                                            <th data-priority="1">Uraian</th>
+                                            <th>Bidang/Bagian</th>
                                             <th>Periode/SPJ Bulan</th>
                                             <th>User Usul</th>
+                                            <th data-priority="3">Tanggal Finalisasi</th>
                                             <th>Status</th>
-                                            <th>Jumlah (Rp)</th>
+                                            <th data-priority="2">Jumlah (Rp)</th>
+                                            <th data-priority="1"></th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center" width="5%">#</th>
+                                            <th class="filterhead"></th>
+                                            <th class="filterhead"></th>
+                                            <th class="filterhead" data-priority="1"></th>
                                             <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th data-priority="3"></th>
+                                            <th></th>
+                                            <th data-priority="2"></th>
+                                            <th data-priority="1"></th>
                                         </tr>
                                     </thead>
                                 </table>

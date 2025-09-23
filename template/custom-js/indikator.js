@@ -1,4 +1,10 @@
+function PilihPeriode(id) {
+	window.location.replace(`${_uri}/app/target?periode=${id}`);
+}
+
 $(function () {
+	
+
 	let $modal = $(".modal-indikator"),
 		$form = $("form#formIndikator");
 
