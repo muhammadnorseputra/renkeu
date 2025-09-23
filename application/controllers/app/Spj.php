@@ -73,19 +73,19 @@ class Spj extends CI_Controller
                         <th class="text-center" width="5%">No</th>
                         <th>Kode</th>
                         <th>Kegiatan/Sub Kegiatan/Uraian</th>
-                        <th width="10%">SPJ Bulan</th>
-                        <th width="12%">Jumlah (Rp)</th>
+                        <th width="8%">SPJ Bulan</th>
+                        <th width="8%">Jumlah (Rp)</th>
                         <th>Status</th>
-                        <th width="15%">Tanggal Entri <span class="sort" data-sort="entri_at">Sort</span></th>
+                        <th width="18%">Tanggal Entri <span class="sort" data-sort="entri_at">Sort</span></th>
                         <th>Berkas</th>
-                        <th class="text-center">Aksi</th>
+                        <th class="text-center" colspan="2">Aksi</th>
                     </tr>
                     </thead>';
         $html .= '<tbody class="list">';
         $no = 1;
         foreach ($db->result() as $r):
             // Catatan
-            $catatan = isset($r->catatan) && !empty($r->catatan) && $r->is_status === 'ENTRI' ? '<span class="text-danger"><i class="fa fa-exclamation-triangle mr-2"></i> ' . substr($r->catatan, 0, 100) . '...</span>' : '';
+            $catatan = isset($r->catatan) && !empty($r->catatan) && $r->is_status === 'ENTRI' ? '<span class="text-danger"><i class="fa fa-exclamation-triangle mr-2"></i> ' . substr($r->catatan, 0, 60) . '...</span>' : '';
             // Status
             if ($r->is_status === 'ENTRI') {
                 $status = '<span class="badge p-2 badge-secondary"><i class="fa fa-edit mr-2"></i> ENTRI</span>';
