@@ -74,7 +74,7 @@ class Spj extends CI_Controller
                         <th>Kode</th>
                         <th>Uraian</th>
                         <th width="8%">SPJ Bulan</th>
-                        <th width="8%">Jumlah (Rp)</th>
+                        <th width="10%">Jumlah (Rp)</th>
                         <th>Status</th>
                         <th width="18%">Tanggal Entri <span class="sort" data-sort="entri_at">Sort</span></th>
                         <th>Berkas</th>
