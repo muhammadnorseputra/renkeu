@@ -57,11 +57,12 @@ $("form#step-1").on("submit", function (e) {
 					action,
 					data,
 					function (res) {
+						alert(res.msg);
 						if (res.code === 200) {
 							return window.location.replace(res.redirect);
 						}
 						window.location.reload();
-						return alert(res.msg);
+						return;
 					},
 					"json"
 				);
@@ -84,8 +85,8 @@ $("form#step-2").on("submit", function (e) {
 		$button = _.find('button[type="submit"]');
 	let msg = "Apakah anda yakin akan mengirim usulan tersebut ?";
 	if (_.parsley().isValid()) {
-		$button.text("processing ...").prop("disabled", true);
 		if (confirm(msg)) {
+			$button.text("processing ...").prop("disabled", true);
 			$.blockUI({
 				message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
 				css: { backgroundColor: "transparent", borderColor: "transparent" },
@@ -96,6 +97,7 @@ $("form#step-2").on("submit", function (e) {
 						action,
 						data,
 						function (res) {
+							alert(res.msg);
 							if (res.code === 200) {
 								window.location.replace(res.redirect);
 							}
@@ -107,7 +109,7 @@ $("form#step-2").on("submit", function (e) {
 				} finally {
 					$button
 						.prop("disabled", false)
-						.text('<i class="fa fa-save mr-2"></i> Kirim Usulan');
+						.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
 				}
 			}, 2000);
 			return false;

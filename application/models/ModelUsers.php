@@ -83,6 +83,10 @@ class ModelUsers extends CI_Model {
 	{
 		return $this->db->get_where('t_users', ['username' => $user_name]);
 	}
+	public function profile_user_id($user_id)
+	{
+		return $this->db->get_where('t_users', ['id' => $user_id]);
+	}
 	public function part_detail($partId) {
 		return $this->db->get_where('ref_parts', ['id' => $partId])->row()->nama;
 	}

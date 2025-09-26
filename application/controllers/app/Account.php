@@ -74,7 +74,7 @@ class Account extends CI_Controller
                 $data = array('upload_data' => $this->upload->data());
                 $image = $data['upload_data']['file_name'];
 
-                $userdata = ['nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'pic' => $image];
+                $userdata = ['is_valid' => "1",'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'pic' => $image];
 
                 $result = $this->users->update($userdata, $whr);
 
@@ -87,7 +87,7 @@ class Account extends CI_Controller
         } elseif (($nama == $profile->nama) && ($nip == $profile->nip) && ($nohp == $profile->nohp) && (empty($_FILES["file"]["name"]))) {
             $msg = ['valid' => false, 'pesan' => 'Tidak ada perubahan', 'redirectTo' => false];
         } else {
-            $userdata = ['nama' => $nama, 'nip' => $nip, 'nohp' => $nohp,];
+            $userdata = ['is_valid' => "1", 'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp,];
             $result = $this->users->update($userdata, $whr);
             if ($result) {
                 $msg = ['valid' => true, 'pesan' => 'Profile berhasil di perbaharui, silahkan relog untuk melihat perubahan.', 'redirectTo' => urlencode(base_url("app/account"))];
@@ -122,7 +122,7 @@ class Account extends CI_Controller
                 if ($this->form_validation->run() == false) {
                     $msg = ['valid' => false, 'pesan' => validation_errors()];
                 } else {
-                    $data = ['password' => $pwd_new_post];
+                    $data = ['is_valid' => "1", 'password' => $pwd_new_post];
                     $whr = ['id' => $profile->id];
                     $db = $this->users->update_pwd('t_users', $data, $whr);
                     if ($db) {

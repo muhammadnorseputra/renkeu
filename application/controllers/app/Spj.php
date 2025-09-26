@@ -42,14 +42,17 @@ class Spj extends CI_Controller
                 'template/custom-js/list-state.js',
                 'template/custom-js/spj.js',
                 'template/backend/vendors/datatables.net/js/jquery.dataTables.min.js',
-                'template/backend/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js',
                 'template/backend/vendors/datatables.net-responsive/js/dataTables.responsive.min.js',
+                'https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js',
+                'https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js',
+                'template/custom-js/blockUI/jquery.blockUI.js',
                 'template/custom-js/tabel-verifikasi.js',
                 'template/custom-js/tabel-verifikasi-selesai.js',
             ],
             'autoload_css' => [
                 'template/backend/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css',
                 'template/backend/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css',
+                'https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css',
             ]
         ];
         $this->load->view('layout/app', $data);
@@ -232,6 +235,7 @@ class Spj extends CI_Controller
                 'template/backend/vendors/moment/min/moment.min.js',
                 'template/backend/vendors/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/custom-js/blockUI/jquery.blockUI.js',
                 'template/custom-js/spj_verifikasi.js',
             ],
             'autoload_css' => [
@@ -245,6 +249,8 @@ class Spj extends CI_Controller
     {
         $input = $this->input->post();
         $token = $input['token'];
+        $getSpj = $this->crud->getWhere('spj', ['token' => $token])->row();
+        $getUser = $this->users->profile_username($getSpj->entri_by)->row();
 
         $whr = [
             'token' => $token
@@ -281,7 +287,25 @@ class Spj extends CI_Controller
             $db = $this->crud->update('spj', $update, $whr);
         }
 
-        if ($db) {
+        $send = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getUser->nohp, '
+*DIGTA SUNANPRAJA*
+📢 *Notifikasi Usulan SPJ*
+-------------
+📝 Uraian   : ' . $getSpj->uraian . '  
+💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
+⏰ Spj Bulan : ' . bulan(strtoupper($getSpj->bulan)) . '
+📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
+-------------
+📌 Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
+-------------
+Telah diverifikasi dengan status *'.$input['status']. '*.  
+Silahkan cek aplikasi Digta Sunanpraja.  
+
+⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
+'.longdate_indo(Date('Y-m-d')).'
+        ');
+
+        if ($db && $send['success']) {
             $msg = ['pesan' => 'Usulan SPJ Berhasil Di Proses', 'code' => 200, 'redirect' => base_url('app/spj/?tab=%23verifikasi')];
         } else {
             $msg = ['pesan' => 'Usulan SPJ Gagal Di Proses', 'code' => 400];
@@ -359,7 +383,25 @@ class Spj extends CI_Controller
         ];
 
         $db = $this->crud->update('spj', $update, $whr);
-        if ($db) {
+
+        $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
+        $send = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getUser->nohp, '
+*DIGTA SUNANPRAJA*
+📢 *Notifikasi Usulan SPJ*
+-------------
+📝 Uraian   : ' . $detailUsul->uraian . '  
+💰 Jumlah   : Rp. ' . nominal($detailUsul->jumlah) . ' 
+⏰ Spj Bulan : ' . bulan(strtoupper($detailUsul->bulan)) . '
+📅 Tgl. Entri : ' . longdate_indo(substr($detailUsul->entri_at, 0, 10)) . '
+-------------
+Telah difinalisasi *ADMIN* dengan status *' . ($is_status === 'SELESAI' ? 'APPROVE' : $detailUsul->is_status) . '*.  
+Silahkan cek aplikasi Digta Sunanpraja.  
+
+⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
+' . longdate_indo(Date('Y-m-d')) . '
+        ');
+
+        if ($db && $send['success']) {
             $this->crud->insert('spj_riwayat', $insert);
             $msg = ['pesan' => 'Oke', 'code' => 200];
         } else {
@@ -624,7 +666,7 @@ class Spj extends CI_Controller
 
         if ($db) {
             $status = [
-                'msg' => 'Oke',
+                'msg' => 'Oke, berhasil disimpan',
                 'code' => 200,
                 'redirect' => base_url('app/spj/buatusul?step=1&status=entri&token=' . $isToken),
                 'data' => [
@@ -650,8 +692,27 @@ class Spj extends CI_Controller
             'is_status' => 'VERIFIKASI'
         ];
         $db = $this->crud->update('spj', $data, $whr);
-        if ($db) {
-            $status = ['msg' => 'Oke', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=2&status=verifikasi&token=' . $input['token'])];
+
+        // notif wa
+        $user = $this->crud->getWhere('spj', ['token' => $input['token']])->row();
+        $getUser = $this->users->profile_username($user->entri_by)->row();
+        $send = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getUser->nohp, '
+*DIGTA SUNANPRAJA*
+📢 *Notifikasi Usulan SPJ*
+Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di verifikasi.
+-------------
+📝 Uraian   : ' . $user->uraian . '
+💰 Jumlah   : Rp. ' . nominal($user->jumlah) . '
+⏰ Spj Bulan : ' . bulan(strtoupper($user->bulan)) . '
+📌 Status   : '.$user->is_status.'
+➡️ Link Berkas : ' . $user->berkas_link . '
+-------------
+⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
+' . longdate_indo(Date('Y-m-d')) . '
+        ');
+
+        if ($db && $send['success']) {
+            $status = ['msg' => 'Oke, berhasil dikirim', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=2&status=verifikasi&token=' . $input['token'])];
         } else {
             $status = ['msg' => 'Gagal', 'code' => 400];
         }

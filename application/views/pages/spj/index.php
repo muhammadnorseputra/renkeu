@@ -84,7 +84,7 @@ if (urldecode($tab) === '#selesai') {
                             </div>
                         </div>
                     <?php endif; ?>
-                    <?php if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || privilages('priv_riwayat_spj')) : ?>
+                    <?php if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'ARSIP_USER' || privilages('priv_riwayat_spj')) : ?>
                         <div class="tab-pane <?= $selesai ?> <?= $is_show_selesai ?>" id="selesai" role="tabpanel" aria-labelledby="selesai-tab">
                             <div class="table-responsive">
                                 <table id="table-spj-selesai" class="table dt-responsive nowrap jambo_table bulk_action" cellspacing="0" width="100%">

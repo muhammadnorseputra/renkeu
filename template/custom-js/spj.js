@@ -15,7 +15,7 @@ $(function () {
 	getInbox().then((data) => {
 		if (data.code === 404) {
 			$("#inbox").html(
-				`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> <div class="clearfix"></div><br> "${data.msg}" Silahkan klik tombol buat usul spj</div>
+				`<div class="text-center my-5"><i class="fa fa-folder-open mb-4" style="font-size: 64px"></i> <br> <div class="clearfix"></div><br> "${data.msg}" Silahkan klik tombol buat usul spj</div>
 				<div class="row d-flex justify-content-center">
 					${data.result}
 				</div>`

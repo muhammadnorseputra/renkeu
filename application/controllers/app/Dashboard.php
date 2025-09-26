@@ -151,4 +151,39 @@ class Dashboard extends CI_Controller
 		]);
 		redirect($this->input->post('redirectTo'));
 	}
+
+	public function cekProfile()
+	{
+		$userId = decrypt_url($this->session->userdata('user_id'));
+		$dbCekProfile = $this->user->profile_user_id($userId);
+
+		$profile = $dbCekProfile->row();
+		if($dbCekProfile && $profile->nohp === "" || $profile->is_valid === "0")
+		{
+			echo json_encode([
+				'status' => false,
+				'message' => 'Profile tidak lengkap ! (No. HP)',
+				'data' => '<p>Untuk meningkatkan keamanan akun Anda, silakan lengkapi informasi profil Anda dengan data yang valid dan terbaru.</p>
+                <p>Silakan lengkapi dan perbarui informasi profil Anda.</p>
+                <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href=\'' . base_url('/app/account') . '\'">Update Profile Disini.</button>'
+			]);
+			return false;
+		}
+
+		if ($dbCekProfile && $profile->nip === "" || $profile->is_valid === "0") {
+			echo json_encode([
+				'status' => false,
+				'message' => 'Profile tidak lengkap ! (NIP/NIK)',
+				'data' => '<p>Untuk meningkatkan keamanan akun Anda, silakan lengkapi informasi profil Anda dengan data yang valid dan terbaru.</p>
+                <p>Silakan lengkapi dan perbarui informasi profil Anda.</p>
+                <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href=\'' . base_url('/app/account') . '\'">Update Profile Disini.</button>'
+			]);
+			return false;
+		}
+
+		echo json_encode([
+			'status' => true,
+			'message' => 'Profile lengkap !'
+		]);
+	}
 }

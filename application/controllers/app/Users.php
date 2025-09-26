@@ -96,7 +96,7 @@ class Users extends CI_Controller
         elseif ($role_name == 'VERIFICATOR'):
             $role_color = '<span class="badge badge-warning">' . $role_name . '</span>';
         else:
-            $role_color = '<span class="badge badge-default">' . $role_name . '</span>';
+            $role_color = '<span class="badge badge-dark">' . $role_name . '</span>';
         endif;
         return $role_color;
     }

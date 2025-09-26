@@ -76,6 +76,14 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 			next: `<i class="fa fa-long-arrow-right"></i>`,
 		},
 	},
+	// Tambahkan bagian ini
+	dom: "lBfrtip",
+	buttons: [
+		{
+			extend: "colvis",
+			text: "Show/Hide Columns",
+		},
+	],
 });
 
 function addStatusFilterSpjSelesai(table, columnIndex) {

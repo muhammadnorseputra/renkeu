@@ -196,6 +196,23 @@
         </div>
     </div>
 </div>
+
+<!-- The Modal -->
+<div class="modal" id="modalInfoProfile" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content rounded-0">
+            <!-- Modal Header -->
+            <div class="modal-header bg-danger text-white rounded-0">
+                <h4 class="modal-title">Mohon Perhatian !</h4>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     $(function() {
         let SPJMS = {

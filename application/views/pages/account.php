@@ -46,7 +46,9 @@
                     <label class="col-form-label col-md-3 col-sm-3 label-align" for="nohp">No. Handphone <span class="text-danger">*</span>
                     </label>
                     <div class="col-md-6 col-sm-6 ">
-                        <input type="text" id="nohp" class="form-control" name="nohp" value="<?= $detail->nohp ?>" required data-parsley-trigger="focusout" data-parsley-pattern-message="Nomor handphone tidak valid !" pattern="^(\+62|62|0)8[1-9][0-9]{6,9}$">
+                        <input type="text" id="nohp" class="form-control" name="nohp" value="<?= $detail->nohp ?>" required data-parsley-trigger="focusout" data-parsley-pattern-message="Nomor handphone tidak valid !" pattern="^(62)8[1-9][0-9]{6,9}$"
+                            data-parsley-maxlength="13" data-parsley-type="number">
+                        <span class="help-block">*) Format nomor handphone harus diawali dengan kode negara (62). Contoh: 6281234567890</span>
                     </div>
                 </div>
                 <div class="item form-group">

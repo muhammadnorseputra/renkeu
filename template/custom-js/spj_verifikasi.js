@@ -4,6 +4,7 @@ $(function () {
 	});
 	$("form#formVerifikasi").on("submit", function (e) {
 		e.preventDefault();
+		let _button = $(this).find("button[type=submit]");
 		let _ = $(this),
 			action = _.attr("action"),
 			data = _.serialize(),
@@ -11,18 +12,27 @@ $(function () {
 		let msg = `Apakah anda yakin akan ${status} usulan tersebut ?`;
 		if (_.parsley().isValid()) {
 			if (confirm(msg)) {
-				$.post(
-					action,
-					data,
-					function (res) {
-						alert(res.pesan);
-						if (res.code === 200) {
-							window.location.replace(res.redirect);
-						}
-					},
-					"json"
-				);
-				return false;
+				_button.html("processing ...").prop("disabled", true);
+				$.blockUI({
+					message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+					css: { backgroundColor: "transparent", borderColor: "transparent" },
+				});
+				try {
+					$.post(
+						action,
+						data,
+						function (res) {
+							alert(res.pesan);
+							if (res.code === 200) {
+								window.location.replace(res.redirect);
+							}
+						},
+						"json"
+					);
+					return false;
+				} catch (error) {
+					alert(error);
+				}
 			}
 		}
 	});
@@ -30,17 +40,26 @@ $(function () {
 
 function Selesai(token) {
 	let msg = "Apakah anda yakin akan menyelesaikan usulan tersebut ?";
+	$.blockUI({
+		message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+		css: { backgroundColor: "transparent", borderColor: "transparent" },
+	});
 	if (confirm(msg)) {
-		$.post(
-			`${_uri}/app/spj/verifikasi_proses_selesai`,
-			{ token: token },
-			function (res) {
-				if (res.code === 200) {
-					window.history.back(-1);
-				}
-			},
-			"json"
-		);
-		return false;
+		try {
+			$.post(
+				`${_uri}/app/spj/verifikasi_proses_selesai`,
+				{ token: token },
+				function (res) {
+					alert(res.pesan);
+					if (res.code === 200) {
+						window.history.back(-1);
+					}
+				},
+				"json"
+			);
+			return false;
+		} catch (error) {
+			alert(error);
+		}
 	}
 }

@@ -129,12 +129,25 @@ function addStatusFilterSPJ(table, columnIndex) {
 
 function Selesai(token) {
 	let msg = 'Apakah anda yakin akan menyelesaikan usulan tersebut ?';
-	if(confirm(msg)) {
-		$.post(`${_uri}/app/spj/verifikasi_proses_selesai`, {token: token}, function(res) {
-			if(res.code === 200) {
-				tableVerifikasiSpj.ajax.reload();
-			}
-		}, 'json')
+	$.blockUI({
+		message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+		css: { backgroundColor: "transparent", borderColor: "transparent" },
+	});
+	if (confirm(msg)) {
+		try {
+			$.post(`${_uri}/app/spj/verifikasi_proses_selesai`, {token: token}, function(res) {
+				if(res.code === 200) {
+					tableVerifikasiSpj.ajax.reload();
+					$.unblockUI();
+					return;
+				}
+				alert(res.pesan);
+				$.unblockUI();
+			}, 'json');
+		} catch (error) {
+			alert(error);
+			$.unblockUI();
+		}
 		return false;
 	}
 }
