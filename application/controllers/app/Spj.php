@@ -250,7 +250,6 @@ class Spj extends CI_Controller
         $input = $this->input->post();
         $token = $input['token'];
         $getSpj = $this->crud->getWhere('spj', ['token' => $token])->row();
-        $getUser = $this->users->profile_username($getSpj->entri_by)->row();
 
         $whr = [
             'token' => $token
@@ -287,6 +286,25 @@ class Spj extends CI_Controller
             $db = $this->crud->update('spj', $update, $whr);
         }
 
+        // Kirim Notifikasi WA ke user
+        $send = $this->sendNotifyUser($getSpj, $input);
+
+        if ($db && $send['success']) {
+            if($input['status'] == 'MS' || $input['status'] == 'TMS' && $this->session->userdata('role') === 'VERIFICATOR'):
+                $this->sendNotifyAdmin($getSpj, $input);
+            endif;
+            $msg = ['pesan' => 'Usulan SPJ Berhasil Di Proses', 'code' => 200, 'redirect' => base_url('app/spj/?tab=%23verifikasi')];
+        } else {
+            $msg = ['pesan' => 'Usulan SPJ Gagal Di Proses', 'code' => 400];
+        }
+
+        echo json_encode($msg);
+    }
+
+    private function sendNotifyUser($getSpj, $input)
+    {
+        // Kirim Notifikasi WA ke user
+        $getUser = $this->users->profile_username($getSpj->entri_by)->row();
         $send = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getUser->nohp, '
 *DIGTA SUNANPRAJA*
 📢 *Notifikasi Usulan SPJ*
@@ -297,21 +315,50 @@ class Spj extends CI_Controller
 📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
 -------------
 📌 Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
+No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
+Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
+Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '
+Verifikator : ' . $this->session->userdata('user_name') . '
 -------------
-Telah diverifikasi dengan status *'.$input['status']. '*.  
+Telah diverifikasi dengan status *' . $input['status'] . '*. Selanjutnya akan di proses oleh ADMIN. 
 Silahkan cek aplikasi Digta Sunanpraja.  
 
 ⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-'.longdate_indo(Date('Y-m-d')).'
+' . longdate_indo(Date('Y-m-d')) . '
+_by ' . $this->session->userdata('role') .' (' . $this->session->userdata('user_name') . ')_
         ');
 
-        if ($db && $send['success']) {
-            $msg = ['pesan' => 'Usulan SPJ Berhasil Di Proses', 'code' => 200, 'redirect' => base_url('app/spj/?tab=%23verifikasi')];
-        } else {
-            $msg = ['pesan' => 'Usulan SPJ Gagal Di Proses', 'code' => 400];
-        }
+        return $send;
+    }
 
-        echo json_encode($msg);
+    private function sendNotifyAdmin($getSpj, $input, $user_admin = 'abduh')
+    {
+        // Kirim Notifikasi WA ke Admin
+            $getAdmin = $this->users->profile_username($user_admin)->row();
+            $sendAdmin = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getAdmin->nohp, '
+*DIGTA SUNANPRAJA*
+📢 *Notifikasi Usulan SPJ*
+-------------
+📝 Uraian   : ' . $getSpj->uraian . '  
+💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
+⏰ Spj Bulan : ' . bulan(strtoupper($getSpj->bulan)) . '
+📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
+-------------
+No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
+Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
+Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '
+Verifikator : ' . $this->session->userdata('user_name') . '
+Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
+-------------
+Telah diverifikasi dengan status *' . $input['status'] . '*.  
+Silahkan cek aplikasi Digta Sunanpraja.  
+
+⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
+' . longdate_indo(Date('Y-m-d')) . '
+_by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')_
+        ');
+
+        return $sendAdmin;
     }
 
     public function verifikasi_proses_selesai()
@@ -399,6 +446,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
 
 ⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
 ' . longdate_indo(Date('Y-m-d')) . '
+_by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')_
         ');
 
         if ($db && $send['success']) {

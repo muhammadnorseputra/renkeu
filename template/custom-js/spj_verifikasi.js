@@ -40,11 +40,11 @@ $(function () {
 
 function Selesai(token) {
 	let msg = "Apakah anda yakin akan menyelesaikan usulan tersebut ?";
-	$.blockUI({
-		message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
-		css: { backgroundColor: "transparent", borderColor: "transparent" },
-	});
 	if (confirm(msg)) {
+		$.blockUI({
+			message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+			css: { backgroundColor: "transparent", borderColor: "transparent" },
+		});
 		try {
 			$.post(
 				`${_uri}/app/spj/verifikasi_proses_selesai`,
