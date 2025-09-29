@@ -1,3 +1,6 @@
+<?php  
+var_dump($this->session->userdata('is_valid_profile'));
+?>
 <div class="clearfix"></div>
 <div class="alert alert-success" role="alert">
     Selamat datang kembali <strong><?= $this->session->userdata('nama') ?></strong> [ Login as <b><?= strtolower($this->session->userdata('role')); ?></b> ] <br>

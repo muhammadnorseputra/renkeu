@@ -24,7 +24,7 @@
                     <label class="col-form-label col-md-3 col-sm-3 label-align" for="customFile">Ganti Photo
                     </label>
                     <div class="col-md-6 col-sm-6 ">
-                        <input type="file" name="file" class="form-control" id="customFile">
+                        <input type="file" name="file" class="form-control" id="customFile" accept="image/png,image/jpg">
                         <span class="help-block">*) Apabila gambar tidak diganti, abaikan inputan ini</span>
                     </div>
                 </div>
@@ -36,10 +36,10 @@
                     </div>
                 </div>
                 <div class="item form-group">
-                    <label class="col-form-label col-md-3 col-sm-3 label-align" for="nip">NIP <span class="text-danger">*</span>
+                    <label class="col-form-label col-md-3 col-sm-3 label-align" for="nip">NIP / NIK <span class="text-danger">*</span>
                     </label>
                     <div class="col-md-6 col-sm-6 ">
-                        <input type="text" id="nip" class="form-control" name="nip" value="<?= $detail->nip ?>" required data-parsley-trigger="focusout" data-parsley-maxlength="18" data-parsley-type="number">
+                        <input type="text" id="nip" class="form-control" name="nip" value="<?= $detail->nip ?>" required data-parsley-trigger="focusout" data-parsley-maxlength="18" maxlength="18" minlength="8" data-parsley-minlength="8" data-parsley-type="number">
                     </div>
                 </div>
                 <div class="item form-group">
@@ -47,7 +47,7 @@
                     </label>
                     <div class="col-md-6 col-sm-6 ">
                         <input type="text" id="nohp" class="form-control" name="nohp" value="<?= $detail->nohp ?>" required data-parsley-trigger="focusout" data-parsley-pattern-message="Nomor handphone tidak valid !" pattern="^(62)8[1-9][0-9]{6,9}$"
-                            data-parsley-maxlength="13" data-parsley-type="number">
+                            data-parsley-maxlength="13" maxlength="13" minlength="10" data-parsley-minlength="10" data-parsley-type="number">
                         <span class="help-block">*) Format nomor handphone harus diawali dengan kode negara (62). Contoh: 6281234567890</span>
                     </div>
                 </div>
@@ -93,10 +93,10 @@
                     </div>
                 </div>
                 <div class="item form-group">
-                    <label class="col-form-label col-md-3 col-sm-3 label-align" for="input-old-pwd">Old Password <span class="text-danger">*</span>
+                    <label class="col-form-label col-md-3 col-sm-3 label-align" for="input-old-pwd">Current Password <span class="text-danger">*</span>
                     </label>
                     <div class="col-md-6 col-sm-6 ">
-                        <input required="required" type="password" autocomplete="off" name="old_pwd" id="input-old-pwd" class="form-control" placeholder="Masukan Password Lama">
+                        <input required="required" type="password" autocomplete="off" name="old_pwd" id="input-old-pwd" class="form-control" placeholder="Masukan Password Saat Ini">
                     </div>
                 </div>
                 <div class="item form-group">

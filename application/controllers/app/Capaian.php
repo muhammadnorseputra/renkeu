@@ -24,7 +24,7 @@ class Capaian extends CI_Controller
 		parent::__construct();
 		cek_session();
 		//  CEK USER PRIVILAGES 
-		if (!privilages('priv_default') && !privilages('priv_anggarankinerja')) :
+		if (!privilages('priv_default') && !privilages('priv_anggarankinerja') || $this->session->userdata('is_valid_profile') === "0") :
 			return show_404();
 		endif;
 

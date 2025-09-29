@@ -35,19 +35,20 @@
             <ul class="nav side-menu">
                 <li><a href="<?= base_url('app/dashboard') ?>" class="loadContent" title="Dashboard"><i class="fa fa-home"></i> Beranda</a></li>
                 <?php if (privilages('priv_programs')): ?>
-                    <li><a href="<?= base_url('app/programs') ?>" class="loadContent" title="Program & Kegiatan"><i class="fa fa-database"></i>Rincian Anggaran </a></li>
+                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/programs') : '#' ?>" class="loadContent" title="Program & Kegiatan" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-database"></i>Rincian Anggaran </a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_spj')): ?>
-                    <li><a href="<?= base_url('app/spj') ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)"><i class="fa fa-dollar"></i> SPJ</a></li>
+                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj') : '#' ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-dollar"></i> SPJ</a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_bukujaga')): ?>
-                    <li><a href="<?= base_url('app/bukujaga') ?>" class="loadContent" title="Buku Jaga Kegiatan"><i class="fa fa-book"></i> Buku Jaga</a></li>
+                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/bukujaga') : '#' ?>" class="loadContent" title="Buku Jaga Kegiatan" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-book"></i> Buku Jaga</a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_anggarankinerja')): ?>
-                    <li>
+                    <li style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">
                         <a>
                             <i class="fa fa-money"></i> Anggaran & Kinerja <span class="fa fa-chevron-down"></span>
                         </a>
+                        <?php if($this->session->userdata('is_valid_profile') === "1"): ?>
                         <ul class="nav child_menu">
                             <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN', 'USER'])): ?>
                                 <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target Indikator">Target</a></li>
@@ -58,6 +59,7 @@
                                 <li><a href="<?= base_url('app/capaian/laporan') ?>" class="loadContent" title="Target Laporan">Laporan Tahunan</a></li>
                             <?php endif ?>
                         </ul>
+                        <?php endif; ?>
                     </li>
                 <?php endif; ?>
             </ul>
