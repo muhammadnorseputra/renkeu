@@ -30,6 +30,7 @@ class Spj extends CI_Controller
         $this->load->model('ModelSpj', 'spj');
         $this->load->model('ModelTarget', 'target');
         $this->load->model('ModelRealisasi', 'realisasi');
+        $this->load->helper('fonnte');
     }
 
     public function index()
@@ -289,11 +290,11 @@ class Spj extends CI_Controller
         // Kirim Notifikasi WA ke user
         $send = $this->sendNotifyUser($getSpj, $input);
 
-        if ($db && $send['success']) {
+        if ($db && $send) {
             if($input['status'] == 'MS' || $input['status'] == 'TMS' && $this->session->userdata('role') === 'VERIFICATOR'):
                 $this->sendNotifyAdmin($getSpj, $input);
             endif;
-            $msg = ['pesan' => 'Usulan SPJ Berhasil Di Proses', 'code' => 200, 'redirect' => base_url('app/spj/?tab=%23verifikasi')];
+            $msg = ['pesan' => 'Usulan SPJ Berhasil Di Proses', 'code' => 200, 'redirect' => base_url('app/spj/?tab=%23verifikasi'), 'send_wa' => $send];
         } else {
             $msg = ['pesan' => 'Usulan SPJ Gagal Di Proses', 'code' => 400];
         }
@@ -305,7 +306,7 @@ class Spj extends CI_Controller
     {
         // Kirim Notifikasi WA ke user
         $getUser = $this->users->profile_username($getSpj->entri_by)->row();
-        $send = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getUser->nohp, '
+        $send = sendMessage($getUser->nohp, '
 *DIGTA SUNANPRAJA*
 📢 *Notifikasi Usulan SPJ*
 -------------
@@ -335,7 +336,7 @@ _by ' . $this->session->userdata('role') .' (' . $this->session->userdata('user_
     {
         // Kirim Notifikasi WA ke Admin
             $getAdmin = $this->users->profile_username($user_admin)->row();
-            $sendAdmin = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getAdmin->nohp, '
+            $sendAdmin = sendMessage($getAdmin->nohp, '
 *DIGTA SUNANPRAJA*
 📢 *Notifikasi Usulan SPJ*
 -------------
@@ -432,7 +433,7 @@ _by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user
         $db = $this->crud->update('spj', $update, $whr);
 
         $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
-        $send = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getUser->nohp, '
+        $send = sendMessage($getUser->nohp, '
 *DIGTA SUNANPRAJA*
 📢 *Notifikasi Usulan SPJ*
 -------------
@@ -449,11 +450,11 @@ Silahkan cek aplikasi Digta Sunanpraja.
 _by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')_
         ');
 
-        if ($db && $send['success']) {
+        if ($db && $send) {
             $this->crud->insert('spj_riwayat', $insert);
-            $msg = ['pesan' => 'Oke', 'code' => 200];
+            $msg = ['pesan' => 'Oke', 'code' => 200, 'send_wa' => $send];
         } else {
-            $msg = ['pesan' => 'Gagal', 'code' => 400];
+            $msg = ['pesan' => 'Gagal', 'code' => 400, 'send_wa' => $send];
         }
         echo json_encode($msg);
     }
@@ -744,7 +745,7 @@ _by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user
         // notif wa
         $user = $this->crud->getWhere('spj', ['token' => $input['token']])->row();
         $getUser = $this->users->profile_username($user->entri_by)->row();
-        $send = sendWaMessage('https://whatsapp.bkpsdm-info.com/message/send-text', 'notify', $getUser->nohp, '
+        $send = sendMessage($getUser->nohp, '
 *DIGTA SUNANPRAJA*
 📢 *Notifikasi Usulan SPJ*
 Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di verifikasi.
@@ -759,10 +760,10 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
 ' . longdate_indo(Date('Y-m-d')) . '
         ');
 
-        if ($db && $send['success']) {
-            $status = ['msg' => 'Oke, berhasil dikirim', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=2&status=verifikasi&token=' . $input['token'])];
+        if ($db && $send) {
+            $status = ['msg' => 'Oke, berhasil dikirim', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=2&status=verifikasi&token=' . $input['token']), 'send_wa' => $send];
         } else {
-            $status = ['msg' => 'Gagal', 'code' => 400];
+            $status = ['msg' => 'Gagal', 'code' => 400, 'send_wa' => $send];
         }
         echo json_encode($status);
     }
