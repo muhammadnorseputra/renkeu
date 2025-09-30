@@ -27,6 +27,7 @@ class Account extends CI_Controller
         if (!privilages('priv_default')) :
             return show_404();
         endif;
+        $this->load->helper('telegram');
     }
 
     public function index()
@@ -78,8 +79,10 @@ class Account extends CI_Controller
                 $userdata = ['is_valid' => "1",'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'telegram_id' => $telegram_id, 'pic' => $image];
 
                 $result = $this->users->update($userdata, $whr);
+                // Send Telegram Notification
+                $send = $this->sendMessageUpdateProfile($telegram_id, $userdata);
 
-                if ($result) {
+                if ($result && $send) {
                     $msg = ['valid' => true, 'pesan' => 'Profile berhasil di perbaharui, silahkan relog untuk melihat perubahan.', 'redirectTo' => urlencode(base_url("app/account"))];
                 } else {
                     $msg = ['valid' => false, 'pesan' => 'Update profil gagal', 'redirectTo' => false];
@@ -90,13 +93,32 @@ class Account extends CI_Controller
         } else {
             $userdata = ['is_valid' => "1", 'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'telegram_id' => $telegram_id];
             $result = $this->users->update($userdata, $whr);
-            if ($result) {
+            // Send Telegram Notification
+            $send = $this->sendMessageUpdateProfile($telegram_id, $userdata);
+            if ($result && $send) {
                 $msg = ['valid' => true, 'pesan' => 'Profile berhasil di perbaharui, silahkan relog untuk melihat perubahan.', 'redirectTo' => urlencode(base_url("app/account"))];
             } else {
                 $msg = ['valid' => false, 'pesan' => 'Update profil gagal', 'redirectTo' => false];
             }
         }
         echo json_encode($msg);
+    }
+
+    private function sendMessageUpdateProfile($chat_id, $data)
+    {
+        $text = '
+        <b>Akun Anda baru saja diperbarui pada ' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '</b>
+<b>DETAIL PERUBAHAN:</b>
+-----------------------------------
+<b>Nama:</b> ' . $data['nama'] . '
+<b>NIP / NIK:</b> ' . $data['nip'] . '
+<b>No. HP:</b> ' . $data['nohp'] . '
+<b>ID Telegram:</b> ' . $data['telegram_id'] . '
+-----------------------------------
+<i>Jika Anda tidak melakukan perubahan ini, segera hubungi admin.</i>
+        ';
+        $send = TeleSendMessage($chat_id, $text);
+        return $send;
     }
 
     public function update_profile_pwd()
