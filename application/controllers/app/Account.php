@@ -56,6 +56,7 @@ class Account extends CI_Controller
         $nama = $this->input->post('nama');
         $nip = $this->input->post('nip');
         $nohp = $this->input->post('nohp');
+        $telegram_id = $this->input->post('telegram_id');
         $whr = ['id' => decrypt_url($user_id)];
         $path = './template/assets/picture_akun';
         if (!empty($_FILES["file"]["name"])) {
@@ -74,7 +75,7 @@ class Account extends CI_Controller
                 $data = array('upload_data' => $this->upload->data());
                 $image = $data['upload_data']['file_name'];
 
-                $userdata = ['is_valid' => "1",'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'pic' => $image];
+                $userdata = ['is_valid' => "1",'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'telegram_id' => $telegram_id, 'pic' => $image];
 
                 $result = $this->users->update($userdata, $whr);
 
@@ -84,10 +85,10 @@ class Account extends CI_Controller
                     $msg = ['valid' => false, 'pesan' => 'Update profil gagal', 'redirectTo' => false];
                 }
             }
-        } elseif (($nama == $profile->nama) && ($nip == $profile->nip) && ($nohp == $profile->nohp) && (empty($_FILES["file"]["name"]))) {
+        } elseif (($nama == $profile->nama) && ($nip == $profile->nip) && ($nohp == $profile->nohp) && ($telegram_id == $profile->telegram_id) && (empty($_FILES["file"]["name"]))) {
             $msg = ['valid' => false, 'pesan' => 'Tidak ada perubahan', 'redirectTo' => false];
         } else {
-            $userdata = ['is_valid' => "1", 'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp,];
+            $userdata = ['is_valid' => "1", 'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'telegram_id' => $telegram_id];
             $result = $this->users->update($userdata, $whr);
             if ($result) {
                 $msg = ['valid' => true, 'pesan' => 'Profile berhasil di perbaharui, silahkan relog untuk melihat perubahan.', 'redirectTo' => urlencode(base_url("app/account"))];

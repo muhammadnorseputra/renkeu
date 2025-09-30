@@ -52,6 +52,14 @@
                     </div>
                 </div>
                 <div class="item form-group">
+                    <label class="col-form-label col-md-3 col-sm-3 label-align" for="telegram_id">Telegram ID <span class="text-danger">*</span>
+                    </label>
+                    <div class="col-md-6 col-sm-6 ">
+                        <input type="text" id="telegram_id" class="form-control" name="telegram_id" value="<?= $detail->telegram_id ?>" required data-parsley-trigger="focusout" data-parsley-maxlength="10" maxlength="10" minlength="9" data-parsley-minlength="9" data-parsley-type="number">
+                        <span class="help-block">*) Cara mendapatkan Telegram ID, <a href="https://www.notion.so/Cara-mendapatkan-telegram-ID-27e56b20b442801f83e9f5da7f9625a1?source=copy_link" target="_blank"><i class="fa fa-book"></i> Panduan mendapatkan Telegram ID</a></span>
+                    </div>
+                </div>
+                <div class="item form-group">
                     <label class="col-form-label col-md-3 col-sm-3 label-align" for="jobdesk">Job Deskripsi
                     </label>
                     <div class="col-md-6 col-sm-6 ">

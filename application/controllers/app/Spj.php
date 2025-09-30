@@ -30,7 +30,7 @@ class Spj extends CI_Controller
         $this->load->model('ModelSpj', 'spj');
         $this->load->model('ModelTarget', 'target');
         $this->load->model('ModelRealisasi', 'realisasi');
-        $this->load->helper('fonnte');
+        $this->load->helper('telegram');
     }
 
     public function index()
@@ -306,9 +306,21 @@ class Spj extends CI_Controller
     {
         // Kirim Notifikasi WA ke user
         $getUser = $this->users->profile_username($getSpj->entri_by)->row();
-        $send = sendMessage($getUser->nohp, '
-*DIGTA SUNANPRAJA*
-📢 *Notifikasi Usulan SPJ*
+
+        // Keterangan No BKU jika status MS
+        if($input['status'] === 'MS') {
+            $note_tambahan = 'No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
+Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
+Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '';
+            $is_proses_admin = 'Selanjutnya akan diverifikasi oleh Admin.';
+        } else {
+            $note_tambahan = '';
+            $is_proses_admin = '';
+        }
+
+        $send = TeleSendMessage($getUser->telegram_id, '
+<b>DIGTA SUNANPRAJA</b>
+📢 <b>Notifikasi Usulan SPJ</b>
 -------------
 📝 Uraian   : ' . $getSpj->uraian . '  
 💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
@@ -316,17 +328,14 @@ class Spj extends CI_Controller
 📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
 -------------
 📌 Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
-No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
-Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
-Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '
-Verifikator : ' . $this->session->userdata('user_name') . '
--------------
-Telah diverifikasi dengan status *' . $input['status'] . '*. Selanjutnya akan di proses oleh ADMIN. 
-Silahkan cek aplikasi Digta Sunanpraja.  
+' . $note_tambahan . '
 
-⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . '
-_by ' . $this->session->userdata('role') .' (' . $this->session->userdata('user_name') . ')_
+Telah diverifikasi dengan status <b>' . $input['status'] . '</b>. ' . $is_proses_admin . ' 
+Silahkan cek aplikasi Digta Sunanpraja.  
+-------------
+<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
+' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
+by ' . $this->session->userdata('role') .' (' . $this->session->userdata('user_name') . ')</i>
         ');
 
         return $send;
@@ -336,9 +345,9 @@ _by ' . $this->session->userdata('role') .' (' . $this->session->userdata('user_
     {
         // Kirim Notifikasi WA ke Admin
             $getAdmin = $this->users->profile_username($user_admin)->row();
-            $sendAdmin = sendMessage($getAdmin->nohp, '
-*DIGTA SUNANPRAJA*
-📢 *Notifikasi Usulan SPJ*
+            $sendAdmin = TeleSendMessage($getAdmin->telegram_id, '
+<b>DIGTA SUNANPRAJA</b>
+📢 <b>Notifikasi Usulan SPJ</b>
 -------------
 📝 Uraian   : ' . $getSpj->uraian . '  
 💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
@@ -351,12 +360,12 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 Verifikator : ' . $this->session->userdata('user_name') . '
 Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
 -------------
-Telah diverifikasi dengan status *' . $input['status'] . '*.  
+Telah diverifikasi dengan status <b>' . $input['status'] . '</b>.  
 Silahkan cek aplikasi Digta Sunanpraja.  
 
-⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . '
-_by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')_
+<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
+' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
+by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
         ');
 
         return $sendAdmin;
@@ -433,21 +442,21 @@ _by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user
         $db = $this->crud->update('spj', $update, $whr);
 
         $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
-        $send = sendMessage($getUser->nohp, '
-*DIGTA SUNANPRAJA*
-📢 *Notifikasi Usulan SPJ*
+        $send = TeleSendMessage($getUser->telegram_id, '
+<b>DIGTA SUNANPRAJA</b>
+📢 <b>Notifikasi Usulan SPJ</b>
 -------------
 📝 Uraian   : ' . $detailUsul->uraian . '  
 💰 Jumlah   : Rp. ' . nominal($detailUsul->jumlah) . ' 
 ⏰ Spj Bulan : ' . bulan(strtoupper($detailUsul->bulan)) . '
 📅 Tgl. Entri : ' . longdate_indo(substr($detailUsul->entri_at, 0, 10)) . '
 -------------
-Telah difinalisasi *ADMIN* dengan status *' . ($is_status === 'SELESAI' ? 'APPROVE' : $detailUsul->is_status) . '*.  
+Telah difinalisasi <b>ADMIN</b> dengan status <b>' . ($is_status === 'SELESAI' ? 'APPROVE' : $detailUsul->is_status) . '</b>.  
 Silahkan cek aplikasi Digta Sunanpraja.  
-
+-------------
 ⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . '
-_by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')_
+' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
+<i>by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
         ');
 
         if ($db && $send) {
@@ -745,9 +754,9 @@ _by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user
         // notif wa
         $user = $this->crud->getWhere('spj', ['token' => $input['token']])->row();
         $getUser = $this->users->profile_username($user->entri_by)->row();
-        $send = sendMessage($getUser->nohp, '
-*DIGTA SUNANPRAJA*
-📢 *Notifikasi Usulan SPJ*
+        $send = TeleSendMessage($getUser->telegram_id, '
+<b>DIGTA SUNANPRAJA</b>
+📢 <b>Notifikasi Usulan SPJ</b>
 Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di verifikasi.
 -------------
 📝 Uraian   : ' . $user->uraian . '
@@ -756,8 +765,8 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
 📌 Status   : '.$user->is_status.'
 ➡️ Link Berkas : ' . $user->berkas_link . '
 -------------
-⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . '
+<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).
+' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '</i>
         ');
 
         if ($db && $send) {

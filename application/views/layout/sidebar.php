@@ -90,7 +90,7 @@
                         <li><a href="<?= base_url('app/users') ?>"><i class="fa fa-users"></i> Users</a></li>
                     <?php endif; ?>
                     <?php if (privilages('priv_notify')): ?>
-                        <li><a href="<?= base_url('app/whatsapp') ?>"><i class="fa fa-envelope"></i> Whatsapp Notify</a></li>
+                        <!-- <li><a href="<?= base_url('app/whatsapp') ?>"><i class="fa fa-envelope"></i> Whatsapp Notify</a></li> -->
                         <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Web Notify</a></li>
                         <li><a href="<?= base_url('app/settings') ?>"><i class="fa fa-cogs"></i> Settings</a></li>
                     <?php endif; ?>
