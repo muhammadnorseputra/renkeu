@@ -727,18 +727,45 @@ Silahkan cek aplikasi Digta Sunanpraja.
         // perhitungan sisa pagu
         $sisa_pa = $this->cek_jumlah_pengajuan($uraian_id, $jml);
 
-        // perhitungan limit pagu
+        // ambil limit pagu
         $totalLimit = $this->spj->getLimitPagu($uraian_id, $periode_id)->row();
-        $totalRealisasiPaguByPeriode = $this->realisasi->getRealisasiByPeriode($uraian_id, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI'], explode(",", @$totalLimit->periode));
-        $sisa_limit = (@$totalLimit->total - $totalRealisasiPaguByPeriode);
 
-        if ((get_only_numbers($jml) > $sisa_limit) || $sisa_pa === false) {
-            echo json_encode(['jml' => get_only_numbers($jml), 'sisa' => $sisa_limit, 'sisa_pa' => $sisa_pa, 'code' => 400]);
-            return $this->output->set_status_header('400');
+        // handle jika data kosong
+        $totalLimitTotal   = isset($totalLimit->total) ? (int)$totalLimit->total : 0;
+        $totalLimitPeriode = isset($totalLimit->periode) ? explode(",", $totalLimit->periode) : null;
+
+        // ambil realisasi
+        $totalRealisasiPaguByPeriode = $this->realisasi->getRealisasiByPeriode(
+            $uraian_id,
+            ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI'],
+            $totalLimitPeriode
+        );
+
+        // hitung sisa limit
+        $sisa_limit = $totalLimitTotal - (int)$totalRealisasiPaguByPeriode;
+
+        // pastikan jml dalam bentuk angka murni
+        $jml_clean = (int)get_only_numbers($jml);
+
+        // validasi
+        if ($jml_clean > $sisa_limit || $sisa_pa === false) {
+            echo json_encode([
+                'jml'     => $jml_clean,
+                'sisa'    => $sisa_limit,
+                'sisa_pa' => $sisa_pa,
+                'code'    => 400
+            ]);
+            return $this->output->set_status_header(400);
         }
 
-        echo json_encode(['jml' => get_only_numbers($jml), 'sisa' => $sisa_limit, 'sisa_pa' => $sisa_pa, 'code' => 200]);
-        return $this->output->set_status_header('200');
+        // jika valid
+        echo json_encode([
+            'jml'     => $jml_clean,
+            'sisa'    => $sisa_limit,
+            'sisa_pa' => $sisa_pa,
+            'code'    => 200
+        ]);
+        return $this->output->set_status_header(200);
     }
 
     public function prosesusul()
