@@ -125,3 +125,22 @@ if (urldecode($tab) === '#selesai') {
         </div>
     </div>
 </div>
+
+<!-- The Modal -->
+<div class="modal" id="modalLogHistoris" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content rounded-0">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title">Log Historis</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -30,6 +30,7 @@ class Spj extends CI_Controller
         $this->load->model('ModelSpj', 'spj');
         $this->load->model('ModelTarget', 'target');
         $this->load->model('ModelRealisasi', 'realisasi');
+        $this->load->model('ModelLog', 'historis');
         $this->load->helper('telegram');
     }
 
@@ -130,7 +131,7 @@ class Spj extends CI_Controller
                     ' . $no . '
                 </td>
                 <td class="kode">
-                ' .$r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian . '
+                ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian . '
                 </td>
                 <td class="nama">
                 ' . $r->nama_sub_kegiatan . ' <br>- <b>' . $r->nama_uraian . '</b>
@@ -145,7 +146,7 @@ class Spj extends CI_Controller
                     ' . $status . ' <br> ' . $catatan . '
                 </td>
                 <td>
-                    <i class="fa fa-calendar mr-1"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o mr-1'></i> " . substr($r->entri_at, 10, 6).
+                    <i class="fa fa-calendar mr-1"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o mr-1'></i> " . substr($r->entri_at, 10, 6) .
                 '</td>
                 <td width="5%" class="text-center">
                     ' . $link . '
@@ -205,8 +206,8 @@ class Spj extends CI_Controller
             $no++;
             $row = array();
             $row['no'] = $no;
-            $row['kode'] = '<br>'. $r->kode_uraian;
-            $row['uraian'] = $r->nama_sub_kegiatan .'<br> - <b>' . $r->nama_uraian . '</b>';
+            $row['kode'] = '<br>' . $r->kode_uraian;
+            $row['uraian'] = $r->nama_sub_kegiatan . '<br> - <b>' . $r->nama_uraian . '</b>';
             $row['periode'] = bulan($r->fid_periode);
             $row['bidang'] = $r->nama_part;
             $row['userinfo'] = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
@@ -267,6 +268,14 @@ class Spj extends CI_Controller
                 'verify_at' => DateTimeInput(),
             ];
             $db = $this->crud->update('spj', $update, $whr);
+            // insert log
+            $info = [
+                'token' => $token,
+                'status' => 'VERIFIKASI',
+                'keterangan' => 'USULAN TELAH DI VERIFIKASI - MEMENUHI SYARAT (MS)',
+                'created_at' => DateTimeInput(),
+                'created_by' => $this->session->userdata('user_name'),
+            ];
         } elseif ($input['status'] == 'TMS' || $input['status'] == 'BTL') {
             $update = [
                 'nomor_pembukuan' => '',
@@ -278,6 +287,14 @@ class Spj extends CI_Controller
                 'verify_at' => DateTimeInput(),
             ];
             $db = $this->crud->update('spj', $update, $whr);
+            // insert log
+            $info = [
+                'token' => $token,
+                'status' => 'VERIFIKASI',
+                'keterangan' => 'USULAN TELAH DI VERIFIKASI - ' . strtoupper($input['status']) . ' (' . $input['catatan'] . ')',
+                'created_at' => DateTimeInput(),
+                'created_by' => $this->session->userdata('user_name'),
+            ];
         } else {
             $update = [
                 'is_status' => $input['status'],
@@ -285,13 +302,23 @@ class Spj extends CI_Controller
                 'catatan' => $input['catatan'],
             ];
             $db = $this->crud->update('spj', $update, $whr);
+            // insert log
+            $info = [
+                'token' => $token,
+                'status' => 'VERIFIKASI',
+                'keterangan' => 'USULAN TELAH DI VERIFIKASI - ' . strtoupper($input['status']) . ' (' . $input['catatan'] . ')',
+                'created_at' => DateTimeInput(),
+                'created_by' => $this->session->userdata('user_name'),
+            ];
         }
 
         // Kirim Notifikasi WA ke user
         $send = $this->sendNotifyUser($getSpj, $input);
 
-        if ($db && $send) {
-            if($input['status'] == 'MS' || $input['status'] == 'TMS' && $this->session->userdata('role') === 'VERIFICATOR'):
+        $log = $this->historis->insert($info);
+
+        if ($db && $send && $log) {
+            if ($input['status'] == 'MS' || $input['status'] == 'TMS' && $this->session->userdata('role') === 'VERIFICATOR'):
                 $this->sendNotifyAdmin($getSpj, $input);
             endif;
             $msg = ['pesan' => 'Usulan SPJ Berhasil Di Proses', 'code' => 200, 'redirect' => base_url('app/spj/?tab=%23verifikasi'), 'send_wa' => $send];
@@ -308,7 +335,7 @@ class Spj extends CI_Controller
         $getUser = $this->users->profile_username($getSpj->entri_by)->row();
 
         // Keterangan No BKU jika status MS
-        if($input['status'] === 'MS') {
+        if ($input['status'] === 'MS') {
             $note_tambahan = 'No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
 Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
 Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '';
@@ -335,7 +362,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
 -------------
 <i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
 ' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-by ' . $this->session->userdata('role') .' (' . $this->session->userdata('user_name') . ')</i>
+by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
         ');
 
         return $send;
@@ -344,8 +371,8 @@ by ' . $this->session->userdata('role') .' (' . $this->session->userdata('user_n
     private function sendNotifyAdmin($getSpj, $input, $user_admin = 'abduh')
     {
         // Kirim Notifikasi WA ke Admin
-            $getAdmin = $this->users->profile_username($user_admin)->row();
-            $sendAdmin = TeleSendMessage($getAdmin->telegram_id, '
+        $getAdmin = $this->users->profile_username($user_admin)->row();
+        $sendAdmin = TeleSendMessage($getAdmin->telegram_id, '
 <b>DIGTA SUNANPRAJA</b>
 📢 <b>Notifikasi Usulan SPJ</b>
 -------------
@@ -459,7 +486,18 @@ Silahkan cek aplikasi Digta Sunanpraja.
 <i>by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
         ');
 
-        if ($db && $send) {
+        // insert log
+        $info = [
+            'token' => $detailUsul->token,
+            'status' => 'APPROVAL',
+            'keterangan' => 'USULAN TELAH DI VERIFIKASI ADMIN (' . $is_status . ')',
+            'created_at' => DateTimeInput(),
+            'created_by' => $this->session->userdata('user_name'),
+        ];
+
+        $log = $this->historis->insert($info);
+
+        if ($db && $send && $log) {
             $this->crud->insert('spj_riwayat', $insert);
             $msg = ['pesan' => 'Oke', 'code' => 200, 'send_wa' => $send];
         } else {
@@ -487,11 +525,11 @@ Silahkan cek aplikasi Digta Sunanpraja.
             // $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian;
             $row['kode_uraian'] = "<br>" . $r->kode_uraian;
             // $row[] = '<b>' . $r->nama_part . '</b> <br>' . $r->nama_program . ' <br/>  ' . strtoupper($r->nama_kegiatan) . ' <br>  ' . $r->nama_sub_kegiatan . ' <br> <b>' . $r->nama_uraian . '</b>';
-            $row['nama_uraian'] = $r->nama_sub_kegiatan.'<br> - <b>' . $r->nama_uraian . '</b>';
+            $row['nama_uraian'] = $r->nama_sub_kegiatan . '<br> - <b>' . $r->nama_uraian . '</b>';
             $row['bidang'] = $r->nama_part;
             $row['periode'] = bulan($r->periode_id);
-            $row['userinfo'] = '<i class="fa fa-calendar"></i> ' .longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
-            $row['tgl_approve'] = '<i class="fa fa-calendar"></i> '.longdate_indo(substr($r->approve_at, 0, 10)). ' <br> <i class="fa fa-clock-o"></i>'. substr($r->approve_at, 10, 6);
+            $row['userinfo'] = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
+            $row['tgl_approve'] = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->approve_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($r->approve_at, 10, 6);
             $row['status'] = $status;
             $row['jumlah'] = $r->is_status === 'APPROVE' ? "<b class='text-success'> Rp. " . nominal((int) $r->jumlah) . "</b>" : "<b class='text-danger'> Rp. " . nominal((int) $r->jumlah) . "</b>";
             $row['action'] = $button;
@@ -529,12 +567,19 @@ Silahkan cek aplikasi Digta Sunanpraja.
 
     private function generate_button($r)
     {
-        if($this->session->userdata('role') === 'VERIFICATOR'):
-        $btn_rollback = '<a class="dropdown-item d-flex justify-content-between" href="#" onclick="Rollback(\'' . $r->token . '\')">
+
+        // Button Rollback hanya untuk verifikator
+        if ($this->session->userdata('role') === 'VERIFICATOR'):
+            $btn_rollback = '<a class="dropdown-item d-flex justify-content-between" href="#" onclick="Rollback(\'' . $r->token . '\')">
                                 Rollback <i class="fa fa-repeat text-danger"></i></a>';
         else:
-        $btn_rollback = '';
+            $btn_rollback = '';
         endif;
+
+        // Button Log
+        $btn_log = '<a class="dropdown-item d-flex justify-content-between text-info" href="#" onclick="LogHistoris(\'' . $r->token . '\')">
+                        Log <i class="fa fa-file-text text-info"></i></a>';
+
         return '<div class="dropdown">
                             <button class="btn btn-sm btn-icon-only text-dark bg-white rounded" type="button" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               action <i class="fa fa-ellipsis-v ml-3"></i>
@@ -543,10 +588,11 @@ Silahkan cek aplikasi Digta Sunanpraja.
                               <a class="dropdown-item d-flex justify-content-between" href="' . base_url('app/spj/verifikasi_selesai_detail/' . $r->token) . '">
                                 Detail <i class="fa fa-eye"></i>
                               </a>
-                              <a class="dropdown-item d-flex justify-content-between" href="' . $r->berkas_link . '" target="_blank">
+                              <a class="dropdown-item d-flex justify-content-between text-success" href="' . $r->berkas_link . '" target="_blank">
                                 Berkas <i class="fa fa-link"></i>
                               </a>
-                              '.$btn_rollback.'
+                              ' . $btn_rollback . '
+                                ' . $btn_log . '
                             </div>
                         </div>';
     }
@@ -559,6 +605,43 @@ Silahkan cek aplikasi Digta Sunanpraja.
             'detail' => $this->spj->riwayat(['token' => $token])->row(),
         ];
         $this->load->view('layout/app', $data);
+    }
+
+    public function log_historis($token)
+    {
+        $data = $this->historis->getWhere(['token' => $token]);
+        if($data->num_rows() > 0):
+            $html = '<table class="table table-bordered table-striped">
+                        <thead>
+                            <tr class="text-center">
+                                <th width="5%">No</th>
+                                <th>Status</th>
+                                <th>Keterangan</th>
+                                <th>Waktu</th>
+                                <th>By</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+            $no = 1;
+            foreach ($data->result() as $r):
+                $html .= '<tr>
+                            <td class="text-center">' . $no . '</td>
+                            <td>' . $r->status . '</td>
+                            <td>' . $r->keterangan . '</td>
+                            <td>' . longdate_indo(substr($r->created_at, 0, 10)) . ' ' . substr($r->created_at, 10, 6) . '</td>
+                            <td>' . $r->created_by . '</td>
+                        </tr>';
+                $no++;
+            endforeach;
+            $html .= '</tbody></table>';
+            $data = ['result' => $html, 'msg' => 'Data Historis Ditemukan', 'code' => 200];
+        else:
+            $html = '<tr>
+                        <td colspan="5" class="text-center">Data Historis Tidak Ditemukan</td>
+            </tr>';
+            $data = ['result' => $html, 'msg' => 'Data Historis Tidak Ditemukan', 'code' => 404];
+        endif;
+        echo json_encode($data);
     }
 
     public function buatusul()
@@ -637,7 +720,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
         return $totalSisaPagu;
     }
 
-    public function cek_angkas($uraian_id, $periode_id)
+    public function cek_angkas($uraian_id, $periode_id = null)
     {
         $jml = $this->input->post('jumlah');
 
@@ -699,6 +782,14 @@ Silahkan cek aplikasi Digta Sunanpraja.
             ];
             $db = $this->crud->update('spj', $data, ['token' => $input['token']]);
             $isToken = $input['token'];
+            // insert log
+            $info = [
+                'token' => $input['token'],
+                'status' => 'ENTRI',
+                'keterangan' => 'USULAN (DIPERBAIKI)',
+                'created_at' => DateTimeInput(),
+                'created_by' => $this->session->userdata('user_name'),
+            ];
         } else {
             $data = [
                 'token' => generateRandomString(18),
@@ -720,9 +811,18 @@ Silahkan cek aplikasi Digta Sunanpraja.
             ];
             $db = $this->crud->insert('spj', $data);
             $isToken = $data['token'];
+            // insert log
+            $info = [
+                'token' => $data['token'],
+                'status' => 'ENTRI',
+                'keterangan' => 'USULAN (BARU)',
+                'created_at' => DateTimeInput(),
+                'created_by' => $this->session->userdata('user_name'),
+            ];
         }
 
-        if ($db) {
+        $log = $this->historis->insert($info);
+        if ($db && $log) {
             $status = [
                 'msg' => 'Oke, berhasil disimpan',
                 'code' => 200,
@@ -762,14 +862,24 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
 📝 Uraian   : ' . $user->uraian . '
 💰 Jumlah   : Rp. ' . nominal($user->jumlah) . '
 ⏰ Spj Bulan : ' . bulan(strtoupper($user->bulan)) . '
-📌 Status   : '.$user->is_status.'
+📌 Status   : ' . $user->is_status . '
 ➡️ Link Berkas : ' . $user->berkas_link . '
 -------------
 <i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).
 ' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '</i>
         ');
 
-        if ($db && $send) {
+        $info = [
+            'token' => $input['token'],
+            'status' => 'KIRIM USULAN',
+            'keterangan' => 'USULAN DIKIRIM',
+            'created_at' => DateTimeInput(),
+            'created_by' => $this->session->userdata('user_name'),
+        ];
+
+        $log = $this->historis->insert($info);
+
+        if ($db && $send && $log) {
             $status = ['msg' => 'Oke, berhasil dikirim', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=2&status=verifikasi&token=' . $input['token']), 'send_wa' => $send];
         } else {
             $status = ['msg' => 'Gagal', 'code' => 400, 'send_wa' => $send];
@@ -781,7 +891,8 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
     {
 
         $db = $this->crud->deleteWhere('spj', ['token' => $token]);
-        if ($db) {
+        $deleteHistori = $this->crud->deleteWhere('historis_spj', ['token' => $token]);
+        if ($db && $deleteHistori) {
             $msg = 200;
         } else {
             $msg = 400;
@@ -793,8 +904,17 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
     {
         $token = $this->input->post('token');
         $db = $this->crud->update('spj', ['is_status' => 'VERIFIKASI'], ['token' => $token]);
-        
-        if ($db) {
+
+        $info = [
+            'token' => $token,
+            'status' => 'ROLLBACK',
+            'keterangan' => 'USULAN DI ROLLBACK - VERIFIKASI',
+            'created_at' => DateTimeInput(),
+            'created_by' => $this->session->userdata('user_name'),
+        ];
+
+        $log = $this->historis->insert($info);
+        if ($db && $log) {
             $msg = ['pesan' => 'Oke', 'code' => 200];
             $this->crud->deleteWhere('spj_riwayat', ['token' => $token]);
         } else {

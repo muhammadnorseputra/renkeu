@@ -39,83 +39,134 @@ function showModalSearchKode() {
 	$("#modelSearchKode").modal("show");
 }
 
-$("form#step-1").on("submit", function (e) {
+$("form#step-1").on("submit", async function (e) {
 	e.preventDefault();
+
 	let _ = $(this),
 		action = _.attr("action"),
 		data = _.serialize(),
 		$button = _.find('button[type="submit"]');
+
 	if (_.parsley().isValid()) {
 		$button.html("processing ...").prop("disabled", true);
+
+		// tampilkan loader
 		$.blockUI({
 			message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
 			css: { backgroundColor: "transparent", borderColor: "transparent" },
 		});
-		setTimeout(function () {
-			try {
-				$.post(
-					action,
-					data,
-					function (res) {
-						alert(res.msg);
-						if (res.code === 200) {
-							return window.location.replace(res.redirect);
-						}
-						window.location.reload();
-						return;
-					},
-					"json"
-				);
-			} catch (err) {
-				return alert(err);
-			} finally {
-				$button
-					.prop("disabled", false)
-					.html('<i class="fa fa-save mr-2"></i> Simpan & Lanjutkan');
-			}
-		}, 2000);
+
+		try {
+			// kirim form dengan fetch
+			const req = await fetch(action, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+				body: data,
+			});
+
+			const res = await req.json();
+
+			$.blockUI({
+				message: res.msg,
+				fadeIn: 700,
+				fadeOut: 700,
+				timeout: 2000,
+				showOverlay: true,
+				center: true,
+				css: {
+					width: "350px",
+					top: "10px",
+					left: "",
+					right: "10px",
+					border: "none",
+					padding: "12px",
+					backgroundColor: "#000",
+					"-webkit-border-radius": "10px",
+					"-moz-border-radius": "10px",
+					opacity: 0.6,
+					color: "#fff",
+				},
+				onUnblock: function () {
+					if (res.code === 200) {
+						return window.location.replace(res.redirect);
+					}
+				},
+			}); 
+		} catch (err) {
+			return alert("Terjadi kesalahan: " + err.message);
+		}
 	}
 });
 
-$("form#step-2").on("submit", function (e) {
+
+$("form#step-2").on("submit", async function (e) {
 	e.preventDefault();
+
 	let _ = $(this),
 		action = _.attr("action"),
-		data = _.serialize(),
+		data = _.serialize(), // tetap pakai serialize jQuery
 		$button = _.find('button[type="submit"]');
+
 	let msg = "Apakah anda yakin akan mengirim usulan tersebut ?";
+
 	if (_.parsley().isValid()) {
 		if (confirm(msg)) {
 			$button.text("processing ...").prop("disabled", true);
+
+			// tampilkan blockUI loader
 			$.blockUI({
 				message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
 				css: { backgroundColor: "transparent", borderColor: "transparent" },
 			});
-			setTimeout(function () {
-				try {
-					$.post(
-						action,
-						data,
-						function (res) {
-							alert(res.msg);
-							if (res.code === 200) {
-								window.location.replace(res.redirect);
-							}
-						},
-						"json"
-					);
-				} catch (err) {
-					return alert(err);
-				} finally {
-					$button
-						.prop("disabled", false)
-						.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
-				}
-			}, 2000);
+
+			try {
+				// kirim form pakai fetch (POST)
+				const req = await fetch(action, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+					},
+					body: data,
+				});
+
+				const res = await req.json();
+
+				$.blockUI({
+					message: res.msg,
+					fadeIn: 700,
+					fadeOut: 700,
+					timeout: 2000,
+					showOverlay: true,
+					center: true,
+					css: {
+						width: "350px",
+						top: "10px",
+						left: "",
+						right: "10px",
+						border: "none",
+						padding: "12px",
+						backgroundColor: "#000",
+						"-webkit-border-radius": "10px",
+						"-moz-border-radius": "10px",
+						opacity: 0.6,
+						color: "#fff",
+					},
+					onUnblock: function () {
+						if (res.code === 200) {
+							return window.location.replace(res.redirect);
+						}
+					},
+				}); 
+			} catch (err) {
+				return alert("Terjadi kesalahan: " + err.message);
+			} 
 			return false;
 		}
 	}
 });
+
 
 function rupiah(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -136,12 +187,12 @@ function newLimit(start, end) {
 		.html(`Rp. ${convert} <i class="text-danger fa fa-level-down"></i>`);
 }
 
-$("input[name='jumlah']").on("keyup", function (e) {
+$("input[name='jumlah']").on("keyup", async function (e) {
 	let start = $(this).attr("data-start");
 	let start_limit = $(this).attr("data-start-limit");
 	let jml = $(this).val();
-	newRealisasi(start, jml.split(".").join(""));
-	newLimit(start_limit, jml.split(".").join(""));
+	await newRealisasi(start, jml.split(".").join(""));
+	await newLimit(start_limit, jml.split(".").join(""));
 });
 $("form#formCariKode").on("submit", function (e) {
 	e.preventDefault();
@@ -220,44 +271,59 @@ function formatResults(res) {
 	var $data = `${res.kode} - ${res.text}`;
 	return $data;
 }
-function cekAngkas(uraian_id, periode_id) {
-	$.getJSON(
-		`${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`,
-		function (res) {
-			if (res.code === 200) {
-				$("h5#angkas").html(
-					`Rp. ${rupiah(res.sisa)} <i class="text-danger fa fa-level-down"></i>`
-				);
-				$("input[name='jumlah']").attr({
-					"data-start": res.sisa_pa,
-					"data-start-limit": res.sisa,
-				});
-			} else {
-				$("h5#angkas").html(
-					`Rp. 0 <i class="text-danger fa fa-level-down"></i>`
-				);
-			}
-		}
-	);
-}
-$("select[name='periode']").on("change", function () {
-	let _ = $(this);
-	let uraian_id = $formStep.find('input[name="ref_uraian"]').val();
-	let periode_id = _.val();
-	cekAngkas(uraian_id, periode_id);
-	$("input[name='jumlah']").attr({
-		"data-parsley-remote": `${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`,
-		"data-parsley-remote-trigger": "focusout,change",
-		"data-parsley-remote-reverse": "false",
-		"data-parsley-remote-options": '{ "type": "POST" }',
-		"data-parsley-remote-message":
-			"Jumlah yang dimasukan melebihi batas maksimum.",
-		"data-parsley-pattern": "^(([0-9.]?)*)+$",
-		disabled: false,
-	});
 
-	$formStep.find('textarea[name="uraian"]').prop("disabled", false);
+async function cekAngkas(uraian_id, periode_id) {
+	try {
+		const req = await fetch(
+			`${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`
+		);
+		const res = await req.json();
+
+		if (res.code === 200) {
+			$("h5#angkas").html(
+				`Rp. ${rupiah(res.sisa)} <i class="text-danger fa fa-level-down"></i>`
+			);
+			$("input[name='jumlah']").attr({
+				"data-start": res.sisa_pa,
+				"data-start-limit": res.sisa,
+			});
+		} else {
+			$("h5#angkas").html(`Rp. 0 <i class="text-danger fa fa-level-down"></i>`);
+		}
+	} catch (error) {
+		console.error("Error cekAngkas:", error);
+		$("h5#angkas").html(`<span class="text-danger">Gagal memuat data</span>`);
+	}
+}
+
+$("select[name='periode']").on("change", async function () {
+	try {
+		let _ = $(this);
+		let uraian_id = $formStep.find('input[name="ref_uraian"]').val();
+		let periode_id = _.val();
+
+		// tunggu sampai cekAngkas selesai
+		await cekAngkas(uraian_id, periode_id);
+
+		// update atribut input jumlah
+		$("input[name='jumlah']").attr({
+			"data-parsley-remote": `${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`,
+			"data-parsley-remote-trigger": "focusout,change",
+			"data-parsley-remote-reverse": "false",
+			"data-parsley-remote-options": '{ "type": "POST" }',
+			"data-parsley-remote-message":
+				"Jumlah yang dimasukan melebihi batas maksimum.",
+			"data-parsley-pattern": "^(([0-9.]?)*)+$",
+			disabled: false,
+		});
+
+		// enable textarea uraian
+		$formStep.find('textarea[name="uraian"]').prop("disabled", false);
+	} catch (error) {
+		console.error("Error saat memproses perubahan periode:", error);
+	}
 });
+
 $(function () {
 	$(
 		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan'],select[name='uraian_kegiatan']"
