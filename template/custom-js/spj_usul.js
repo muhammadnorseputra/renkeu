@@ -310,7 +310,7 @@ $("select[name='periode']").on("change", async function () {
 			"data-parsley-remote": `${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`,
 			"data-parsley-remote-trigger": "focusout,change",
 			"data-parsley-remote-reverse": "false",
-			"data-parsley-remote-options": '{ "type": "POST" }',
+			"data-parsley-remote-options": '{ "type": "GET" }',
 			"data-parsley-remote-message":
 				"Jumlah yang dimasukan melebihi batas maksimum.",
 			"data-parsley-pattern": "^(([0-9.]?)*)+$",

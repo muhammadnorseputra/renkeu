@@ -722,7 +722,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
 
     public function cek_angkas($uraian_id, $periode_id = null)
     {
-        $jml = $this->input->post('jumlah');
+        $jml = $this->input->get('jumlah');
 
         // perhitungan sisa pagu
         $sisa_pa = $this->cek_jumlah_pengajuan($uraian_id, $jml);
