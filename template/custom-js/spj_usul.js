@@ -279,7 +279,7 @@ async function cekAngkas(uraian_id, periode_id) {
 		);
 		const res = await req.json();
 
-		if (res.code === 200) {
+		if (res.status) {
 			$("h5#angkas").html(
 				`Rp. ${rupiah(res.sisa)} <i class="text-danger fa fa-level-down"></i>`
 			);

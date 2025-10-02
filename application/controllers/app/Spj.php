@@ -753,7 +753,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
                 'jml'     => $jml_clean,
                 'sisa'    => $sisa_limit,
                 'sisa_pa' => $sisa_pa,
-                'code'    => 400
+                'status'    => false
             ]);
             return $this->output->set_status_header(400);
         }
@@ -763,7 +763,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
             'jml'     => $jml_clean,
             'sisa'    => $sisa_limit,
             'sisa_pa' => $sisa_pa,
-            'code'    => 200
+            'status'    => true
         ]);
         return $this->output->set_status_header(200);
     }
