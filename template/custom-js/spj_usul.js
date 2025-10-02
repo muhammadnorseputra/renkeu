@@ -92,14 +92,19 @@ $("form#step-1").on("submit", async function (e) {
 					if (res.code === 200) {
 						return window.location.replace(res.redirect);
 					}
+					$button
+						.prop("disabled", false)
+						.html('<i class="fa fa-save mr-2"></i> Simpan & Lanjutkan');
 				},
-			}); 
+			});
 		} catch (err) {
+			$button
+				.prop("disabled", false)
+				.html('<i class="fa fa-save mr-2"></i> Simpan & Lanjutkan');
 			return alert("Terjadi kesalahan: " + err.message);
 		}
 	}
 });
-
 
 $("form#step-2").on("submit", async function (e) {
 	e.preventDefault();
@@ -157,16 +162,21 @@ $("form#step-2").on("submit", async function (e) {
 						if (res.code === 200) {
 							return window.location.replace(res.redirect);
 						}
+						$button
+							.prop("disabled", false)
+							.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
 					},
-				}); 
+				});
 			} catch (err) {
+				$button
+					.prop("disabled", false)
+					.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
 				return alert("Terjadi kesalahan: " + err.message);
-			} 
+			}
 			return false;
 		}
 	}
 });
-
 
 function rupiah(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
