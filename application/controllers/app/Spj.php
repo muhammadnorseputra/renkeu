@@ -755,17 +755,17 @@ Silahkan cek aplikasi Digta Sunanpraja.
                 'sisa_pa' => $sisa_pa,
                 'status'    => false
             ]);
-            return $this->output->set_status_header(400);
+            return @$this->output->set_status_header(400);
         }
 
         // jika valid
         echo json_encode([
-            'jml'     => $jml_clean,
+            'jml'     => @$jml_clean,
             'sisa'    => $sisa_limit,
             'sisa_pa' => $sisa_pa,
             'status'    => true
         ]);
-        return $this->output->set_status_header(200);
+        return @$this->output->set_status_header(200);
     }
 
     public function prosesusul()
