@@ -59,7 +59,7 @@ $(function () {
 		let $data = {
 			id: id,
 		};
-		let msg = `Apakah anda yakin akan menghapus indikator ${label}`;
+		let msg = `Apakah anda yakin akan menghapus target ${label}`;
 
 		if (confirm(msg)) {
 			$.post(

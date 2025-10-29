@@ -1,199 +1,453 @@
-<div class="row">
-    <div class="col-md-12">
-        <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikatorUbah', 'data-parsley-validate' => ''], ['id' => $id_indikator, 'periode_id' => $periode_id]); ?>
-        <div class="form-group">
-            <label class="col-form-label label-align" for="tahun">Target Tahun</label>
-            <select name="tahun" id="tahun" class="form-control" required="required" data-parsley-errors-container="#help-block-tahun">
-                <option value="">Pilih Tahun</option>
-                <?php
-                $year = date('Y');
-                for ($i = $year; $i <= $year + 3; $i++) {
-                    $selected = date('Y') == $i ? 'selected' : 'disabled';
-                    echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
-                }
-                ?>
-            </select>
-            <div id="help-block-tahun" class="row col-md-12"></div>
+<div class="x_panel ui-ribbon-container">
+    <div class="ui-ribbon-wrapper">
+        <div class="ui-ribbon">
+            Ubah
         </div>
-        <?php if ($table === 'ref_sub_kegiatans'): ?>
-            <div class="form-group">
-                <label for="jenis_indikator">Jenis Indikator <span class="text-danger">*</span></label>
-                <select name="jenis_indikator" id="jenis_indikator" class="form-control" required>
-                    <option value="">-- Pilih Jenis Indikator --</option>
-                    <?php foreach ($jenis_indikator->result() as $j):
-                        $selected = $row->fid_jenis_indikator === $j->id ? 'selected' : '';
-                    ?>
-                        <option value="<?= $j->id; ?>" <?= $selected; ?>><?= $j->nama; ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        <?php endif; ?>
-        <div class="form-group">
-            <label for="bidang">Penanggung Jawab <span class="text-danger">*</span></label>
-            <select name="bidang[]" id="bidang" multiple="multiple" required data-parsley-errors-container="#help-block-bidang"></select>
-            <div id="help-block-bidang"></div>
-        </div>
+    </div>
+    <div class="x_title">
+        <h2><i class="fa fa-edit mr-2"></i> Formulir Ubah Indikator</h2>
+        <div class="clearfix"></div>
+    </div>
+    <div id="wizard_verticle" class="form_wizard wizard_verticle">
+        <ul class="list-unstyled wizard_steps anchor">
+            <li>
+                <a href="#step-1" class="selected" isdone="1" rel="1">
+                    <span class="step_no">1</span>
+                </a>
+            </li>
+            <li>
+                <a href="#step-2" class="done" isdone="1" rel="2">
+                    <span class="step_no">2</span>
+                </a>
+            </li>
+            <li>
+                <a href="#step-3" class="done" isdone="1" rel="3">
+                    <span class="step_no">3</span>
+                </a>
+            </li>
+            <li>
+                <a href="#step-4" class="done" isdone="1" rel="4">
+                    <span class="step_no">4</span>
+                </a>
+            </li>
+        </ul>
+        <div class="stepContainer">
+            <div id="step-1" class="content" style="display: block;">
+                <h2 class="StepTitle">Step 1 Referensi</h2>
+                <?= form_open(base_url('app/indikator/step_ubah/1/' . $detail->id), ['class' => 'form-horizontal form-label-left', 'id' => 'formStep1']); ?>
+                <span class="section">Pilih Referensi Indikator</span>
+                <div class="form-group row">
+                    <label class="col-form-label col-md-2 col-sm-3 label-align" for="referensi">Referensi <span class="text-danger">*</span>
+                    </label>
+                    <div class="col-md-10 col-sm-6">
+                        <select name="referensi" id="referensi" class="form-control" required>
+                            <option value="">-- Pilih Referensi --</option>
+                            <?php if (in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])): ?>
+                                <option value="Tujuan" <?= $detail->fid_tujuan !== null ? 'selected' : ''; ?>>- Tujuan</option>
+                                <option value="Sasaran" <?= $detail->fid_sasaran !== null ? 'selected' : ''; ?>>- Sasaran</option>
+                            <?php endif; ?>
+                            <option value="Program" <?= $detail->fid_program !== null ? 'selected' : ''; ?>>- Program</option>
+                            <option value="Kegiatan" <?= $detail->fid_kegiatan !== null ? 'selected' : ''; ?>>- Kegiatan</option>
+                            <option value="SubKegiatan" <?= $detail->fid_sub_kegiatan !== null ? 'selected' : ''; ?>>- Sub Kegiatan</option>
+                        </select>
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="periode">Periode <span class="text-danger">*</span></label>
-            <select name="periode[]" id="periode" multiple="multiple" required
-                data-parsley-errors-container="#help-block-periode">
-            </select>
-            <div id="help-block-periode" class="help-block"></div>
-        </div>
-        <div class="form-group">
-            <label for="nama">Nama Indikator <span class="text-danger">*</span></label>
-            <input name="nama" id="nama" class="form-control" value="<?= $row->nama ?>" required>
-        </div>
-        <div class="row">
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label for="is_jenis">Jenis Output <span class="text-danger">*</span></label>
-                    <select name="is_jenis" id="is_jenis" class="form-control" required>
-                        <option value="">-- Pilih Jenis Output --</option>
-                        <option value="1" <?= $row->is_jenis === "1" ? "selected" : ""; ?>>Persentase (%)</option>
-                        <option value="2" <?= $row->is_jenis === "2" ? "selected" : "" ?>>Jumlah Eviden</option>
-                    </select>
+                <div class="form-group row d-flex justify-content-end">
+
+                    <button type="button" class="btn btn-secondary" onclick="nextStep('<?= base_url('app/indikator') ?>')"><i class="fa fa-list mr-2"></i>Daftar Indikator</button>
+                    <button type="submit" class="btn btn-primary">Simpan & Lanjutkan</button>
                 </div>
+                <?= form_close(); ?>
             </div>
-            <div class="col-md-2" id="formPersentase" style="display:none;">
-                <div class="form-group">
-                    <label for="persentase">Peserntase % <span class="text-danger">*</span></label>
-                    <input type="text" name="persentase" id="persentase" class="form-control"
-                        data-parsley-pattern="^\d+(\.\d+)?$"
-                        data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
-                        required
-                        value="<?= $row->persentase ?>">
+            <div id="step-2" class="content" style="display: none;">
+                <h2 class="StepTitle">Step 2 Detail</h2>
+                <hr />
+                <?= form_open(base_url('app/indikator/step_ubah/2/' . $detail->id), ['class' => 'form-horizontal form-label-left', 'id' => 'formStep2']); ?>
+                <?php if ($data['ref'] === 'Tujuan'): ?>
+                    <div class="form-group row">
+                        <label class="col-form-label col-md-2 col-sm-3 label-align" for="ref_tujuan">Tujuan <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-md-10 col-sm-6">
+                            <select name="ref_tujuan" id="ref_tujuan" class="form-control" required>
+                                <option value="">-- Pilih Tujuan --</option>
+                                <?php foreach ($data['tujuans']->result() as $tujuan): ?>
+                                    <?php $selectedTujuan = $detail->fid_tujuan === $tujuan->id ? 'selected' : ''; ?>
+                                    <option value="<?= $tujuan->id; ?>" <?= $selectedTujuan; ?>><?= $tujuan->nama; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if ($data['ref'] === 'Sasaran'): ?>
+                    <div class="form-group row">
+                        <label class="col-form-label col-md-2 col-sm-3 label-align" for="ref_sasaran">Sasaran <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-md-10 col-sm-6">
+                            <select name="ref_sasaran" id="ref_sasaran" class="form-control" required>
+                                <option value="">-- Pilih Sasaran --</option>
+                                <?php foreach ($data['sasarans']->result() as $sasaran): ?>
+                                    <?php $selectedSasaran = $detail->fid_sasaran === $sasaran->id ? 'selected' : ''; ?>
+                                    <option value="<?= $sasaran->id; ?>" <?= $selectedSasaran; ?>><?= $sasaran->nama; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if ($data['ref'] === 'Program'): ?>
+                    <div class="form-group row">
+                        <label class="col-form-label col-md-2 col-sm-3 label-align" for="ref_program">Program <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-md-10 col-sm-6">
+                            <select name="ref_program" id="ref_program" class="form-control" required>
+                                <option value="">-- Pilih Program --</option>
+                                <?php foreach ($data['programs']->result() as $program): ?>
+                                    <?php $selectedProgram = $detail->fid_program === $program->id ? 'selected' : ''; ?>
+                                    <option value="<?= $program->id; ?>" <?= $selectedProgram; ?>><?= $program->nama; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if ($data['ref'] === 'Kegiatan'): ?>
+                    <div class="form-group row">
+                        <label class="col-form-label col-md-2 col-sm-3 label-align" for="ref_kegiatan">Kegiatan <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-md-10 col-sm-6">
+                            <select name="ref_kegiatan" id="ref_kegiatan" class="form-control" required>
+                                <option value="">-- Pilih Kegiatan --</option>
+                                <?php foreach ($data['kegiatans']->result() as $kegiatan): ?>
+                                    <?php $selectedKegiatan = $detail->fid_kegiatan === $kegiatan->id ? 'selected' : ''; ?>
+                                    <option value="<?= $kegiatan->id; ?>" <?= $selectedKegiatan; ?>><?= $kegiatan->nama; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if ($data['ref'] === 'SubKegiatan'): ?>
+                    <div class="form-group row">
+                        <label class="col-form-label col-md-2 col-sm-3 label-align" for="parent_kegiatan">Kegiatan <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-md-10 col-sm-6">
+                            <select name="parent_kegiatan" id="parent_kegiatan" class="form-control" required>
+                                <option value="">-- Pilih Kegiatan --</option>
+                                <?php foreach ($data['kegiatans']->result() as $kegiatan): ?>
+                                    <?php $selectedKegiatan = $detail->fid_kegiatan === $kegiatan->id ? 'selected' : ''; ?>
+                                    <option value="<?= $kegiatan->id; ?>" <?= $selectedKegiatan; ?>><?= $kegiatan->nama; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-form-label col-md-2 col-sm-3 label-align" for="ref_sub_kegiatan">Sub Kegiatan <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-md-10 col-sm-6">
+                            <select name="ref_sub_kegiatan" id="ref_sub_kegiatan" class="form-control" required>
+                                <option value="">-- Pilih Sub Kegiatan --</option>
+                            </select>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="form-group row">
+                    <label class="col-form-label col-md-2 col-sm-3 label-align" for="indikator">Nama Indikator <span class="text-danger">*</span>
+                    </label>
+                    <div class="col-md-10 col-sm-6">
+                        <textarea name="indikator" id="indikator" rows="3" class="form-control" placeholder="Masukan nama indikator disini ..." required><?= $detail->nama ?? ''; ?></textarea>
+                    </div>
                 </div>
+                <div class="form-group row">
+                    <label class="col-form-label col-md-2 col-sm-3 label-align" for="ref_tujuan">Jenis Indikator <span class="text-danger">*</span></label>
+                    <div class="col-md-10 col-sm-6">
+                        <select name="ref_jenis_indikator" id="ref_jenis_indikator" class="form-control" required>
+                            <option value="">-- Pilih Jenis Indikator --</option>
+                            <?php foreach ($data['jenis_indikator']->result() as $j):
+                                $selectedJenis = $detail->fid_jenis_indikator == $j->id ? 'selected' : '';
+                            ?>
+                                <option value="<?= $j->id; ?>" <?= $selectedJenis; ?>><?= $j->nama; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-form-label col-md-2 col-sm-3 label-align" for="periode">Periode <span class="text-danger">*</span>
+                    </label>
+                    <div class="col-md-10 col-sm-6">
+                        <select name="periode" id="periode" class="form-control" required>
+                            <?php foreach (bulanIndo() as $key => $val): ?>
+                                <option value="<?= $key; ?>"
+                                    <?= in_array($key, $detail->periode ?? []) ? 'selected' : ''; ?>>
+                                    <?= $val; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row d-flex justify-content-end">
+                    <button type="button" onclick="backStep()" class="btn btn-danger">Kembali</button>
+                    <button type="submit" class="btn btn-primary">Simpan & Lanjutkan</button>
+                </div>
+                <?= form_close(); ?>
             </div>
-            <div class="col-md-2" id="formEviden" style="display:none;">
-                <div class="form-group">
-                    <label for="jumlah_eviden">Jumlah Eviden <span class="text-danger">*</span></label>
-                    <input type="text" name="jumlah_eviden" id="jumlah_eviden" class="form-control"
-                        data-parsley-pattern="^\d+(\.\d+)?$"
-                        data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
-                        required
-                        value="<?= $row->eviden_jumlah ?>">
+            <div id="step-3" class="content" style="display: none;">
+                <h2 class="StepTitle">Step 3 Review</h2>
+                <hr>
+                <table class="table table-bordered">
+                    <tr>
+                        <td colspan="3" class="bg-light text-dark"><b>Referensi</b></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Tujuan</td>
+                        <td width="2%">:</td>
+                        <td><?= @$this->indikator->getReferensiTujuan($data['result']['ref_tujuan'])->row()->nama; ?></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Sasaran</td>
+                        <td width="2%">:</td>
+                        <td><?= @$this->indikator->getReferensiSasaran($data['result']['ref_sasaran'])->row()->nama; ?></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Program</td>
+                        <td width="2%">:</td>
+                        <td><?= @$this->indikator->getReferensiProgram($data['result']['ref_program'])->row()->nama; ?></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Kegiatan</td>
+                        <td width="2%">:</td>
+                        <td><?= @$this->indikator->getReferensiKegiatan($data['result']['ref_kegiatan'])->row()->nama; ?></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Sub Kegiatan</td>
+                        <td width="2%">:</td>
+                        <td><?= @$this->indikator->getReferensiSubKegiatan($data['result']['ref_sub_kegiatan'])->row()->nama; ?></td>
+                    </tr>
+                </table>
+                <table class="table table-bordered">
+                    <tr>
+                        <td colspan="3" class="bg-light text-dark"><b>Indikator</b></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Nama Indikator</td>
+                        <td width="2%">:</td>
+                        <td><?= $data['result']['indikator'] ?? ''; ?></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Jenis Indikator</td>
+                        <td width="2%">:</td>
+                        <td><?= $this->indikator->getJenisIndikator($data['result']['ref_jenis_indikator'])->row()->nama ?? ''; ?></td>
+                    </tr>
+                    <tr>
+                        <td width="20%">Periode</td>
+                        <td width="2%">:</td>
+                        <td><?= periodeToBulan($data['result']['periode']); ?></td>
+                    </tr>
+                </table>
+                <?= form_open(base_url('app/indikator/update'), ['id' => 'formStep3'], [
+                    'id' => $detail->id,
+                    'ref' => $data['ref'],
+                    'nama_indikator' => $data['result']['indikator'],
+                    'jenis_indikator' => $data['result']['ref_jenis_indikator'],
+                    'periode' => $data['result']['periode'],
+                    'ref_tujuan' => $data['result']['ref_tujuan'] ?? null,
+                    'ref_sasaran' => $data['result']['ref_sasaran'] ?? null,
+                    'ref_program' => $data['result']['ref_program'] ?? null,
+                    'ref_kegiatan' => $data['result']['ref_kegiatan'] ?? null,
+                    'ref_sub_kegiatan' => $data['result']['ref_sub_kegiatan'] ?? null,
+                ]); ?>
+                <div class="form-group row d-flex justify-content-end">
+                    <button type="button" onclick="backStep()" class="btn btn-danger">Kembali</button>
+                    <button type="submit" class="btn btn-primary">Simpan Data</button>
                 </div>
+                <?= form_close(); ?>
             </div>
-            <div class="col-md-3" id="formKeteranganEviden" style="display:none;">
-                <div class="form-group">
-                    <label for="keterangan_eviden">Keterangan Eviden <span class="text-danger">*</span></label>
-                    <input type="text" name="keterangan_eviden" id="keterangan_eviden" class="form-control" required value="<?= $row->eviden_jenis ?>">
-                </div>
+            <div id="step-4" class="content" style="display: none;">
+                <h2 class="StepTitle">Step 4 Final</h2>
+                <hr>
+                <?php if (isset($_GET['status']) && $_GET['status'] === 'berhasil'): ?>
+                    <div class="alert alert-success">
+                        <h4><i class="fa fa-check-circle mr-2"></i>Indikator Kinerja Berhasil Diperbaharui!</h4>
+                        <p>Data indikator kinerja telah berhasil diperbaharui ke dalam sistem. Anda dapat menambahkan indikator baru atau kembali ke daftar indikator.</p>
+                        <hr>
+                        <button type="button" class="btn btn-primary" onclick="nextStep('<?= base_url('app/indikator/baru') ?>')"><i class="fa fa-plus mr-2"></i>Tambah Indikator Baru</button>
+                        <button type="button" class="btn btn-secondary" onclick="nextStep('<?= base_url('app/indikator') ?>')"><i class="fa fa-list mr-2"></i>Daftar Indikator</button>
+                    </div>
+                <?php endif; ?>
+                <?php if (isset($_GET['status']) && $_GET['status'] === 'gagal'): ?>
+                    <div class="alert alert-danger">
+                        <h4><i class="fa fa-times-circle mr-2"></i>Gagal Memperbaharui Indikator Kinerja!</h4>
+                        <p>Terjadi kesalahan saat memperbaharui data indikator kinerja. Silakan coba lagi.</p>
+                        <hr>
+                        <button type="button" class="btn btn-danger" onclick="backStep()"><i class="fa fa-arrow-left mr-2"></i>Kembali</button>
+                        <button type="button" class="btn btn-secondary" onclick="nextStep('<?= base_url('app/indikator') ?>')"><i class="fa fa-list mr-2"></i>Daftar Indikator</button>
+                    </div>
+                <?php endif; ?>
+
             </div>
         </div>
-        <hr />
-        <div class="form-group">
-            <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/target') ?>'"><i class="fa fa-close mr-2"></i>Batal</button>
-            <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
-        </div>
-        <?= form_close(); ?>
     </div>
 </div>
+<style>
+    .actionBar {
+        display: none;
+    }
+</style>
 
 <script>
+    function nextStep(path) {
+        return (window.location.href = path);
+    }
+
+    function backStep() {
+        return window.history.back();
+    }
+
+    // Onload
     $(function() {
-        let $form = $("form#formIndikatorUbah");
-        $form.on("submit", function(e) {
-            e.preventDefault();
-            $data = $(this).serialize();
-            if ($(this).parsley().isValid()) {
-                $.post(
-                    $(this).attr('action'),
-                    $data,
-                    (response) => {
-                        if (response === 200) {
-                            window.location.href = `${_uri}/app/target`;
-                        }
-                    },
-                    "json"
-                );
+        var getStep = urlParams.get("step");
+        if (getStep == "") {
+            isStep = 0;
+        } else {
+            isStep = getStep;
+        }
+        $("#wizard_verticle").smartWizard({
+            // Properties
+            selected: isStep,
+            keyNavigation: false, // Enable/Disable key navigation(left and right keys are used if enabled)
+            enableAllSteps: false, // Enable/Disable all steps on first load
+            transitionEffect: "slide", // Effect on navigation, none/fade/slide/slideleft
+            contentURL: null, // specifying content url enables ajax content loading
+            contentURLData: null, // override ajax query parameters
+            contentCache: false, // cache step contents, if false content is fetched always from ajax url
+            cycleSteps: false, // cycle step navigation
+            enableFinishButton: false, // makes finish button enabled always
+            hideButtonsOnDisabled: true, // when the previous/next/finish buttons are disabled, hide them instead
+            errorSteps: [], // array of step numbers to highlighting as error steps
+            labelNext: "Selanjutnya", // label for Next button
+            labelPrevious: "Sebelumnya", // label for Previous button
+            labelFinish: "Selesai", // label for Finish button
+            noForwardJumping: true,
+            ajaxType: "POST",
+            // Events
+            onLeaveStep: null, // triggers when leaving a step
+            onShowStep: null, // triggers when showing a step
+            onFinish: null, // triggers when Finish button is clicked
+            buttonOrder: ["next", "prev", "finish"], // button order, to hide a button remove it from the list
+        });
+
+        let formStep1 = $("form#formStep1");
+        let selectReferensi = formStep1.find("select#referensi");
+
+        selectReferensi.on("change", function() {
+            let val = $(this).val();
+            if (val == "") {
+                return $.notify('Referensi indikator wajib dipilih', {
+                    timer: 800,
+                    delay: 100,
+                    type: "warning"
+                });
             }
         });
 
-        // seleksi jenis output
-        let isJenis = $form.find("select[name='is_jenis']");
+        let formStep2 = $("form#formStep2");
 
-        // Fungsi untuk show/hide + atur required
-        function toggleJenisForm(val) {
-            if (val === "1") {
-                // Show form persentase
-                $("#formPersentase").show();
-                $("#formPersentase input").attr("required", true);
+        // Handle parent_kegiatan change
+        let kegiatanSelect = formStep2.find("select#parent_kegiatan");
+        let subKegiatanSelect = formStep2.find("select#ref_sub_kegiatan");
 
-                // Hide form eviden
-                $("#formEviden").hide();
-                $("#formEviden input").removeAttr("required");
-                $("#formKeteranganEviden").hide();
-                $("#formKeteranganEviden input").removeAttr("required");
+        // Fungsi untuk memuat sub kegiatan
+        async function loadSubKegiatan(kegiatanId) {
+            if (kegiatanId && kegiatanId !== "") {
+                try {
+                    let response = await fetch(`<?= base_url('app/indikator/getSubKegiatan/') ?>${kegiatanId}`);
+                    if (!response.ok) {
+                        throw new Error("Gagal mengambil data sub kegiatan");
+                    }
 
-                // Set selected
-                isJenis.val("1");
-            } else if (val === "2") {
-                // Show form eviden
-                $("#formEviden").show();
-                $("#formEviden input").attr("required", true);
-                $("#formKeteranganEviden").show();
-                $("#formKeteranganEviden input").attr("required", true);
+                    // Karena server mengirimkan HTML, bukan JSON
+                    let data = await response.json();
+                    subKegiatanSelect.html(data);
 
-                // Hide form persentase
-                $("#formPersentase").hide();
-                $("#formPersentase input").removeAttr("required");
-
-                // Set selected
-                isJenis.val("2");
+                } catch (error) {
+                    console.error(error);
+                    subKegiatanSelect.html('<option value="">-- Gagal memuat Sub Kegiatan --</option>');
+                }
             } else {
-                // Semua hide & non-required
-                $("#formPersentase, #formEviden, #formKeteranganEviden").hide();
-                $("#formPersentase input, #formEviden input, #formKeteranganEviden input").removeAttr("required");
+                subKegiatanSelect.html('<option value="">-- Pilih Sub Kegiatan --</option>');
             }
         }
 
-        // Event change
-        isJenis.on("change", function() {
-            toggleJenisForm($(this).val());
+        // 🔹 Ambil kegiatanId saat pertama kali halaman diload (misalnya saat edit)
+        let initialKegiatanId = kegiatanSelect.val();
+        console.log("Initial kegiatanId:", initialKegiatanId);
+        loadSubKegiatan(initialKegiatanId);
+
+        // 🔹 Event listener saat user mengganti kegiatan
+        kegiatanSelect.on("change", async function() {
+            let kegiatanId = $(this).val();
+            await loadSubKegiatan(kegiatanId);
         });
 
-        // Jalankan saat page load untuk set kondisi awal dari PHP
-        toggleJenisForm(isJenis.val());
-
-        // select part
-        const selectedBidang = <?= json_encode(explode(",", $row->fid_part)); ?>;
-
-        // Manually add selected options to the select (in case they are not loaded yet)
-        selectedBidang.forEach(function(id) {
-            const option = new Option(id, id, true, true);
-            $('#bidang').append(option).trigger('change');
+        $("select[name='referensi'],select[name='ref_tujuan'],select[name='ref_sasaran'],select[name='ref_program'],select[name='parent_kegiatan'],select[name='ref_kegiatan'],select[name='ref_sub_kegiatan'], select[name='ref_jenis_indikator']").select2();
+        $("select#periode").select2({
+            placeholder: '-- Pilih Periode Indikator --',
+            tags: false,
+            allowClear: true,
+            tokenSeparators: [',', ' ']
         });
 
-        $('select#bidang').select2({
-            placeholder: 'Pilih Bidang',
-            allowClear: false,
-            tags: true,
-            tokenSeparators: [',', ' '],
-            // maximumSelectionLength: 1,
-            width: "100%",
-            // theme: "classic",
-            // dropdownParent: MODAL_KEGIATAN,
-            ajax: {
-                delay: 350,
-                method: 'post',
-                url: '<?= base_url("app/programs/getParts") ?>',
-                dataType: 'json',
-                data: function(params) {
-                    return {
-                        q: params.term, // search term
-                    };
-                },
-                cache: false,
-                processResults: function(data) {
-                    // Transforms the top-level key of the response object from 'items' to 'results'
-                    return {
-                        results: data
-                    };
+        $('textarea#indikator').autocomplete({
+            serviceUrl: '<?= base_url('app/indikator/autocomplete/indikator') ?>',
+            minChars: 3,
+            deferRequestBy: 300,
+        });
+
+        let formStep3 = $("form#formStep3");
+        formStep3.on("submit", async function(e) {
+            e.preventDefault(); // Prevent default form submission
+            const url = $(this).attr('action');
+            const formData = new FormData(this);
+            const submitBtn = $(this).find('button[type="submit"]'); // ambil tombol submit
+            const originalText = submitBtn.html(); // simpan teks asli tombol
+
+            try {
+                // Ubah tombol jadi loading dan nonaktifkan
+                submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Menyimpan...');
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    $.notify(result.message, {
+                        timer: 800,
+                        delay: 100,
+                        type: "success",
+                        onShow: function() {
+                            // Optional: tindakan tambahan saat notifikasi muncul
+                            window.location.href = result.redirect_url || '<?= base_url('app/indikator/ubah/'.$detail->id.'?step=3&status=gagal') ?>';
+                        },
+                    });
+
+                } else {
+                    $.notify(result.message || 'Gagal menyimpan data indikator.', {
+                        timer: 800,
+                        delay: 100,
+                        type: "danger"
+                    });
                 }
-                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            } catch (error) {
+                console.error('Terjadi kesalahan:', error);
+                $.notify('Terjadi kesalahan pada koneksi server.', {
+                    timer: 800,
+                    delay: 100,
+                    type: "danger"
+                });
+            } finally {
+                // Kembalikan tombol ke kondisi semula
+                submitBtn.prop('disabled', false).html(originalText);
             }
         });
     })

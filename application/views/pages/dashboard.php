@@ -1,4 +1,3 @@
-
 <div class="clearfix"></div>
 <div class="alert alert-success" role="alert">
     Selamat datang kembali <strong><?= $this->session->userdata('nama') ?></strong> [ Login as <b><?= strtolower($this->session->userdata('role')); ?></b> ] <br>
@@ -60,17 +59,22 @@
 <div class="clearfix"></div>
 <!-- Transaction Chart -->
 <div class="row" id="tour_chart_transaksi">
-    <div class="col-md-12">
-        <div class="x_panel">
+    <div class="col-md-9">
+        <div class="x_panel ui-ribbon-container">
+            <div class="ui-ribbon-wrapper">
+                <div class="ui-ribbon">
+                    <?= $this->session->userdata('tahun_anggaran'); ?>
+                </div>
+            </div>
             <div class="x_title">
                 <h2>Trend Realisasi </h2>
-                <ul class="nav navbar-right panel_toolbox">
+                <!-- <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                </ul>
+                </ul> -->
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                <div class="col-md-9 col-sm-12 ">
+                <div class="col-12 ">
                     <div class="demo-container" style="height:280px">
                         <div id="chart_transaksi" class="demo-placeholder"></div>
                     </div>
@@ -130,43 +134,51 @@
                     </div>
 
                 </div>
-
-                <div class="col-md-3 col-sm-12 ">
-                    <div>
-                        <div class="x_title">
-                            <h4>Realisasi Terbaru</h4>
-                            <div class="clearfix"></div>
-                        </div>
-                        <ul class="list-unstyled top_profiles scroll-view">
-                            <?php
-                            foreach ($chart['top_transaksi'] as $top) :
-                                $profile = $this->user->profile_username($top->entri_by)->row();
-                                $tglsql = substr($top->entri_at, 0, 10);
-                                if ($top->is_status === 'APPROVE') {
-                                    $status = '<span class="badge badge-success"><i class="fa fa-check-circle" title="APPROVE"></i></span>';
-                                } elseif ($top->is_status === 'BTL') {
-                                    $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> BTL</span>';
-                                } elseif ($top->is_status === 'TMS') {
-                                    $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> TMS</span>';
-                                } else {
-                                    $status = '<span class="badge badge-success"><i class="fa fa-check-circle"></i></span>';
-                                }
-                            ?>
-                                <li class="media event">
-                                    <a class="pull-left border-aero profile_thumb">
-                                        <img class="aero" src="<?= base_url('template/assets/picture_akun/' . $profile->pic) ?>" alt="<?= $profile->username ?>" width="25">
-                                    </a>
-                                    <div class="media-body">
-                                        <a class="title" href="#" data-toggle="tooltip" data-placement="right" title="<?= ucwords(strtolower($profile->nama)) ?>"><small><?= $top->singkatan; ?> | <?= longdate_indo($tglsql) ?></small></a>
-                                        <p><strong>Rp. <?= nominal($top->jumlah) ?> </strong></p>
-                                        <p><small><?= $profile->nama ?></small><span style="float:right"><?= $status ?></span></p>
-                                    </div>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="x_panel ui-ribbon-container">
+            <div class="ui-ribbon-wrapper">
+                <div class="ui-ribbon">
+                    <?= $this->session->userdata('tahun_anggaran'); ?>
                 </div>
-
+            </div>
+            <div class="x_title">
+                <h2>New Realisasi </h2>
+                <!-- <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                </ul> -->
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <ul class="list-unstyled top_profiles scroll-view">
+                    <?php
+                    foreach ($chart['top_transaksi'] as $top) :
+                        $profile = $this->user->profile_username($top->entri_by)->row();
+                        $tglsql = substr($top->entri_at, 0, 10);
+                        if ($top->is_status === 'APPROVE') {
+                            $status = '<span class="badge badge-success"><i class="fa fa-check-circle" title="APPROVE"></i></span>';
+                        } elseif ($top->is_status === 'BTL') {
+                            $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> BTL</span>';
+                        } elseif ($top->is_status === 'TMS') {
+                            $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> TMS</span>';
+                        } else {
+                            $status = '<span class="badge badge-success"><i class="fa fa-check-circle"></i></span>';
+                        }
+                    ?>
+                        <li class="media event">
+                            <a class="pull-left border-aero profile_thumb">
+                                <img class="aero" src="<?= base_url('template/assets/picture_akun/' . $profile->pic) ?>" alt="<?= $profile->username ?>" width="25">
+                            </a>
+                            <div class="media-body">
+                                <a class="title" href="#" data-toggle="tooltip" data-placement="right" title="<?= ucwords(strtolower($profile->nama)) ?>"><small><?= $top->singkatan; ?> | <?= longdate_indo($tglsql) ?></small></a>
+                                <p><strong>Rp. <?= nominal($top->jumlah) ?> </strong></p>
+                                <p><small><?= $profile->nama ?></small><span style="float:right"><?= $status ?></span></p>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
         </div>
     </div>
@@ -209,7 +221,7 @@
 
             <!-- Modal body -->
             <div class="modal-body">
-                
+
             </div>
         </div>
     </div>
@@ -220,7 +232,7 @@
             label: "Realisasi SPJ MS",
             data: <?= $chart['spj_ms'] ?>,
             lines: {
-                fillColor: "rgba(150, 202, 89, 0.12)"
+                fillColor: "rgba(30, 64, 175, 0.12)"
             },
             points: {
                 fillColor: "#fff"
@@ -236,16 +248,26 @@
                 fillColor: "#fff"
             },
         };
-        // let SPJBTL = {
-        //     label: "Realisasi SPJ BTL",
-        //     data: <?= $chart['spj_btl'] ?>,
-        //     lines: {
-        //         fillColor: "rgba(255, 165, 0, 0.12)"
-        //     },
-        //     points: {
-        //         fillColor: "#fff"
-        //     },
-        // };
+        let SPJBARU = {
+            label: "Realisasi SPJ Baru",
+            data: <?= $chart['spj_baru'] ?>,
+            lines: {
+                fillColor: "rgba(255, 165, 0, 0.12)"
+            },
+            points: {
+                fillColor: "#fff"
+            },
+        };
+        let SPJCAIR = {
+            label: "Realisasi SPJ Cair",
+            data: <?= $chart['spj_cair'] ?>,
+            lines: {
+                fillColor: "rgba(75, 192, 75, 0.12)"
+            },
+            points: {
+                fillColor: "#fff"
+            },
+        };
         let options = {
             grid: {
                 show: !0,
@@ -277,7 +299,7 @@
             },
             legend: {
                 position: "ne",
-                margin: [0, -60],
+                margin: [0, -50],
                 noColumns: 0,
                 labelBoxBorderColor: null,
                 labelFormatter: function(e, a) {
@@ -287,20 +309,20 @@
                 height: 1,
             },
             colors: [
-                "green",
-                "red",
                 "orange",
+                "blue",
+                "red",
+                "#2c7282",
                 "#6f7a8a",
                 "#f7cb38",
                 "#5a8022",
-                "#2c7282",
             ],
             shadowSize: !0,
             tooltip: {
                 cssClass: "flotTip",
                 show: !0,
                 content: function(label, x, y) {
-                    return `${x}: ${y.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+                    return `${label}: ${y.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
                 }
             },
             yaxis: {
@@ -314,7 +336,7 @@
             },
         };
 
-        $.plot($("#chart_transaksi"), [SPJMS, SPJTMS], options);
+        $.plot($("#chart_transaksi"), [SPJBARU, SPJMS, SPJTMS, SPJCAIR], options);
 
         // Pie Charts
         var DataPieParts = {
@@ -363,19 +385,37 @@
         const data = {
             labels: labels,
             datasets: [{
+                    label: 'BARU',
+                    data: <?= $chart['spj_count_baru'] ?>,
+                    backgroundColor: [
+                        'rgba(255, 165, 0, 0.2)',
+                        'rgba(255, 165, 0, 0.2)',
+                        'rgba(255, 165, 0, 0.2)',
+                        'rgba(255, 165, 0, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgb(255, 165, 0)',
+                        'rgb(255, 165, 0)',
+                        'rgb(255, 165, 0)',
+                        'rgb(255, 165, 0)',
+                    ],
+
+                    borderWidth: 1
+                },
+                {
                     label: 'APPROVE',
                     data: <?= $chart['spj_count_ms'] ?>,
                     backgroundColor: [
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(0, 0, 255, 0.2)',
+                        'rgba(0, 0, 255, 0.2)',
+                        'rgba(0, 0, 255, 0.2)',
+                        'rgba(0, 0, 255, 0.2)',
                     ],
                     borderColor: [
-                        'rgb(75, 192, 192)',
-                        'rgb(75, 192, 192)',
-                        'rgb(75, 192, 192)',
-                        'rgb(75, 192, 192)',
+                        'rgb(0, 0, 255)',
+                        'rgb(0, 0, 255)',
+                        'rgb(0, 0, 255)',
+                        'rgb(0, 0, 255)',
                     ],
                     borderWidth: 1
                 },
@@ -396,23 +436,24 @@
                     ],
                     borderWidth: 1
                 },
-                // {
-                //     label: 'BTL',
-                //     data: <?= $chart['spj_count_btl'] ?>,
-                //     backgroundColor: [
-                //         'rgba(255, 102, 0, 0.2)',
-                //         'rgba(255, 102, 0, 0.2)',
-                //         'rgba(255, 102, 0, 0.2)',
-                //         'rgba(255, 102, 0, 0.2)',
-                //     ],
-                //     borderColor: [
-                //         'rgb(255, 102, 0)',
-                //         'rgb(255, 102, 0)',
-                //         'rgb(255, 102, 0)',
-                //         'rgb(255, 102, 0)',
-                //     ],
-                //     borderWidth: 1
-                // }
+                {
+                    label: 'CAIR',
+                    data: <?= $chart['spj_count_cair'] ?>,
+                    backgroundColor: [
+                        'rgba(0, 128, 128, 0.2)',
+                        'rgba(0, 128, 128, 0.2)',
+                        'rgba(0, 128, 128, 0.2)',
+                        'rgba(0, 128, 128, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgb(0, 128, 128)',
+                        'rgb(0, 128, 128)',
+                        'rgb(0, 128, 128)',
+                        'rgb(0, 128, 128)',
+                    ],
+                    borderWidth: 1
+                },
+
             ]
         };
         const config = {

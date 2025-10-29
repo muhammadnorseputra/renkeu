@@ -67,12 +67,12 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                 $no_level_0 = "#";
                 $tujuan = $this->target->getTujuan(['t.tahun' => $this->session->userdata('tahun_anggaran')]);
                 foreach ($tujuan->result() as $t) :
-                    $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id], $this->session->userdata('part'));
+                    $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id, 'i.fid_periode' => $periode_id], $this->session->userdata('part'));
                     $tr = "";
-                    $rowspan = 1;
+                    $rowspan = "";
                     if ($indikator_tujuan->num_rows() > 0):
                         $indikator = $indikator_tujuan->result_array();
-                        $toEnd = count($indikator);
+                        $toEndTujuan = count($indikator);
                         foreach ($indikator as $key => $r) :
                             $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($periode_id, $r['indikator_id']);
                             // Aksi
@@ -114,8 +114,8 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             }
 
                             // Row
-                            $rowspan = $toEnd++;
-                            if (0 === --$toEnd) { //last
+                            $rowspan = $toEndTujuan++;
+                            if (0 === --$toEndTujuan) { //last
                                 $tr .= "";
                             } elseif ($key === 0) { //first
                                 $tr .= "
@@ -139,29 +139,25 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         endforeach;
                     else:
                         $tr .= "
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
-                        <td rowspan='" . $rowspan . "'></td>
+                        <td colspan='6' rowspan='" . $rowspan . "'></td>
                         <tr></tr>";
                     endif;
                 ?>
                     <tr class="bg-warning">
-                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
-                        <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama ?> </td>
+                        <td class="text-center align-middle" rowspan="<?= @$toEndTujuan ?>"><?= $no_level_0 ?></td>
+                        <td class="align-middle" colspan="2" rowspan="<?= @$toEndTujuan ?>"><?= $t->nama ?> </td>
                         <?= $tr ?>
                     </tr>
                     <?php
                     $no_level_0_1 = "#1";
                     $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
                     foreach ($sasaran->result() as $s) :
-                        $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id], null);
+                        $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id, 'i.fid_periode' => $periode_id], null);
                         $tr = "";
+                        $rowspan = "";
                         if ($indikator_sasaran->num_rows() > 0):
                             $indikator = $indikator_sasaran->result_array();
-                            $toEnd = count($indikator);
+                            $toEndSasaran = count($indikator);
                             foreach ($indikator as $key => $r) :
                                 $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($periode_id, $r['indikator_id']);
                                 // Aksi
@@ -203,8 +199,8 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 }
 
                                 // Row
-                                $rowspan = $toEnd++;
-                                if (0 === --$toEnd) { //last
+                                $rowspan = $toEndSasaran++;
+                                if (0 === --$toEndSasaran) { //last
                                     $tr .= "";
                                 } elseif ($key === 0) { //first
                                     $tr .= "
@@ -233,8 +229,8 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         endif;
                     ?>
                         <tr class="bg-success text-white">
-                            <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0_1 ?></td>
-                            <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $s->nama ?> </td>
+                            <td class="text-center align-middle" rowspan="<?= @$toEndSasaran ?>"><?= $no_level_0_1 ?></td>
+                            <td class="align-middle" colspan="2" rowspan="<?= @$toEndSasaran ?>"><?= $s->nama ?> </td>
                             <?= $tr ?>
                         </tr>
                         <?php
@@ -242,14 +238,15 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
                         foreach ($programs->result() as $program) :
                             if ($this->session->userdata('role') === 'USER') {
-                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], $this->session->userdata('part'));
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id, 'i.fid_periode' => $periode_id], $this->session->userdata('part'));
                             } else {
-                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], null);
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id, 'i.fid_periode' => $periode_id], null);
                             }
                             $tr = "";
+                            $rowspan = "";
                             if ($indikator_program->num_rows() > 0) :
                                 $indikator = $indikator_program->result_array();
-                                $toEnd = count($indikator);
+                                $toEndProgram = count($indikator);
                                 foreach ($indikator as $key => $ip) :
                                     $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($periode_id, $ip['indikator_id']);
                                     if ($this->session->userdata('role') === 'USER' && ($isStatusVerifikasi === 'ENTRI' || $isStatusVerifikasi === 'ENTRI_ULANG')) :
@@ -289,8 +286,8 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                         $link = "";
                                     }
 
-                                    $rowspan = $toEnd++;
-                                    if (0 === --$toEnd) { //last
+                                    $rowspan = $toEndProgram++;
+                                    if (0 === --$toEndProgram) { //last
                                         $tr .= "";
                                     } elseif ($key === 0) { //first
                                         $tr .= "
@@ -319,9 +316,9 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             endif;
                         ?>
                             <tr class="bg-secondary text-white">
-                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
-                                <td rowspan="<?= @$toEnd ?>"></td>
-                                <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
+                                <td class="text-center align-middle" rowspan="<?= @$toEndProgram ?>"><?= $no_level_1 ?></td>
+                                <td rowspan="<?= @$toEndProgram ?>"></td>
+                                <td class="align-middle" rowspan="<?= @$toEndProgram ?>"><?= $program->nama ?> </td>
                                 <?= $tr ?>
                             </tr>
                             <?php
@@ -334,17 +331,18 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             $no_level_2 = 1;
                             foreach ($kegiatans->result() as $kegiatan) :
                                 if ($this->session->userdata('role') === 'ADMIN') :
-                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], null);
+                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id], null);
                                 else:
                                     $indikator_kegiatan = $this->realisasi->getIndikator(
-                                        ['fid_kegiatan' => $kegiatan->id],
+                                        ['fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id],
                                         $this->session->userdata('part')
                                     );
                                 endif;
                                 $tr = "";
+                                $rowspan = "";
                                 if ($indikator_kegiatan->num_rows() > 0) :
                                     $indikator_keg = $indikator_kegiatan->result_array();
-                                    $toEnd = count($indikator_keg);
+                                    $toEndKegiatan = count($indikator_keg);
                                     foreach ($indikator_keg as $key => $ik) :
                                         $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($periode_id, $ik['indikator_id']);
                                         if ($this->session->userdata('role') === 'USER' && ($isStatusVerifikasi === 'ENTRI' || $isStatusVerifikasi === 'ENTRI_ULANG')) :
@@ -382,8 +380,8 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                             $link = "";
                                         }
 
-                                        $rowspan = $toEnd++;
-                                        if (0 === --$toEnd) { //last
+                                        $rowspan = $toEndKegiatan++;
+                                        if (0 === --$toEndKegiatan) { //last
                                             $tr .= "";
                                         } elseif ($key === 0) { //first
                                             $tr .= "
@@ -405,16 +403,15 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                         }
                                     endforeach;
                                 else:
-                                    $tr .= "
-                        <td colspan='6' rowspan='" . $rowspan . "'></td>
-                        <tr></tr>";
+                                    $tr .= "<td colspan='6' rowspan='" . $rowspan . "'></td>
+                                    <tr></tr>";
                                 endif;
                             ?>
                                 <tr class="bg-info text-white">
-                                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                                    <td class="text-center align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $no_level_1 . "." . $no_level_2 ?>
                                     </td>
-                                    <td rowspan="<?= @$toEnd ?>"></td>
-                                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
+                                    <td rowspan="<?= @$toEndKegiatan ?>"></td>
+                                    <td class="align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $kegiatan->nama ?></td>
                                     <?= $tr ?>
                                 </tr>
                                 <?php
@@ -422,14 +419,15 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 $no_level_3 = 1;
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
                                     if ($this->session->userdata('role') === 'USER') :
-                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], $this->session->userdata('part'));
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id], $this->session->userdata('part'));
                                     else:
-                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], null);
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id], null);
                                     endif;
                                     $tr = "";
+                                    $rowspan = "";
                                     if ($indikator_sub_kegiatan->num_rows() > 0) :
                                         $indikator_sub = $indikator_sub_kegiatan->result_array();
-                                        $toEnd = count($indikator_sub);
+                                        $toEndSubKegiatan = count($indikator_sub);
                                         foreach ($indikator_sub as $key => $isk) :
                                             $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($periode_id, $isk['indikator_id']);
                                             if ($this->session->userdata('role') === 'USER' && ($isStatusVerifikasi === 'ENTRI' || $isStatusVerifikasi === 'ENTRI_ULANG')) :
@@ -467,8 +465,8 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                                 $link = "";
                                             }
 
-                                            $rowspan = $toEnd++;
-                                            if (0 === --$toEnd) { //last
+                                            $rowspan = $toEndSubKegiatan++;
+                                            if (0 === --$toEndSubKegiatan) { //last
                                                 $tr .= "";
                                             } elseif ($key === 0) { //first
                                                 $tr .= "
@@ -497,10 +495,10 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     endif;
                                 ?>
                                     <tr>
-                                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                                        <td class="text-center align-middle" rowspan="<?= @$toEndSubKegiatan ?>">
                                             <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                                        <td rowspan="<?= @$toEnd ?>"></td>
-                                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                                        <td rowspan="<?= @$toEndSubKegiatan ?>"></td>
+                                        <td class="align-middle" rowspan="<?= @$toEndSubKegiatan ?>"><?= $sub_kegiatan->nama ?></td>
                                         <?= $tr ?>
                                     </tr>
 

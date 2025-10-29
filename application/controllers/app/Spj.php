@@ -36,20 +36,32 @@ class Spj extends CI_Controller
 
     public function index()
     {
+        $jmlSpjEntri = $this->crud->getWhere('spj', ['is_status' => 'ENTRI', 'catatan' => null, 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
+        $jmlSpjEntriPerbaikan = $this->crud->getWhere('spj', ['is_status' => 'ENTRI', 'catatan !=' => null, 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
+        $jmlSpjVerfikasi = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI', 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
+        $jmlSpjApprove = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI_ADMIN', 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
         $data = [
             'title' => 'SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/index',
+            'data' => [
+                'jml_spj_baru' => $jmlSpjEntri,
+                'jml_spj_perbaikan' => $jmlSpjEntriPerbaikan,
+                'jml_spj_verifikasi' => $jmlSpjVerfikasi,
+                'jml_spj_verifikasi_admin' => $jmlSpjApprove,
+            ],
             'autoload_js' => [
                 'template/custom-js/list.min.js',
                 'template/custom-js/list-state.js',
-                'template/custom-js/spj.js',
                 'template/backend/vendors/datatables.net/js/jquery.dataTables.min.js',
                 'template/backend/vendors/datatables.net-responsive/js/dataTables.responsive.min.js',
                 'https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js',
                 'https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js',
+                'template/backend/vendors/parsleyjs/dist/parsley.min.js',
                 'template/custom-js/blockUI/jquery.blockUI.js',
                 'template/custom-js/tabel-verifikasi.js',
                 'template/custom-js/tabel-verifikasi-selesai.js',
+                'template/custom-js/tabel-payments.js',
+                'template/custom-js/spj.js',
             ],
             'autoload_css' => [
                 'template/backend/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css',
@@ -81,7 +93,7 @@ class Spj extends CI_Controller
                         <th width="8%">SPJ Bulan</th>
                         <th width="10%">Jumlah (Rp)</th>
                         <th>Status</th>
-                        <th width="18%">Tanggal Entri <span class="sort" data-sort="entri_at">Sort</span></th>
+                        <th width="18%">Tanggal Entri</th>
                         <th>Berkas</th>
                         <th class="text-center" colspan="3">Aksi</th>
                     </tr>
@@ -112,6 +124,9 @@ class Spj extends CI_Controller
                 $link = '<i class="text-secondary">Kosong</i>';
             }
 
+            // cek apakah usulan sudah pernah di verifikasi admin atau belum
+            $isDeleteDisabled = $r->verify_by !== null || $r->approve_by !== null ? 'disabled' : '';
+
             if ($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN') {
                 $detail = '<button onclick="window.location.replace(\'' . base_url('app/spj/buatusul?step=0&status=' . $r->is_status . '&token=' . $r->token) . '\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
             } elseif ($r->is_status === 'APPROVE' || $r->is_status === 'TMS' || $r->is_status === 'SELESAI_TMS' || $r->is_status === 'BTL' || $r->is_status === 'SELESAI_BTL') {
@@ -122,7 +137,10 @@ class Spj extends CI_Controller
                             <button onclick="window.location.replace(\'' . base_url('app/spj/buatusul?step=0&status=entri&token=' . $r->token) . '\')" type="button" class="btn btn-sm btn-primary m-0 rounded-0"><i class="fa fa-pencil"></i> <br> Ubah</button> 
                         </td>
                         <td class="text-center">
-                            <button onclick="HapusUsulan(\'' . base_url('app/spj/hapususulan/' . $r->token) . '\')" type="button" class="btn btn-sm btn-danger m-0 rounded-0 pull-right"><i class="fa fa-trash"></i> <br> Hapus</button>
+                            <button onclick="HapusUsulan(\'' . base_url('app/spj/hapususulan/' . $r->token) . '\')" type="button" class="btn btn-sm btn-danger m-0 rounded-0 pull-right"
+                            ' . $isDeleteDisabled . '>
+                                <i class="fa fa-trash"></i> <br> Hapus
+                            </button>
                         </td>
                     ';
             }
@@ -294,6 +312,7 @@ class Spj extends CI_Controller
                 'keterangan' => 'USULAN TELAH DI VERIFIKASI - ' . strtoupper($input['status']) . ' (' . $input['catatan'] . ')',
                 'created_at' => DateTimeInput(),
                 'created_by' => $this->session->userdata('user_name'),
+                'tahun' => $this->session->userdata('tahun_anggaran'),
             ];
         } else {
             $update = [
@@ -309,6 +328,7 @@ class Spj extends CI_Controller
                 'keterangan' => 'USULAN TELAH DI VERIFIKASI - ' . strtoupper($input['status']) . ' (' . $input['catatan'] . ')',
                 'created_at' => DateTimeInput(),
                 'created_by' => $this->session->userdata('user_name'),
+                'tahun' => $this->session->userdata('tahun_anggaran'),
             ];
         }
 
@@ -415,9 +435,6 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
         $kode_uraian = $this->spj->getKode('ref_uraians', $detailUsul->fid_uraian);
         $kode_program = $this->spj->getKode('ref_programs', $detailUsul->fid_program);
 
-        $whr = [
-            'token' => $detailUsul->token
-        ];
 
         if ($detailUsul->is_status === 'BTL') {
             $is_status = 'SELESAI_BTL';
@@ -431,6 +448,10 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
             'is_status' => $is_status,
             'approve_by' => $this->session->userdata('user_name'),
             'approve_at' => DateTimeInput(),
+        ];
+
+        $whr = [
+            'token' => $detailUsul->token
         ];
 
         $insert = [
@@ -466,25 +487,12 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
             'berkas_link' => $detailUsul->berkas_link
         ];
 
-        $db = $this->crud->update('spj', $update, $whr);
-
-        $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
-        $send = TeleSendMessage($getUser->telegram_id, '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
--------------
-📝 Uraian   : ' . $detailUsul->uraian . '  
-💰 Jumlah   : Rp. ' . nominal($detailUsul->jumlah) . ' 
-⏰ Spj Bulan : ' . bulan(strtoupper($detailUsul->bulan)) . '
-📅 Tgl. Entri : ' . longdate_indo(substr($detailUsul->entri_at, 0, 10)) . '
--------------
-Telah difinalisasi <b>ADMIN</b> dengan status <b>' . ($is_status === 'SELESAI' ? 'APPROVE' : $detailUsul->is_status) . '</b>.  
-Silahkan cek aplikasi Digta Sunanpraja.  
--------------
-⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-<i>by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
-        ');
+        $new_payment = [
+            'token' => $detailUsul->token,
+            'status' => 'PENDING',
+            'pending_at' => DateTimeInput(),
+            'tahun' => $this->session->userdata('tahun_anggaran'),
+        ];
 
         // insert log
         $info = [
@@ -493,18 +501,67 @@ Silahkan cek aplikasi Digta Sunanpraja.
             'keterangan' => 'USULAN TELAH DI VERIFIKASI ADMIN (' . $is_status . ')',
             'created_at' => DateTimeInput(),
             'created_by' => $this->session->userdata('user_name'),
+            'tahun' => $this->session->userdata('tahun_anggaran'),
         ];
 
-        $log = $this->historis->insert($info);
+        $this->db->trans_start(); // mulai transaksi otomatis
+        $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
+        $send_message = TeleSendMessage($getUser->telegram_id, $this->TemplateMessageApproval($detailUsul, $is_status));
+        $update_to_spj = $this->crud->update('spj', $update, $whr);
+        $save_to_riwayat = $this->crud->insert('spj_riwayat', $insert);
+        $save_to_log = $this->historis->insert($info);
 
-        if ($db && $send && $log) {
-            $this->crud->insert('spj_riwayat', $insert);
-            $msg = ['pesan' => 'Oke', 'code' => 200, 'send_wa' => $send];
+        $cek_payment = $this->crud->getWhere('spj_payment', ['token' => $detailUsul->token])->num_rows();
+        if ($cek_payment > 0) {
+            // update payment jadi pending lagi
+            $new_payment_update = [
+                'status' => 'PENDING - PERBAIKAN',
+                'pending_at' => DateTimeInput(),
+            ];
+            $save_to_payment = $this->crud->update('spj_payment', $new_payment_update, ['token' => $detailUsul->token]);
         } else {
-            $msg = ['pesan' => 'Gagal', 'code' => 400, 'send_wa' => $send];
+            // insert payment baru
+            $save_to_payment = $this->crud->insert('spj_payment', $new_payment);
         }
+        $this->db->trans_complete(); // selesai transaksi
+
+        if (
+            $this->db->trans_status() === FALSE ||
+            !$update_to_spj || !$send_message || !$save_to_log || !$save_to_riwayat || !$save_to_payment
+        ) {
+            // Rollback otomatis kalau ada yang gagal
+            $msg = ['pesan' => 'Gagal', 'code' => 400, 'send_wa' => $send_message];
+        } else {
+            // Commit otomatis kalau semua sukses
+            $msg = ['pesan' => 'Oke', 'code' => 200, 'send_wa' => $send_message];
+        }
+
         echo json_encode($msg);
     }
+
+    private function TemplateMessageApproval($detailUsul, $is_status)
+    {
+        $statusText = ($is_status === 'SELESAI') ? 'APPROVE' : $detailUsul->is_status;
+
+        $message = '
+<b>DIGTA SUNANPRAJA</b>
+📢 <b>Notifikasi Usulan SPJ</b>
+-------------
+📝 Uraian   : ' . $detailUsul->uraian . '  
+💰 Jumlah   : Rp. ' . nominal($detailUsul->jumlah) . ' 
+⏰ Spj Bulan : ' . bulan(strtoupper($detailUsul->bulan)) . '
+📅 Tgl. Entri : ' . longdate_indo(substr($detailUsul->entri_at, 0, 10)) . '
+-------------
+Telah difinalisasi <b>ADMIN</b> dengan status <b>' . $statusText . '</b>.  
+Silahkan cek aplikasi Digta Sunanpraja.  
+-------------
+⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
+' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
+<i>by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>';
+
+        return $message;
+    }
+
 
     public function verifikasi_selesai()
     {
@@ -516,6 +573,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
 
             $userusul = $this->users->profile_username($r->entri_by)->row();
             $status = $this->generate_status($r->is_status);
+            $status_bendahara = $this->generate_status_by_bendahara($r->status);
             $button = $this->generate_button($r);
 
             $no++;
@@ -531,6 +589,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
             $row['userinfo'] = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o'></i> " . substr($r->entri_at, 10, 6) . " <i class='fa fa-user'></i> " . $userusul->nama;
             $row['tgl_approve'] = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->approve_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($r->approve_at, 10, 6);
             $row['status'] = $status;
+            $row['status_bendahara'] = $status_bendahara;
             $row['jumlah'] = $r->is_status === 'APPROVE' ? "<b class='text-success'> Rp. " . nominal((int) $r->jumlah) . "</b>" : "<b class='text-danger'> Rp. " . nominal((int) $r->jumlah) . "</b>";
             $row['action'] = $button;
             $data[] = $row;
@@ -565,13 +624,38 @@ Silahkan cek aplikasi Digta Sunanpraja.
         }
     }
 
+    private function generate_status_by_bendahara($status)
+    {
+        switch ($status) {
+            case 'CAIR':
+                return '<span class="badge p-2 badge-success"><i class="fa fa-check-circle mr-2"></i> CAIR</span>';
+            case 'PENDING':
+                return '<span class="badge p-2 badge-secondary"><i class="fa fa-lock mr-2"></i> PENDING</span>';
+            case 'PENDING - PERBAIKAN':
+                return '<span class="badge p-2 badge-secondary"><i class="fa fa-lock mr-2"></i> PENDING - PERBAIKAN</span>';
+            case 'PERBAIKAN':
+                return '<span class="badge p-2 badge-warning"><i class="fa fa-check-circle mr-2"></i> PERBAIKAN</span>';
+            case 'TOLAK':
+                return '<span class="badge p-2 badge-danger"><i class="fa fa-close mr-2"></i> TOLAK</span>';
+            default:
+                return '<span class="badge p-2 badge-light"><i class="fa fa-info-circle mr-2"></i> BELUM DIVERIFIKASI</span>';
+        }
+    }
+
     private function generate_button($r)
     {
+        // cek apakah status pada tabel spj_payment === 'PERBAIKAN' atau 'TOLAK'
+        $payment_status = $this->crud->getWhere('spj_payment', ['token' => $r->token])->row();
+        if ($payment_status && in_array($payment_status->status, ['CAIR', 'PENDING'])) {
+            $isRollBackDisabled = 'disabled bg-light text-secondary';
+        } else {
+            $isRollBackDisabled = 'bg-danger text-white';
+        }
 
         // Button Rollback hanya untuk verifikator
         if ($this->session->userdata('role') === 'VERIFICATOR'):
-            $btn_rollback = '<a class="dropdown-item d-flex justify-content-between" href="#" onclick="Rollback(\'' . $r->token . '\')">
-                                Rollback <i class="fa fa-repeat text-danger"></i></a>';
+            $btn_rollback = '<button class="dropdown-item d-flex justify-content-between ' . $isRollBackDisabled . '" onclick="Rollback(\'' . $r->token . '\')">
+                                Rollback <i class="fa fa-repeat text-warning"></i></button>';
         else:
             $btn_rollback = '';
         endif;
@@ -603,6 +687,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
             'title' => 'Verifikasi Selesai',
             'content' => 'pages/spj/verifikasi_selesai_detail',
             'detail' => $this->spj->riwayat(['token' => $token])->row(),
+            'payment' => $this->spj->riwayat_payment(['token' => $token])->row()
         ];
         $this->load->view('layout/app', $data);
     }
@@ -610,37 +695,64 @@ Silahkan cek aplikasi Digta Sunanpraja.
     public function log_historis($token)
     {
         $data = $this->historis->getWhere(['token' => $token]);
-        if($data->num_rows() > 0):
-            $html = '<table class="table table-bordered table-striped">
-                        <thead>
-                            <tr class="text-center">
-                                <th width="5%">No</th>
-                                <th>Status</th>
-                                <th>Keterangan</th>
-                                <th>Waktu</th>
-                                <th>By</th>
-                            </tr>
-                        </thead>
-                        <tbody>';
-            $no = 1;
+        if ($data->num_rows() > 0):
+            $html = '<ul class="list-unstyled timeline">';
             foreach ($data->result() as $r):
-                $html .= '<tr>
-                            <td class="text-center">' . $no . '</td>
-                            <td>' . $r->status . '</td>
-                            <td>' . $r->keterangan . '</td>
-                            <td>' . longdate_indo(substr($r->created_at, 0, 10)) . ' ' . substr($r->created_at, 10, 6) . '</td>
-                            <td>' . $r->created_by . '</td>
-                        </tr>';
-                $no++;
+
+                // Tentukan warna tag berdasarkan status
+                $status = strtolower($r->status);
+                switch ($status) {
+                    case 'rollback':
+                        $color = 'text-warning'; // hijau
+                        break;
+                    case 'tolak':
+                        $color = 'text-danger'; // hijau
+                        break;
+                    case 'verifikasi':
+                        $color = 'text-primary'; // merah
+                        break;
+                    case 'approval':
+                        $color = 'text-success'; // kuning
+                        break;
+                    case 'pending':
+                        $color = 'text-secondary'; // kuning
+                        break;
+                    case 'cair':
+                        $color = 'text-info'; // kuning
+                        break;
+                    default:
+                        $color = 'text-dark'; // biru (default)
+                        break;
+                }
+
+                $html .= '<li>
+                    <div class="block">
+                        <div class="block_content">
+                            <h2 class="title ' . $color . '">
+                                <a>' . htmlspecialchars(ucwords($r->status)) . '</a>
+                            </h2>
+                            <div class="byline">
+                                <span>' . longdate_indo(substr($r->created_at, 0, 10)) . ' ' . substr($r->created_at, 10, 6) . '</span> 
+                                by <a>' . htmlspecialchars($r->created_by) . '</a>
+                            </div>
+                            <p class="excerpt">' . htmlspecialchars($r->keterangan) . '</p>
+                        </div>
+                    </div>
+                  </li>';
             endforeach;
-            $html .= '</tbody></table>';
+            $html .= '</ul>';
             $data = ['result' => $html, 'msg' => 'Data Historis Ditemukan', 'code' => 200];
         else:
-            $html = '<tr>
-                        <td colspan="5" class="text-center">Data Historis Tidak Ditemukan</td>
-            </tr>';
+            $html = '<ul class="list-unstyled timeline">
+                <li>
+                    <div class="block text-center">
+                        <p>Data Historis Tidak Ditemukan</p>
+                    </div>
+                </li>
+            </ul>';
             $data = ['result' => $html, 'msg' => 'Data Historis Tidak Ditemukan', 'code' => 404];
         endif;
+
         echo json_encode($data);
     }
 
@@ -816,6 +928,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
                 'keterangan' => 'USULAN (DIPERBAIKI)',
                 'created_at' => DateTimeInput(),
                 'created_by' => $this->session->userdata('user_name'),
+                'tahun' => $this->session->userdata('tahun_anggaran'),
             ];
         } else {
             $data = [
@@ -845,6 +958,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
                 'keterangan' => 'USULAN (BARU)',
                 'created_at' => DateTimeInput(),
                 'created_by' => $this->session->userdata('user_name'),
+                'tahun' => $this->session->userdata('tahun_anggaran'),
             ];
         }
 
@@ -902,6 +1016,7 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
             'keterangan' => 'USULAN DIKIRIM',
             'created_at' => DateTimeInput(),
             'created_by' => $this->session->userdata('user_name'),
+            'tahun' => $this->session->userdata('tahun_anggaran'),
         ];
 
         $log = $this->historis->insert($info);
@@ -938,6 +1053,7 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
             'keterangan' => 'USULAN DI ROLLBACK - VERIFIKASI',
             'created_at' => DateTimeInput(),
             'created_by' => $this->session->userdata('user_name'),
+            'tahun' => $this->session->userdata('tahun_anggaran'),
         ];
 
         $log = $this->historis->insert($info);

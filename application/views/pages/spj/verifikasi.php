@@ -205,7 +205,7 @@
                                 <span class="input-group-addon">
                                     <span class="fa fa-calendar"></span>
                                 </span>
-                                <input type="text" name="tanggal" class="form-control date" id="tanggal" value="<?= $detail->tanggal_pembukuan ?>" required="required" <?= $disabled_tms ?>>
+                                <input type="text" name="tanggal" class="form-control date" id="tanggal" value="<?= format_tanggal($detail->tanggal_pembukuan) ?>" required="required" <?= $disabled_tms ?>>
                             </div>
                             <div class="form-group">
                                 <label for="is_realisasi"><b>Status Realisasi :</b></label>

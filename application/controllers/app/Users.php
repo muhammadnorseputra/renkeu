@@ -292,6 +292,7 @@ class Users extends CI_Controller
         if ($type === 'privilage') {
             $data = [
                 'fid_user' => $uid,
+                'updated_at' => DateTimeInput(),
                 'priv_default' => !empty($p['priv_default']) ? $p['priv_default'] : "N",
                 'priv_users' => !empty($p['priv_users']) ? $p['priv_users'] : "N",
                 'priv_settings' => !empty($p['priv_settings']) ? $p['priv_settings'] : "N",
@@ -305,6 +306,7 @@ class Users extends CI_Controller
                 'priv_anggarankinerja' => !empty($p['priv_anggarankinerja']) ? $p['priv_anggarankinerja'] : "N",
                 'priv_target_kinerja' => !empty($p['priv_target_kinerja']) ? $p['priv_target_kinerja'] : "N",
                 'priv_verify_kinerja' => !empty($p['priv_verify_kinerja']) ? $p['priv_verify_kinerja'] : "N",
+                'priv_payment' => !empty($p['priv_payment']) ? $p['priv_payment'] : "N",
             ];
             $tbl = 't_privilages';
             $cek_privilage = $this->users->get_privilages_count($tbl, $uid);

@@ -35,6 +35,7 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 		{ data: "userinfo", orderable: true },
 		{ data: "tgl_approve", orderable: true },
 		{ data: "status", orderable: false },
+		{ data: "status_bendahara", orderable: false },
 		{ data: "jumlah", orderable: false },
 		{ data: "action", width: "10%", orderable: false, searchable: false },
 	],

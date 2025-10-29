@@ -70,7 +70,7 @@ class ModelSelect2 extends CI_Model
         if (isset($ta)) {
             $this->db->where('p.tahun', $ta);
         }
-        if(isset($is_perubahan)) {
+        if (isset($is_perubahan)) {
             $this->db->where('pg.is_perubahan', $is_perubahan);
         }
         if (isset($sub_kegiatanid)) {

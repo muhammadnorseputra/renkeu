@@ -70,3 +70,25 @@ function indoSQL($date) {
 function formatToSQL($date) {
     return date("Y-m-d", strtotime($date));
 }
+
+/**
+ * Ubah format tanggal dari database (Y-m-d) ke format Indonesia (d-m-Y)
+ *
+ * @param string $date Tanggal dari database (contoh: 1999-05-27)
+ * @return string|null Tanggal dengan format baru atau null jika tidak valid
+ */
+if (! function_exists('format_tanggal')) {
+    function format_tanggal($date)
+    {
+        if (empty($date) || $date == '0000-00-00') {
+            return null;
+        }
+
+        $timestamp = strtotime($date);
+        if ($timestamp === false) {
+            return null;
+        }
+
+        return date('d-m-Y', $timestamp);
+    }
+}

@@ -125,7 +125,7 @@ class Target extends CI_Controller
 		$jenis_indikator = $this->crud->get('ref_jenis_indikators');
 		$data = [
 			'title' => 'Ubah Indikator',
-			'content' => 'pages/anggaran_kinerja/indikator_ubah',
+			'content' => 'pages/anggaran_kinerja/target_ubah',
 			'id_indikator' => $id,
 			'table' => $table,
 			'periode' => $periode,
@@ -243,10 +243,9 @@ class Target extends CI_Controller
 	public function hapus()
 	{
 		$id = $this->input->post('id');
-		$db = $this->crud->deleteWhere('ref_indikators', ['id' => $id]);
+		$db = $this->crud->deleteWhere('t_target', ['fid_indikator' => $id]);
 		if ($db) {
 			$this->crud->deleteWhere('t_realisasi', ['fid_indikator' => $id]);
-			$this->crud->deleteWhere('t_target', ['fid_indikator' => $id]);
 			$msg = 200;
 		} else {
 			$msg = 400;

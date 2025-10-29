@@ -45,7 +45,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                     <th rowspan="2" class="align-middle">Kode</th>
                     <th rowspan="2" class="align-middle">Tujuan & Sasaran</th>
                     <th rowspan="3" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
-                    <th rowspan="2" colspan="2" class="align-middle">Indikator Kinerja</th>
+                    <th rowspan="2" class="align-middle">Indikator Kinerja</th>
                     <th colspan="2">Target</th>
                     <th colspan="2">Aksi</th>
                 </tr>
@@ -66,7 +66,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                     $rowspan = "";
                     if ($indikator_tujuan->num_rows() > 0):
                         $indikator = $indikator_tujuan->result_array();
-                        $toEnd = count($indikator);
+                        $toEndTujuan = count($indikator);
                         foreach ($indikator as $key => $r) :
                             // Action Edit dan Hapus
                             if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
@@ -87,8 +87,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             }
 
                             // Rowspan untuk Indikator
-                            $rowspan = $toEnd++;
-                            if (0 === --$toEnd) { //last
+                            $rowspan = $toEndTujuan++;
+                            if (0 === --$toEndTujuan) { //last
                                 $tr .= "";
                             } elseif ($key === 0) { //first
                                 $tr .= "
@@ -113,15 +113,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                     endif;
                 ?>
                     <tr class="bg-warning text-dark">
-                        <td class="text-center" rowspan="<?= @$toEnd ?>"><?= $no_level_0++ ?></td>
-                        <td class="text-left" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama; ?></td>
-                        <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                            <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') : ?>
-                                <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $t->id ?>"
-                                    data-label="Tujuan" data-ref="ref_tujuan" data-toggle="tooltip" data-placement="top"
-                                    title="Tambah Indikator : <?= $t->nama ?>"><i class="fa fa-plus"></i></button>
-                            <?php endif; ?>
-                        </td>
+                        <td class="text-center" rowspan="<?= @$toEndTujuan ?>"><?= $no_level_0++ ?></td>
+                        <td class="text-left" colspan="2" rowspan="<?= @$toEndTujuan ?>"><?= $t->nama; ?></td>
                         <?= $tr; ?>
                     </tr>
                     <?php
@@ -133,7 +126,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                         $rowspan = "";
                         if ($indikator_sasaran->num_rows() > 0):
                             $indikator = $indikator_sasaran->result_array();
-                            $toEnd = count($indikator);
+                            $toEndSasaran = count($indikator);
                             foreach ($indikator as $key => $rs) :
                                 // Action Edit dan Hapus
                                 if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
@@ -154,8 +147,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 }
 
                                 // Rowspan untuk Indikator
-                                $rowspan = $toEnd++;
-                                if (0 === --$toEnd) { //last
+                                $rowspan = $toEndSasaran++;
+                                if (0 === --$toEndSasaran) { //last
                                     $tr .= "";
                                 } elseif ($key === 0) { //first
                                     $tr .= "
@@ -180,15 +173,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                         endif;
                     ?>
                         <tr class="bg-success text-white">
-                            <td class="text-center" rowspan="<?= @$toEnd ?>"><?= $no_level_0_1 ?></td>
-                            <td class="text-left text-wrap" rowspan="<?= @$toEnd ?>" colspan="2"><?= $s->nama; ?></td>
-                            <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                                <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') : ?>
-                                    <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator" data-id="<?= $s->id ?>"
-                                        data-label="Sasaran" data-ref="ref_sasaran" data-toggle="tooltip" data-placement="top"
-                                        title="Tambah Indikator : <?= $s->nama ?>"><i class="fa fa-plus"></i></button>
-                                <?php endif; ?>
-                            </td>
+                            <td class="text-center" rowspan="<?= @$toEndSasaran ?>"><?= $no_level_0_1 ?></td>
+                            <td class="text-left text-wrap" rowspan="<?= @$toEndSasaran ?>" colspan="2"><?= $s->nama; ?></td>
                             <?= $tr; ?>
                         </tr>
                         <?php
@@ -200,7 +186,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             $rowspan = "";
                             if ($indikator_program->num_rows() > 0):
                                 $indikator = $indikator_program->result_array();
-                                $toEnd = count($indikator);
+                                $toEndProgram = count($indikator);
                                 foreach ($indikator as $key => $ip) :
 
                                     if ($this->session->userdata('role') === 'USER') :
@@ -219,8 +205,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                         $indikator_input = "~";
                                     }
 
-                                    $rowspan = $toEnd++;
-                                    if (0 === --$toEnd) { //last
+                                    $rowspan = $toEndProgram++;
+                                    if (0 === --$toEndProgram) { //last
                                         $tr .= "";
                                     } elseif ($key === 0) { //first
                                         $tr .= "
@@ -245,17 +231,9 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             endif;
                         ?>
                             <tr class="bg-secondary text-white">
-                                <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
-                                <td class="align-middle bg-success border-success" rowspan="<?= @$toEnd ?>"></td>
-                                <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?></td>
-                                <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                                    <?php if ($this->session->userdata('role') === 'USER') : ?>
-                                        <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator"
-                                            data-id="<?= $program->id ?>" data-label="Program" data-ref="ref_programs"
-                                            data-toggle="tooltip" data-placement="top"
-                                            title="Tambah Indikator : <?= $program->nama ?>"><i class="fa fa-plus"></i></button>
-                                    <?php endif; ?>
-                                </td>
+                                <td class="text-center align-middle" rowspan="<?= @$toEndProgram ?>"><?= $no_level_1 ?></td>
+                                <td class="align-middle bg-success border-success" rowspan="<?= @$toEndProgram ?>"></td>
+                                <td class="align-middle" rowspan="<?= @$toEndProgram ?>"><?= $program->nama ?></td>
                                 <?= $tr ?>
                             </tr>
                             <?php
@@ -272,7 +250,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 $rowspan = "";
                                 if ($indikator_kegiatan->num_rows() > 0):
                                     $indikator = $indikator_kegiatan->result_array();
-                                    $toEnd = count($indikator);
+                                    $toEndKegiatan = count($indikator);
                                     foreach ($indikator as $key => $ik) :
                                         if ($this->session->userdata('role') === 'USER') :
                                             $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $ik['indikator_id'] . '" data-label="Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
@@ -290,8 +268,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             $indikator_input = "~";
                                         }
 
-                                        $rowspan = $toEnd++;
-                                        if (0 === --$toEnd) { //last
+                                        $rowspan = $toEndKegiatan++;
+                                        if (0 === --$toEndKegiatan) { //last
                                             $tr .= "";
                                         } elseif ($key === 0) { //first
                                             $tr .= "
@@ -312,22 +290,14 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     endforeach;
                                 else:
                                     $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
-                                        <tr></tr>";
+                                                <tr></tr>";
                                 endif;
                             ?>
                                 <tr class="bg-info text-white">
-                                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                                    <td class="text-center align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $no_level_1 . "." . $no_level_2 ?>
                                     </td>
-                                    <td class="align-middle bg-success border-success" rowspan="<?= @$toEnd ?>"></td>
-                                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
-                                    <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                                        <?php if ($this->session->userdata('role') === 'USER') : ?>
-                                            <button class="btn btn-sm btn-light m-0 rounded" id="TambahIndikator"
-                                                data-id="<?= $kegiatan->id ?>" data-label="Kegiatan" data-ref="ref_kegiatans"
-                                                data-toggle="tooltip" data-placement="top"
-                                                title="Tambah Indikator : <?= $kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
-                                        <?php endif; ?>
-                                    </td>
+                                    <td class="align-middle bg-success border-success" rowspan="<?= @$toEndKegiatan ?>"></td>
+                                    <td class="align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $kegiatan->nama ?></td>
                                     <?= $tr ?>
                                 </tr>
                                 <?php
@@ -339,7 +309,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     $rowspan = "";
                                     if ($indikator_sub_kegiatan->num_rows() > 0):
                                         $indikator = $indikator_sub_kegiatan->result_array();
-                                        $toEnd = count($indikator);
+                                        $toEndSubKegiatan = count($indikator);
                                         foreach ($indikator as $key => $isk) :
                                             if ($this->session->userdata('role') === 'USER') :
                                                 $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $isk['indikator_id'] . '" data-label="Sub Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
@@ -357,8 +327,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                                 $indikator_input = "~";
                                             }
 
-                                            $rowspan = $toEnd++;
-                                            if (0 === --$toEnd) { //last
+                                            $rowspan = $toEndSubKegiatan++;
+                                            if (0 === --$toEndSubKegiatan) { //last
                                                 $tr .= "";
                                             } elseif ($key === 0) { //first
                                                 $tr .= "
@@ -383,19 +353,11 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     endif;
                                 ?>
                                     <tr>
-                                        <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                                        <td class="text-center align-middle" rowspan="<?= @$toEndSubKegiatan ?>">
                                             <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
 
-                                        <td class="align-middle bg-success border-bottom-0" rowspan="<?= @$toEnd ?>"></td>
-                                        <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
-                                        <td class="align-middle text-center" rowspan="<?= @$toEnd ?>">
-                                            <?php if ($this->session->userdata('role') === 'USER') : ?>
-                                                <button class="btn btn-sm btn-primary m-0 rounded" id="TambahIndikator"
-                                                    data-id="<?= $sub_kegiatan->id ?>" data-label="Sub Kegiatan" data-ref="ref_sub_kegiatans"
-                                                    data-toggle="tooltip" data-placement="top"
-                                                    title="Tambah Indikator : <?= $sub_kegiatan->nama ?>"><i class="fa fa-plus"></i></button>
-                                            <?php endif; ?>
-                                        </td>
+                                        <td class="align-middle bg-success border-bottom-0" rowspan="<?= @$toEndSubKegiatan ?>"></td>
+                                        <td class="align-middle" rowspan="<?= @$toEndSubKegiatan ?>"><?= $sub_kegiatan->nama ?></td>
                                         <?= $tr ?>
                                     </tr>
                                 <?php

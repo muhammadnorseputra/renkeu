@@ -1,11 +1,11 @@
-<?php  
-if($detail->is_status === 'ENTRI') {
+<?php
+if ($detail->is_status === 'ENTRI') {
     $status = '<span class="badge p-2 badge-secondar pull-right"><i class="fa fa-edit mr-2"></i> ENTRI</span>';
-} elseif($detail->is_status === 'VERIFIKASI' || $detail->is_status === 'VERIFIKASI_ADMIN') {
+} elseif ($detail->is_status === 'VERIFIKASI' || $detail->is_status === 'VERIFIKASI_ADMIN') {
     $status = '<span class="badge p-2 badge-primary text-white pull-right"><i class="fa fa-lock mr-2"></i> VERIFIKASI</span>';
-} elseif($detail->is_status === 'APPROVE') {
+} elseif ($detail->is_status === 'APPROVE') {
     $status = '<span class="badge p-2 badge-success text-white pull-right"><i class="fa fa-check-circle mr-2"></i> APPROVE</span>';
-} elseif($detail->is_status === 'BTL') {
+} elseif ($detail->is_status === 'BTL') {
     $status = '<span class="badge p-2 badge-danger text-white pull-right "><i class="fa fa-close mr-2"></i> BTL</span>';
 } else {
     $status = '<span class="badge p-2 badge-danger text-white  pull-right"><i class="fa fa-close mr-2"></i> TMS</span>';
@@ -63,20 +63,20 @@ if($detail->is_status === 'ENTRI') {
                 <td class="bg-light text-dark text-center" colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
             </tr>
             <tr>
-                    <td>
-                        Kode Rekening
-                    </td>
-                    <td colspan="2">
-                        <?= $detail->koderek ?>
-                    </td>
+                <td>
+                    Kode Rekening
+                </td>
+                <td colspan="2">
+                    <?= $detail->koderek ?>
+                </td>
             </tr>
             <tr>
-                    <td>
-                        SPJ Bulan
-                    </td>
-                    <td colspan="2">
-                        <?= bulan($detail->fid_periode) ?> / <?= $detail->tahun ?>
-                    </td>
+                <td>
+                    SPJ Bulan
+                </td>
+                <td colspan="2">
+                    <?= bulan($detail->fid_periode) ?> / <?= $detail->tahun ?>
+                </td>
             </tr>
             <tr>
                 <td>
@@ -91,7 +91,7 @@ if($detail->is_status === 'ENTRI') {
                     Jumlah
                 </td>
                 <td colspan="2">
-                <h5>Rp.    <b><?= nominal($detail->jumlah) ?></b></h5>
+                    <h5>Rp. <b><?= nominal($detail->jumlah) ?></b></h5>
                 </td>
             </tr>
             <tr>
@@ -105,42 +105,69 @@ if($detail->is_status === 'ENTRI') {
                     <?= $detail->berkas_link ?> <br>
                 </td>
             </tr>
-            <?php if($detail->is_status  !== 'APPROVE'): ?>
-            <tr>
-                <td class="bg-light text-dark text-center" colspan="3">Alasan <?= $detail->is_status ?></td>
-            </tr>
-            <tr>
-                <td colspan="3" class="text-center bg-danger text-white">
-                    <b><?= $detail->catatan ?></b>
-                </td>
-            </tr>
+            <?php if ($detail->is_status  !== 'APPROVE'): ?>
+                <tr>
+                    <td class="bg-light text-dark text-center" colspan="3">Alasan <?= $detail->is_status ?></td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-center bg-danger text-white">
+                        <b><?= $detail->catatan ?></b>
+                    </td>
+                </tr>
             <?php endif; ?>
             <tr>
                 <td class="bg-light text-dark text-center" colspan="3">Detail Pengguna</td>
             </tr>
             <tr>
                 <td colspan="3">
-                    
+
                     <div class="row">
-                        <div class="col-md-4 border-right">
+                        <div class="col-md-3 border-right">
                             <?php $userusul = $this->users->profile_username($detail->entri_by)->row(); ?>
                             Dientri oleh : <?= $userusul->nama ?> (<?= strtoupper($detail->entri_by) ?>) <br>
-                            Tanggal / Jam : <?= longdate_indo(substr($detail->entri_at,0,10)) ?> / <?= substr($detail->entri_at,10,6) ?> WITA
+                            Tanggal / Jam : <?= longdate_indo(substr($detail->entri_at, 0, 10)) ?> / <?= substr($detail->entri_at, 10, 6) ?> WITA
                         </div>
-                        <div class="col-md-4 border-right">
+                        <div class="col-md-3 border-right">
                             <?php $userusul = $this->users->profile_username($detail->verify_by)->row(); ?>
                             Diverifikasi oleh : <?= $userusul->nama ?> (<?= strtoupper($detail->verify_by) ?>) <br>
-                            Tanggal / Jam : <?= longdate_indo(substr($detail->verify_at,0,10)) ?> / <?= substr($detail->verify_at,10,6) ?> WITA
+                            Tanggal / Jam : <?= longdate_indo(substr($detail->verify_at, 0, 10)) ?> / <?= substr($detail->verify_at, 10, 6) ?> WITA
                         </div>
-                        <?php if($detail->is_status  === 'APPROVE'): ?>
-                        <div class="col-md-4">
-                            <?php $userusul = $this->users->profile_username($detail->approve_by)->row(); ?>
-                            Diapprove oleh : <?= $userusul->nama ?> (<?= strtoupper($detail->approve_by) ?>) <br>
-                            Tanggal / Jam : <?= longdate_indo(substr($detail->approve_at,0,10)) ?> / <?= substr($detail->approve_at,10,6) ?> WITA
-                        </div>
+                        <?php if ($detail->is_status  === 'APPROVE'): ?>
+                            <div class="col-md-3 border-right">
+                                <?php $userusul = $this->users->profile_username($detail->approve_by)->row(); ?>
+                                Diapprove oleh : <?= $userusul->nama ?> (<?= strtoupper($detail->approve_by) ?>) <br>
+                                Tanggal / Jam : <?= longdate_indo(substr($detail->approve_at, 0, 10)) ?> / <?= substr($detail->approve_at, 10, 6) ?> WITA
+                            </div>
+                        <?php endif; ?>
+                        <?php if (@in_array($payment->status, ['CAIR', 'PENDING', 'PENDING - PERBAIKAN', 'PERBAIKAN', 'TOLAK'])): ?>
+                            <div class="col-md-3">
+                                <?php $userusul = $this->users->profile_username($payment->approver_by)->row(); ?>
+                                Diverifikasi Bendahara : <?= $userusul->nama ?? "-" ?> (<?= strtoupper($payment->approver_by ?? "-") ?>) <br>
+                                <?php
+                                switch ($payment->status):
+                                    case "CAIR":
+                                        echo 'Tanggal / Jam : ' . longdate_indo(substr($payment->cair_at, 0, 10)) . ' / ' . substr($payment->cair_at, 10, 6) . ' WITA';
+                                        break;
+                                    case "PENDING":
+                                        echo 'Tanggal / Jam : ' . longdate_indo(substr($payment->pending_at, 0, 10)) . ' / ' . substr($payment->pending_at, 10, 6) . ' WITA';
+                                        break;
+                                    case "PERBAIKAN":
+                                    case "PENDING - PERBAIKAN":
+                                        echo 'Tanggal / Jam : ' . longdate_indo(substr($payment->perbaikan_at, 0, 10)) . ' / ' . substr($payment->perbaikan_at, 10, 6) . ' WITA';
+                                        break;
+                                    case "TOLAK":
+                                        echo 'Tanggal / Jam : ' . longdate_indo(substr($payment->tolak_at, 0, 10)) . ' / ' . substr($payment->tolak_at, 10, 6) . ' WITA';
+                                        break;
+                                    default:
+                                        echo '-';
+                                        break;
+                                endswitch;
+                                ?>
+
+                            </div>
                         <?php endif; ?>
                     </div>
-                    
+
                 </td>
             </tr>
 

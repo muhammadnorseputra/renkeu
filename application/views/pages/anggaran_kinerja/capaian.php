@@ -54,8 +54,8 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                 <?= form_close(); ?>
             </div>
         </div>
-        <table class="table table-sm table-bordered table-responsive-md">
-            <thead class="bg-light top-0" style="position: sticky; top: 0; z-index: 1;">
+        <table class="table table-responsive table-sm table-bordered table-responsive-md no-wrap">
+            <thead class="bg-light top-0">
                 <tr class="text-center">
                     <th rowspan="2" class="align-middle">No</th>
                     <th rowspan="2" class="align-middle">Tujuan & Sasaran</th>
@@ -86,10 +86,10 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                 foreach ($tujuan->result() as $t) :
                     $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id], $this->session->userdata('part'));
                     $tr = "";
-                    $rowspan = 1;
+                    $rowspan = "";
                     if ($indikator_tujuan->num_rows() > 0):
                         $indikator = $indikator_tujuan->result_array();
-                        $toEnd = count($indikator);
+                        $toEndTujuan = count($indikator);
                         foreach ($indikator as $key => $r) :
                             // Target Kinerja
                             if ($r['persentase'] === "0") {
@@ -139,8 +139,8 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                 $ButtonInput = '';
                             endif;
 
-                            $rowspan = $toEnd++;
-                            if (0 === --$toEnd) { //last
+                            $rowspan = $toEndTujuan++;
+                            if (0 === --$toEndTujuan) { //last
                                 $tr .= "";
                             } elseif ($key === 0) { //first
                                 $tr .= "
@@ -169,23 +169,13 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                         endforeach;
                     else:
                         $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
+                                <td colspan='11' rowspan='" . $rowspan . "'></td> 
                                 <tr></tr>";
                     endif;
                 ?>
                 <tr class="bg-warning">
-                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
-                    <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $t->nama ?> </td>
+                    <td class="text-center align-middle" rowspan="<?= @$toEndTujuan ?>"><?= $no_level_0 ?></td>
+                    <td class="align-middle" colspan="2" rowspan="<?= @$toEndTujuan ?>"><?= $t->nama ?> </td>
                     <?= $tr ?>
                 </tr>
                 <?php
@@ -196,7 +186,7 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                         $tr = "";
                         if ($indikator_sasaran->num_rows() > 0):
                             $indikator = $indikator_sasaran->result_array();
-                            $toEnd = count($indikator);
+                            $toEndSasaran = count($indikator);
                             foreach ($indikator as $key => $r) :
                                 // Target Kinerja
                                 if ($r['persentase'] === "0") {
@@ -246,8 +236,8 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                     $ButtonInput = '';
                                 endif;
 
-                                $rowspan = $toEnd++;
-                                if (0 === --$toEnd) { //last
+                                $rowspan = $toEndSasaran++;
+                                if (0 === --$toEndSasaran) { //last
                                     $tr .= "";
                                 } elseif ($key === 0) { //first
                                     $tr .= "
@@ -276,23 +266,13 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                             endforeach;
                         else:
                             $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
+                                <td colspan='11' rowspan='" . $rowspan . "'></td>
                                 <tr></tr>";
                         endif;
                     ?>
                 <tr class="bg-success text-white">
-                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_0 ?></td>
-                    <td class="align-middle" colspan="2" rowspan="<?= @$toEnd ?>"><?= $s->nama ?> </td>
+                    <td class="text-center align-middle" rowspan="<?= @$toEndSasaran ?>"><?= $no_level_0 ?></td>
+                    <td class="align-middle" colspan="2" rowspan="<?= @$toEndSasaran ?>"><?= $s->nama ?> </td>
                     <?= $tr ?>
                 </tr>
                 <?php
@@ -301,9 +281,10 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                         foreach ($programs->result() as $program) :
                             $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id], null);
                             $tr = "";
+                            $rowspan = "";
                             if ($indikator_program->num_rows() > 0) :
                                 $indikator = $indikator_program->result_array();
-                                $toEnd = count($indikator);
+                                $toEndProgram = count($indikator);
                                 foreach ($indikator as $key => $ip) :
                                     // Target Kinerja
                                     if ($ip['persentase'] === "0") {
@@ -353,8 +334,8 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                         $ButtonInput = "";
                                     endif;
 
-                                    $rowspan = $toEnd++;
-                                    if (0 === --$toEnd) { //last
+                                    $rowspan = $toEndProgram++;
+                                    if (0 === --$toEndProgram) { //last
                                         $tr .= "";
                                     } elseif ($key === 0) { //first
                                         $tr .= "
@@ -385,24 +366,14 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                 endforeach;
                             else:
                                 $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
+                                <td colspan='11' rowspan='" . $rowspan . "'></td>
                                 <tr></tr>";
                             endif;
                         ?>
                 <tr class="bg-secondary text-white">
-                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 ?></td>
-                    <td rowspan="<?= @$toEnd ?>"></td>
-                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $program->nama ?> </td>
+                    <td class="text-center align-middle" rowspan="<?= @$toEndProgram ?>"><?= $no_level_1 ?></td>
+                    <td rowspan="<?= @$toEndProgram ?>"></td>
+                    <td class="align-middle" rowspan="<?= @$toEndProgram ?>"><?= $program->nama ?> </td>
                     <?= $tr ?>
                 </tr>
                 <?php
@@ -416,9 +387,10 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                             foreach ($kegiatans->result() as $kegiatan) :
                                 $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id], null);
                                 $tr = "";
+                                $rowspan = "";
                                 if ($indikator_kegiatan->num_rows() > 0) :
                                     $indikator_keg = $indikator_kegiatan->result_array();
-                                    $toEnd = count($indikator_keg);
+                                    $toEndKegiatan = count($indikator_keg);
                                     foreach ($indikator_keg as $key => $ik) :
                                         // Target
                                         if ($ik['persentase'] === "0") {
@@ -464,8 +436,8 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                             $ButtonInput = "";
                                         endif;
 
-                                        $rowspan = $toEnd++;
-                                        if (0 === --$toEnd) { //last
+                                        $rowspan = $toEndKegiatan++;
+                                        if (0 === --$toEndKegiatan) { //last
                                             $tr .= "";
                                         } elseif ($key === 0) { //first
                                             $tr .= "
@@ -496,25 +468,15 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                     endforeach;
                                 else:
                                     $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
+                                <td colspan='11' rowspan='" . $rowspan . "'></td>
                                 <tr></tr>";
                                 endif;
                             ?>
                 <tr class="bg-info text-white">
-                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>"><?= $no_level_1 . "." . $no_level_2 ?>
+                    <td class="text-center align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $no_level_1 . "." . $no_level_2 ?>
                     </td>
-                    <td rowspan="<?= @$toEnd ?>"></td>
-                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $kegiatan->nama ?></td>
+                    <td rowspan="<?= @$toEndKegiatan ?>"></td>
+                    <td class="align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $kegiatan->nama ?></td>
                     <?= $tr ?>
                 </tr>
                 <?php
@@ -523,9 +485,10 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
                                     $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id], null);
                                     $tr = "";
+                                    $rowspan = "";
                                     if ($indikator_sub_kegiatan->num_rows() > 0) :
                                         $indikator_sub = $indikator_sub_kegiatan->result_array();
-                                        $toEnd = count($indikator_sub);
+                                        $toEndSubKegiatan = count($indikator_sub);
                                         foreach ($indikator_sub as $key => $isk) :
                                             // Target
                                             if ($isk['persentase'] === "0") {
@@ -573,12 +536,12 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                                 $ButtonInput = "";
                                             endif;
 
-                                            $rowspan = $toEnd++;
-                                            if (0 === --$toEnd) { //last
+                                            $rowspan = $toEndSubKegiatan++;
+                                            if (0 === --$toEndSubKegiatan) { //last
                                                 $tr .= "";
                                             } elseif ($key === 0) { //first
                                                 $tr .= "
-                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle' nowrap>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($target_anggaran) . "</td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($realisasi_anggaran) . "</td>
@@ -592,7 +555,7 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                             } else { //middle
                                                 $tr .= "
                                     <tr>
-                                        <td class='align-middle'>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
+                                        <td class='align-middle' nowrap>" . $isk['nama'] . " <i class='" . $isk['color'] . "'>(" . $isk['jenis_indikator'] . ")</i></td>
                                         <td class='align-middle text-center'>" . $indikator_input_view . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi_view . "</td>
                                         <td class='align-middle text-center'>" . $capaian_kinerja . " (%)</td>
@@ -605,25 +568,15 @@ $periode_end = isset($_GET['periode_end']) ? $_GET['periode_end'] : $this->spj->
                                         endforeach;
                                     else:
                                         $tr .= "
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
-                                <td rowspan='" . $rowspan . "'></td>
+                                <td colspan='11' rowspan='" . $rowspan . "'></td>
                                 <tr></tr>";
                                     endif;
                                 ?>
                 <tr>
-                    <td class="text-center align-middle" rowspan="<?= @$toEnd ?>">
+                    <td class="text-center align-middle" rowspan="<?= @$toEndSubKegiatan ?>">
                         <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                    <td rowspan="<?= @$toEnd ?>"></td>
-                    <td class="align-middle" rowspan="<?= @$toEnd ?>"><?= $sub_kegiatan->nama ?></td>
+                    <td rowspan="<?= @$toEndSubKegiatan ?>"></td>
+                    <td class="align-middle" rowspan="<?= @$toEndSubKegiatan ?>"><?= $sub_kegiatan->nama ?></td>
                     <?= $tr ?>
                 </tr>
 

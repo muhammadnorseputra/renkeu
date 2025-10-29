@@ -77,6 +77,16 @@ $(function () {
 		await tableVerifikasiSpjSelesai.ajax.reload();
 	});
 
+	$(document).on("click", "#myTab a[href='#payment']", async function (e) {
+		let _ = $(this),
+			href = _.attr("href");
+		// console.log(_.attr('href'))
+		const url = new URL(window.location.href);
+		url.searchParams.set("tab", href);
+		history.pushState({}, "", url);
+		await tabelPayment.ajax.reload();
+	});
+
 	var option = {
 		valueNames: ["nama"],
 		searchColumns: ["nama", "kode"],

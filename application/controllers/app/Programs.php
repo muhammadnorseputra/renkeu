@@ -224,19 +224,16 @@ class Programs extends CI_Controller
     public function program()
     {
         $db = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
-        if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') :
-            $btnAdd = '<div>
+        $btnAdd = '<div class="float-right">
+        <a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/program') . '"><i class="fa fa-download"></i> Export</a>
             <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
-            <a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/program') . '"><i class="fa fa-download"></i> Export</a>
             </div>
         ';
-        else :
-            $btnAdd = '';
-        endif;
         $search = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
         $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
+        $btnOptions = '<div class="col-md-3">' . $btnAdd . '</div>';
 
-        $html = '<div id="listProgram"><div class="row">' . $search . $pagging . $btnAdd . "</div>";
+        $html = '<div id="listProgram"><div class="row">' . $search . $pagging . $btnOptions . "</div>";
         $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action table-bordered">';
         $html .= '<thead>
                     <tr>
@@ -1679,13 +1676,21 @@ class Programs extends CI_Controller
             ->get('t_pagu_limit')
             ->row();
 
-        $getTotalPaguAwal = $this->crud->getWhere('t_pagu', ['fid_uraian' => $id, 'is_perubahan' => $this->session->userdata('is_perubahan')])->row()->total_pagu_awal ?? 0;
+        $getTotalPaguAwal = $this->crud->getWhere('t_pagu', ['fid_uraian' => $id, 'is_perubahan' => $this->session->userdata('is_perubahan'), 'tahun' => $this->session->userdata('tahun_anggaran')])->row()->total_pagu_awal ?? 0;
 
-        $sisaLimit = ($getTotalPaguAwal - $getTotalLimit->total_limit);
+        $realisasi = $this->db->select('id,SUM(jumlah) as total_realisasi')
+            ->where('fid_uraian', $id)
+            ->where('tahun', $this->session->userdata('tahun_anggaran'))
+            ->where('is_status', 'SELESAI')
+            ->get('spj')
+            ->row();
+
+        $sisaLimit = ($getTotalPaguAwal - $getTotalLimit->total_limit - $realisasi->total_realisasi);
 
         return [
             'total_pagu_awal' => (int) $getTotalPaguAwal,
             'total_limit' => $getTotalLimit,
+            'total_realisasi' => (int) $realisasi->total_realisasi,
             'sisa_limit' => (int) $sisaLimit
         ];
     }
@@ -1699,7 +1704,8 @@ class Programs extends CI_Controller
             'message' => 'Sisa Limit Anggaran',
             'total_pagu_awal' => (int) $data['total_pagu_awal'],
             'total_limit' => $data['total_limit'],
-            'sisa_limit' => (int) $data['sisa_limit']
+            'sisa_limit' => (int) $data['sisa_limit'],
+            'total_realisasi' => (int) $data['total_realisasi']
         ]);
     }
 
