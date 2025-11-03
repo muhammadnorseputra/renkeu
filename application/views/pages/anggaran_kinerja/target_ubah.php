@@ -1,0 +1,183 @@
+<div class="row">
+    <div class="col-md-8">
+        <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikatorUbah', 'data-parsley-validate' => ''], ['id' => $id_indikator, 'periode_id' => $periode_id]); ?>
+        <div class="form-group">
+            <label class="col-form-label label-align" for="tahun">Target Tahun</label>
+            <select name="tahun" id="tahun" class="form-control" required="required" readonly data-parsley-errors-container="#help-block-tahun">
+                <option value="">Pilih Tahun</option>
+                <?php
+                $year = date('Y');
+                for ($i = $year; $i <= $year + 3; $i++) {
+                    $selected = date('Y') == $i ? 'selected' : 'disabled';
+                    echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+                }
+                ?>
+            </select>
+            <div id="help-block-tahun" class="row col-md-12"></div>
+        </div>
+        <div class="form-group">
+            <label for="periode">Periode</label>
+            <input name="periode" id="periode" class="form-control" value="<?= bulan($periode_id) ?>" readonly>
+        </div>
+        <div class="form-group">
+            <label for="nama">Nama Indikator <span class="text-danger">*</span></label>
+            <textarea name="nama" id="nama" class="form-control" rows="5" readonly required><?= $row->nama ?></textarea>
+        </div>
+        <div class="form-group">
+            <label for="bidang">Penanggung Jawab <span class="text-danger">*</span></label>
+            <select name="bidang[]" id="bidang" multiple="multiple" required data-parsley-errors-container="#help-block-bidang"></select>
+            <div id="help-block-bidang"></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="is_jenis">Jenis Output <span class="text-danger">*</span></label>
+                    <select name="is_jenis" id="is_jenis" class="form-control" required>
+                        <option value="">-- Pilih Jenis Output --</option>
+                        <option value="1" <?= $row->is_jenis === "1" ? "selected" : ""; ?>>Persentase (%)</option>
+                        <option value="2" <?= $row->is_jenis === "2" ? "selected" : "" ?>>Jumlah Eviden</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3" id="formPersentase" style="display:none;">
+                <div class="form-group">
+                    <label for="persentase">Peserntase % <span class="text-danger">*</span></label>
+                    <input type="text" name="persentase" id="persentase" class="form-control"
+                        data-parsley-pattern="^\d+(\.\d+)?$"
+                        data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
+                        required
+                        value="<?= $row->persentase ?>">
+                </div>
+            </div>
+            <div class="col-md-3" id="formEviden" style="display:none;">
+                <div class="form-group">
+                    <label for="jumlah_eviden">Jumlah Eviden <span class="text-danger">*</span></label>
+                    <input type="text" name="jumlah_eviden" id="jumlah_eviden" class="form-control"
+                        data-parsley-pattern="^\d+(\.\d+)?$"
+                        data-parsley-pattern-message="Hanya boleh angka desimal dengan titik."
+                        required
+                        value="<?= $row->eviden_jumlah ?>">
+                </div>
+            </div>
+            <div class="col-md-6" id="formKeteranganEviden" style="display:none;">
+                <div class="form-group">
+                    <label for="keterangan_eviden">Keterangan Eviden <span class="text-danger">*</span></label>
+                    <input type="text" name="keterangan_eviden" id="keterangan_eviden" class="form-control" required value="<?= $row->eviden_jenis ?>">
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="form-group">
+            <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/target') ?>'"><i class="fa fa-close mr-2"></i>Batal</button>
+            <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+        </div>
+        <?= form_close(); ?>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        let $form = $("form#formIndikatorUbah");
+        $form.on("submit", function(e) {
+            e.preventDefault();
+            $data = $(this).serialize();
+            if ($(this).parsley().isValid()) {
+                $.post(
+                    $(this).attr('action'),
+                    $data,
+                    (response) => {
+                        if (response === 200) {
+                            window.location.href = `${_uri}/app/target`;
+                        }
+                    },
+                    "json"
+                );
+            }
+        });
+
+        // seleksi jenis output
+        let isJenis = $form.find("select[name='is_jenis']");
+
+        // Fungsi untuk show/hide + atur required
+        function toggleJenisForm(val) {
+            if (val === "1") {
+                // Show form persentase
+                $("#formPersentase").show();
+                $("#formPersentase input").attr("required", true);
+
+                // Hide form eviden
+                $("#formEviden").hide();
+                $("#formEviden input").removeAttr("required");
+                $("#formKeteranganEviden").hide();
+                $("#formKeteranganEviden input").removeAttr("required");
+
+                // Set selected
+                isJenis.val("1");
+            } else if (val === "2") {
+                // Show form eviden
+                $("#formEviden").show();
+                $("#formEviden input").attr("required", true);
+                $("#formKeteranganEviden").show();
+                $("#formKeteranganEviden input").attr("required", true);
+
+                // Hide form persentase
+                $("#formPersentase").hide();
+                $("#formPersentase input").removeAttr("required");
+
+                // Set selected
+                isJenis.val("2");
+            } else {
+                // Semua hide & non-required
+                $("#formPersentase, #formEviden, #formKeteranganEviden").hide();
+                $("#formPersentase input, #formEviden input, #formKeteranganEviden input").removeAttr("required");
+            }
+        }
+
+        // Event change
+        isJenis.on("change", function() {
+            toggleJenisForm($(this).val());
+        });
+
+        // Jalankan saat page load untuk set kondisi awal dari PHP
+        toggleJenisForm(isJenis.val());
+
+        // select part
+        const selectedBidang = <?= json_encode(explode(",", $row->fid_part)); ?>;
+
+        // Manually add selected options to the select (in case they are not loaded yet)
+        selectedBidang.forEach(function(id) {
+            const option = new Option(id, id, true, true);
+            $('#bidang').append(option).trigger('change');
+        });
+
+        $('select#bidang').select2({
+            placeholder: 'Pilih Bidang',
+            allowClear: false,
+            tags: true,
+            tokenSeparators: [',', ' '],
+            // maximumSelectionLength: 1,
+            width: "100%",
+            // theme: "classic",
+            // dropdownParent: MODAL_KEGIATAN,
+            ajax: {
+                delay: 350,
+                method: 'post',
+                url: '<?= base_url("app/programs/getParts") ?>',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: params.term, // search term
+                    };
+                },
+                cache: false,
+                processResults: function(data) {
+                    // Transforms the top-level key of the response object from 'items' to 'results'
+                    return {
+                        results: data
+                    };
+                }
+                // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            }
+        });
+    })
+</script>
