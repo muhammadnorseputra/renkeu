@@ -51,12 +51,13 @@
                         <?php if ($this->session->userdata('is_valid_profile') === "1"): ?>
                             <ul class="nav child_menu">
                                 <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN', 'USER'])): ?>
+                                <li><a href="<?= base_url('app/target/perjanjian_kerja') ?>" class="loadContent" title="Target">Dokumen PK</a></li>
                                     <li><a href="<?= base_url('app/indikator') ?>" class="loadContent" title="Indikator">Indikator</a></li>
                                     <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target">Target</a></li>
                                 <?php endif; ?>
                                 <li><a href="<?= base_url('app/realisasi') ?>" class="loadContent" title="Realisasi Indikator">Realisasi</a></li>
                                 <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN'])): ?>
-                                <li><a href="<?= base_url('app/capaian') ?>" class="loadContent" title="Capaian Indikator">Capaian</a></li>
+                                    <li><a href="<?= base_url('app/capaian') ?>" class="loadContent" title="Capaian Indikator">Capaian</a></li>
                                     <li><a href="<?= base_url('app/capaian/laporan') ?>" class="loadContent" title="Target Laporan">Laporan Tahunan</a></li>
                                 <?php endif ?>
                             </ul>

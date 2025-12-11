@@ -58,7 +58,7 @@ if (urldecode($tab) === '#payment') {
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-edit"></i></div>
             <div class="count">Input - Perbaikan</div>
-            <h3><?= $data['jml_spj_perbaikan']; ?></h3>
+            <h3 class="text-warning"><?= $data['jml_spj_perbaikan']; ?></h3>
             <p>Jumlah SPJ Diusulkan Dalam Perbaikan</p>
         </div>
     </div>
@@ -68,7 +68,7 @@ if (urldecode($tab) === '#payment') {
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-clock-o"></i></div>
             <div class="count">Proses - Verifikasi</div>
-            <h3><?= $data['jml_spj_verifikasi']; ?></h3>
+            <h3 class="text-primary"><?= $data['jml_spj_verifikasi']; ?></h3>
             <p>Jumlah SPJ Dalam Proses Verifikasi</p>
         </div>
     </div>
@@ -78,7 +78,7 @@ if (urldecode($tab) === '#payment') {
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-check-circle"></i></div>
             <div class="count">Proses - Approval</div>
-            <h3><?= $data['jml_spj_verifikasi_admin']; ?></h3>
+            <h3 class="text-success"><?= $data['jml_spj_verifikasi_admin']; ?></h3>
             <p>Jumlah SPJ Dalam Proses Verifikasi Admin</p>
         </div>
     </div>
@@ -88,7 +88,7 @@ if (urldecode($tab) === '#payment') {
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-university"></i></div>
             <div class="count">Proses - Pending</div>
-            <h3><?= $data['jml_spj_verifikasi_admin']; ?></h3>
+            <h3 class="text-info"><?= $data['jml_spj_verifikasi_admin']; ?></h3>
             <p>Jumlah SPJ Dalam Proses Pencairan</p>
         </div>
     </div>

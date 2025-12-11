@@ -36,10 +36,12 @@ class Spj extends CI_Controller
 
     public function index()
     {
-        $jmlSpjEntri = $this->crud->getWhere('spj', ['is_status' => 'ENTRI', 'catatan' => null, 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
-        $jmlSpjEntriPerbaikan = $this->crud->getWhere('spj', ['is_status' => 'ENTRI', 'catatan !=' => null, 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
-        $jmlSpjVerfikasi = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI', 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
-        $jmlSpjApprove = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI_ADMIN', 'fid_part' => $this->session->userdata('part')])->num_rows() ?? 0;
+        $jmlSpjEntri = $this->crud->getWhere('spj', ['is_status' => 'ENTRI', 'catatan' => null, 'fid_part' => $this->session->userdata('part'), 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows() ?? 0;
+
+        $jmlSpjEntriPerbaikan = $this->crud->getWhere('spj', ['is_status' => 'ENTRI', 'catatan !=' => null, 'fid_part' => $this->session->userdata('part'), 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows() ?? 0;
+        $jmlSpjVerfikasi = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI', 'fid_part' => $this->session->userdata('part'), 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows() ?? 0;
+        $jmlSpjApprove = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI_ADMIN', 'fid_part' => $this->session->userdata('part'), 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows() ?? 0;
+        
         $data = [
             'title' => 'SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/index',

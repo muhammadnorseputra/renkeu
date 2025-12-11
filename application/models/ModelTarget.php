@@ -187,4 +187,12 @@ class ModelTarget extends CI_Model
         return $this->db->select('persentase, eviden_jumlah, eviden_jenis')->from('t_target')->where(['fid_indikator' => $indikator_id, 'fid_periode' => $periode_id, 'tahun' => $tahun])
         ->get();
     }
+
+    public function getBidang()
+    {
+        if(isAuthorizedRole(['SUPER_ADMIN', 'ADMIN'])) {
+            return $this->db->where_not_in('id', 12)->get('ref_parts');
+        }
+        return $this->db->where_not_in('id', 12)->where('id', $this->session->userdata('part'))->get('ref_parts');
+    }
 }

@@ -54,6 +54,78 @@ class Target extends CI_Controller
 		$this->load->view('layout/app', $data);
 	}
 
+	public function perjanjian_kerja()
+	{
+		$bidang = $this->target->getBidang();
+		$data = [
+			'title' => 'Dokumen Perjanjian Kinerja',
+			'content' => 'pages/anggaran_kinerja/upload_pk',
+			'bidang' => $bidang,
+			'autoload_js' => [
+				'template/backend/vendors/select2/dist/js/select2.full.min.js',
+				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+			]
+		];
+		$this->load->view('layout/app', $data);
+	}
+
+	public function upload_pk()
+	{
+		$part_id = $this->input->post('part_id');
+		$namafiles = $_FILES['dokumen_pk']['name'];
+		$tahun = $this->session->userdata('tahun_anggaran');
+		$file_name = 'PK_' . $part_id . '_' . $tahun;
+
+		// Cek apakah sudah ada file untuk part dan tahun yg sama
+		$existing = $this->crud->getWhere('t_dokumen_pk', ['fid_part' => $part_id, 'tahun' => $tahun]);
+
+		// validasi form dan upload file ke folder /template/upload/dokumen_pk/
+		$config = [
+			'upload_path'   => './template/upload/dokumen_pk/',
+			'allowed_types' => 'pdf',
+			'max_size'      => 2120, // 2MB
+			'file_name'     => $file_name,
+			'overwrite'     => true
+		];
+
+		$this->load->library('upload', $config);
+
+		if (!$this->upload->do_upload('dokumen_pk')) {
+			$this->session->set_flashdata('alert_type', 'error');
+			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
+			return redirect(base_url('app/target/perjanjian_kerja'));
+		}
+
+		$upload_data = $this->upload->data();
+
+		$data = [
+			'fid_part' => $part_id,
+			'nama_dokumen' => $namafiles,
+			'file_path' => $upload_data['file_name'],
+			'ukuran_file' => $upload_data['file_size'],
+			'tipe_file' => $upload_data['file_type'],
+			'tahun' => $tahun,
+			'created_by' => $this->session->userdata('user_name'),
+			'created_at' => DateTimeInput()
+		];
+
+		// jika sudah ada record, lakukan update; jika belum, insert baru
+		if ($existing->num_rows() > 0) {
+			$db = $this->crud->update('t_dokumen_pk', $data, ['fid_part' => $part_id, 'tahun' => $tahun]);
+		} else {
+			$db = $this->crud->insert('t_dokumen_pk', $data);
+		}
+
+		if ($db) {
+			$this->session->set_flashdata('alert_type', 'success');
+			$this->session->set_flashdata('alert_msg', 'File berhasil diupload');
+		} else {
+			$this->session->set_flashdata('alert_type', 'error');
+			$this->session->set_flashdata('alert_msg', 'Gagal menyimpan data ke database');
+		}
+		return redirect(base_url('app/target/perjanjian_kerja'));
+	}
+
 	public function tambah_indikator()
 	{
 		$post = $this->input->post();
@@ -189,7 +261,7 @@ class Target extends CI_Controller
 			];
 
 			// jika jenis = persentase
-			if((int) $post['is_jenis'] === 1) {
+			if ((int) $post['is_jenis'] === 1) {
 				$insert = array_merge($insert, [
 					'persentase' => $post['persentase']
 				]);
@@ -198,7 +270,7 @@ class Target extends CI_Controller
 				]);
 			}
 			// jika jenis = jumlah
-			if((int) $post['is_jenis'] === 2) {
+			if ((int) $post['is_jenis'] === 2) {
 				$insert = array_merge($insert, [
 					'eviden_jumlah' => $post['jumlah_eviden'],
 					'eviden_jenis'  => $post['keterangan_eviden']
@@ -208,7 +280,7 @@ class Target extends CI_Controller
 					'eviden_jenis'  => $post['keterangan_eviden']
 				]);
 			}
-			
+
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
 			if ($dbcek->num_rows() > 0) {
 				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id'], 'fid_periode' => $post['periode_id']]);
