@@ -82,8 +82,8 @@ class Target extends CI_Controller
 		// validasi form dan upload file ke folder /template/upload/dokumen_pk/
 		$config = [
 			'upload_path'   => './template/upload/dokumen_pk/',
-			'allowed_types' => 'pdf',
-			'max_size'      => 2120, // 2MB
+			'allowed_types' => 'zip|rar|pdf',
+			'max_size'      => 5120, // 5MB
 			'file_name'     => $file_name,
 			'overwrite'     => true
 		];

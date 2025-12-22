@@ -17,12 +17,12 @@
         <?php if(getSetting('DokumenPK')): ?>
             <div class="alert alert-info" role="alert">
                 <i class="fa fa-info-circle mr-2"></i>
-                Unggah dokumen Perjanjian Kinerja (PK) dalam format PDF. Maksimal ukuran file adalah 2MB. File yang diunggah akan menimpa file sebelumnya untuk bidang dan tahun anggaran yang sama.
+                Unggah Dokumen Kinerja Non Perjanjian Kerja (PK) dalam format PDF yang di kompresi dengan ZIP/RAR. Maksimal ukuran file adalah 5MB. File yang diunggah akan menimpa file sebelumnya untuk bidang dan tahun anggaran yang sama.
             </div>
             <?php else: ?>
             <div class="alert alert-warning text-dark" role="alert">
                 <i class="fa fa-exclamation-triangle mr-2"></i>
-                Fitur unggah dokumen Perjanjian Kinerja (PK) saat ini telah dinonaktifkan oleh administrator.
+                Fitur unggah Dokumen Kinerja Non Perjanjian Kerja (PK) saat ini telah dinonaktifkan oleh administrator.
             </div>
         <?php endif; ?>
         <div class="table-responsive">
@@ -56,10 +56,10 @@
                                         <input type="hidden" name="part_id" value="<?= $row->id ?>">
 
                                         <div class="custom-file" style="flex:1; min-width:0;">
-                                            <input type="file" name="dokumen_pk" id="<?= $uid ?>" accept="application/pdf" class="custom-file-input" required style="display:none;">
+                                            <input type="file" name="dokumen_pk" id="<?= $uid ?>" accept="application/pdf,application/zip,application/rar" class="custom-file-input" required style="display:none;">
                                             <label for="<?= $uid ?>" class="btn btn-outline-secondary btn-block text-truncate mb-0" style="text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                                <i class="fa fa-file-pdf-o text-danger mr-2" aria-hidden="true"></i>
-                                                <span class="file-label">Pilih file PDF...</span>
+                                                <i class="fa fa-file-zip-o text-danger mr-2" aria-hidden="true"></i>
+                                                <span class="file-label">Pilih file anda...</span>
                                             </label>
                                         </div>
 
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 label.textContent = f.name;
                 label.title = f.name;
             } else {
-                label.textContent = 'Pilih file PDF...';
+                label.textContent = 'Pilih file anda...';
             }
         });
 
