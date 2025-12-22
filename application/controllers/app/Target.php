@@ -117,8 +117,9 @@ class Target extends CI_Controller
 		echo json_encode($msg);
 	}
 
-	public function ubah($id, $table)
+	public function ubah($id, $table, $periode_id)
 	{
+		$periode = $this->crud->getWhere('t_periode', ['is_open' => 'Y']);
 		$row = $this->target->getIndikator(['i.id' => $id]);
 		$jenis_indikator = $this->crud->get('ref_jenis_indikators');
 		$data = [
@@ -127,6 +128,8 @@ class Target extends CI_Controller
 			'id_indikator' => $id,
 			'table' => $table,
 			'jenis_indikator' => $jenis_indikator,
+			'periode' => $periode,
+			'periode_id' => $periode_id,
 			'row' => $row->row(),
 			'autoload_js' => [
 				'template/backend/vendors/select2/dist/js/select2.full.min.js',
@@ -143,77 +146,43 @@ class Target extends CI_Controller
 
 	public function ubah_proses()
 	{
-		$post = $this->input->post();
-		$part_id = implode(",", $post['bidang']);
+	$post = $this->input->post();
+    $id_indikator = $post['id']; // dari form_open hidden input
 
-		if (isset($post['jenis_indikator'])) {
-			$data = [
-				'nama' => $post['nama'],
-				'fid_part' => $part_id,
-				'fid_jenis_indikator' => $post['jenis_indikator']
-			];
-		} else {
-			$data = [
-				'nama' => $post['nama'],
-				'fid_part' => $part_id,
-			];
-		}
+    $dataInsert = [];
+    $dataUpdate = [];
 
-		$whr = [
-			'id' => $post['id']
-		];
+    foreach ($post['is_jenis'] as $periode_id => $is_jenis) {
+        $id_target = $post['id_target'][$periode_id] ?? null;
 
-		$db = $this->crud->update('ref_indikators', $data, $whr);
-		if ($db) {
-			$msg = 200;
+        $row = [
+            'id_indikator'    => $id_indikator,
+            'periode_id'      => $periode_id,
+            'is_jenis'        => $is_jenis,
+            'persentase'      => $post['persentase'][$periode_id] ?? null,
+            'eviden_jumlah'   => $post['jumlah_eviden'][$periode_id] ?? null,
+            'eviden_jenis'    => $post['keterangan_eviden'][$periode_id] ?? null,
+            'updated_at'      => date('Y-m-d H:i:s')
+        ];
 
-			// Insert
-			$insert = [
-				'is_jenis' => (int) $post['is_jenis'],
-				'fid_indikator' => $post['id'],
-				'tahun' => $post['tahun'],
-				'created_by' => $this->session->userdata('user_name')
-			];
+        if ($id_target) {
+            // Data sudah ada → update
+            $row['id'] = $id_target;
+            $dataUpdate[] = $row;
+        } else {
+            // Data baru → insert
+            $row['created_at'] = date('Y-m-d H:i:s');
+            $dataInsert[] = $row;
+        }
+    }
 
-			// Update 
-			$update = [
-				'is_jenis' => (int) $post['is_jenis'],
-				'tahun' => $post['tahun'],
-				'update_at' => DateTimeInput(),
-				'update_by' => $this->session->userdata('user_name')
-			];
-
-			// jika jenis = persentase
-			if((int) $post['is_jenis'] === 1) {
-				$insert = array_merge($insert, [
-					'persentase' => $post['persentase']
-				]);
-				$update = array_merge($update, [
-					'persentase' => $post['persentase']
-				]);
-			}
-			// jika jenis = jumlah
-			if((int) $post['is_jenis'] === 2) {
-				$insert = array_merge($insert, [
-					'eviden_jumlah' => $post['jumlah_eviden'],
-					'eviden_jenis'  => $post['keterangan_eviden']
-				]);
-				$update = array_merge($update, [
-					'eviden_jumlah' => $post['jumlah_eviden'],
-					'eviden_jenis'  => $post['keterangan_eviden']
-				]);
-			}
-			
-			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
-			if ($dbcek->num_rows() > 0) {
-				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id']]);
-			} else {
-				$this->crud->insert('t_target', $insert);
-			}
-		} else {
-			$msg = 400;
-		}
-
+    // Eksekusi batch
+    if (!empty($dataUpdate)) {
+        $this->db->update_batch('target_table', $dataUpdate, 'id');
+    }
+    if (!empty($dataInsert)) {
+        $this->db->insert_batch('target_table', $dataInsert);
+    }
 		echo json_encode($msg);
 	}
 

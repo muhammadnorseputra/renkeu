@@ -44,7 +44,7 @@
                             // Action Edit dan Hapus
                             if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
                                 $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $r['indikator_id'] . '" data-label="Tujuan" type="button"><i class="fa fa-trash"></i></button>';
-                                $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $r['indikator_id'] . "/ref_tujuan") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
+                                $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $r['indikator_id'] . "/ref_tujuan/". $r['fid_periode']) . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                             else :
                                 $button_hapus = '';
                                 $button_ubah = '';
@@ -110,7 +110,7 @@
                                 // Action Edit dan Hapus
                                 if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
                                     $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $rs['indikator_id'] . '" data-label="Sasaran" type="button"><i class="fa fa-trash"></i></button>';
-                                    $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $rs['indikator_id'] . "/ref_sasaran") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
+                                    $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $rs['indikator_id'] . "/ref_sasaran/". $rs['fid_periode']) . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                                 else :
                                     $button_hapus = '';
                                     $button_ubah = '';
@@ -176,7 +176,7 @@
 
                                     if ($this->session->userdata('role') === 'USER') :
                                         $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $ip['indikator_id'] . '" data-label="Program" type="button"><i class="fa fa-trash"></i></button>';
-                                        $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $ip['indikator_id'] . "/ref_programs") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
+                                        $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $ip['indikator_id'] . "/ref_programs/". $ip['fid_periode']) . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                                     else :
                                         $button_hapus = '';
                                         $button_ubah = '';
@@ -246,7 +246,7 @@
                                     foreach ($indikator as $key => $ik) :
                                         if ($this->session->userdata('role') === 'USER') :
                                             $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $ik['indikator_id'] . '" data-label="Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
-                                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $ik['indikator_id'] . "/ref_kegiatans") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
+                                            $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $ik['indikator_id'] . "/ref_kegiatans/". $ik['fid_periode']) . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                                         else:
                                             $button_hapus = '';
                                             $button_ubah = '';
@@ -312,7 +312,7 @@
                                         foreach ($indikator as $key => $isk) :
                                             if ($this->session->userdata('role') === 'USER') :
                                                 $button_hapus = '<button class="btn btn-danger btn-sm m-0" id="HapusIndikator" data-id="' . $isk['indikator_id'] . '" data-label="Sub Kegiatan" type="button"><i class="fa fa-trash"></i></button>';
-                                                $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $isk['indikator_id'] . "/ref_sub_kegiatans") . '\')" type="button"><i class="fa fa-pencil"></i></button>';
+                                                $button_ubah = '<button class="btn btn-info btn-sm m-0" onclick="window.location.replace(\'' . base_url("app/target/ubah/" . $isk['indikator_id'] . "/ref_sub_kegiatans/". $isk['fid_periode']) . '\')" type="button"><i class="fa fa-pencil"></i></button>';
                                             else:
                                                 $button_hapus = '';
                                                 $button_ubah = '';

@@ -79,7 +79,7 @@ class ModelTarget extends CI_Model
     }
     public function getIndikator($whr, $part_id = null)
     {
-        $this->db->select('t.*,i.fid_part,i.fid_jenis_indikator, i.id AS indikator_id, i.nama, j.nama AS jenis_indikator, j.color');
+        $this->db->select('t.*,i.fid_part,i.fid_periode,i.fid_jenis_indikator, i.id AS indikator_id, i.nama, j.nama AS jenis_indikator, j.color');
         $this->db->from('ref_indikators AS i');
         $this->db->join('ref_jenis_indikators AS j', 'i.fid_jenis_indikator=j.id', 'left');
         $this->db->join('t_target AS t', 't.fid_indikator=i.id', 'left');
@@ -90,6 +90,30 @@ class ModelTarget extends CI_Model
         $this->db->order_by('i.id', 'asc');
         $q = $this->db->get();
         return $q;
+    }
+
+    public function getDetailIndikator($id, $periode = "")
+    {
+        $this->db->select('id,nama,fid_part,fid_periode,tahun');
+        $this->db->from('ref_indikators');
+        $this->db->where('id', $id);
+        if (!empty($periode)){
+            $this->db->where('fid_periode', $periode);
+        };
+        $q = $this->db->get();
+        return $q->row();
+    }
+
+    public function getDetailTarget($indikator_id, $periode_id = "")
+    {
+        $this->db->select('*');
+        $this->db->from('t_target');
+        $this->db->where('fid_indikator', $indikator_id);
+        if (!empty($periode_id)){
+            $this->db->where('fid_periode', $periode_id);
+        };
+        $q = $this->db->get();
+        return $q->row();
     }
 
     public function getAlokasiPaguTujuan($tujuanId, $is_perubahan = "0", $ta)
