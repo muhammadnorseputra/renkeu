@@ -126,8 +126,12 @@ class Spj extends CI_Controller
                 $link = '<i class="text-secondary">Kosong</i>';
             }
 
-            // cek apakah usulan sudah pernah di verifikasi admin atau belum
-            $isDeleteDisabled = $r->verify_by !== null || $r->approve_by !== null ? 'disabled' : '';
+            // cek di riwayat apakah ada atau tidak
+            $history = $this->crud->getWhere('spj_riwayat', ['token' => $r->token])->num_rows();
+            // jika ada riwayat maka tidak bisa di hapus
+            if ($history > 0) {
+                $isDeleteDisabled = 'disabled';
+            }
 
             if ($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN') {
                 $detail = '<button onclick="window.location.replace(\'' . base_url('app/spj/buatusul?step=0&status=' . $r->is_status . '&token=' . $r->token) . '\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
