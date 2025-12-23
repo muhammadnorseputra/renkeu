@@ -131,6 +131,8 @@ class Spj extends CI_Controller
             // jika ada riwayat maka tidak bisa di hapus
             if ($history > 0) {
                 $isDeleteDisabled = 'disabled';
+            } else {
+                $isDeleteDisabled = '';
             }
 
             if ($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN') {
