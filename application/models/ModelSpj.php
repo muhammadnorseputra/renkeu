@@ -98,6 +98,17 @@ class ModelSpj extends CI_Model
 		return $this->db->get_where($tbl, ['id' => $id])->row()->kode;
 	}
 
+	public function getPaguByUraianId($uraian_id, $ta, $is_perubahan)
+	{
+		$this->db->select('total_pagu_awal');
+		$this->db->from('t_pagu');
+		$this->db->where('fid_uraian', $uraian_id);
+		$this->db->where('tahun', $ta);
+		$this->db->where('is_perubahan', $is_perubahan);
+		$q = $this->db->get();
+		return $q->row()->total_pagu_awal;
+	}
+
 	public function TopTransaksiSPJ($limit)
 	{
 		$this->db->select('r.jumlah,r.entri_by,r.entri_at,r.is_status,p.singkatan');

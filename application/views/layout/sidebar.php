@@ -39,9 +39,20 @@
                 <?php endif; ?>
                 <?php if (privilages('priv_spj')): ?>
                     <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj') : '#' ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-dollar"></i> SPJ</a></li>
+
+                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj/monitor') : '#' ?>" class="loadContent" title="Monitoring Belanja" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-line-chart"></i> Monitoring Belanja</a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_bukujaga')): ?>
-                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/bukujaga') : '#' ?>" class="loadContent" title="Buku Jaga Kegiatan" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-book"></i> Buku Jaga</a></li>
+                    <li style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">
+                        <a>
+                            <i class="fa fa-archive"></i> Buku Jaga <span class="fa fa-chevron-down"></span>
+                        </a>
+                        <ul class="nav child_menu">
+                            <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/bukujaga') : '#' ?>" class="loadContent" title="Buku Jaga Belanja Kegiatan" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">Belanja Kegiatan</a></li>
+
+                            <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/bukujaga/rincian') : '#' ?>" class="loadContent" title="Rincian Belanja" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">Rincian Belanja</a></li>
+                        </ul>
+                    </li>
                 <?php endif; ?>
                 <?php if (privilages('priv_anggarankinerja')): ?>
                     <li style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">
@@ -51,7 +62,7 @@
                         <?php if ($this->session->userdata('is_valid_profile') === "1"): ?>
                             <ul class="nav child_menu">
                                 <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN', 'USER'])): ?>
-                                <li><a href="<?= base_url('app/target/perjanjian_kerja') ?>" class="loadContent" title="Target">Dokumen Kinerja Non PK</a></li>
+                                    <li><a href="<?= base_url('app/target/perjanjian_kerja') ?>" class="loadContent" title="Target">Dokumen Kinerja Non PK</a></li>
                                     <li><a href="<?= base_url('app/indikator') ?>" class="loadContent" title="Indikator">Indikator</a></li>
                                     <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target">Target</a></li>
                                 <?php endif; ?>

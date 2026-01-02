@@ -70,6 +70,13 @@
               </select>
             </div>
             <div class="form-group first">
+              <label for="is_perubahan">Status Anggaran</label>
+              <select name="is_perubahan" id="is_perubahan" class="form-control">
+                <option value="0" <?= getSetting('StatusAnggaran') == 0 ? 'selected' : '' ?>>Anggaran Murni</option>
+                <option value="1" <?= getSetting('StatusAnggaran') == 1 ? 'selected' : '' ?>>Anggaran Perubahan</option>
+              </select>
+            </div>
+            <div class="form-group first">
               <label for="username">Username</label>
               <input type="text" name="username" placeholder="Masukan Username" class="form-control" data-sanitize="trim" data-validation="required" id="username">
             </div>

@@ -1073,4 +1073,15 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
         }
         echo json_encode($msg);
     }
+
+    public function monitor()
+    {
+        $data = [
+            'title' => 'Monitor SPJ (Surat Pertanggung Jawaban)',
+            // 'content' => 'pages/spj/monitor',
+            'content' => 'in-development',
+            'proggres' => '10',
+        ];
+        $this->load->view('layout/app', $data);
+    }
 }
