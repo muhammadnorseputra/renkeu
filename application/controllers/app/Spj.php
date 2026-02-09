@@ -1078,9 +1078,13 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
     {
         $data = [
             'title' => 'Monitor SPJ (Surat Pertanggung Jawaban)',
-            // 'content' => 'pages/spj/monitor',
-            'content' => 'in-development',
-            'proggres' => '10',
+            'content' => 'pages/spj/monitor',
+            'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
+            'is_perubahan' => $this->session->userdata('is_perubahan'),
+            'part' => $this->session->userdata('part'),
+            'listpart' => $this->crud->getWhere('ref_parts', ['id' => $this->session->userdata('part')])->result(),
+            'programs' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran')),
+            'kegiatans' => $this->db->order_by('kode', 'asc')->where('fid_part', $this->session->userdata('part'))->where('tahun', $this->session->userdata('tahun_anggaran'))->get('ref_kegiatans')
         ];
         $this->load->view('layout/app', $data);
     }

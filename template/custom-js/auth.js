@@ -12,8 +12,8 @@ $(document).ready(function () {
 		form: "#f_login",
 		lang: "en",
 		showErrorDialogs: true,
-		modules: "security, html5, sanitize, toggleDisabled",
-		disabledFormFilter: 'form.toggle-disabled',
+		modules: "security, html5, sanitize",
+		//disabledFormFilter: 'form.toggle-disabled',
         // validateOnEvent: false,
 		onError: function ($form) {
 			$containerMsg.html(`

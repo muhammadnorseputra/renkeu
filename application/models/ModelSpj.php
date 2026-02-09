@@ -439,4 +439,106 @@ class ModelSpj extends CI_Model
 		return $this->db->count_all_results();
 	}
 	// -------------------------------- end-datatable --------------------------//
+
+	// Monitoring SPJ
+	public function getAllParts()
+	{
+		return $this->db->select('id,nama')->from('ref_parts')->order_by('id', 'asc')->get();
+	}
+
+	// get total pagu murni berdasarkan part
+	public function getTotalPaguMurniByPart($part, $ta)
+	{
+		$this->db->select_sum('total_pagu_awal');
+		$this->db->from('t_pagu');
+		$this->db->where('fid_part', $part);
+		$this->db->where('tahun', $ta);
+		$this->db->where('is_perubahan', '0');
+		$q = $this->db->get();
+		return $q->row()->total_pagu_awal;
+	}
+
+	public function getTotalPaguPerubahanByPart($part, $ta)
+	{
+		$this->db->select_sum('total_pagu_awal');
+		$this->db->from('t_pagu');
+		$this->db->where('fid_part', $part);
+		$this->db->where('tahun', $ta);
+		$this->db->where('is_perubahan', '1');
+		$q = $this->db->get();
+		return $q->row()->total_pagu_awal;
+	}
+
+	// get total realisasi berdasarkan part
+	public function getTotalRealisasiByPart($part, $ta)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj_riwayat');
+		$this->db->where('entri_by_part', $part);
+		$this->db->where('is_status', 'APPROVE');
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	// get total realiasi berdasarkan part dana status SPJ (BARU, VERIFIKASI, PENDING, CAIR, TMS)
+	public function getTotalRealisasiByPartAndStatus($part, $ta, $status)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj');
+		$this->db->where('fid_part', $part);
+		$this->db->where_in('is_status', $status);
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function getTotalRealisasiByPartAndStatusAdmin($part, $ta, $is_status)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj_riwayat');
+		$this->db->where('entri_by_part', $part);
+		$this->db->where_in('is_status', $is_status);
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function getTotalRealisasiByPartAndStatusBendahara($part, $ta, $is_status)
+	{
+		$this->db->select_sum('spj_riwayat.jumlah');
+		$this->db->from('spj_riwayat');
+		$this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token');
+		$this->db->where('spj_riwayat.entri_by_part', $part);
+		$this->db->where_in('spj_payment.status', $is_status);
+		$this->db->where('spj_riwayat.tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function getRealisasiByPartAndProgram($part, $program_id, $ta)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj');
+		$this->db->where('fid_part', $part);
+		$this->db->where('fid_program', $program_id);
+		$this->db->where('is_status', 'SELESAI');
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function getRealisasiByPartAndKegiatan($part, $kegiatan_id, $ta)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj');
+		$this->db->where('fid_part', $part);
+		$this->db->where('fid_kegiatan', $kegiatan_id);
+		$this->db->where('is_status', 'SELESAI');
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	
 }

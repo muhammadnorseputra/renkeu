@@ -36,7 +36,7 @@
 <body>
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
-    <div class="container d-flex align-items-center justify-content-between">
+    <div class="container d-flex align-items-center justify-content-center">
 
       <div id="logo">
         <!-- <h1 data-aos="fade-in"><?= getSetting('APPName') ?></h1> -->
@@ -44,17 +44,17 @@
         <!-- <a href="index.html"><img src="<?= base_url('template/landingpage/assets/img/logo.png') ?>" alt="" title="" /></a>-->
       </div>
 
-      <!-- <nav id="navbar" class="navbar">
+      <nav id="navbar" class="navbar">
         <ul>
-          <li><a class="nav-link scrollto <?= isActive('/') ?>" href="<?= base_url('/') ?>">Home</a></li>
-          <li><a class="nav-link scrollto <?= isActive('about') ?>" href="<?= base_url('frontend/about') ?>">About</a></li>
-          <li><a class="nav-link scrollto <?= isActive('featured') ?>" href="<?= base_url('frontend/featured') ?>">Features</a></li>
+          <li><a class="nav-link scrollto <?= isActive('/') ?>" href="<?= base_url('/') ?>">Beranda</a></li>
+          <li><a class="nav-link scrollto" href="#about-us">Tentang Kami</a></li>
+          <!-- <li><a class="nav-link scrollto <?= isActive('featured') ?>" href="<?= base_url('frontend/featured') ?>">Features</a></li>
           <li><a class="nav-link scrollto <?= isActive('screenshot') ?>" href="<?= base_url('frontend/screenshot') ?>">Screenshots</a></li>
           <li><a class="nav-link scrollto <?= isActive('team') ?>" href="<?= base_url('frontend/team') ?>">Team</a></li>
-          <li><a class="nav-link scrollto <?= isActive('contact') ?>" href="<?= base_url('frontend/contact') ?>">Contact</a></li>
+          <li><a class="nav-link scrollto <?= isActive('contact') ?>" href="<?= base_url('frontend/contact') ?>">Contact</a></li> -->
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
-      </nav>.navbar -->
+      </nav>
 
     </div>
   </header><!-- End Header -->

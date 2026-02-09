@@ -57,9 +57,7 @@ class Bukujaga extends CI_Controller
     {
         $data = [
             'title' => 'Rincian Kegiatan',
-            // 'content' => 'pages/spj/bukujaga_rincian',
-            'content' => 'in-development',
-            'proggres' => 70,
+            'content' => 'pages/spj/bukujaga_rincian',
             'programs' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran')),
             'autoload_js' => [
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
