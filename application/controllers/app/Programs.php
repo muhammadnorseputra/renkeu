@@ -556,6 +556,7 @@ class Programs extends CI_Controller
         $no = 1;
         $total_all_pagu = 0;
         $total_all_pagu_perubahan = 0;
+        $warnaClassTotal = '';
         foreach ($db->result() as $r) :
             //get jumlah spj berdasarkan id uraian
             $jmlSpj = $this->crud->getWhere('spj', ['fid_uraian' => $r->id])->num_rows();
