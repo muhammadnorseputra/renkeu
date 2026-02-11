@@ -773,7 +773,9 @@ Silahkan cek aplikasi Digta Sunanpraja.
 
         $data = [
             'title' => 'Entri Usul - SPJ (Surat Pertanggung Jawaban)',
-            'content' => 'pages/spj/usul',
+            // 'content' => 'pages/spj/usul',
+            'content' => 'in-development',
+            'proggres' => 90,
             'list_bidang' => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
             'list_program' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'))->result(),
             'detail' => @$detail,
