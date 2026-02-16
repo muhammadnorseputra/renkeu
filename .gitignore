@@ -35,5 +35,5 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 env.php
 .env
 
-/template/upload/
+/template/upload/*
 
