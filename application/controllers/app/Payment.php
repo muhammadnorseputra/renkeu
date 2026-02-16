@@ -97,12 +97,23 @@ class Payment extends CI_Controller
         ];
 
         if ($post['verifikasi_status'] === 'CAIR') {
-            $update = [
+            $updatePayment = [
                 'status' => 'CAIR',
                 'cair_at' => DateTimeInput(),
                 'approver_by' => $this->session->userdata('user_name'),
                 'catatan' => null
             ];
+
+            $updateSpj = [
+                'nomor_pembukuan' => $post['nomor_bku'],
+                'tanggal_pembukuan' => $post['tanggal_bku'],
+            ];
+
+            $updateRiwayatSpj = [
+                'nomor_pembukuan' => $post['nomor_bku'],
+                'tanggal_pembukuan' => $post['tanggal_bku'],
+            ];
+            
             // insert log
             $info = [
                 'token' => $post['token'],
@@ -114,11 +125,14 @@ class Payment extends CI_Controller
             ];
 
             $this->db->trans_start();
-            $this->crud->update('spj_payment', $update, $whr);
+            $this->crud->update('spj', $updateSpj, $whr);
+            $this->crud->update('spj_payment', $updatePayment, $whr);
+            $this->crud->update('spj_riwayat', $updateRiwayatSpj, $whr);
             $this->historis->insert($info);
             $this->db->trans_complete();
 
             if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
                 $msg = [
                     'message' => 'SPJ gagal di proses',
                     'status' => false
@@ -127,6 +141,7 @@ class Payment extends CI_Controller
                 return false;
             }
 
+            $this->db->trans_commit();
             $msg = [
                 'message' => 'SPJ telah di proses',
                 'status' => true
@@ -158,6 +173,7 @@ class Payment extends CI_Controller
             $this->db->trans_complete();
 
             if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
                 $msg = [
                     'message' => 'SPJ gagal diproses perbaikan !',
                     'status' => false
@@ -166,6 +182,7 @@ class Payment extends CI_Controller
                 return false;
             }
 
+            $this->db->trans_commit();
             $msg = [
                 'message' => 'SPJ telah diproses perbaikan !',
                 'status' => true
@@ -197,6 +214,7 @@ class Payment extends CI_Controller
             $this->db->trans_complete();
 
             if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
                 $msg = [
                     'message' => 'SPJ gagal ditolak !',
                     'status' => false
@@ -205,6 +223,7 @@ class Payment extends CI_Controller
                 return false;
             }
 
+            $this->db->trans_commit();
             $msg = [
                 'message' => 'SPJ berhasil ditolak !',
                 'status' => true

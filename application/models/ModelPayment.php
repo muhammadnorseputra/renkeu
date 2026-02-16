@@ -14,7 +14,7 @@ class ModelPayment extends CI_Model
     private function _datatables()
     {
 
-        $this->db->select('sp.*, sr.nomor_pembukuan, sr.kode_uraian, sr.nama_uraian, sr.nama_part, sr.fid_periode,sr.entri_at,sr.approve_at,sr.entri_by,sr.is_status,sr.jumlah, sr.catatan as catatan_by_verify');
+        $this->db->select('sp.*, sr.nomor_pembukuan, sr.kode_uraian, sr.nama_uraian, sr.nama_part, sr.fid_periode,sr.entri_at,sr.approve_at,sr.entri_by,sr.is_status,sr.jumlah, sr.catatan as catatan_by_verify, sr.nomor_verifikasi, sr.tanggal_verifikasi');
         $this->db->from('spj_payment as sp');
         $this->db->join('spj_riwayat as sr', 'sp.token=sr.token');
         $this->db->where('sp.tahun', $this->session->userdata('tahun_anggaran'));

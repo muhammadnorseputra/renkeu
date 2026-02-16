@@ -160,10 +160,14 @@ modalPayment.find("#verifikasi_status").on("change", function () {
 	const $this = $(this);
 	const val = $this.val();
 	const $verifikasiCatatan = $("#verifikasi_catatan");
+	const $verifikasiCair = $("#verifikasi_cair");
 	const $catatan = $("textarea[name='catatan']");
 
 	const isRejectedOrFix = val === "TOLAK" || val === "PERBAIKAN";
-
+	const isCair = val === "CAIR";
+	// Toggle tampilan input nomor dan tanggal BKU
+	$verifikasiCair.toggleClass("d-none", !isCair);
+	$verifikasiCair.toggleClass("d-block", isCair);
 	// Toggle tampilan catatan verifikasi
 	$verifikasiCatatan.toggleClass("d-none", !isRejectedOrFix);
 	$verifikasiCatatan.toggleClass("d-block", isRejectedOrFix);
@@ -235,6 +239,15 @@ $("form#formApprover").on("submit", async function (e) {
 function TemplateTablePayment(row) {
 	if (!row) return `Data is Empty`;
 
+	let tanggalIndo = new Date(row.tanggal_verifikasi).toLocaleDateString(
+		"id-ID",
+		{
+			day: "2-digit",
+			month: "long",
+			year: "numeric",
+		},
+	);
+
 	return `
 		<table class="table table-bordered">
 			<tr>
@@ -250,8 +263,12 @@ function TemplateTablePayment(row) {
 				<td class="text-success">Rp. ${rupiah(row.jumlah)}</td>
 			</tr>
 			<tr>
-				<td width="15%">No. BKU</td>
-				<td>${row.nomor_pembukuan}</td>
+				<td width="15%">Nomor Verifikasi</td>
+				<td>${row.nomor_verifikasi}</td>
+			</tr>
+			<tr>
+				<td width="15%">Tanggal Verifikasi</td>
+				<td>${tanggalIndo}</td>
 			</tr>
 			<tr class="bg-light">
 				<td width="20%">Catatan Verifikator</td>

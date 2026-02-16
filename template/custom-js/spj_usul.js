@@ -2,6 +2,8 @@ let $formStep = $("form#step-1");
 let $modal = $("#modelSearchKode");
 
 var getStep = urlParams.get("step");
+var getToken = urlParams.get("token");
+
 if (getStep == "") {
 	isStep = 0;
 } else {
@@ -73,13 +75,9 @@ $("form#step-1").on("submit", async function (e) {
 				fadeIn: 700,
 				fadeOut: 700,
 				timeout: 2000,
-				showOverlay: true,
+				showOverlay: false,
 				center: true,
 				css: {
-					width: "350px",
-					top: "10px",
-					left: "",
-					right: "10px",
 					border: "none",
 					padding: "12px",
 					backgroundColor: "#000",
@@ -106,7 +104,7 @@ $("form#step-1").on("submit", async function (e) {
 	}
 });
 
-$("form#step-2").on("submit", async function (e) {
+$("form#step-3").on("submit", async function (e) {
 	e.preventDefault();
 
 	let _ = $(this),
@@ -114,70 +112,126 @@ $("form#step-2").on("submit", async function (e) {
 		data = _.serialize(), // tetap pakai serialize jQuery
 		$button = _.find('button[type="submit"]');
 
-	let msg = "Apakah anda yakin akan mengirim usulan tersebut ?";
-
 	if (_.parsley().isValid()) {
-		if (confirm(msg)) {
-			$button.text("processing ...").prop("disabled", true);
+		$button.text("processing ...").prop("disabled", true);
 
-			// tampilkan blockUI loader
-			$.blockUI({
-				message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
-				css: { backgroundColor: "transparent", borderColor: "transparent" },
+		// tampilkan blockUI loader
+		$.blockUI({
+			message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+			css: { backgroundColor: "transparent", borderColor: "transparent" },
+		});
+
+		try {
+			// kirim form pakai fetch (POST)
+			const req = await fetch(action, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+				body: data,
 			});
 
-			try {
-				// kirim form pakai fetch (POST)
-				const req = await fetch(action, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/x-www-form-urlencoded",
-					},
-					body: data,
-				});
+			const res = await req.json();
 
-				const res = await req.json();
-
-				$.blockUI({
-					message: res.msg,
-					fadeIn: 700,
-					fadeOut: 700,
-					timeout: 2000,
-					showOverlay: true,
-					center: true,
-					css: {
-						width: "350px",
-						top: "10px",
-						left: "",
-						right: "10px",
-						border: "none",
-						padding: "12px",
-						backgroundColor: "#000",
-						"-webkit-border-radius": "10px",
-						"-moz-border-radius": "10px",
-						opacity: 0.6,
-						color: "#fff",
-					},
-					onUnblock: function () {
-						if (res.code === 200) {
-							return window.location.replace(res.redirect);
-						}
-						$button
-							.prop("disabled", false)
-							.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
-					},
-				});
-			} catch (err) {
-				$button
-					.prop("disabled", false)
-					.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
-				return alert("Terjadi kesalahan: " + err.message);
-			}
-			return false;
+			$.blockUI({
+				message: res.msg,
+				fadeIn: 700,
+				fadeOut: 700,
+				timeout: 2000,
+				showOverlay: false,
+				center: true,
+				css: {
+					border: "none",
+					padding: "12px",
+					backgroundColor: "#000",
+					"-webkit-border-radius": "10px",
+					"-moz-border-radius": "10px",
+					opacity: 0.6,
+					color: "#fff",
+				},
+				onUnblock: function () {
+					if (res.code === 200) {
+						return window.location.replace(res.redirect);
+					}
+					$button
+						.prop("disabled", false)
+						.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
+				},
+			});
+		} catch (err) {
+			$button
+				.prop("disabled", false)
+				.html('<i class="fa fa-save mr-2"></i> Kirim Usulan');
+			return alert("Terjadi kesalahan: " + err.message);
 		}
+		return false;
 	}
 });
 
+
+$("form#step-4").on("submit", async function (e) { 
+	e.preventDefault();
+	
+	let _ = $(this),
+		action = _.attr("action"),
+		data = _.serialize(), // tetap pakai serialize jQuery
+		$button = _.find('button[type="submit"]');
+	$button.text("processing ...").prop("disabled", true);
+	// tampilkan blockUI loader
+	$.blockUI({
+		message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
+		css: { backgroundColor: "transparent", borderColor: "transparent" },
+	});
+
+	try {
+		// kirim form pakai fetch (POST)
+		const req = await fetch(action, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+			body: data,
+		});
+
+		const res = await req.json();
+
+		if (!res.status) {
+			return alert(res.msg);
+		}
+
+		$.blockUI({
+			message: res.msg,
+			fadeIn: 700,
+			fadeOut: 700,
+			timeout: 2000,
+			showOverlay: false,
+			center: true,
+			css: {
+				border: "none",
+				padding: "12px",
+				backgroundColor: "#000",
+				"-webkit-border-radius": "10px",
+				"-moz-border-radius": "10px",
+				opacity: 0.6,
+				color: "#fff",
+			},
+			onUnblock: function () {
+				if (res.status) {
+					return window.location.replace(res.redirect);
+				}
+				$button
+					.prop("disabled", false)
+					.html('Finalkan <i class="fa fa-save ml-2"></i>');
+			},
+		});
+	} catch (err) {
+		$button
+			.prop("disabled", false)
+			.html('Finalkan <i class="fa fa-save ml-2"></i>');
+		return alert("Terjadi kesalahan: " + err.message);
+	}
+	return false;
+});
 function rupiah(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
@@ -239,15 +293,15 @@ $("form#formCariKode").on("submit", function (e) {
 						.find("h5#jumlah_max")
 						.html(
 							`Rp. ${rupiah(
-								res.pagu.total_sisa_pa
-							)} <i class="text-success fa fa-external-link-square"></i>`
+								res.pagu.total_sisa_pa,
+							)} <i class="text-success fa fa-external-link-square"></i>`,
 						);
 					$formStep
 						.find("h5#sisa_max")
 						.html(
 							`Rp. ${rupiah(
-								res.pagu.total_sisa_pa
-							)} <i class="text-danger fa fa-level-down"></i>`
+								res.pagu.total_sisa_pa,
+							)} <i class="text-danger fa fa-level-down"></i>`,
 						);
 
 					$formStep
@@ -258,7 +312,7 @@ $("form#formCariKode").on("submit", function (e) {
 					$formStep.find('select[name="tahun"]').prop("disabled", false);
 					$modal.modal("hide");
 				},
-				"json"
+				"json",
 			);
 		} catch (err) {
 			$formStep.find("#loadKegiatan").hide().html("");
@@ -285,13 +339,13 @@ function formatResults(res) {
 async function cekAngkas(uraian_id, periode_id) {
 	try {
 		const req = await fetch(
-			`${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`
+			`${_uri}/app/spj/cek_angkas/${uraian_id}/${periode_id}`,
 		);
 		const res = await req.json();
 
 		if (res.status) {
 			$("h5#angkas").html(
-				`Rp. ${rupiah(res.sisa)} <i class="text-danger fa fa-level-down"></i>`
+				`Rp. ${rupiah(res.sisa)} <i class="text-danger fa fa-level-down"></i>`,
 			);
 			$("input[name='jumlah']").attr({
 				"data-start": res.sisa_pa,
@@ -336,14 +390,14 @@ $("select[name='periode']").on("change", async function () {
 
 $(function () {
 	$(
-		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan'],select[name='uraian_kegiatan']"
+		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan'],select[name='uraian_kegiatan']",
 	).select2({
 		width: "100%",
 		dropdownParent: $("#modelSearchKode"),
 	});
 
 	$(
-		"select[name='periode'],select[name='bulan'],select[name='tahun']"
+		"select[name='periode'],select[name='bulan'],select[name='tahun']",
 	).select2();
 
 	let $modal = $("#modelSearchKode");
@@ -405,7 +459,7 @@ $(function () {
 	}
 	select2Kegiatan(
 		$modal.find('select[name="program"]').val(),
-		$modal.find('select[name="part"]').val()
+		$modal.find('select[name="part"]').val(),
 	);
 
 	$("select[name='part'],select[name='program']").on("change", function () {
@@ -489,6 +543,94 @@ $(function () {
 			var kegiatanId = $("select[name='kegiatan']").val();
 			var subKegiatanId = $("select[name='sub_kegiatan']").val();
 			select2UraianKegiatan(kegiatanId, subKegiatanId);
-		}
+		},
 	);
+
+	$("input#organisasi").autocomplete({
+		serviceUrl: `${_uri}/app/spj/autocomplete/organisasi`,
+		minChars: 2,
+		deferRequestBy: 300,
+	});
+
+	$("input#perorangan").autocomplete({
+		serviceUrl: `${_uri}/app/spj/autocomplete/perorangan`,
+		minChars: 2,
+		deferRequestBy: 300,
+	});
+
+	const MODAL_RELASI_PUBLIK = $("#tambah-data-users");
+	const FORM_RELASI_PUBLIK = $("#formRelasiPublik");
+	MODAL_RELASI_PUBLIK.on("hidden.bs.modal", function (e) {
+		FORM_RELASI_PUBLIK[0].reset();
+		FORM_RELASI_PUBLIK.parsley().reset();
+	});
+
+	FORM_RELASI_PUBLIK.on("submit", async function (e) {
+		e.preventDefault();
+
+		const formData = new FormData(this);
+		try {
+			const response = await fetch(`${_uri}/app/spj/tambah_penerima_manfaat`, {
+				method: "POST",
+				body: formData,
+				headers: {
+					"X-Requested-With": "XMLHttpRequest",
+				},
+			});
+
+			const result = await response.json();
+
+			if (result.status) {
+				$.blockUI({
+					message: result.pesan,
+					fadeIn: 700,
+					fadeOut: 700,
+					timeout: 2000,
+					showOverlay: false,
+					center: true,
+					css: {
+						border: "none",
+						padding: "12px",
+						backgroundColor: "#000",
+						"-webkit-border-radius": "10px",
+						"-moz-border-radius": "10px",
+						opacity: 0.6,
+						color: "#fff",
+					},
+				});
+
+				// reset form
+				FORM_RELASI_PUBLIK[0].reset();
+				FORM_RELASI_PUBLIK.parsley().reset();
+
+				// tutup modal (jika pakai bootstrap 4)
+				MODAL_RELASI_PUBLIK.modal("hide");
+				// optional: reload table/data
+				// location.reload();
+				tablePenerimaManfaat.ajax.reload(); // reload datatable tanpa reset paging
+				return false;
+			}
+
+			$.blockUI({
+				message: result.pesan,
+				fadeIn: 700,
+				fadeOut: 700,
+				timeout: 2000,
+				showOverlay: false,
+				center: true,
+				css: {
+					border: "none",
+					padding: "12px",
+					backgroundColor: "#000",
+					"-webkit-border-radius": "10px",
+					"-moz-border-radius": "10px",
+					opacity: 0.6,
+					color: "#fff",
+				},
+			});
+		} catch (error) {
+			console.error("Error:", error);
+			alert("Terjadi kesalahan saat menyimpan data.");
+		}
+	});
 });

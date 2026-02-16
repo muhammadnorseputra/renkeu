@@ -290,10 +290,8 @@ class ModelSpj extends CI_Model
 		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
 		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
 		$this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
-		if ($this->session->userdata('role') === 'ADMIN'):
-			$this->db->where_in('is_status', ['VERIFIKASI_ADMIN', 'APPROVE', 'TMS', 'BTL']);
-		else:
-			$this->db->where_in('is_status', ['VERIFIKASI']);
+		if ($this->session->userdata('role') === 'VERIFICATOR'):
+			$this->db->where_in('is_status', ['VERIFIKASI','VERIFIKASI_ADMIN', 'APPROVE', 'TMS', 'BTL']);
 		endif;
 
 		// Pencarian global
@@ -364,7 +362,7 @@ class ModelSpj extends CI_Model
 	// default order 
 	protected $order_verifikasi_selesai = array('spj_riwayat.approve_at' => 'desc');
 
-	private function _datatables_verifikasi_selesai()
+	private function _datatables_verifikasi_selesai($filter)
 	{
 
 		$this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id,spj_payment.status');
@@ -372,8 +370,15 @@ class ModelSpj extends CI_Model
 		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
 		$this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token', 'left');
 		$this->db->where('spj_riwayat.tahun', $this->session->userdata('tahun_anggaran'));
+
+		// filter bedasarkan role
 		if ($this->session->userdata('role') === 'USER') {
-			$this->db->where('entri_by_part', $this->session->userdata('part'));
+			$this->db->where('spj_riwayat.entri_by_part', $this->session->userdata('part'));
+		}
+
+		// filter berdasarkan bidang
+		if (!empty($filter['filter_bidang'])) {
+			$this->db->where('spj_riwayat.entri_by_part', $filter['filter_bidang']);
 		}
 
 		// Pencarian global
@@ -417,25 +422,82 @@ class ModelSpj extends CI_Model
 		}
 	}
 
-	function make_datatables_verifikasi_selesai()
+	function make_datatables_verifikasi_selesai($filter)
 	{
-		$this->_datatables_verifikasi_selesai();
+		$this->_datatables_verifikasi_selesai($filter);
 		if (@$_POST['length'] != -1)
 			$this->db->limit(@$_POST['length'], @$_POST['start']);
 		$query = $this->db->get();
 		return $query->result();
 	}
 
-	function make_count_filtered_verifikasi_selesai()
+	function make_count_filtered_verifikasi_selesai($filter)
 	{
-		$this->_datatables_verifikasi_selesai();
+		$this->_datatables_verifikasi_selesai($filter);
 		$query = $this->db->get();
 		return $query->num_rows();
 	}
 
-	public function make_count_all_verifikasi_selesai()
+	public function make_count_all_verifikasi_selesai($filter)
 	{
-		$this->_datatables_verifikasi_selesai();
+		$this->_datatables_verifikasi_selesai($filter);
+		return $this->db->count_all_results();
+	}
+	// -------------------------------- end-datatable --------------------------//
+
+
+	// ----------------- datatable-penerima-manfaat --------------------------//
+
+	//set column field database for datatable orderable
+	protected $column_order_penerima_manfaat = array('rp.id', 'rp.organisasi', 'rp.perorangan');
+	// default order 
+	protected $order_penerima_manfaat = array('rp.id' => 'desc');
+
+	private function _datatables_penerima_manfaat($token)
+	{
+
+		$this->db->select('rp.id, rp.organisasi, rp.perorangan, s.is_status');
+		$this->db->from('spj_relasi_publik AS rp');
+		$this->db->join('spj as s', 'rp.token=s.token');
+		$this->db->where('rp.token', $token);
+
+		// Pencarian global
+		if (!empty($_POST['search']['value'])) {
+			$search = strtolower($_POST['search']['value']);
+			$this->db->group_start()
+				->like('LOWER(rp.organisasi)', $search)
+				->or_like('LOWER(rp.perorangan)', $search)
+				->group_end();
+		}
+
+		if (isset($_POST['order'])) // here order processing
+		{
+			$this->db->order_by($this->column_order_penerima_manfaat[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if (isset($this->order_penerima_manfaat)) {
+			$order = $this->order_penerima_manfaat;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function make_datatables_penerima_manfaat($token)
+	{
+		$this->_datatables_penerima_manfaat($token);
+		if (@$_POST['length'] != -1)
+			$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function make_count_filtered_penerima_manfaat($token)
+	{
+		$this->_datatables_penerima_manfaat($token);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+
+	public function make_count_all_penerima_manfaat($token)
+	{
+		$this->_datatables_penerima_manfaat($token);
 		return $this->db->count_all_results();
 	}
 	// -------------------------------- end-datatable --------------------------//
@@ -540,5 +602,143 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
+	public function getListPenerimaManfaat($token)
+	{
+		$this->db->select('*');
+		$this->db->from('spj_relasi_publik');
+		$this->db->where('token', $token);
+		$q = $this->db->get();
+		return $q;
+	}
+
+	// ----------------- datatable-rekap-perjadin --------------------------//
+
+	//set column field database for datatable orderable
+	protected $column_order_rekap_perjadin = array('t.id', 't.nama_dokumen', 't.bulan', 't.tahun');
+	// default order 
+	protected $order_rekap_perjadin = array('t.id' => 'desc');
+
+	private function _datatables_rekap_perjadin($filter)
+	{
+
+		$this->db->select('t.id, t.nama_dokumen, t.file_path, t.bulan, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan');
+		$this->db->from('t_dokumen_perjadin AS t');
+		$this->db->join('ref_parts as r', 't.fid_part=r.id');
+		if($this->session->userdata('role') === 'USER') {
+			$this->db->where('t.tahun', $this->session->userdata('tahun_anggaran'));
+			$this->db->where('t.fid_part', $this->session->userdata('part'));
+		}
+
+		if(!empty($filter['filter_bulan'])) {
+			$this->db->where('t.bulan', $filter['filter_bulan']);
+		}
+
+		if(!empty($filter['filter_bidang'])) {
+			$this->db->where('t.fid_part', $filter['filter_bidang']);
+		}
+
+		// Pencarian global
+		if (!empty($_POST['search']['value'])) {
+			$search = strtolower($_POST['search']['value']);
+			$this->db->group_start()
+				->like('LOWER(t.nama_dokumen)', $search)
+				->or_like('LOWER(t.bulan)', $search)
+				->group_end();
+		}
+
+		if (isset($_POST['order'])) // here order processing
+		{
+			$this->db->order_by($this->column_order_rekap_perjadin[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if (isset($this->order_rekap_perjadin)) {
+			$order = $this->order_rekap_perjadin;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function make_datatables_rekap_perjadin($filter)
+	{
+		$this->_datatables_rekap_perjadin($filter);
+		if (@$_POST['length'] != -1)
+			$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function make_count_filtered_rekap_perjadin($filter)
+	{
+		$this->_datatables_rekap_perjadin($filter);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+
+	public function make_count_all_rekap_perjadin($filter)
+	{
+		$this->_datatables_rekap_perjadin($filter);
+		return $this->db->count_all_results();
+	}
+	// -------------------------------- end-datatable --------------------------//
 	
+	// ----------------- datatable-rekap-pajak --------------------------//
+
+	//set column field database for datatable orderable
+	protected $column_order_rekap_pajak = array('t.id', 'r.nama', 't.periode', 't.jenis_dokumen', 't.tahun');
+	// default order 
+	protected $order_rekap_pajak = array('t.id' => 'desc');
+
+	private function _datatables_rekap_pajak($filter)
+	{
+
+		$this->db->select('t.id, t.nama_dokumen, t.jenis_dokumen, t.file_path, t.periode, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan');
+		$this->db->from('t_dokumen_pajak AS t');
+		$this->db->join('ref_parts as r', 't.fid_part=r.id');
+		if($this->session->userdata('role') === 'USER') {
+			$this->db->where('t.tahun', $this->session->userdata('tahun_anggaran'));
+			$this->db->where('t.fid_part', $this->session->userdata('part'));
+		}
+
+		if(!empty($filter['filter_bidang'])) {
+			$this->db->where('t.fid_part', $filter['filter_bidang']);
+		}
+
+		// Pencarian global
+		if (!empty($_POST['search']['value'])) {
+			$search = strtolower($_POST['search']['value']);
+			$this->db->group_start()
+				->like('LOWER(t.nama_dokumen)', $search)
+				->or_like('LOWER(t.periode)', $search)
+				->group_end();
+		}
+
+		if (isset($_POST['order'])) // here order processing
+		{
+			$this->db->order_by($this->column_order_rekap_pajak[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} else if (isset($this->order_rekap_pajak)) {
+			$order = $this->order_rekap_pajak;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
+
+	function make_datatables_rekap_pajak($filter)
+	{
+		$this->_datatables_rekap_pajak($filter);
+		if (@$_POST['length'] != -1)
+			$this->db->limit(@$_POST['length'], @$_POST['start']);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	function make_count_filtered_rekap_pajak($filter)
+	{
+		$this->_datatables_rekap_pajak($filter);
+		$query = $this->db->get();
+		return $query->num_rows();
+	}
+
+	public function make_count_all_rekap_pajak($filter)
+	{
+		$this->_datatables_rekap_pajak($filter);
+		return $this->db->count_all_results();
+	}
+	// -------------------------------- end-datatable --------------------------//
+
 }

@@ -1,6 +1,5 @@
 <div class="clearfix"></div>
 <?php if (@$detail->is_status === 'VERIFIKASI'  || @$detail->is_status === 'VERIFIKASI_ADMIN') : ?>
-
     <div class="alert alert-warning text-dark rounded-0" role="alert">
         <strong><i class="fa fa-lock mr-2"></i> Verifikasi </strong>, Usulan SPJ kamu dalam tahap verifikasi.
     </div>
@@ -32,8 +31,8 @@
                 <a href="#step-2">
                     <span class="step_no">2</span>
                     <span class="step_descr">
-                        Eviden<br />
-                        <small>Upload Berkas SPJ</small>
+                        Relasi Publik<br />
+                        <small>Penerima Manfaat</small>
                     </span>
                 </a>
             </li>
@@ -41,8 +40,8 @@
                 <a href="#step-3">
                     <span class="step_no">3</span>
                     <span class="step_descr">
-                        Verifikasi<br />
-                        <small>Verifikasi Admin</small>
+                        Eviden<br />
+                        <small>Unggah Berkas SPJ</small>
                     </span>
                 </a>
             </li>
@@ -50,8 +49,17 @@
                 <a href="#step-4">
                     <span class="step_no">4</span>
                     <span class="step_descr">
-                        Selesai<br />
+                        Review<br />
                         <small>Review Usulan</small>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="#step-5">
+                    <span class="step_no">5</span>
+                    <span class="step_descr">
+                        Final<br />
+                        <small>Verifikasi</small>
                     </span>
                 </a>
             </li>
@@ -187,7 +195,23 @@
 
         </div>
         <div id="step-2">
-            <?= form_open(base_url('app/spj/proseseviden'), ['id' => 'step-2', 'class' => 'form-horizontal form-label-left', 'data-parsley-validate' => '']); ?>
+            <div class="col-md-10 center-margin">
+            <table class="table table-bordered table-striped" id="table-penerima-manfaat">
+                <thead>
+                    <tr>
+                        <th width="5%">No.</th>
+                        <th>Nama Organsasi/Instansi/Lembaga</th>
+                        <th>Nama Perorangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+            </table>
+            <button type="button" class="btn btn-secondary rounded-0 pull-left" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=0&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
+            <button onclick="nextStep('<?= base_url('app/spj/buatusul?step=2&token=' . @$detail->token) ?>')" class="btn btn-primary rounded-0" type="button"> Selanjutnya <i class="fa fa-arrow-right ml-2"></i></button>
+        </div>
+        </div>
+        <div id="step-3">
+            <?= form_open(base_url('app/spj/proseseviden'), ['id' => 'step-3', 'class' => 'form-horizontal form-label-left', 'data-parsley-validate' => '']); ?>
             <input type="hidden" name="token" value="<?= @$detail->token ?>">
             <div class="col-md-10 center-margin">
                 <div class="alert alert-info rounded-0" role="alert">
@@ -227,7 +251,6 @@
                 </div>
             </div>
             <div class="col-md-10 center-margin">
-
                 <div class="form-group">
                     <label class="col-form-label label-align" for="link">Link Berkas <span class="text-danger">*</span></label>
                     <textarea name="link" id="link" cols="30" rows="3" class="form-control" required="required"
@@ -235,214 +258,269 @@
                         data-parsley-pattern-message="Link harus diawali http:// atau https://"
                         <?= $disabled_status ?>><?= @$detail->berkas_link ?></textarea>
                 </div>
-                <button type="button" class="btn btn-primary rounded-0" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=0&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
+                <button type="button" class="btn btn-secondary rounded-0" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=1&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
                 <?php if ((@$detail->is_status === 'ENTRI') || (empty(@$detail->token))) : ?>
-                    <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i> Kirim Usulan</button>
-                    <button class="btn btn-danger rounded-0 pull-right" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-close mr-3"></i> Batalkan </button>
+                    <button type="submit" class="btn btn-primary rounded-0"> Simpan & Lanjutkan <i class="fa fa-arrow-right mr-2"></i></button>
                 <?php else : ?>
-                    <button onclick="nextStep('<?= base_url('app/spj/buatusul?step=2&token=' . @$detail->token) ?>')" class="btn btn-primary rounded-0 pull-right mt-3" type="button"> Selanjutnya <i class="fa fa-arrow-right ml-2"></i></button>
+                    <button onclick="nextStep('<?= base_url('app/spj/buatusul?step=3&token=' . @$detail->token) ?>')" class="btn btn-primary rounded-0" type="button"> Selanjutnya <i class="fa fa-arrow-right ml-2"></i></button>
                 <?php endif; ?>
             </div>
             <?= form_close() ?>
         </div>
-        <div id="step-3" class="text-center">
+        <div id="step-4">
+            <?= form_open(base_url('app/spj/final'), ['id' => 'step-4', 'class' => 'form-horizontal form-label-left', 'data-parsley-validate' => '']); ?>
+            <input type="hidden" name="token" value="<?= @$detail->token ?>">
+            <div class="col-md-10 center-margin">
+                <?php
+                $spj = $this->spj->detail(['token' => @$detail->token])->row();
+                ?>
+                <?php if (!in_array(@$spj->is_status, ['SELESAI_TMS', 'SELESAI_BTL'])) : ?>
+                    <div class="alert alert-info rounded-0" role="alert">
+                        <strong><i class="fa fa-check-circle mr-2"></i> Perhatian !</strong> Silahkan cek kembali data usulan SPJ anda sebelum difinalisasi.
+                    </div>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    Bidang / Bagian
+                                </td>
+                                <td rowspan="2">
+
+                                </td>
+                                <td>
+                                    <?= $spj->nama_part ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Program
+                                </td>
+                                <td>
+                                    <?= $spj->nama_program ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Kegiatan
+                                </td>
+                                <td class="text-right">
+                                    <?= $spj->kode_kegiatan ?>
+                                </td>
+                                <td>
+                                    <?= strtoupper($spj->nama_kegiatan) ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Sub Kegiatan
+                                </td>
+                                <td class="text-right">
+                                    <?= $spj->kode_sub_kegiatan ?>
+                                </td>
+                                <td>
+                                    <?= strtoupper($spj->nama_sub_kegiatan) ?>
+                                </td>
+                            </tr>
+                            <tr class="bg-light text-dark text-center">
+                                <td colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Kode Rekening
+                                </td>
+                                <td colspan="2">
+                                    <?= $spj->koderek ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    SPJ Bulan
+                                </td>
+                                <td colspan="2">
+                                    <?= bulan($spj->bulan) ?> / <?= $spj->tahun ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Uraian
+                                </td>
+                                <td colspan="2">
+                                    <?= $spj->uraian ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Jumlah
+                                </td>
+                                <td colspan="2">
+                                    <h5>Rp. <b><?= nominal($spj->jumlah) ?></b></h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Berkas (Link)
+                                </td>
+                                <td class="text-center">
+                                    <a href="<?= $spj->berkas_link ?>" target="_blank" title="Open Link"><i class="fa fa-link"></i> Open</a>
+                                </td>
+                                <td>
+                                    <?= $spj->berkas_link ?> <br>
+                                </td>
+                            </tr>
+                            <tr class="bg-light text-dark text-center">
+                                <td colspan="3">Daftar Penerima Manfaat</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th width="5%">No.</th>
+                                                <th>Nama Organsasi/Instansi/Lembaga</th>
+                                                <th>Nama Perorangan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $list_penerima = $this->spj->getListPenerimaManfaat(@$detail->token)->result();
+                                            if (count($list_penerima) > 0) :
+                                                $no = 1;
+                                                foreach ($list_penerima as $penerima) :
+                                            ?>
+                                                    <tr>
+                                                        <td class="text-center"><?= $no++; ?>.</td>
+                                                        <td><?= !empty($penerima->organisasi) ? $penerima->organisasi : '-'; ?></td>
+                                                        <td><?= !empty($penerima->perorangan) ? $penerima->perorangan : '-'; ?></td>
+                                                    </tr>
+                                                <?php
+                                                endforeach;
+                                            else :
+                                                ?>
+                                                <tr>
+                                                    <td colspan="3" class="text-center">-- Data Penerima Manfaat Tidak Ada --</td>
+                                                </tr>
+                                            <?php
+                                            endif;
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr class="bg-light text-dark text-center">
+                                <td colspan="3">Detail Pengguna</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <?php
+                                    $userusul = $this->users->profile_username($spj->entri_by)->row();
+                                    ?>
+                                    Dientri oleh : <?= $userusul->nama ?> (<?= strtoupper($spj->entri_by) ?>) <br>
+                                    Tanggal / Jam : <?= longdate_indo(substr($spj->entri_at, 0, 10)) ?> / <?= substr($spj->entri_at, 10, 6) ?> WITA
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <?php if(count($list_penerima) > 0): ?>
+                                        <?php if((@$detail->is_status === 'ENTRI') || (empty(@$detail->token))): ?>
+                                        <button class="btn btn-success rounded-0" type="submit"> Finalkan <i class="fa fa-save ml-2"></i></button>
+                                        <?php else: ?>    
+                                        <button onclick="nextStep('<?= base_url('app/spj/buatusul?step=4&token=' . @$detail->token) ?>')" class="btn btn-primary rounded-0" type="button"> Selanjutnya <i class="fa fa-arrow-right ml-2"></i></button>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <i class="fa fa-exclamation-triangle mr-2"></i> Mohon Maaf, Usulan SPJ harus memiliki minimal 1 (satu) penerima manfaat.
+                                    </div>
+                                    <?php endif; ?>
+                                    <button type="button" class="btn btn-secondary rounded-0 pull-left" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=2&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>                    
+                <?php endif; ?>
+            </div>
+            <?= form_close(); ?>
+        </div>
+        <div id="step-5">
             <?php if (@$detail->is_status === 'VERIFIKASI' || @$detail->is_status === 'VERIFIKASI_ADMIN') : ?>
                 <div class="container">
-                    <div class="col-md-12">
                         <img src="<?= base_url('template/assets/icon/verifikasi.svg') ?>" alt="Verifikasi Admin" width="50%">
                         <h2 class="StepTitle">Usulan Dalam Proses Verifikasi <i class="fa fa-lock text-success ml-2"></i></h2>
-                        <button class="btn btn-warning rounded-0" onclick="window.location.href='<?= base_url('app/spj') ?>'">Kembali <i class="fa fa-arrow-right ml-3"></i> </button>
+                        <button type="button" class="btn btn-secondary rounded-0" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=3&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
+                        <button class="btn btn-primary rounded-0" onclick="window.location.href='<?= base_url('app/spj') ?>'">Buka Inbox <i class="fa fa-inbox ml-2"></i> </button>
                     </div>
                 </div>
-            <?php endif; ?>
-        </div>
-        <div id="step-4">
-            <?php if (@$detail->is_status === 'TMS' || @$detail->is_status === 'BTL' || @$detail->is_status === 'SELESAI' || @$detail->is_status === 'SELESAI_TMS' || @$detail->is_status === 'SELESAI_BTL') : ?>
-                <div class="col-md-10 center-margin">
-                    <?php
-                    $spj = $this->spj->detail(['token' => @$detail->token])->row();
-                    ?>
-                    <?php if (@$spj->is_status === 'APPROVE') : ?>
-                        <div class="alert alert-success rounded-0" role="alert">
-                            <strong><i class="fa fa-check-circle mr-2"></i> Selamat</strong>, Usulan SPJ dengan kode rekening "<?= $spj->koderek ?>" telah disetujui.
-                        </div>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        Bidang / Bagian
-                                    </td>
-                                    <td rowspan="2">
-
-                                    </td>
-                                    <td>
-                                        <?= $spj->nama_part ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Program
-                                    </td>
-                                    <td>
-                                        <?= $spj->nama_program ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Kegiatan
-                                    </td>
-                                    <td class="text-right">
-                                        <?= $spj->kode_kegiatan ?>
-                                    </td>
-                                    <td>
-                                        <?= strtoupper($spj->nama_kegiatan) ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Sub Kegiatan
-                                    </td>
-                                    <td class="text-right">
-                                        <?= $spj->kode_sub_kegiatan ?>
-                                    </td>
-                                    <td>
-                                        <?= strtoupper($spj->nama_sub_kegiatan) ?>
-                                    </td>
-                                </tr>
-                                <tr class="bg-light text-dark text-center">
-                                    <td colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Kode Rekening
-                                    </td>
-                                    <td colspan="2">
-                                        <?= $spj->koderek ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        SPJ Bulan
-                                    </td>
-                                    <td colspan="2">
-                                        <?= bulan($spj->bulan) ?> / <?= $spj->tahun ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Uraian
-                                    </td>
-                                    <td colspan="2">
-                                        <?= $spj->uraian ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Jumlah
-                                    </td>
-                                    <td colspan="2">
-                                        <h5>Rp. <b><?= nominal($spj->jumlah) ?></b></h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Berkas (Link)
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="<?= $spj->berkas_link ?>" target="_blank" title="Open Link"><i class="fa fa-link"></i> Open</a>
-                                    </td>
-                                    <td>
-                                        <?= $spj->berkas_link ?> <br>
-                                    </td>
-                                </tr>
-                                <tr class="bg-light text-dark text-center">
-                                    <td colspan="3">Detail Verificator</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">
+            <?php else: ?>
+            <div class="alert alert-danger rounded-0" role="alert">
+                        <strong><i class="fa fa-close mr-2"></i> Mohon Maaf</strong>, Usulan SPJ dengan kode rekening "<?= $spj->koderek ?>" (<?= $spj->is_status ?>).
+                    </div>
+                    <div class="alert alert-light rounded-0 border" role="alert">
+                        <strong>Alasan (<?= $spj->is_status ?>) : </strong> <br> <?= !empty($spj->catatan) ? $spj->catatan : '-' ?>
+                    </div>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr class="bg-light text-dark text-center">
+                                <td colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Kode Rekening
+                                </td>
+                                <td colspan="2">
+                                    <?= $spj->koderek ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    SPJ Bulan
+                                </td>
+                                <td colspan="2">
+                                    <?= bulan($spj->bulan) ?> / <?= $spj->tahun ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Uraian
+                                </td>
+                                <td colspan="2">
+                                    <?= $spj->uraian ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Jumlah
+                                </td>
+                                <td colspan="2">
+                                    <h5>Rp. <b><?= nominal($spj->jumlah) ?></b></h5>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Berkas (Link)
+                                </td>
+                                <td class="text-center">
+                                    <a href="<?= $spj->berkas_link ?>" target="_blank" title="Open Link"><i class="fa fa-link"></i> Open</a>
+                                </td>
+                                <td>
+                                    <?= $spj->berkas_link ?> <br>
+                                </td>
+                            </tr>
+                            <tr class="bg-light text-dark text-center">
+                                <td colspan="3">Detail Verificator</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <?php if ($spj->is_status === 'BTL' || $spj->is_status === 'TMS' || $spj->is_status === 'SELESAI_TMS' || $spj->is_status === 'SELESAI_BTL') : ?>
                                         <?php
-                                        $userusul = $this->users->profile_username($spj->approve_by)->row();
+                                        $userusul = $this->users->profile_username($spj->verify_by)->row();
                                         ?>
-                                        Diapprove oleh : <?= $userusul->nama ?> (<?= strtoupper($spj->approve_by) ?>) <br>
-                                        Tanggal / Jam : <?= longdate_indo(substr($spj->approve_at, 0, 10)) ?> / <?= substr($spj->approve_at, 10, 6) ?> WITA
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    <?php else : ?>
-                        <div class="alert alert-danger rounded-0" role="alert">
-                            <strong><i class="fa fa-close mr-2"></i> Mohon Maaf</strong>, Usulan SPJ dengan kode rekening "<?= $spj->koderek ?>" (<?= $spj->is_status ?>).
-                        </div>
-                        <div class="alert alert-light rounded-0 border" role="alert">
-                            <strong>Alasan (<?= $spj->is_status ?>) : </strong> <br> <?= !empty($spj->catatan) ? $spj->catatan : '-' ?>
-                        </div>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr class="bg-light text-dark text-center">
-                                    <td colspan="3">Detail SPJ (Surat Pertanggung Jawaban)</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Kode Rekening
-                                    </td>
-                                    <td colspan="2">
-                                        <?= $spj->koderek ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        SPJ Bulan
-                                    </td>
-                                    <td colspan="2">
-                                        <?= bulan($spj->bulan) ?> / <?= $spj->tahun ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Uraian
-                                    </td>
-                                    <td colspan="2">
-                                        <?= $spj->uraian ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Jumlah
-                                    </td>
-                                    <td colspan="2">
-                                        <h5>Rp. <b><?= nominal($spj->jumlah) ?></b></h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Berkas (Link)
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="<?= $spj->berkas_link ?>" target="_blank" title="Open Link"><i class="fa fa-link"></i> Open</a>
-                                    </td>
-                                    <td>
-                                        <?= $spj->berkas_link ?> <br>
-                                    </td>
-                                </tr>
-                                <tr class="bg-light text-dark text-center">
-                                    <td colspan="3">Detail Verificator</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">
-                                        <?php if ($spj->is_status === 'BTL' || $spj->is_status === 'TMS' || $spj->is_status === 'SELESAI_TMS' || $spj->is_status === 'SELESAI_BTL') : ?>
-                                            <?php
-                                            $userusul = $this->users->profile_username($spj->verify_by)->row();
-                                            ?>
-                                            Diverifikasi oleh : <?= $userusul->nama ?> (<?= strtoupper($spj->verify_by) ?>) <br>
-                                            Tanggal / Jam : <?= longdate_indo(substr($spj->verify_at, 0, 10)) ?> / <?= substr($spj->verify_at, 10, 6) ?> WITA
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button class="btn btn-danger rounded-0 pull-left mt-3" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-arrow-left mr-3"></i> Kembali </button>
-                    <?php endif; ?>
-                </div>
+                                        Diverifikasi oleh : <?= $userusul->nama ?> (<?= strtoupper($spj->verify_by) ?>) <br>
+                                        Tanggal / Jam : <?= longdate_indo(substr($spj->verify_at, 0, 10)) ?> / <?= substr($spj->verify_at, 10, 6) ?> WITA
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-danger rounded-0 pull-left mt-3" onclick="window.location.href='<?= base_url('app/spj') ?>'" type="button"><i class="fa fa-arrow-left mr-3"></i> Kembali </button>
             <?php endif; ?>
         </div>
     </div>
@@ -534,4 +612,37 @@
             </form>
         </div>
     </div>
+</div>
+
+<!-- Modal Tambah Data Users -->
+<div class="modal fade" id="tambah-data-users" tabindex="-1" aria-labelledby="tambah-data-usersLabel" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-0">
+      <?= form_open(base_url('app/spj/tambah_penerima'), ['id' => 'formRelasiPublik', 'data-parsley-validate' => true], [
+            'token' => @$detail->token
+        ]) ?>
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambah-data-usersLabel">Relasi Publik</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="organisasi">Organisasi/Instansi/Lembaga</label>
+            <input type="text" name="organisasi" id="organisasi" class="form-control" placeholder="Masukkan Nama Organisasi/Instansi/Lembaga" required data-parsley-required-message="Nama organisasi wajib diisi">
+        </div>
+        <div class="form-group">
+            <label for="perorangan">Nama Perorangan</label>
+            <input type="text" name="perorangan" id="perorangan" class="form-control" placeholder="Masukkan Nama Perorangan"
+            required data-parsley-required-message="Nama perorangan wajib diisi">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+    </div>
+    <?= form_close(); ?>
+    </div>
+  </div>
 </div>

@@ -139,7 +139,7 @@
                 <td class="text-center" valign="middle">Perbaikan <br> (Ubah Status Usulan)</td>
                 <td colspan="3">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <?=
                             form_open(base_url('app/spj/verifikasi_proses'), ['id' => 'formVerifikasi', 'class' => 'form-horizontal', 'data-parsley-validate' => '', 'data-parsley-errors-messages-disabled' => ''], ['status' => 'UBAH_STATUS', 'token' => $detail->token]);
                             ?>
@@ -173,7 +173,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="catatan"><b>Keterangan Perbaikan :</b></label>
-                                <textarea name="catatan" id="catatan" cols="5" rows="3" class="form-control" placeholder="Masukan keterangan perbaikan" required></textarea>
+                                <textarea name="catatan" id="catatan" cols="12" rows="6" class="form-control" placeholder="Masukan keterangan perbaikan" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary rounded-0"><i class="fa fa-save mr-2"></i> Proses</button>
                             <?=
@@ -197,15 +197,15 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="nomor"><b>Nomor Buku :</b></label>
-                                <input type="text" name="nomor" class="form-control" value="<?= $detail->nomor_pembukuan ?>" required="required" <?= $disabled_tms ?>>
+                                <label for="nomor"><b>Nomor Verifikasi :</b></label>
+                                <input type="text" name="nomor" class="form-control" value="<?= $detail->nomor_verifikasi ?>" required="required" <?= $disabled_tms ?>>
                             </div>
-                            <label for="tanggal"><b>Tanggal Buku :</b></label>
+                            <label for="tanggal"><b>Tanggal Verifikasi :</b></label>
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <span class="fa fa-calendar"></span>
                                 </span>
-                                <input type="text" name="tanggal" class="form-control date" id="tanggal" value="<?= format_tanggal($detail->tanggal_pembukuan) ?>" required="required" <?= $disabled_tms ?>>
+                                <input type="text" name="tanggal" class="form-control date" id="tanggal" value="<?= format_tanggal($detail->tanggal_verifikasi) ?>" required="required" <?= $disabled_tms ?>>
                             </div>
                             <div class="form-group">
                                 <label for="is_realisasi"><b>Status Realisasi :</b></label>

@@ -1,3 +1,12 @@
+const FILTER_FORM = $("#filterForm");
+
+$.fn.dataTable.ext.buttons.reload = {
+	text: "<i class='fa fa-repeat'></i> Reload Data",
+	action: function (e, dt, node, config) {
+		dt.ajax.reload();
+	},
+};
+
 var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 	stateSave: true, // ini menyimpan filter, search, pagination
 	processing: true,
@@ -5,14 +14,11 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 	paging: true,
 	ordering: true,
 	info: true,
-	searching: true,
-	select: {
-		style: "single",
-	},
+	searching: false,
+	select: true,
 	orderCellsTop: true,
 	deferRender: true,
-	pagingType: "full_numbers",
-	responsive: false,
+	responsive: true,
 	datatype: "json",
 	// scrollY: "",
 	order: [[7, "desc"]], //default order
@@ -54,7 +60,7 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 				.attr("type", "search")
 				.addClass("form-control form-control-sm")
 				.appendTo(
-					$(".filterhead:eq(" + indexColumn + ")", table).empty() // hanya cari di tabel ini
+					$(".filterhead:eq(" + indexColumn + ")", table).empty(), // hanya cari di tabel ini
 				)
 				.on("change", function () {
 					column.search($(this).val(), false, false, true).draw();
@@ -68,8 +74,6 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 
 			indexColumn++;
 		});
-		// panggil function buat filter selectbox
-		addStatusFilterSpjSelesai(this, 4); // 7 = index kolom status
 	},
 	language: {
 		paginate: {
@@ -77,51 +81,19 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 			next: `<i class="fa fa-long-arrow-right"></i>`,
 		},
 	},
-	// Tambahkan bagian ini
-	dom: "lBfrtip",
-	buttons: [
-		{
-			extend: "colvis",
-			text: "Show/Hide Columns",
-		},
-	],
+	layout: {
+		topStart: ["pageLength"],
+		topEnd: [
+			{
+				buttons: ["colvis", "reload"],
+			},
+		],
+		bottomStart: ["info"],
+		bottomEnd: ["paging"],
+	},
 });
 
-function addStatusFilterSpjSelesai(table, columnIndex) {
-	var api = table.api();
-
-	// buat element select
-	var filterSelect = $(`
-		<label style="margin-left:10px;">
-			Hanya Tampilkan:
-			<select id="statusFilterSpjSelesai" class="form-control form-control-sm" style="display:inline-block; width:auto; margin-left:5px;">
-				<option value="">Semua</option>
-			</select>
-		</label>
-	`);
-
-	// sisipkan ke samping search box
-	$("#table-spj-selesai_wrapper .dataTables_filter").append(filterSelect);
-
-	// ambil data unik dari kolom
-	api
-		.column(columnIndex)
-		.data()
-		.unique()
-		.sort()
-		.each(function (d) {
-			if (d) {
-				$("#statusFilterSpjSelesai").append(`<option value="${d}">${d}</option>`);
-			}
-		});
-
-	// event listener
-	$("#statusFilterSpjSelesai").on("change", function () {
-		api.column(columnIndex).search(this.value).draw();
-	});
-}
-
-function Rollback(token) { 
+function Rollback(token) {
 	if (confirm("Yakin ingin rollback data SPJ ini?")) {
 		$.ajax({
 			url: `${_uri}/app/spj/rollback`,
@@ -142,4 +114,17 @@ function Rollback(token) {
 		});
 	}
 	return false;
+}
+
+FILTER_FORM.on("submit", function (e) {
+	e.preventDefault();
+	let formData = $(this).serialize();
+	let newUrl = `${_uri}/app/spj/verifikasi_selesai?${formData}`;
+	tableVerifikasiSpjSelesai.ajax.url(newUrl).load();
+});
+
+async function ResetFilter() {
+	FILTER_FORM[0].reset();
+	let newUrl = `${_uri}/app/spj/verifikasi_selesai`;
+	tableVerifikasiSpjSelesai.ajax.url(newUrl).load();
 }

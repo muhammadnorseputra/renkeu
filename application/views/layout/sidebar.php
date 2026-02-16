@@ -38,7 +38,18 @@
                     <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/programs') : '#' ?>" class="loadContent" title="Program & Kegiatan" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-database"></i>Rincian Anggaran </a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_spj')): ?>
-                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj') : '#' ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-dollar"></i> SPJ</a></li>
+                    <li style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">
+                        <a>
+                            <i class="fa fa-dollar"></i> SPJ <span class="fa fa-chevron-down"></span>
+                        </a>
+                        <ul class="nav child_menu">
+                            <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj') : '#' ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"> Inbox</a></li>
+
+                            <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj/rekap_perjadin') : '#' ?>" class="loadContent" title="Rekapitulasi Perjalanan Dinas" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"> Rekapitulasi Perjadin</a></li>
+
+                            <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj/rekap_pajak') : '#' ?>" class="loadContent" title="Rekapitulasi Pajak" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"> Rekapitulasi Pajak</a></li>
+                        </ul>
+                    </li>
 
                     <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj/monitor') : '#' ?>" class="loadContent" title="Monitoring Belanja" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-line-chart"></i> Monitoring Belanja</a></li>
                 <?php endif; ?>
