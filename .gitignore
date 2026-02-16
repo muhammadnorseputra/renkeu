@@ -34,3 +34,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 ## environment files
 env.php
 .env
+
+/template/upload/
+
