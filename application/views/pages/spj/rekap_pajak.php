@@ -17,6 +17,7 @@
         <div class="alert alert-info" role="alert">
             <i class="fa fa-info-circle mr-2"></i>
             Unggah Dokumen dalam format PDF / Excel. Maksimal ukuran file adalah 2MB. File yang diunggah akan menimpa file sebelumnya untuk jenis, periode dan tahun anggaran yang sama.
+            Silahkan unduh template yang sudah disediakan untuk memastikan format file yang benar. <br/> <a href="<?= base_url('/template/template_rekap_pajak_daerah.xlsx') ?>" class="alert-link btn btn-sm btn-warning"><i class="fa fa-file"></i> Unduh Template Pajak Daerah</a> | <a href="<?= base_url('/template/template_rekap_pajak_negara.xlsx') ?>" class="alert-link btn btn-sm btn-warning"><i class="fa fa-file"></i> Unduh Template Pajak Negara</a>.
         </div>
         <table class="table table-borderless table-hover" id="table-rekap-pajak">
                 <thead class="thead-light">

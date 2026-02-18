@@ -17,6 +17,11 @@
         <div class="alert alert-info" role="alert">
             <i class="fa fa-info-circle mr-2"></i>
             Unggah Dokumen dalam format PDF / Excel. Maksimal ukuran file adalah 2MB. File yang diunggah akan menimpa file sebelumnya untuk bulan dan tahun anggaran yang sama.
+            Silahkan unduh template yang sudah disediakan untuk memastikan format file yang benar. <br/> <a href="<?= base_url('/template/template_rekap_perjadin.xlsx') ?>" class="alert-link btn btn-sm btn-warning"><i class="fa fa-file"></i> Unduh Template</a>.
+        </div>
+        <div class="alert alert-warning" role="alert">
+            <i class="fa fa-exclamation-triangle mr-2"></i>
+            Pastikan file yang diunggah sudah benar, karena jika sudah dikunci oleh admin, file tidak dapat diubah atau dihapus.
         </div>
         <?php if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR'])): ?>
         <?= form_open(base_url('app/spj/filter_rekap_perjadin'), ['class' => 'form-horizontal border p-3 mb-3 mx-2 bg-light', 'id' => 'filterForm', 'data-parsley-validate' => '']) ?>
