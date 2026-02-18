@@ -16,7 +16,7 @@
 
         <div class="alert alert-info" role="alert">
             <i class="fa fa-info-circle mr-2"></i>
-            Unggah Dokumen dalam format PDF. Maksimal ukuran file adalah 2MB. File yang diunggah akan menimpa file sebelumnya untuk jenis, periode dan tahun anggaran yang sama.
+            Unggah Dokumen dalam format PDF / Excel. Maksimal ukuran file adalah 2MB. File yang diunggah akan menimpa file sebelumnya untuk jenis, periode dan tahun anggaran yang sama.
         </div>
         <table class="table table-borderless table-hover" id="table-rekap-pajak">
                 <thead class="thead-light">

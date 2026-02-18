@@ -2,6 +2,7 @@
 
 class ModelSpj extends CI_Model
 {
+
 	public function getPeriode()
 	{
 		$this->db->select('*');
@@ -596,6 +597,18 @@ class ModelSpj extends CI_Model
 		$this->db->from('spj');
 		$this->db->where('fid_part', $part);
 		$this->db->where('fid_kegiatan', $kegiatan_id);
+		$this->db->where('is_status', 'SELESAI');
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	public function getRealisasiByPartAndSubKegiatan($part, $sub_kegiatan_id, $ta)
+	{
+		$this->db->select_sum('jumlah');
+		$this->db->from('spj');
+		$this->db->where('fid_part', $part);
+		$this->db->where('fid_sub_kegiatan', $sub_kegiatan_id);
 		$this->db->where('is_status', 'SELESAI');
 		$this->db->where('tahun', $ta);
 		$q = $this->db->get();

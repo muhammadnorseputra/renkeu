@@ -1221,15 +1221,28 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
 
     public function monitor()
     {
+        $tahun_anggaran = $this->session->userdata('tahun_anggaran');
+        $is_perubahan = $this->session->userdata('is_perubahan');
+        $part = $this->session->userdata('part');
+
         $data = [
             'title' => 'Monitor SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/monitor',
-            'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
-            'is_perubahan' => $this->session->userdata('is_perubahan'),
-            'part' => $this->session->userdata('part'),
-            'listpart' => $this->crud->getWhere('ref_parts', ['id' => $this->session->userdata('part')])->result(),
-            'programs' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran')),
-            'kegiatans' => $this->db->order_by('kode', 'asc')->where('fid_part', $this->session->userdata('part'))->where('tahun', $this->session->userdata('tahun_anggaran'))->get('ref_kegiatans')
+            'tahun_anggaran' => $tahun_anggaran,
+            'is_perubahan' => $is_perubahan,
+            'part' => $part,
+            'listpart' => $this->crud->getWhere('ref_parts', ['id' => $part])->result(),
+            'programs' => $this->target->program(null, $part, $tahun_anggaran),
+            'kegiatans' => $this->db->order_by('kode', 'asc')
+                                ->where('fid_part', $part)
+                                ->where('tahun', $tahun_anggaran)
+                                ->get('ref_kegiatans'),
+            'sub_kegiatans' => $this->db->select('sk.id, sk.kode, sk.nama')
+                                    ->order_by('sk.kode', 'asc')
+                                    ->join('ref_kegiatans as k', 'sk.fid_kegiatan = k.id')
+                                    ->where('k.fid_part', $part)
+                                    ->where('sk.tahun', $tahun_anggaran)
+                                    ->get('ref_sub_kegiatans as sk'),
         ];
         $this->load->view('layout/app', $data);
     }
@@ -1383,7 +1396,7 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
         // validasi form dan upload file ke folder /template/upload/dokumen_perjadin/
 		$config = [
 			'upload_path'   => './template/upload/dokumen_perjadin/',
-			'allowed_types' => 'pdf',
+			'allowed_types' => 'pdf|xls|xlsx',
 			'max_size'      => 2120, // 2MB
 			'file_name'     => $namafile,
 			'overwrite'     => true
@@ -1624,7 +1637,7 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
         // validasi form dan upload file ke folder /template/upload/dokumen_pajak/
 		$config = [
 			'upload_path'   => './template/upload/dokumen_pajak/',
-			'allowed_types' => 'pdf',
+			'allowed_types' => 'pdf|xls|xlsx',
 			'max_size'      => 2120, // 2MB
 			'file_name'     => $namafile,
 			'overwrite'     => true

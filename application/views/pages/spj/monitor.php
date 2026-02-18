@@ -66,13 +66,13 @@
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Bidang</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
-            <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
     </div>
-    <div class="x_content" style="display: none;">
+    <div class="x_content">
         <table class="table jambo_table bulk_action table-bordered">
-            <thead class="top-0" style="position: sticky; top: 0; z-index: 1;">
+            <thead>
                 <tr>
                     <th rowspan="3" class="align-middle text-center">No</th>
                     <th rowspan="3" class="align-middle text-center">Bidang/Bagian</th>
@@ -155,7 +155,6 @@
         </table>
     </div>
 </div>
-
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Program</h2>
@@ -178,15 +177,34 @@
             </thead>
             <tbody>
                 <?php if ($programs): ?>
-                    <?php $no = 1;
-                    foreach ($programs->result() as $program): ?>
+                    <?php 
+                    $no = 1;
+                    $totalPaguProgram = 0;
+                    $totalRealisasiProgram = 0;
+                    foreach ($programs->result() as $program): 
+                    $paguProgram = $this->target->getAlokasiPaguProgram($program->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
+                    $realisasiProgram = $this->spj->getRealisasiByPartAndProgram($part->id, $program->id, $tahun_anggaran);
+                    $sisaAnggaran = $paguProgram - $realisasiProgram;
+                    $capaian = $paguProgram > 0 ? ($realisasiProgram / $paguProgram) * 100 : 0;
+                    $totalPaguProgram += $paguProgram;
+                    $totalRealisasiProgram += $realisasiProgram;
+                    ?>
                         <tr>
                             <td class="text-center"><?= $no++ ?></td>
                             <td><?= $program->nama ?></td>
-                            <td>Pagu</td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getRealisasiByPartAndProgram($part->id, $program->id, $tahun_anggaran)) ?></td>
+                            <td>Rp. <?= nominal($paguProgram) ?></td>
+                            <td class="text-right">Rp. <?= nominal($realisasiProgram) ?></td>
+                            <td class="text-right">Rp. <?= nominal($sisaAnggaran) ?></td>
+                            <td class="text-right"><?= number_format($capaian, 2) ?>%</td>
                         </tr>
                     <?php endforeach; ?>
+                    <tr>
+                        <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPaguProgram) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalRealisasiProgram) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPaguProgram - $totalRealisasiProgram) ?></td>
+                        <td class="text-right font-weight-bold"><?= $totalPaguProgram > 0 ? number_format(($totalRealisasiProgram / $totalPaguProgram) * 100, 2) : 0 ?>%</td>
+                    </tr>
                 <?php else: ?>
                     <tr>
                         <td class="text-center" colspan="2">Data tidak tersedia</td>
@@ -219,12 +237,83 @@
             </thead>
             <tbody>
                 <?php if ($kegiatans): ?>
-                    <?php $no = 1;
-                    foreach ($kegiatans->result() as $kegiatan): ?>
+                    <?php 
+                    $no = 1;
+                    $totalPaguKegiatan = 0;
+                    $totalRealisasiPaguKegiatan = 0;
+                    foreach ($kegiatans->result() as $kegiatan): 
+                    $paguKegiatan = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
+                    $totalPaguKegiatan += $paguKegiatan;
+
+                    $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan($part->id, $kegiatan->id, $tahun_anggaran);
+                    $totalRealisasiPaguKegiatan += $realisasiKegiatan;
+
+                    $sisaAnggaran = $paguKegiatan - $realisasiKegiatan;
+                    $capaian = $paguKegiatan > 0 ? ($realisasiKegiatan / $paguKegiatan) * 100 : 0;
+                    ?>
                         <tr>
                             <td class="text-center"><?= $no++ ?></td>
                             <td><?= $kegiatan->nama ?></td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getRealisasiByPartAndKegiatan($part->id, $kegiatan->id, $tahun_anggaran)) ?></td>
+                            <td class="text-right">Rp. <?= nominal($paguKegiatan) ?></td>
+                            <td class="text-right">
+                                Rp. <?= nominal($realisasiKegiatan) ?>
+                            </td>
+                            <td class="text-right">Rp. <?= nominal($sisaAnggaran) ?></td>
+                            <td class="text-right"><?= number_format($capaian, 2) ?>%</td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPaguKegiatan) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalRealisasiPaguKegiatan) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPaguKegiatan - $totalRealisasiPaguKegiatan) ?></td>
+                        <td class="text-right font-weight-bold"><?= $totalPaguKegiatan > 0 ? number_format(($totalRealisasiPaguKegiatan / $totalPaguKegiatan) * 100, 2) : 0 ?>%</td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td class="text-center" colspan="2">Data tidak tersedia</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="x_panel">
+    <div class="x_title">
+        <h2><i class="fa fa-line-chart mr-2"></i> Belanja Sub Kegiatan</h2>
+        <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <table class="table jambo_table bulk_action table-bordered">
+            <thead>
+                <tr>
+                    <th rowspan="3" class="align-middle text-center">No</th>
+                    <th rowspan="3" class="align-middle text-center">Sub Kegiatan</th>
+                    <th class="align-middle text-center">Total Pagu</th>
+                    <th class="align-middle text-center">Total Realisasi</th>
+                    <th class="align-middle text-center">Sisa Anggaran</th>
+                    <th class="align-middle text-center">Capaian</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($sub_kegiatans): ?>
+                    <?php 
+                    $no = 1;
+                    $totalPaguKegiatan = 0;
+                    $totalRealisasiPaguKegiatan = 0;
+                    foreach ($sub_kegiatans->result() as $sub_kegiatan): 
+                    ?>
+                        <tr>
+                            <td class="text-center"><?= $no++ ?></td>
+                            <td><?= $sub_kegiatan->nama ?></td>
+                            <td class="text-right">
+                                Rp. <?= nominal($this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0) ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
