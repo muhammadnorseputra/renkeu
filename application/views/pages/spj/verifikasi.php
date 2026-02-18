@@ -104,6 +104,45 @@
                 </td>
             </tr>
             <tr>
+                <td class="bg-light text-dark text-center" colspan="3">Pihak Berelasi / Pihak Penerima</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th width="5%">No.</th>
+                                <th>Nama Organsasi/Instansi/Lembaga</th>
+                                <th>Nama Perorangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $list_penerima = $this->spj->getListPenerimaManfaat($detail->token)->result();
+                            if (count($list_penerima) > 0) :
+                                $no = 1;
+                                foreach ($list_penerima as $penerima) :
+                            ?>
+                                    <tr>
+                                        <td class="text-center"><?= $no++; ?>.</td>
+                                        <td><?= !empty($penerima->organisasi) ? $penerima->organisasi : '-'; ?></td>
+                                        <td><?= !empty($penerima->perorangan) ? $penerima->perorangan : '-'; ?></td>
+                                    </tr>
+                                <?php
+                                endforeach;
+                            else :
+                                ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">-- Data Penerima Manfaat Tidak Ada --</td>
+                                </tr>
+                            <?php
+                            endif;
+                            ?>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
                 <td class="bg-light text-dark text-center" colspan="3">Detail Pengguna</td>
             </tr>
             <tr>
