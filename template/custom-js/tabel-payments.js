@@ -166,8 +166,11 @@ modalPayment.find("#verifikasi_status").on("change", function () {
 	const isRejectedOrFix = val === "TOLAK" || val === "PERBAIKAN";
 	const isCair = val === "CAIR";
 	// Toggle tampilan input nomor dan tanggal BKU
-	$verifikasiCair.toggleClass("d-none", !isCair);
-	$verifikasiCair.toggleClass("d-block", isCair);
+	$verifikasiCair
+		.toggleClass("d-none", !isCair)
+		.toggleClass("d-block", isCair)
+		.find("input")
+		.prop("required", isCair);
 	// Toggle tampilan catatan verifikasi
 	$verifikasiCatatan.toggleClass("d-none", !isRejectedOrFix);
 	$verifikasiCatatan.toggleClass("d-block", isRejectedOrFix);
