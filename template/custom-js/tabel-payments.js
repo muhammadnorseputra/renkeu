@@ -1,3 +1,5 @@
+const FILTER_FORM_PAYMENT = $("#filterFormPayment");
+
 var modalPayment = $("#modalPayment");
 var tabelPayment = $("#table-spj-payment").DataTable({
 	stateSave: true,
@@ -10,7 +12,7 @@ var tabelPayment = $("#table-spj-payment").DataTable({
 	orderCellsTop: true,
 	deferRender: true,
 	pagingType: "full_numbers",
-	responsive: false,
+	responsive: true,
 	datatype: "json",
 	order: [],
 	scrollCollapse: false,
@@ -22,7 +24,8 @@ var tabelPayment = $("#table-spj-payment").DataTable({
 		url: `${_uri}/app/payment/ajaxTable`,
 		type: "POST",
 		data: function (d) {
-			d.filter_status = $("#filterStatus").val() || ""; // kirim value select box ke server
+			d.filter_status = FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || ""; // kirim value select box ke server
+			d.filter_bidang = FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || ""; // kirim value select box ke server
 		},
 	},
 	columns: [
@@ -43,27 +46,18 @@ var tabelPayment = $("#table-spj-payment").DataTable({
 			next: `<i class="fa fa-long-arrow-right"></i>`,
 		},
 	},
-	initComplete: function () {
-		// Tambahkan select box ke area filter (search box)
-		var filterHtml = `
-			<label style="margin-left:10px;">
-				<select id="filterStatus" class="form-control form-control-sm" style="width:150px; display:inline-block;">
-					<option value="PENDING" selected>PENDING</option>
-					<option value="CAIR">CAIR</option>
-					<option value="PERBAIKAN">PERBAIKAN</option>
-					<option value="TOLAK">TOLAK</option>
-				</select>
-			</label>
-		`;
-		// sisipkan setelah search box bawaan DataTables
-		$("#table-spj-payment_filter").append(filterHtml);
-
-		// Reload data ketika select berubah
-		$("#filterStatus").on("change", function () {
-			tabelPayment.ajax.reload();
-		});
-	},
 });
+
+FILTER_FORM_PAYMENT.on("submit", function (e) {
+	e.preventDefault();
+	tabelPayment.ajax.reload();
+});
+
+async function ResetFilter() {
+	FILTER_FORM_PAYMENT[0].reset();
+	let newUrl = `${_uri}/app/payment/ajaxTable`;
+	tabelPayment.ajax.url(newUrl).load();
+}
 
 async function ProsesApprover(btn) {
 	// disabld button submit & select
@@ -179,7 +173,7 @@ modalPayment.find("#verifikasi_status").on("change", function () {
 	$catatan.prop("required", isRejectedOrFix);
 	$catatan.attr(
 		"placeholder",
-		isRejectedOrFix ? "Masukkan catatan verifikasi" : ""
+		isRejectedOrFix ? "Masukkan catatan verifikasi" : "",
 	);
 });
 

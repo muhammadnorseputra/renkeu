@@ -442,8 +442,8 @@
         </div>
         <div id="step-5">
             <?php if (@$detail->is_status === 'VERIFIKASI' || @$detail->is_status === 'VERIFIKASI_ADMIN') : ?>
-                <div class="container">
-                        <img src="<?= base_url('template/assets/icon/verifikasi.svg') ?>" alt="Verifikasi Admin" width="50%">
+                <div class="container text-center">
+                        <img src="<?= base_url('template/assets/icon/verifikasi.svg') ?>" alt="Verifikasi Admin" width="30%">
                         <h2 class="StepTitle">Usulan Dalam Proses Verifikasi <i class="fa fa-lock text-success ml-2"></i></h2>
                         <button type="button" class="btn btn-secondary rounded-0" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=3&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
                         <button class="btn btn-primary rounded-0" onclick="window.location.href='<?= base_url('app/spj') ?>'">Buka Inbox <i class="fa fa-inbox ml-2"></i> </button>

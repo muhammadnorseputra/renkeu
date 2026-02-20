@@ -19,6 +19,62 @@
             Unggah Dokumen dalam format PDF / Excel. Maksimal ukuran file adalah 2MB. File yang diunggah akan menimpa file sebelumnya untuk jenis, periode dan tahun anggaran yang sama.
             Silahkan unduh template yang sudah disediakan untuk memastikan format file yang benar. <br/> <a href="<?= base_url('/template/template_rekap_pajak_daerah.xlsx') ?>" class="alert-link btn btn-sm btn-warning"><i class="fa fa-file"></i> Unduh Template Pajak Daerah</a> | <a href="<?= base_url('/template/template_rekap_pajak_negara.xlsx') ?>" class="alert-link btn btn-sm btn-warning"><i class="fa fa-file"></i> Unduh Template Pajak Negara</a>.
         </div>
+        <?php if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR'])): ?>
+        <?= form_open(base_url('app/spj/filter_rekap_perjadin'), ['class' => 'form-horizontal border p-3 mb-3 mx-2 bg-light', 'id' => 'filterFormPajak', 'data-parsley-validate' => '']) ?>
+            <div class="row">
+                <div class="col-md-3 border-right">
+                    <div class="form-group">
+                        <label for="filter_periode">Filter Periode</label>
+                        <select name="filter_periode" id="filter_periode" class="form-control">
+                            <option value="">Semua Periode</option>
+                            <!-- option group -->
+                            <optgroup label="Bulanan">
+                                <option value="01">Januari</option>
+                                <option value="02">Februari</option>
+                                <option value="03">Maret</option>
+                                <option value="04">April</option>
+                                <option value="05">Mei</option>
+                                <option value="06">Juni</option>
+                                <option value="07">Juli</option>
+                                <option value="08">Agustus</option>
+                                <option value="09">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </optgroup>
+                            <optgroup label="Triwulan">
+                                <option value="TW1">Triwulan 1</option>
+                                <option value="TW2">Triwulan 2</option>
+                                <option value="TW3">Triwulan 3</option>
+                                <option value="TW4">Triwulan 4</option>
+                                </optgroup>
+                            <optgroup label="Semester">
+                                <option value="SEMESTER1">Semester 1</option>
+                                <option value="SEMESTER2">Semester 2</option>  
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="filter_bidang">Filter Bidang</label>
+                        <select name="filter_bidang" id="filter_bidang" class="form-control">
+                            <option value="">Semua Bidang</option>
+                            <?php foreach ($list_bidang as $bidang) { ?>
+                                <option value="<?= $bidang->id ?>"><?= $bidang->nama ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <!-- Button submit filter -->
+                <div class="col-md-3 align-self-center">
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Filter</button>
+                    <!-- Button reset filter -->
+                    <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset Filter</button>
+                </div>
+            </div>
+        <?= form_close(); ?>
+        <?php endif; ?>
         <table class="table table-borderless table-hover" id="table-rekap-pajak">
                 <thead class="thead-light">
                     <tr>
@@ -55,7 +111,7 @@
             <label for="jenis_dokumen">Jenis Dokumen</label>
             <select name="jenis_dokumen" id="jenis_dokumen" class="form-control" required>
                 <option value="">Pilih Jenis Dokumen</option>
-                <option value="PAJAK_PUSAT">Pajak Pusat</option>
+                <option value="PAJAK_PUSAT">Pajak Negara</option>
                 <option value="PAJAK_DAERAH">Pajak Daerah</option>
             </select>
         </div>

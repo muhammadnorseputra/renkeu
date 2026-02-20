@@ -33,7 +33,8 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 	},
 	columns: [
 		{ data: "no", orderable: false },
-		{ data: "no_buku", orderable: true },
+		{ data: "no_verifikasi", orderable: false },
+		{ data: "no_buku", orderable: false },
 		{ data: "kode_uraian", orderable: true },
 		{ data: "nama_uraian", orderable: false },
 		{ data: "bidang", className: "align-middle", orderable: false },
@@ -51,7 +52,7 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 		var table = $(api.table().container()); // container spesifik tabel
 
 		// search per kolom + restore dari state
-		api.columns([1, 2, 3]).every(function () {
+		api.columns([1, 2, 3, 4]).every(function () {
 			var column = this;
 			var input = document.createElement("input");
 

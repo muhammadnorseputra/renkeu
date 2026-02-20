@@ -26,6 +26,10 @@ class ModelPayment extends CI_Model
             $this->db->where_in('status', ['PENDING', 'PENDING - PERBAIKAN']);
         }
 
+        if(!empty($_POST['filter_bidang'])) {
+            $this->db->where('sr.entri_by_part', $_POST['filter_bidang']);
+        }
+
 
         // Search
         $i = 0;

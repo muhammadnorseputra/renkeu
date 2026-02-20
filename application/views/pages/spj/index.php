@@ -179,32 +179,34 @@ if (urldecode($tab) === '#payment') {
                                 <table id="table-spj-selesai" class="table dt-responsive nowrap jambo_table">
                                     <thead>
                                         <tr>
-                                            <th class="text-center" width="5%">No. Urut</th>
+                                            <th class="text-center" width="5%" data-priority="1">No. Urut</th>
+                                            <th>No. Verifikasi</th>
                                             <th>No. BKU</th>
                                             <th>Kode</th>
-                                            <th data-priority="1">Uraian</th>
+                                            <th data-priority="2">Uraian</th>
                                             <th>Bidang/Bagian</th>
                                             <th>Periode/SPJ Bulan</th>
-                                            <th>User Usul</th>
-                                            <th data-priority="3">Tanggal Finalisasi</th>
+                                            <th data-priority="3">User Usul</th>
+                                            <th>Tanggal Finalisasi</th>
                                             <th>Status - Admin</th>
                                             <th>Status - Bendahara</th>
-                                            <th data-priority="2">Jumlah (Rp)</th>
+                                            <th data-priority="4">Jumlah (Rp)</th>
                                             <th data-priority="1"></th>
                                         </tr>
                                         <tr>
                                             <th class="text-center" width="5%">#</th>
                                             <th class="filterhead"></th>
                                             <th class="filterhead"></th>
-                                            <th class="filterhead" data-priority="1"></th>
+                                            <th class="filterhead"></th>
+                                            <th class="filterhead"></th>
                                             <th></th>
                                             <th></th>
                                             <th></th>
-                                            <th data-priority="3"></th>
                                             <th></th>
                                             <th></th>
-                                            <th data-priority="2"></th>
-                                            <th data-priority="1"></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -212,7 +214,39 @@ if (urldecode($tab) === '#payment') {
                     <?php endif; ?>
                     <?php if (privilages('priv_payment')) : ?>
                         <div class="tab-pane <?= $payment ?> <?= $is_show_payment ?>" id="payment" role="tabpanel" aria-labelledby="payment-tab">
-                            
+                                 <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterFormPayment', 'data-parsley-validate' => '']) ?>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="filter_bidang">Filter Bidang</label>
+                                            <select name="filter_bidang" id="filter_bidang" class="form-control"> 
+                                                <option value="">Semua Bidang</option>
+                                                <?php foreach ($list_bidang as $bidang) { ?>
+                                                    <option value="<?= $bidang->id ?>"><?= $bidang->nama ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- filter status -->
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="filter_status">Filter Status</label>
+                                            <select name="filter_status" id="filter_status" class="form-control" required>
+                                                <option value="PENDING" selected>PENDING</option>
+                                                <option value="CAIR">CAIR</option>
+                                                <option value="PERBAIKAN">PERBAIKAN</option>
+                                                <option value="TOLAK">TOLAK</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Button submit filter -->
+                                    <div class="col-md-3 align-self-end">
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Filter</button>
+                                        <!-- Button reset filter -->
+                                        <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset Filter</button>
+                                    </div>
+                                </div>
+                                <?= form_close(); ?>                   
                                 <table id="table-spj-payment" class="table dt-responsive nowrap jambo_table bulk_action" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>

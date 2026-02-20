@@ -378,11 +378,12 @@ class Spj extends CI_Controller
     {
         // Kirim Notifikasi WA ke user
         $getUser = $this->users->profile_username($getSpj->entri_by)->row();
+        $session = $this->session->userdata();
 
         // Keterangan No BKU jika status MS
         if ($input['status'] === 'MS') {
-            $note_tambahan = 'No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
-Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
+            $note_tambahan = 'No. Verifikasi : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
+Tgl. Verifikasi : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
 Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '';
             $is_proses_admin = 'Selanjutnya akan diverifikasi oleh Admin.';
         } else {
@@ -390,25 +391,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             $is_proses_admin = '';
         }
 
-        $send = TeleSendMessage($getUser->telegram_id, '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
--------------
-📝 Uraian   : ' . $getSpj->uraian . '  
-💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
-⏰ Spj Bulan : ' . bulan(strtoupper($getSpj->bulan)) . '
-📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
--------------
-📌 Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
-' . $note_tambahan . '
-
-Telah diverifikasi dengan status <b>' . $input['status'] . '</b>. ' . $is_proses_admin . ' 
-Silahkan cek aplikasi Digta Sunanpraja.  
--------------
-<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
-        ');
+        $send = TeleSendMessage($getUser->telegram_id, TemplateMessageHasilVerifikasi($getSpj, $input, $note_tambahan, $is_proses_admin, $session));
 
         return $send;
     }
@@ -416,29 +399,9 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
     private function sendNotifyAdmin($getSpj, $input, $user_admin = 'abduh')
     {
         // Kirim Notifikasi WA ke Admin
+        $session = $this->session->userdata();
         $getAdmin = $this->users->profile_username($user_admin)->row();
-        $sendAdmin = TeleSendMessage($getAdmin->telegram_id, '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
--------------
-📝 Uraian   : ' . $getSpj->uraian . '  
-💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
-⏰ Spj Bulan : ' . bulan(strtoupper($getSpj->bulan)) . '
-📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
--------------
-No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
-Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
-Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '
-Verifikator : ' . $this->session->userdata('user_name') . '
-Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
--------------
-Telah diverifikasi dengan status <b>' . $input['status'] . '</b>.  
-Silahkan cek aplikasi Digta Sunanpraja.  
-
-<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
-        ');
+        $sendAdmin = TeleSendMessage($getAdmin->telegram_id, TemplateMessageHasilVerifikasiAdmin($getSpj, $input, $session));
 
         return $sendAdmin;
     }
@@ -530,8 +493,9 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
         ];
 
         $this->db->trans_start(); // mulai transaksi otomatis
+        $session = $this->session->userdata();
         $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
-        $send_message = TeleSendMessage($getUser->telegram_id, $this->TemplateMessageApproval($detailUsul, $is_status));
+        $send_message = TeleSendMessage($getUser->telegram_id, TemplateMessageApproval($detailUsul, $is_status, $session));
         $update_to_spj = $this->crud->update('spj', $update, $whr);
         $save_to_riwayat = $this->crud->insert('spj_riwayat', $insert);
         $save_to_log = $this->historis->insert($info);
@@ -564,29 +528,6 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
         echo json_encode($msg);
     }
 
-    private function TemplateMessageApproval($detailUsul, $is_status)
-    {
-        $statusText = ($is_status === 'SELESAI') ? 'APPROVE' : $detailUsul->is_status;
-
-        $message = '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
--------------
-📝 Uraian   : ' . $detailUsul->uraian . '  
-💰 Jumlah   : Rp. ' . nominal($detailUsul->jumlah) . ' 
-⏰ Spj Bulan : ' . bulan(strtoupper($detailUsul->bulan)) . '
-📅 Tgl. Entri : ' . longdate_indo(substr($detailUsul->entri_at, 0, 10)) . '
--------------
-Telah difinalisasi <b>ADMIN</b> dengan status <b>' . $statusText . '</b>.  
-Silahkan cek aplikasi Digta Sunanpraja.  
--------------
-⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-<i>by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>';
-
-        return $message;
-    }
-
 
     public function verifikasi_selesai()
     {
@@ -605,6 +546,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
             $no++;
             $row = array();
             $row['no'] = $no;
+            $row['no_verifikasi'] = $r->nomor_verifikasi;
             $row['no_buku'] = $r->nomor_pembukuan;
             // $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian;
             $row['kode_uraian'] = "<br>" . $r->kode_uraian;
@@ -829,21 +771,9 @@ Silahkan cek aplikasi Digta Sunanpraja.
 
         // notif wa
         $user = $this->crud->getWhere('spj', ['token' => $input['token']])->row();
+        $penerima = $this->crud->getWhere('spj_relasi_publik', ['token' => $input['token']]);
         $getUser = $this->users->profile_username($user->entri_by)->row();
-        $send = TeleSendMessage($getUser->telegram_id, '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
-Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di verifikasi.
--------------
-📝 Uraian   : ' . $user->uraian . '
-💰 Jumlah   : Rp. ' . nominal($user->jumlah) . '
-⏰ Spj Bulan : ' . bulan(strtoupper($user->bulan)) . '
-📌 Status   : ' . $user->is_status . '
-➡️ Link Berkas : ' . $user->berkas_link . '
--------------
-<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '</i>
-        ');
+        $send = TeleSendMessage($getUser->telegram_id, TemplateMessageFinal($getUser, $user, $penerima->num_rows()));
 
         $info = [
             'token' => $input['token'],
@@ -1380,7 +1310,8 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
         $bulan = $this->input->post('bulan');
         $tahun = $this->session->userdata('tahun_anggaran');
         $part_id = $this->session->userdata('part');
-        $namafile = 'Rekapitulasi Perjalanan Dinas-' . $bulan . '-' . $tahun.'-'. generateRandomString();
+        $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
+        $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString();
 
         // Cek apakah sudah ada file untuk part dan tahun yg sama
 		$existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun]);
@@ -1537,8 +1468,7 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
 
     public function get_rekap_pajak()
     {
-        $filter = $this->input->get();
-        $db = $this->spj->make_datatables_rekap_pajak($filter);
+        $db = $this->spj->make_datatables_rekap_pajak();
         $data = array();
         $no = @$_POST['start'];
 
@@ -1605,8 +1535,8 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
 
         $output = array(
             "draw" => @$_POST['draw'],
-            "recordsTotal" => $this->spj->make_count_all_rekap_pajak($filter),
-            "recordsFiltered" => $this->spj->make_count_filtered_rekap_pajak($filter),
+            "recordsTotal" => $this->spj->make_count_all_rekap_pajak(),
+            "recordsFiltered" => $this->spj->make_count_filtered_rekap_pajak(),
             "data" => $data,
         );
         //output to json format
@@ -1619,9 +1549,10 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
         $getFileName = $_FILES['file']['name'];
         $periode = $this->input->post('periode');
         $tahun = $this->session->userdata('tahun_anggaran');
-        $part_id = $this->session->userdata('part');
         $jenis_dokumen = $this->input->post('jenis_dokumen');
-        $namafile = 'Rekapitulasi - ' . $jenis_dokumen . '-' . $periode . '-' . $tahun.'-'. generateRandomString();
+        $part_id = $this->session->userdata('part');
+        $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
+        $namafile = 'Rekapitulasi-' . $namapart .'-'. $jenis_dokumen . '-' . $periode . '-' . $tahun .'-'. generateRandomString();
 
         // Cek apakah sudah ada file untuk part dan tahun yg sama
 		$existing = $this->crud->getWhere('t_dokumen_pajak', ['fid_part' => $part_id, 'jenis_dokumen' => $jenis_dokumen, 'periode' => $periode, 'tahun' => $tahun]);

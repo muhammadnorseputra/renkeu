@@ -698,7 +698,7 @@ class ModelSpj extends CI_Model
 	// default order 
 	protected $order_rekap_pajak = array('t.id' => 'desc');
 
-	private function _datatables_rekap_pajak($filter)
+	private function _datatables_rekap_pajak()
 	{
 
 		$this->db->select('t.id, t.nama_dokumen, t.jenis_dokumen, t.file_path, t.periode, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan');
@@ -709,8 +709,12 @@ class ModelSpj extends CI_Model
 			$this->db->where('t.fid_part', $this->session->userdata('part'));
 		}
 
-		if(!empty($filter['filter_bidang'])) {
-			$this->db->where('t.fid_part', $filter['filter_bidang']);
+		if(!empty($_POST['filter_bidang'])) {
+			$this->db->where('t.fid_part', $_POST['filter_bidang']);
+		}
+
+		if(!empty($_POST['filter_periode'])) {
+			$this->db->where('t.periode', $_POST['filter_periode']);
 		}
 
 		// Pencarian global
@@ -731,25 +735,25 @@ class ModelSpj extends CI_Model
 		}
 	}
 
-	function make_datatables_rekap_pajak($filter)
+	function make_datatables_rekap_pajak()
 	{
-		$this->_datatables_rekap_pajak($filter);
+		$this->_datatables_rekap_pajak();
 		if (@$_POST['length'] != -1)
 			$this->db->limit(@$_POST['length'], @$_POST['start']);
 		$query = $this->db->get();
 		return $query->result();
 	}
 
-	function make_count_filtered_rekap_pajak($filter)
+	function make_count_filtered_rekap_pajak()
 	{
-		$this->_datatables_rekap_pajak($filter);
+		$this->_datatables_rekap_pajak();
 		$query = $this->db->get();
 		return $query->num_rows();
 	}
 
-	public function make_count_all_rekap_pajak($filter)
+	public function make_count_all_rekap_pajak()
 	{
-		$this->_datatables_rekap_pajak($filter);
+		$this->_datatables_rekap_pajak();
 		return $this->db->count_all_results();
 	}
 	// -------------------------------- end-datatable --------------------------//

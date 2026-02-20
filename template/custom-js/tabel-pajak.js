@@ -1,5 +1,6 @@
 const MODAL = $("#unggahDokumen");
 const MODAL_CATATAN = $("#tambahCatatan");
+const FILTER_FORM_PAJAK = $("#filterFormPajak");
 
 MODAL.on("hidden.bs.modal", function () {
 	MODAL.find("form")[0].reset();
@@ -37,6 +38,9 @@ var tableRekapPajak = $("#table-rekap-pajak").DataTable({
 	ajax: {
 		url: `${_uri}/app/spj/get_rekap_pajak`,
 		type: "POST",
+		data: function (d) {
+			d.filter_bidang = FILTER_FORM_PAJAK.find("select[name='filter_bidang']").val() || ""; // kirim value select box ke server
+		}
 	},
 	columns: [
 		{ data: "no", orderable: false },
@@ -79,6 +83,17 @@ var tableRekapPajak = $("#table-rekap-pajak").DataTable({
 		infoFiltered: "(disaring dari _MAX_ total entri)",
 	},
 });
+
+FILTER_FORM_PAJAK.on("submit", async function (e) {
+	e.preventDefault();
+	await tableRekapPajak.ajax.reload();
+});
+
+async function ResetFilter() {
+	FILTER_FORM_PAJAK[0].reset();
+	let newUrl = `${_uri}/app/spj/get_rekap_pajak`;
+	await tableRekapPajak.ajax.url(newUrl).load();
+}
 
 async function VerifikasiDokumen(id) {
 	if (!id) return;

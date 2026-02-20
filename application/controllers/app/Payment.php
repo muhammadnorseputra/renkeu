@@ -32,6 +32,8 @@ class Payment extends CI_Controller
         $this->load->model('ModelPayment', 'payment');
         $this->load->model('ModelUsers', 'user');
         $this->load->model('ModelLog', 'historis');
+        
+        $this->load->helper('telegram');
     }
 
     public function index()
@@ -129,6 +131,14 @@ class Payment extends CI_Controller
             $this->crud->update('spj_payment', $updatePayment, $whr);
             $this->crud->update('spj_riwayat', $updateRiwayatSpj, $whr);
             $this->historis->insert($info);
+
+            // notif telegram
+            $detailUsul = $this->crud->getWhere('spj', ['token' => $post['token']])->row();
+            $is_status = 'CAIR';
+            $session = $this->session->userdata();
+            $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
+            $send_message = TeleSendMessage($getUser->telegram_id, TemplateMessageApprovalBendahara($detailUsul, $is_status, $session));
+
             $this->db->trans_complete();
 
             if ($this->db->trans_status() === false) {
@@ -142,6 +152,7 @@ class Payment extends CI_Controller
             }
 
             $this->db->trans_commit();
+            
             $msg = [
                 'message' => 'SPJ telah di proses',
                 'status' => true
