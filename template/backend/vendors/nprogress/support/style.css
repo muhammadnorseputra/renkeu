@@ -91,20 +91,20 @@ button {
 }
 
 .button:hover {
-  background: #2d9;
+  background: #00B8D9;
   color: #fff;
 }
 
 .button.primary {
-  background: #2d9;
+  background: #0a2a5e;
   color: #fff;
 }
 .button.primary:hover {
-  background: #1c8;
+  background: #00B8D9;
 }
 
 .button:active {
-  background: #2d9;
+  background: #f59e0b;
   box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.6);
 }
 

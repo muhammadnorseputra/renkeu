@@ -102,7 +102,7 @@
               <span class="ml-auto"><a href="https://wa.me/6282151815132/?text=Halo%20Admin%20Aplikasi%20<?= getSetting('APPName') ?>,%20saya%20mau%20reset%20password." target="_blank" class="forgot-pass">Forgot Password</a></span>
             </div>
 
-            <button type="submit" role="button" class="btn btn-block btn-success">Masuk</button>
+            <button type="submit" role="button" class="btn btn-block btn-info">Masuk</button>
 
             <?= form_close(); ?>
           </div>

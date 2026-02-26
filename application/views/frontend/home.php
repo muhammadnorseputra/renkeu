@@ -3,7 +3,7 @@
     <div class="hero-container">
       <h1 data-aos="fade-down">Welcome</h1>
       <h2 data-aos="fade-up" data-aos-delay="250"><?= getSetting('APPDescription') ?></h2>
-      <img src="<?= base_url('template/landingpage/assets/img/hero-img.png') ?>" data-aos="zoom-in" data-aos-delay="400" alt="Hero Imgs">
+      <img width="45%" class="rounded-xl" src="<?= base_url('template/assets/ChatGPT Image Feb 26, 2026, 03_47_16 PM.png') ?>" data-aos="zoom-in" data-aos-delay="400" alt="Hero Imgs">
       <a href="<?= base_url('login') ?>" class="btn-get-started scrollto" data-aos="fade-up" data-aos-delay="1500">Log In Aplikasi</a>
       <!-- <div class="btns">
         <a href="#"><i class="fa fa-apple fa-3x"></i> App Store</a>
