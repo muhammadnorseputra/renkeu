@@ -1,5 +1,5 @@
 <div class="clearfix"></div>
-<div class="alert alert-success" role="alert">
+<div class="alert alert-primary" role="alert">
     Selamat datang kembali <strong><?= $this->session->userdata('nama') ?></strong> [ Login as <b><?= strtolower($this->session->userdata('role')); ?></b> ] <br>
     <?= $this->users->part_detail($this->session->userdata('part')); ?> <br>
 </div>
@@ -46,7 +46,7 @@
                     <!-- <small>Progres Capaian 100%</small> -->
                     <div class="mt-md-2">
                         <div class="progress m-0" style="width: 100%;">
-                            <div class="progress-bar bg-green" role="progressbar" data-transitiongoal="<?= @round($panel['persentase_capaian'], 2) ?>"></div>
+                            <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="<?= @round($panel['persentase_capaian'], 2) ?>"></div>
                         </div>
                     </div>
                 </div>
@@ -158,13 +158,13 @@
                         $profile = $this->user->profile_username($top->entri_by)->row();
                         $tglsql = substr($top->entri_at, 0, 10);
                         if ($top->is_status === 'APPROVE') {
-                            $status = '<span class="badge badge-success"><i class="fa fa-check-circle" title="APPROVE"></i></span>';
+                            $status = '<span class="badge badge-primary"><i class="fa fa-check-circle" title="APPROVE"></i></span>';
                         } elseif ($top->is_status === 'BTL') {
                             $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> BTL</span>';
                         } elseif ($top->is_status === 'TMS') {
                             $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> TMS</span>';
                         } else {
-                            $status = '<span class="badge badge-success"><i class="fa fa-check-circle"></i></span>';
+                            $status = '<span class="badge badge-primary"><i class="fa fa-check-circle"></i></span>';
                         }
                     ?>
                         <li class="media event">
