@@ -10,8 +10,8 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="<?= base_url('template/assets/logo.png') ?>" rel="icon">
-  <link href="<?= base_url('template/assets/logo.png') ?>" rel="apple-touch-icon">
+  <link href="<?= base_url('template/assets/Logo DSP Warna/Logo3.png') ?>" rel="icon">
+  <link href="<?= base_url('template/assets/Logo DSP Warna/Logo3.png') ?>" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Roboto:100,300,400,500,700|Philosopher:400,400i,700,700i" rel="stylesheet">
@@ -41,13 +41,14 @@
       <div id="logo">
         <!-- <h1 data-aos="fade-in"><?= getSetting('APPName') ?></h1> -->
         <!-- Uncomment below if you prefer to use an image logo -->
-        <!-- <a href="index.html"><img src="<?= base_url('template/landingpage/assets/img/logo.png') ?>" alt="" title="" /></a>-->
+        <a href="<?= base_url('/') ?>"><img src="<?= base_url('template/assets/Logo DSP Warna/Logo1.png') ?>" alt="Logo DSP" title="Logo DSP" width="250" height="70"/></a>
       </div>
 
       <nav id="navbar" class="navbar">
         <ul>
           <li><a class="nav-link scrollto <?= isActive('/') ?>" href="<?= base_url('/') ?>">Beranda</a></li>
           <li><a class="nav-link scrollto" href="#about-us">Tentang Kami</a></li>
+          <li><a class="nav-link scrollto" href="#design-logo">Desain Logo</a></li>
           <!-- <li><a class="nav-link scrollto <?= isActive('featured') ?>" href="<?= base_url('frontend/featured') ?>">Features</a></li>
           <li><a class="nav-link scrollto <?= isActive('screenshot') ?>" href="<?= base_url('frontend/screenshot') ?>">Screenshots</a></li>
           <li><a class="nav-link scrollto <?= isActive('team') ?>" href="<?= base_url('frontend/team') ?>">Team</a></li>

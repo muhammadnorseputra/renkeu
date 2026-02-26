@@ -1,7 +1,7 @@
   <!-- ======= Hero Section ======= -->
   <section id="hero">
     <div class="hero-container">
-      <h1 data-aos="fade-down">Welcome to <?= getSetting('APPName') ?> <sup>+</sup> </h1>
+      <h1 data-aos="fade-down">Welcome</h1>
       <h2 data-aos="fade-up" data-aos-delay="250"><?= getSetting('APPDescription') ?></h2>
       <img src="<?= base_url('template/landingpage/assets/img/hero-img.png') ?>" data-aos="zoom-in" data-aos-delay="400" alt="Hero Imgs">
       <a href="<?= base_url('login') ?>" class="btn-get-started scrollto" data-aos="fade-up" data-aos-delay="1500">Log In Aplikasi</a>
@@ -42,3 +42,22 @@
       </div>
     </div>
   </section><!-- End About Us Section -->
+
+  <!-- ======= Logo Section ======= -->
+    <section id="design-logo" class="padd-section text-center">
+
+      <div class="container" data-aos="fade-up">
+        <div class="section-title text-center">
+          <h2>Desain Logo</h2>
+          <p class="separator">Desain Logo yang telah dibuat oleh tim</p>
+        </div>
+
+        <div class="screens-slider swiper">
+          <div class="swiper-wrapper align-items-center">
+            <div class="swiper-slide"><img src="<?= base_url('template/assets/desain-logo.jpeg') ?>" class="img-fluid" alt="" width="700"></div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+
+    </section><!-- End Screenshots Section -->

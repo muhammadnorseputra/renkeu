@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
   <!-- Favicons -->
-  <link href="<?= base_url('template/assets/logo.png') ?>" rel="icon">
-  <link href="<?= base_url('template/assets/logo.png') ?>" rel="apple-touch-icon">
+  <link href="<?= base_url('template/assets/Logo DSP Warna/Logo3.png') ?>" rel="icon">
+  <link href="<?= base_url('template/assets/Logo DSP Warna/Logo3.png') ?>" rel="apple-touch-icon">
 
   <link rel="stylesheet" href="<?= base_url('template/login-form-02/fonts/icomoon/icons.css') ?>">
 
@@ -39,10 +39,10 @@
           <div class="col-md-10">
             <!-- App Logo -->
             <?php if (getSetting('APPLogo') != '') : ?>
-              <center><img style="margin:30px;" src="<?= base_url('template/assets/logo.png') ?>" width="120" alt="Logo Application"></center>
+              <center><img style="margin:30px;" src="<?= base_url('template/assets/Logo DSP Warna/Logo5.png') ?>" width="210" alt="Logo Application"></center>
             <?php endif; ?>
             <?php if (getSetting('APPName') != '') : ?>
-              <h3 class="text-center">Log In - <strong><?= getSetting('APPName') ?><sup style="color: teal;">+</sup></strong></h3>
+              <h3 class="text-center">Log In</strong></h3>
             <?php endif; ?>
             <p class="mb-4 text-center"><?= getSetting('APPDescription') ?></p>
             <?php

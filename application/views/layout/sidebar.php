@@ -2,10 +2,7 @@
     <div class="navbar nav_title" style="border-bottom: 1px solid #666; padding-left: 13px;">
         <a href="<?= base_url('/') ?>" class="site_title">
             <?php if (getSetting('APPLogo') != ''): ?>
-                <img src="<?= base_url('template/assets/logo.png') ?>" width="25" alt="Logo Application">
-            <?php endif; ?>
-            <?php if (getSetting('APPName') != ''): ?>
-                <span><?= getSetting('APPName') ?> - App</span>
+                <img src="<?= base_url('template/assets/Logo DSP Monokrom/Logo4.png') ?>" width="180" alt="Logo Application">
             <?php endif; ?>
         </a>
     </div>
