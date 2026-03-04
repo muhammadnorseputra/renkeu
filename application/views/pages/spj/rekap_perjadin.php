@@ -65,6 +65,7 @@
                         <th>Bidang</th>
                         <th>Bulan</th>
                         <th>Tahun</th>
+                        <th>Inputer</th>
                         <th>Catatan</th>
                         <th>Aksi</th>
                     </tr>
@@ -90,8 +91,8 @@
             Jika ada perbaikan dokumen, silahkan unggah ulang dengan memilih file yang benar pada bulan dan tahun yang sama.
          </div>
         <div class="form-group">
-            <label for="file">Pilih File PDF</label>
-            <input type="file" class="form-control-file" id="file" name="file" accept=".pdf" required>
+            <label for="file">Pilih File Excel (.xlsx)</label>
+            <input type="file" class="form-control-file" id="file" name="file" accept=".xlsx" required>
         </div>
         <div class="form-group">
             <label for="bulan">Rekapitulasi Bulan</label>
@@ -101,9 +102,9 @@
                     $selected = ($key == $bulanSekarang) ? 'selected' : '';
 
                     // Cek apakah sudah ada file untuk bulan dan tahun yg sama
-                    $getIsKunci = $this->crud->getWhere('t_dokumen_perjadin', ['bulan' => $key, 'tahun' => $this->session->userdata('tahun_anggaran'), 'fid_part' => $this->session->userdata('part')]);
-                    $disabled = ($getIsKunci && $getIsKunci->row()->is_kunci) ? 'disabled' : '';
-                    echo '<option value="'.$key.'" '.$selected.' '.$disabled.'>'.$value.'</option>';
+                    // $getIsKunci = $this->crud->getWhere('t_dokumen_perjadin', ['bulan' => $key, 'tahun' => $this->session->userdata('tahun_anggaran'), 'fid_part' => $this->session->userdata('part')]);
+                    // $disabled = ($getIsKunci && $getIsKunci->row()->is_kunci) ? 'disabled' : '';
+                    echo '<option value="'.$key.'" '.$selected.'>'.$value.'</option>';
 
                 } ?>
             </select>

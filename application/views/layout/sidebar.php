@@ -71,6 +71,7 @@
                             <ul class="nav child_menu">
                                 <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN', 'USER'])): ?>
                                     <li><a href="<?= base_url('app/target/perjanjian_kerja') ?>" class="loadContent" title="Target">Dokumen Kinerja Non PK</a></li>
+                                    <li><a href="<?= base_url('app/target/pengelolaan_resiko') ?>" class="loadContent" title="Target">Dokumen Pengelolaan Resiko</a></li>
                                     <li><a href="<?= base_url('app/indikator') ?>" class="loadContent" title="Indikator">Indikator</a></li>
                                     <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target">Target</a></li>
                                 <?php endif; ?>

@@ -45,8 +45,10 @@ var tableRekapPerjadin = $("#table-rekap-perjadin").DataTable({
 		{ data: "bidang", orderable: true },
 		{ data: "bulan", orderable: true },
 		{ data: "tahun", orderable: true },
+		{ data: "user", orderable: false },
 		{
-			data: "catatan", orderable: false,
+			data: "catatan",
+			orderable: false,
 			className: "text-start text-danger",
 		},
 		{

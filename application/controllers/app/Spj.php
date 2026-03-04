@@ -1288,6 +1288,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             $row['bidang'] = $r->nama_part;
             $row['bulan'] = bulan($r->bulan) .' <br/> '. $terverifikasi;
             $row['tahun'] = $r->tahun;
+            $row['user'] = $r->created_by;
             $row['catatan'] = $r->catatan ?? '-';
             $row['action'] = $btnAksi;
             $data[] = $row;
@@ -1311,19 +1312,20 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
         $tahun = $this->session->userdata('tahun_anggaran');
         $part_id = $this->session->userdata('part');
         $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
-        $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString();
+        $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString().'-'.$this->session->userdata('user_name');
 
         // Cek apakah sudah ada file untuk part dan tahun yg sama
-		$existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun]);
+		//$existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun]);
         // jika sudah ada, hapus file lama dari server
-        if ($existing->num_rows() > 0) {
+        /*if ($existing->num_rows() > 0) {
             $oldFile = $existing->row()->file_path;
             $oldFilePath = FCPATH . 'template/upload/dokumen_perjadin/' . $oldFile;
             if (file_exists($oldFilePath) && is_file($oldFilePath)) {
                 unlink($oldFilePath);
             }
         }
-        
+        */
+
         // validasi form dan upload file ke folder /template/upload/dokumen_perjadin/
 		$config = [
 			'upload_path'   => './template/upload/dokumen_perjadin/',
@@ -1357,7 +1359,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 		];
 
         // jika sudah ada record, lakukan update; jika belum, insert baru
-		if ($existing->num_rows() > 0) {
+		/*if ($existing->num_rows() > 0) {
 			$db = $this->crud->update('t_dokumen_perjadin', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'bulan' => $bulan]);
             if($db) {
                 $this->session->set_flashdata('alert_type', 'success');
@@ -1368,6 +1370,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             }
             return redirect(base_url('app/spj/rekap_perjadin'));
 		}
+        */
 
         $db = $this->crud->insert('t_dokumen_perjadin', $data);
         if($db) {
