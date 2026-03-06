@@ -35,7 +35,7 @@ class ModelIndikator extends CI_Model
         $this->db->join('ref_sub_kegiatans as sk', 'i.fid_sub_kegiatan=sk.id', 'left');
         $this->db->where('i.fid_part', $this->session->userdata('part'));
         $this->db->where('fid_periode', $_POST['periode']);
-
+        $this->db->where('i.tahun', $this->session->userdata('tahun_anggaran'));
 
         if (isset($_POST['type']) && $_POST['type'] === 'Tujuan') {
             return $this->db->where('i.fid_tujuan !=', null);

@@ -32,7 +32,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 $selected = "";
                             }
                         ?>
-                            <option value="<?= $periode->id ?>" <?= $disabled ?> <?= $selected ?>><?= $periode->nama ?>
+                            <option value="<?= $periode->id ?>" <?= $selected ?>><?= $periode->nama ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
