@@ -226,7 +226,7 @@ class Indikator extends CI_Controller
             ]);
             return;
         }
-
+        
         echo json_encode([
             'success' => true,
             'message' => 'Data indikator berhasil disimpan.',

@@ -30,24 +30,41 @@ $(function () {
 		}
 	});
 
-	$form.on("submit", function (e) {
+	$form.on("submit", async function (e) {
 		e.preventDefault();
+
 		let id = $(this).find("input[name='id']").val(),
 			ref = $(this).find("input[name='ref']").val(),
 			url = $(this).attr("action");
-		let $data = $(this).serializeArray();
+
+		let data = $(this).serializeArray();
+
 		if ($(this).parsley().isValid()) {
-			$data.push({ name: "id", value: id }, { name: "ref", value: ref });
-			$.post(
-				url,
-				$data,
-				(response) => {
-					if (response === 200) {
-						window.location.reload();
-					}
-				},
-				"json"
-			);
+			data.push({ name: "id", value: id }, { name: "ref", value: ref });
+
+			// ubah serializeArray menjadi URLSearchParams
+			let formData = new URLSearchParams();
+			data.forEach((item) => {
+				formData.append(item.name, item.value);
+			});
+
+			try {
+				const res = await fetch(url, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+					},
+					body: formData.toString(),
+				});
+
+				const response = await res.json();
+
+				if (response === 200) {
+					window.location.reload();
+				}
+			} catch (error) {
+				console.error("Request failed:", error);
+			}
 		}
 	});
 

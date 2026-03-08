@@ -33,28 +33,31 @@ class ModelIndikator extends CI_Model
         $this->db->join('ref_programs as p', 'i.fid_program=p.id', 'left');
         $this->db->join('ref_kegiatans as k', 'i.fid_kegiatan=k.id', 'left');
         $this->db->join('ref_sub_kegiatans as sk', 'i.fid_sub_kegiatan=sk.id', 'left');
-        $this->db->where('i.fid_part', $this->session->userdata('part'));
-        $this->db->where('fid_periode', $_POST['periode']);
         $this->db->where('i.tahun', $this->session->userdata('tahun_anggaran'));
+        $this->db->where('i.fid_periode', $_POST['periode']);
+        
+        if($this->session->userdata('role') == 'USER') {
+            $this->db->where('i.fid_part', $this->session->userdata('part'));
+        }
 
         if (isset($_POST['type']) && $_POST['type'] === 'Tujuan') {
-            return $this->db->where('i.fid_tujuan !=', null);
+            $this->db->where('i.fid_tujuan !=', null);
         }
 
         if (isset($_POST['type']) && $_POST['type'] === 'Sasaran') {
-            return $this->db->where('i.fid_sasaran !=', null);
+            $this->db->where('i.fid_sasaran !=', null);
         }
 
         if (isset($_POST['type']) && $_POST['type'] === 'Program') {
-            return $this->db->where('i.fid_program !=', null);
+            $this->db->where('i.fid_program !=', null);
         }
 
         if (isset($_POST['type']) && $_POST['type'] === 'Kegiatan') {
-            return $this->db->where('i.fid_kegiatan !=', null);
+            $this->db->where('i.fid_kegiatan !=', null);
         }
 
         if (isset($_POST['type']) && $_POST['type'] === 'SubKegiatan') {
-            return $this->db->where('i.fid_sub_kegiatan !=', null);
+            $this->db->where('i.fid_sub_kegiatan !=', null);
         }
 
         $i = 0;
