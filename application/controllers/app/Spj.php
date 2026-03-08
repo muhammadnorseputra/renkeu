@@ -1270,6 +1270,16 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
                 $btnCatatan = '';
             endif;
 
+            if(in_array($this->session->userdata('role'), ['USER']) && $r->is_kunci == 0 && $r->created_by == $this->session->userdata('user_name')):
+                $btnDelete = '
+                    <button type="button" class="btn btn-danger" title="Hapus Dokumen" onclick="HapusDokumen(' . $r->id . ')">
+                        <i class="fa fa-trash mr-1"></i> Hapus
+                    </button>
+                    ';
+            else:
+                $btnDelete = '';
+            endif;
+
 
             $btnAksi = '
             <!-- Download / Status -->
@@ -1277,10 +1287,11 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
                 ' . $unduh . '
                 ' . $verifikasi . '
                 ' . $btnCatatan . '
+                ' . $btnDelete . '
             </div>
             ';
 
-            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2">Terverifikasi</span>' : '<span class="badge badge-warning p-2">Belum Terverifikasi</span>';
+            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2"><i class="fa fa-check-circle mr-1"></i> Terverifikasi</span>' : '<span class="badge badge-warning p-2"><i class="fa fa-exclamation-circle mr-1"></i> Belum Diverifikasi</span>';
 
             $no++;
             $row = array();
@@ -1305,6 +1316,34 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
         echo json_encode($output);
     }
 
+    public function delete_dokumen_perjadin()
+    {
+        $id = $this->input->post('id');
+        $dok = $this->crud->getWhere('t_dokumen_perjadin', ['id' => $id])->row();
+
+        if (!$dok) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        $filePath = FCPATH . 'template/upload/dokumen_perjadin/' . $dok->file_path;
+
+        if (file_exists($filePath) && is_file($filePath)) {
+            unlink($filePath);
+        }
+
+        $db = $this->crud->deleteWhere('t_dokumen_perjadin', ['id' => $id]);
+
+        if ($db) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen berhasil dihapus', 'status' => true]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Gagal menghapus dokumen', 'status' => false]);
+        }
+    }
+
     public function upload_rekap_perjadin()
     {
         $getFileName = $_FILES['file']['name'];
@@ -1314,17 +1353,17 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
         $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
         $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString().'-'.$this->session->userdata('user_name');
 
-        // Cek apakah sudah ada file untuk part dan tahun yg sama
-		//$existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun]);
+        // Cek apakah sudah ada file untuk part, bulan, tahun dan created_by yg sama
+		$existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
         // jika sudah ada, hapus file lama dari server
-        /*if ($existing->num_rows() > 0) {
+        if ($existing->num_rows() > 0) {
             $oldFile = $existing->row()->file_path;
             $oldFilePath = FCPATH . 'template/upload/dokumen_perjadin/' . $oldFile;
             if (file_exists($oldFilePath) && is_file($oldFilePath)) {
                 unlink($oldFilePath);
             }
         }
-        */
+        
 
         // validasi form dan upload file ke folder /template/upload/dokumen_perjadin/
 		$config = [
@@ -1359,8 +1398,8 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 		];
 
         // jika sudah ada record, lakukan update; jika belum, insert baru
-		/*if ($existing->num_rows() > 0) {
-			$db = $this->crud->update('t_dokumen_perjadin', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'bulan' => $bulan]);
+		if ($existing->num_rows() > 0) {
+			$db = $this->crud->update('t_dokumen_perjadin', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'bulan' => $bulan, 'created_by' => $this->session->userdata('user_name')]);
             if($db) {
                 $this->session->set_flashdata('alert_type', 'success');
                 $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diperbarui');
@@ -1370,7 +1409,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             }
             return redirect(base_url('app/spj/rekap_perjadin'));
 		}
-        */
+        
 
         $db = $this->crud->insert('t_dokumen_perjadin', $data);
         if($db) {
@@ -1409,7 +1448,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 
         // transaction
         $this->db->trans_begin();
-        $this->crud->update('t_dokumen_perjadin', ['is_kunci' => $new_value], ['id' => $id]);
+        $this->crud->update('t_dokumen_perjadin', ['is_kunci' => $new_value, 'catatan' => ''], ['id' => $id]);
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
@@ -1512,6 +1551,16 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
                 $btnCatatan = '';
             endif;
 
+            if(in_array($this->session->userdata('role'), ['USER']) && $r->is_kunci == 0 && $r->created_by == $this->session->userdata('user_name')):
+                $btnDelete = '
+                    <button type="button" class="btn btn-danger" title="Hapus Dokumen" onclick="HapusDokumen(' . $r->id . ')">
+                        <i class="fa fa-trash mr-1"></i> Hapus
+                    </button>
+                    ';
+            else:
+                $btnDelete = '';
+            endif;
+
 
             $btnAksi = '
             <!-- Download / Status -->
@@ -1519,10 +1568,11 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
                 ' . $unduh . '
                 ' . $verifikasi . '
                 ' . $btnCatatan . '
+                ' . $btnDelete . '
             </div>
             ';
 
-            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2">Terverifikasi</span>' : '<span class="badge badge-warning p-2">Belum Terverifikasi</span>';
+            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2"><i class="fa fa-check-circle mr-1"></i> Terverifikasi</span>' : '<span class="badge badge-warning p-2"><i class="fa fa-exclamation-circle mr-1"></i> Belum Diverifikasi</span>';
 
             $no++;
             $row = array();
@@ -1531,6 +1581,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             $row['periode'] = $r->periode .' <br/> '. $terverifikasi;
             $row['jenis_dokumen'] = $r->jenis_dokumen;
             $row['tahun'] = $r->tahun;
+            $row['user'] = $r->created_by;
             $row['catatan'] = $r->catatan ?? '-';
             $row['action'] = $btnAksi;
             $data[] = $row;
@@ -1558,7 +1609,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
         $namafile = 'Rekapitulasi-' . $namapart .'-'. $jenis_dokumen . '-' . $periode . '-' . $tahun .'-'. generateRandomString();
 
         // Cek apakah sudah ada file untuk part dan tahun yg sama
-		$existing = $this->crud->getWhere('t_dokumen_pajak', ['fid_part' => $part_id, 'jenis_dokumen' => $jenis_dokumen, 'periode' => $periode, 'tahun' => $tahun]);
+		$existing = $this->crud->getWhere('t_dokumen_pajak', ['fid_part' => $part_id, 'jenis_dokumen' => $jenis_dokumen, 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
         // jika sudah ada, hapus file lama dari server
         if ($existing->num_rows() > 0) {
             $oldFile = $existing->row()->file_path;
@@ -1603,7 +1654,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 
         // jika sudah ada record, lakukan update; jika belum, insert baru
 		if ($existing->num_rows() > 0) {
-			$db = $this->crud->update('t_dokumen_pajak', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'periode' => $periode, 'jenis_dokumen' => $jenis_dokumen]);
+			$db = $this->crud->update('t_dokumen_pajak', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'periode' => $periode, 'jenis_dokumen' => $jenis_dokumen, 'created_by' => $this->session->userdata('user_name')]);
             if($db) {
                 $this->session->set_flashdata('alert_type', 'success');
                 $this->session->set_flashdata('alert_msg', 'Rekap Pajak berhasil diperbarui');
@@ -1651,7 +1702,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 
         // transaction
         $this->db->trans_begin();
-        $this->crud->update('t_dokumen_pajak', ['is_kunci' => $new_value], ['id' => $id]);
+        $this->crud->update('t_dokumen_pajak', ['is_kunci' => $new_value, 'catatan' => ''], ['id' => $id]);
 
         if ($this->db->trans_status() === FALSE) {
             $this->db->trans_rollback();
@@ -1690,4 +1741,33 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             echo json_encode(['pesan' => 'Catatan berhasil ditambahkan', 'status' => true]);
         }
     }
+
+    public function delete_dokumen_pajak()
+    {
+        $id = $this->input->post('id');
+        $dok = $this->crud->getWhere('t_dokumen_pajak', ['id' => $id])->row();
+
+        if (!$dok) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        $filePath = FCPATH . 'template/upload/dokumen_pajak/' . $dok->file_path;
+
+        if (file_exists($filePath) && is_file($filePath)) {
+            unlink($filePath);
+        }
+
+        $db = $this->crud->deleteWhere('t_dokumen_pajak', ['id' => $id]);
+
+        if ($db) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen berhasil dihapus', 'status' => true]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Gagal menghapus dokumen', 'status' => false]);
+        }
+    }
+
 }

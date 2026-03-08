@@ -83,6 +83,7 @@
                         <th>Periode</th>
                         <th>Jenis Dokumen</th>
                         <th>Tahun</th>
+                        <th>Upload By</th>
                         <th>Catatan</th>
                         <th>Aksi</th>
                     </tr>
@@ -147,8 +148,8 @@
              </select>
         </div>
         <div class="form-group">
-            <label for="file">Pilih File PDF</label>
-            <input type="file" class="form-control-file" id="file" name="file" accept=".pdf" required>
+            <label for="file">Pilih File Excel</label>
+            <input type="file" class="form-control-file" id="file" name="file" accept=".xlsx,.xls" required>
         </div>
         
     </div>

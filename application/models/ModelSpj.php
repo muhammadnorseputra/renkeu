@@ -701,7 +701,7 @@ class ModelSpj extends CI_Model
 	private function _datatables_rekap_pajak()
 	{
 
-		$this->db->select('t.id, t.nama_dokumen, t.jenis_dokumen, t.file_path, t.periode, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan');
+		$this->db->select('t.id, t.nama_dokumen, t.jenis_dokumen, t.file_path, t.periode, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan, t.created_by');
 		$this->db->from('t_dokumen_pajak AS t');
 		$this->db->join('ref_parts as r', 't.fid_part=r.id');
 		if($this->session->userdata('role') === 'USER') {

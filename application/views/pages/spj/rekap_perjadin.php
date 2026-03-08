@@ -65,7 +65,7 @@
                         <th>Bidang</th>
                         <th>Bulan</th>
                         <th>Tahun</th>
-                        <th>Inputer</th>
+                        <th>Upload By</th>
                         <th>Catatan</th>
                         <th>Aksi</th>
                     </tr>
@@ -102,8 +102,8 @@
                     $selected = ($key == $bulanSekarang) ? 'selected' : '';
 
                     // Cek apakah sudah ada file untuk bulan dan tahun yg sama
-                    // $getIsKunci = $this->crud->getWhere('t_dokumen_perjadin', ['bulan' => $key, 'tahun' => $this->session->userdata('tahun_anggaran'), 'fid_part' => $this->session->userdata('part')]);
-                    // $disabled = ($getIsKunci && $getIsKunci->row()->is_kunci) ? 'disabled' : '';
+                    $getIsKunci = $this->crud->getWhere('t_dokumen_perjadin', ['bulan' => $key, 'tahun' => $this->session->userdata('tahun_anggaran'), 'fid_part' => $this->session->userdata('part'), 'created_by' => $this->session->userdata('user_name')]);
+                    $disabled = ($getIsKunci && $getIsKunci->row()->is_kunci) ? 'disabled' : '';
                     echo '<option value="'.$key.'" '.$selected.'>'.$value.'</option>';
 
                 } ?>

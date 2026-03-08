@@ -26,7 +26,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                         foreach ($this->spj->getPeriode()->result() as $periode) :
                             $is_status = $periode->is_open === 'Y' ? 'OPEN' : 'CLOSE';
                             $disabled = $periode->is_open !== 'Y' ? 'disabled' : '';
-                            if (isset($_GET['periode']) && $_GET['periode'] === $periode->id && $periode->is_open === 'Y') {
+                            if (isset($_GET['periode']) && $_GET['periode'] == $periode->id) {
                                 $selected = "selected";
                             } else {
                                 $selected = "";

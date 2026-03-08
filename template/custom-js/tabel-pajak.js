@@ -39,8 +39,9 @@ var tableRekapPajak = $("#table-rekap-pajak").DataTable({
 		url: `${_uri}/app/spj/get_rekap_pajak`,
 		type: "POST",
 		data: function (d) {
-			d.filter_bidang = FILTER_FORM_PAJAK.find("select[name='filter_bidang']").val() || ""; // kirim value select box ke server
-		}
+			d.filter_bidang =
+				FILTER_FORM_PAJAK.find("select[name='filter_bidang']").val() || ""; // kirim value select box ke server
+		},
 	},
 	columns: [
 		{ data: "no", orderable: false },
@@ -48,6 +49,7 @@ var tableRekapPajak = $("#table-rekap-pajak").DataTable({
 		{ data: "periode", orderable: true },
 		{ data: "jenis_dokumen", orderable: true },
 		{ data: "tahun", orderable: true },
+		{ data: "user", orderable: false },
 		{
 			data: "catatan",
 			orderable: false,
@@ -135,6 +137,44 @@ async function CatatanDokumen(id, catatan) {
 	MODAL_CATATAN.modal("show");
 	MODAL_CATATAN.find("input[name='id']").val(id);
 	MODAL_CATATAN.find("textarea[name='catatan']").val(catatan);
+}
+
+async function HapusDokumen(id) {
+	if (!id) return;
+	if (!confirm("Apakah Anda yakin ingin menghapus dokumen ini?")) {
+		return;
+	}
+	try {
+		const formData = new FormData();
+		formData.append("id", id);
+
+		const resp = await fetch(`${_uri}/app/spj/delete_dokumen_pajak`, {
+			method: "POST",
+			headers: {
+				"X-Requested-With": "XMLHttpRequest",
+			},
+			body: formData, // id dikirim sebagai FormData
+		});
+		const data = await resp.json();
+		if (resp.ok && data.status) {
+			$.notify(data.pesan, {
+				timer: 800,
+				delay: 100,
+				type: "success",
+			});
+			if (typeof tableRekapPajak !== "undefined") {
+				tableRekapPajak.ajax.reload(null, false);
+			}
+		} else {
+			$.notify(data.pesan, {
+				timer: 800,
+				delay: 100,
+				type: "danger",
+			});
+		}
+	} catch (err) {
+		alert("Terjadi kesalahan koneksi : " + err.message);
+	}
 }
 
 MODAL_CATATAN.find("form").on("submit", async function (e) {
