@@ -100,7 +100,7 @@
                             <select name="ref_program" id="ref_program" class="form-control" required>
                                 <option value="">-- Pilih Program --</option>
                                 <?php foreach ($data['programs']->result() as $program): ?>
-                                    <option value="<?= $program->id; ?>"><?= $program->nama; ?></option>
+                                    <option value="<?= $program->id; ?>"><?= $program->nama; ?> - <?= $program->tahun; ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -159,8 +159,9 @@
                             <option value="">-- Pilih Jenis Indikator --</option>
                             <?php foreach ($data['jenis_indikator']->result() as $j):
                                 $selectedJenis = isset($data['result']['ref_jenis_indikator']) && $data['result']['ref_jenis_indikator'] == $j->id ? 'selected' : '';
+                                $is_disabled = $j->is_aktif === 'N' ? 'disabled' : '';
                             ?>
-                                <option value="<?= $j->id; ?>" <?= $selectedJenis; ?>><?= $j->nama; ?></option>
+                                <option value="<?= $j->id; ?>" <?= $selectedJenis; ?> <?= $is_disabled; ?>><?= $j->nama; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

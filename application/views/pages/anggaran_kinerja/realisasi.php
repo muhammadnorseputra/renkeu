@@ -27,7 +27,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         foreach ($this->spj->getPeriode()->result() as $periode) :
                             $is_status = $periode->is_open === 'Y' ? 'OPEN' : 'CLOSE';
                             $disabled = $periode->is_open !== 'Y' ? 'disabled' : '';
-                            if (isset($_GET['periode']) && $_GET['periode'] === $periode->id && $periode->is_open === 'Y') {
+                            if (isset($_GET['periode']) && $_GET['periode'] === $periode->id) {
                                 $selected = "selected";
                             } else {
                                 $selected = "";

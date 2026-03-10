@@ -62,7 +62,7 @@ class Indikator extends CI_Controller
         $part = $this->session->userdata('part');
         $tujuan = $this->crud->getWhere('ref_tujuan', ['tahun' => $this->session->userdata('tahun_anggaran')]);
         $sasaran = $this->crud->getWhere('ref_sasaran', ['tahun' => $this->session->userdata('tahun_anggaran')]);
-        $program = $this->db->where("FIND_IN_SET('{$part}', fid_part) >", 0)->get('ref_programs');
+        $program = $this->db->where('tahun', $this->session->userdata('tahun_anggaran'))->where("FIND_IN_SET('{$part}', fid_part) >", 0)->get('ref_programs');
         $kegiatan = $this->crud->getWhere('ref_kegiatans', ['tahun' => $this->session->userdata('tahun_anggaran'), 'fid_part' => $part]);
 
         $getData = $this->session->userdata('indikator_data');
