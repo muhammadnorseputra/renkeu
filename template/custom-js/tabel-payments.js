@@ -24,13 +24,20 @@ var tabelPayment = $("#table-spj-payment").DataTable({
 		url: `${_uri}/app/payment/ajaxTable`,
 		type: "POST",
 		data: function (d) {
-			d.filter_status = FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || ""; // kirim value select box ke server
-			d.filter_bidang = FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || ""; // kirim value select box ke server
+			d.filter_status =
+				FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || "";
+			d.filter_bidang =
+				FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || "";
+			d.filter_tanggal =
+				FILTER_FORM_PAYMENT.find("input[name='filter_tanggal']").val() || "";
 		},
 	},
 	columns: [
 		{ data: "no", orderable: false },
-		{ data: "no_buku", orderable: true },
+		{ data: "no_verifikasi", orderable: true },
+		{ data: "tgl_verifikasi", orderable: true },
+		{ data: "no_bku", orderable: true },
+		{ data: "tgl_bku", orderable: true },
 		{ data: "kode_uraian", orderable: true },
 		{ data: "nama_uraian", orderable: false },
 		{ data: "periode", orderable: true },
@@ -278,3 +285,45 @@ function TemplateTablePayment(row) {
 function rupiah(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
+
+$("#filter_tanggal").daterangepicker({
+	showDropdowns: false,
+	autoApply: true,
+	drops: "auto",
+	opens: "center",
+	autoUpdateInput: false,
+	locale: {
+		format: "DD/MM/YYYY",
+		separator: " - ",
+		cancelLabel: "Clear",
+	},
+	ranges: {
+		Today: [moment(), moment()],
+		Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+		"Last 7 Days": [moment().subtract(6, "days"), moment()],
+		"Last 30 Days": [moment().subtract(29, "days"), moment()],
+		"This Month": [moment().startOf("month"), moment().endOf("month")],
+		"Last Month": [
+			moment().subtract(1, "month").startOf("month"),
+			moment().subtract(1, "month").endOf("month"),
+		],
+	},
+});
+
+$('#filter_tanggal').on(
+	"apply.daterangepicker",
+	function (ev, picker) {
+		$(this).val(
+			picker.startDate.format("DD/MM/YYYY") +
+				" - " +
+				picker.endDate.format("DD/MM/YYYY"),
+		);
+	},
+);
+
+$('#filter_tanggal').on(
+	"cancel.daterangepicker",
+	function (ev, picker) {
+		$(this).val("");
+	},
+);

@@ -276,7 +276,7 @@ class ModelSpj extends CI_Model
 	//set column field database for datatable orderable
 	protected $column_order = array(null, 'uraian.kode', null, 's.fid_periode', null, 's.entri_at');
 	// default order 
-	protected $order = array('s.created_at');
+	protected $order = array('s.entri_perbaikan_at' => 'desc', 's.entri_at' => 'desc');
 	// default select 
 	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian');
 

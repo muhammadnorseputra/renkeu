@@ -214,7 +214,7 @@ if (urldecode($tab) === '#payment') {
                     <?php endif; ?>
                     <?php if (privilages('priv_payment')) : ?>
                         <div class="tab-pane <?= $payment ?> <?= $is_show_payment ?>" id="payment" role="tabpanel" aria-labelledby="payment-tab">
-                                 <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterFormPayment', 'data-parsley-validate' => '']) ?>
+                                 <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterFormPayment', 'data-parsley-validate' => '', 'autocomplete' => 'off']) ?>
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -232,18 +232,32 @@ if (urldecode($tab) === '#payment') {
                                         <div class="form-group">
                                             <label for="filter_status">Filter Status</label>
                                             <select name="filter_status" id="filter_status" class="form-control" required>
-                                                <option value="PENDING" selected>PENDING</option>
+                                                <option value="PENDING" selected>PENDING - APPROVED VERIFIKATOR</option>
                                                 <option value="CAIR">CAIR</option>
                                                 <option value="PERBAIKAN">PERBAIKAN</option>
                                                 <option value="TOLAK">TOLAK</option>
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <fieldset>
+                                            <div class="control-group ">
+                                            <label for="filter_tanggal">Filter Tanggal</label>
+                                                <div class="controls">
+                                                    <div class="input-prepend input-group">
+                                                        <input type="text" autocomplete="off" style="width: 200px" data-min-year="<?= $this->session->userdata('tahun_anggaran'); ?>" data-max-year="<?= $this->session->userdata('tahun_anggaran') + 1; ?>" name="filter_tanggal" id="filter_tanggal" class="form-control" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
                                     <!-- Button submit filter -->
                                     <div class="col-md-3 align-self-end">
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Filter</button>
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Terapkan</button>
                                         <!-- Button reset filter -->
-                                        <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset Filter</button>
+                                        <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset</button>
+                                        <!-- Button Unduh  -->
+                                        <button type="button" class="btn btn-info ml-2" onclick="UnduhData()"><i class="fa fa-download mr-1"></i> Unduh Data</button>
                                     </div>
                                 </div>
                                 <?= form_close(); ?>                   
@@ -251,12 +265,15 @@ if (urldecode($tab) === '#payment') {
                                     <thead>
                                         <tr>
                                             <th class="text-center" width="5%">No</th>
+                                            <th>No. Verifikasi</th>
+                                            <th>Tgl. Verifikasi</th>
                                             <th>No. BKU</th>
+                                            <th>Tgl. BKU</th>
                                             <th>Kode</th>
-                                            <th data-priority="1">Uraian</th>
+                                            <th>Uraian</th>
                                             <th>Periode/SPJ Bulan</th>
-                                            <th data-priority="3">Tanggal Approval Admin</th>
-                                            <th data-priority="4">Tanggal Proses Bendahara</th>
+                                            <th>Tanggal Approval Admin</th>
+                                            <th>Tanggal Proses Bendahara</th>
                                             <th>Status</th>
                                             <th data-priority="2">Jumlah (Rp)</th>
                                             <th data-priority="1"></th>

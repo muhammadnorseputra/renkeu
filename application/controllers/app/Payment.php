@@ -69,7 +69,10 @@ class Payment extends CI_Controller
             $no++;
             $row = array();
             $row['no'] = $no;
-            $row['no_buku'] = $r->nomor_pembukuan;
+            $row['no_verifikasi'] = $r->nomor_verifikasi;
+            $row['tgl_verifikasi'] = $r->tanggal_verifikasi ? longdate_indo($r->tanggal_verifikasi) : '-';
+            $row['no_bku'] = $r->nomor_pembukuan;
+            $row['tgl_bku'] = $r->tanggal_pembukuan ? longdate_indo($r->tanggal_pembukuan) : '-';
             $row['kode_uraian'] = "<br>" . $r->kode_uraian;
             $row['nama_uraian'] = $r->nama_part . '<br> - <b>' . $r->nama_uraian . '</b>';
             $row['periode'] = bulan($r->fid_periode);

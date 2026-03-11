@@ -128,9 +128,9 @@ class ModelRealisasi extends CI_Model
     {
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj_riwayat AS s');
-        $this->db->where('is_status', 'APPROVE');
-        $this->db->where('kode_program', $kode_program);
-        $this->db->where('tahun', $ta);
+        $this->db->where('s.is_status', 'APPROVE');
+        $this->db->where('s.kode_program', $kode_program);
+        $this->db->where('s.tahun', $ta);
         $q = $this->db->get();
         return $q->row()->jumlah;
     }

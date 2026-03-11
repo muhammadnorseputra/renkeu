@@ -14,20 +14,46 @@ class ModelPayment extends CI_Model
     private function _datatables()
     {
 
-        $this->db->select('sp.*, sr.nomor_pembukuan, sr.kode_uraian, sr.nama_uraian, sr.nama_part, sr.fid_periode,sr.entri_at,sr.approve_at,sr.entri_by,sr.is_status,sr.jumlah, sr.catatan as catatan_by_verify, sr.nomor_verifikasi, sr.tanggal_verifikasi');
+        $this->db->select('sp.*, sr.nomor_verifikasi, sr.tanggal_verifikasi, sr.nomor_pembukuan, sr.tanggal_pembukuan, sr.kode_uraian, sr.nama_uraian, sr.nama_part, sr.fid_periode,sr.entri_at,sr.approve_at,sr.entri_by,sr.is_status,sr.jumlah, sr.catatan as catatan_by_verify, sr.nomor_verifikasi, sr.tanggal_verifikasi');
         $this->db->from('spj_payment as sp');
         $this->db->join('spj_riwayat as sr', 'sp.token=sr.token');
         $this->db->where('sp.tahun', $this->session->userdata('tahun_anggaran'));
 
         // Add filter
         if (in_array($_POST['filter_status'], ['CAIR', 'PERBAIKAN', 'TOLAK'])) {
-            $this->db->where('status', $_POST['filter_status']);
+            $this->db->where('sp.status', $_POST['filter_status']);
         } else {
-            $this->db->where_in('status', ['PENDING', 'PENDING - PERBAIKAN']);
+            $this->db->where_in('sp.status', ['PENDING', 'PENDING - PERBAIKAN']);
         }
 
         if(!empty($_POST['filter_bidang'])) {
             $this->db->where('sr.entri_by_part', $_POST['filter_bidang']);
+        }
+
+        if(!empty($_POST['filter_tanggal'])) {
+            $tanggal = explode(' - ', $_POST['filter_tanggal']);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+            if($_POST['filter_status'] === 'CAIR') {
+                $this->db->where('DATE(sp.cair_at) >=', $start_date);
+                $this->db->where('DATE(sp.cair_at) <=', $end_date);
+            } 
+            
+            if($_POST['filter_status'] === 'PERBAIKAN') {
+                $this->db->where('DATE(sp.perbaikan_at) >=', $start_date);
+                $this->db->where('DATE(sp.perbaikan_at) <=', $end_date);
+            } 
+            
+            if($_POST['filter_status'] === 'TOLAK') {
+                $this->db->where('DATE(sp.tolak_at) >=', $start_date);
+                $this->db->where('DATE(sp.tolak_at) <=', $end_date);
+            }  
+
+            if($_POST['filter_status'] === 'PENDING') {
+                $this->db->where('DATE(sr.approve_at) >=', $start_date);
+                $this->db->where('DATE(sr.approve_at) <=', $end_date);
+            }
         }
 
 

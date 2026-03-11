@@ -39,7 +39,7 @@ class Dashboard extends CI_Controller
 	public function index()
 	{
 		// Panel Dashboard
-		$db_program = $this->crud->get('ref_programs');
+		$db_program = $this->crud->getWhere('ref_programs', ['tahun' => $this->ta]);
 		$db_indikator = $this->crud->getWhere('ref_indikators', ['tahun' => $this->ta]);
 		$ProgramTotalPaguAwal = 0;
 		$ProgramTotalRealisasi = 0;
