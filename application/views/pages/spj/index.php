@@ -216,7 +216,7 @@ if (urldecode($tab) === '#payment') {
                         <div class="tab-pane <?= $payment ?> <?= $is_show_payment ?>" id="payment" role="tabpanel" aria-labelledby="payment-tab">
                                  <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterFormPayment', 'data-parsley-validate' => '', 'autocomplete' => 'off']) ?>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label for="filter_bidang">Filter Bidang</label>
                                             <select name="filter_bidang" id="filter_bidang" class="form-control"> 
@@ -239,25 +239,25 @@ if (urldecode($tab) === '#payment') {
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <fieldset>
                                             <div class="control-group ">
                                             <label for="filter_tanggal">Filter Tanggal</label>
                                                 <div class="controls">
                                                     <div class="input-prepend input-group">
-                                                        <input type="text" autocomplete="off" style="width: 200px" data-min-year="<?= $this->session->userdata('tahun_anggaran'); ?>" data-max-year="<?= $this->session->userdata('tahun_anggaran') + 1; ?>" name="filter_tanggal" id="filter_tanggal" class="form-control" />
+                                                        <input type="text" autocomplete="off" data-min-year="<?= $this->session->userdata('tahun_anggaran'); ?>" data-max-year="<?= $this->session->userdata('tahun_anggaran') + 1; ?>" name="filter_tanggal" id="filter_tanggal" class="form-control" />
                                                     </div>
                                                 </div>
                                             </div>
                                         </fieldset>
                                     </div>
                                     <!-- Button submit filter -->
-                                    <div class="col-md-3 align-self-end">
+                                    <div class="col-md-5 align-self-end">
                                         <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Terapkan</button>
                                         <!-- Button reset filter -->
-                                        <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset</button>
+                                        <button type="button" class="btn btn-secondary" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset</button>
                                         <!-- Button Unduh  -->
-                                        <button type="button" class="btn btn-info ml-2" onclick="UnduhData()"><i class="fa fa-download mr-1"></i> Unduh Data</button>
+                                        <button type="button" class="btn btn-info" onclick="UnduhData()"><i class="fa fa-download mr-1"></i> Unduh Data</button>
                                     </div>
                                 </div>
                                 <?= form_close(); ?>                   

@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Payment extends CI_Controller
 {
 
@@ -342,5 +345,76 @@ class Payment extends CI_Controller
                 return '<i class="fa fa-calendar"></i> - <br> <i class="fa fa-clock-o"></i> -';
                 break;
         }
+    }
+
+    public function export() {
+
+        $this->load->helper('nominal');
+
+        $filters = $this->input->get();
+        $spj = $this->payment->getRekapSpjHasilVerifikasi($filters);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'NOMOR VERIFIKASI');
+        $sheet->setCellValue('B1', 'TANGGAL VERIFIKASI');
+        $sheet->setCellValue('C1', 'NOMOR BKU');
+        $sheet->setCellValue('D1', 'TANGGAL BKU');
+        $sheet->setCellValue('E1', 'KODE URAIAN');
+        $sheet->setCellValue('F1', 'URAIAN');
+        $sheet->setCellValue('G1', 'PERIODE');
+        $sheet->setCellValue('H1', 'STATUS VERIFIKASI');
+        $sheet->setCellValue('I1', 'JUMLAH');
+
+        //OPTION
+        $sheet->getDefaultColumnDimension()->setAutoSize(true);
+        $sheet->setAutoFilter('A1:I1');
+        $sheet->getStyle('A1:I1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['argb' => 'FFFFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => [
+                    'argb' => 'FF4CAF50',
+                ],
+            ],
+        ]);
+
+        $protection = $sheet->getProtection(); // dengan password yang diinginkan
+        $protection->setPassword(date('dmY')); // Ganti dengan password yang diinginkan
+        $protection->setSheet(true);
+        $protection->setSort(true);
+        $protection->setInsertRows(true);
+        $protection->setFormatCells(true);
+        
+        $col = 2;
+        $no = 1;
+        foreach ($spj->result() as $item) {
+            $sheet->setCellValue('A' . $col, $item->nomor_verifikasi);
+            $sheet->setCellValue('B' . $col, formatToHuman($item->tanggal_verifikasi));
+            $sheet->setCellValue('C' . $col, $item->nomor_pembukuan);
+            $sheet->setCellValue('D' . $col, formatToHuman($item->tanggal_pembukuan));
+            $sheet->setCellValue('E' . $col, $item->kode_uraian);
+            $sheet->setCellValue('F' . $col, $item->uraian);
+            $sheet->setCellValue('G' . $col, $item->fid_periode);
+            $sheet->setCellValue('H' . $col, $item->status_verifikasi);
+            $sheet->setCellValue('I' . $col, nominal($item->jumlah));
+            $no++;
+            $col++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'DATA-SPJ-' . date('d-m-Y');
+
+        // header download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 }

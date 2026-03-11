@@ -327,3 +327,17 @@ $('#filter_tanggal').on(
 		$(this).val("");
 	},
 );
+
+function UnduhData() {
+	const filterStatus = FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || "";
+	const filterBidang = FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || "";
+	const filterTanggal = FILTER_FORM_PAYMENT.find("input[name='filter_tanggal']").val() || "";
+
+	const params = new URLSearchParams({
+		filter_status: filterStatus,
+		filter_bidang: filterBidang,
+		filter_tanggal: filterTanggal,
+	});
+	
+	window.open(`${_uri}/app/payment/export?${params.toString()}`, "_blank");
+}
