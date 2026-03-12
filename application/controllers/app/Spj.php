@@ -1160,24 +1160,62 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
         $is_perubahan = $this->session->userdata('is_perubahan');
         $part = $this->session->userdata('part');
 
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listpart = $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result();
+        } else {
+            $listpart = $this->crud->getWhere('ref_parts', ['id' => $part])->result();
+        }
+
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listprogram = $this->target->program(null, null, $tahun_anggaran);
+        } else {
+            $listprogram = $this->target->program(null, $part, $tahun_anggaran);
+        }
+
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listkegiatan = $this->db->order_by('kode', 'asc')
+                                ->where('tahun', $tahun_anggaran)
+                                ->get('ref_kegiatans');
+        } else {
+            $listkegiatan = $this->db->order_by('kode', 'asc')
+                                ->where('fid_part', $part)
+                                ->where('tahun', $tahun_anggaran)
+                                ->get('ref_kegiatans');
+        }
+
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listsubkegiatan = $this->db->select('sk.id, sk.kode, sk.nama')
+                                    ->order_by('sk.kode', 'asc')
+                                    ->join('ref_kegiatans as k', 'sk.fid_kegiatan = k.id')
+                                    ->where('sk.tahun', $tahun_anggaran)
+                                    ->get('ref_sub_kegiatans as sk');
+        } else {
+            $listsubkegiatan = $this->db->select('sk.id, sk.kode, sk.nama')
+                                    ->order_by('sk.kode', 'asc')
+                                    ->join('ref_kegiatans as k', 'sk.fid_kegiatan = k.id')
+                                    ->where('k.fid_part', $part)
+                                    ->where('sk.tahun', $tahun_anggaran)
+                                    ->get('ref_sub_kegiatans as sk');
+        }
+
         $data = [
             'title' => 'Monitor SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/monitor',
             'tahun_anggaran' => $tahun_anggaran,
             'is_perubahan' => $is_perubahan,
             'part' => $part,
-            'listpart' => $this->crud->getWhere('ref_parts', ['id' => $part])->result(),
-            'programs' => $this->target->program(null, $part, $tahun_anggaran),
-            'kegiatans' => $this->db->order_by('kode', 'asc')
-                                ->where('fid_part', $part)
-                                ->where('tahun', $tahun_anggaran)
-                                ->get('ref_kegiatans'),
-            'sub_kegiatans' => $this->db->select('sk.id, sk.kode, sk.nama')
-                                    ->order_by('sk.kode', 'asc')
-                                    ->join('ref_kegiatans as k', 'sk.fid_kegiatan = k.id')
-                                    ->where('k.fid_part', $part)
-                                    ->where('sk.tahun', $tahun_anggaran)
-                                    ->get('ref_sub_kegiatans as sk'),
+            'listpart' => $listpart,
+            'programs' => $listprogram,
+            'kegiatans' => $listkegiatan,
+            'sub_kegiatans' => $listsubkegiatan,
+            'autoload_js' => [
+                'template/backend/vendors/moment/min/moment.min.js',
+                'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.js',
+                'template/custom-js/spj_monitor.js',
+            ],
+            'autoload_css' => [
+                'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.css',
+            ]
         ];
         $this->load->view('layout/app', $data);
     }

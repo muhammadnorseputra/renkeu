@@ -1,28 +1,71 @@
+<?= form_open(base_url("app/spj/monitor"), ['class' => 'form-horizontal', 'method' => 'GET']); ?>
+<div class="border p-2 mb-3 bg-light rounded-bottom">
+    <div class="row">
+        <div class="col-md-3">
+            <fieldset>
+                <div class="control-group ">
+                <label for="filter_tanggal">Filter Tanggal</label>
+                    <div class="controls">
+                        <div class="input-prepend input-group">
+                            <input type="text" autocomplete="off" name="filter_tanggal" id="filter_tanggal" class="form-control" />
+                        </div>
+                        
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" id="btn_filter" class="btn btn-primary mt-4"><i class="fa fa-filter"></i> Terapkan</button>
+        </div>
+    </div>
+</div>
+<?= form_close(); ?>
 <div class="row"
     style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0px; padding-bottom: 10px;">
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
         style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
-            <div class="count">Alokasi Pagu</div>
-            <h3><?= nominal($this->spj->getTotalPaguMurniByPart($part, $tahun_anggaran)); ?></h3>
+            <?php  
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+                $alokasiPagu = $this->spj->getTotalPaguMurniByPart(null, $tahun_anggaran);
+            } else {
+                $alokasiPagu = $this->spj->getTotalPaguMurniByPart($part, $tahun_anggaran);
+            }
+            ?>
+            <div class="count">Alokasi Pagu Murni</div>
+            <h3><?= nominal($alokasiPagu); ?></h3>
             <p>Pagu Anggaran Murni</p>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
         style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
+            <?php
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+                $alokasiPaguPerubahan = $this->spj->getTotalPaguPerubahanByPart(null, $tahun_anggaran);
+            } else {
+                $alokasiPaguPerubahan = $this->spj->getTotalPaguPerubahanByPart($part, $tahun_anggaran);
+            }
+            ?>
             <div class="icon"><i class="fa fa-money"></i></div>
-            <div class="count">Alokasi Pagu</div>
-            <h3><?= nominal($this->spj->getTotalPaguPerubahanByPart($part, $tahun_anggaran)); ?></h3>
+            <div class="count">Alokasi Pagu Perubahan</div>
+            <h3><?= nominal($alokasiPaguPerubahan); ?></h3>
             <p>Pagu Anggaran Perubahan</p>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
         style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
+            <?php
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+                $totalRealisasi = $this->spj->getTotalRealisasiByPart(null, $tahun_anggaran);
+            } else {
+                $totalRealisasi = $this->spj->getTotalRealisasiByPart($part, $tahun_anggaran);
+            }
+            ?>
             <div class="icon"><i class="fa fa-list-alt"></i></div>
             <div class="count">Realisasi Belanja</div>
-            <h3><?= nominal($this->spj->getTotalRealisasiByPart($part, $tahun_anggaran)); ?></h3>
+            <h3><?= nominal($totalRealisasi); ?></h3>
             <p>Realisasi Anggaran</p>
         </div>
     </div>
@@ -35,12 +78,12 @@
             <h3>
                 <?= number_format(
                     ($this->session->userdata('is_perubahan') ?
-                        $this->spj->getTotalPaguPerubahanByPart($part, $tahun_anggaran) :
-                        $this->spj->getTotalPaguMurniByPart($part, $tahun_anggaran)) > 0
-                        ? ($this->spj->getTotalRealisasiByPart($part, $tahun_anggaran) /
+                        $alokasiPaguPerubahan :
+                        $alokasiPagu) > 0
+                        ? ($totalRealisasi /
                             ($this->session->userdata('is_perubahan') ?
-                                $this->spj->getTotalPaguPerubahanByPart($part, $tahun_anggaran) :
-                                $this->spj->getTotalPaguMurniByPart($part, $tahun_anggaran))) * 100
+                                $alokasiPaguPerubahan :
+                                $alokasiPagu)) * 100
                         : 0,
                     2
                 ) . '%'; ?>
@@ -167,12 +210,20 @@
         <table class="table jambo_table bulk_action table-bordered">
             <thead>
                 <tr>
-                    <th rowspan="3" class="align-middle text-center">No</th>
-                    <th rowspan="3" class="align-middle text-center">Program</th>
+                    <th class="align-middle text-center">No</th>
+                    <th class="align-middle text-center">Program</th>
                     <th class="align-middle text-center">Total Pagu</th>
                     <th class="align-middle text-center">Total Realisasi</th>
                     <th class="align-middle text-center">Sisa Anggaran</th>
                     <th class="align-middle text-center">Capaian</th>
+                </tr>
+                <tr>
+                    <th class="align-middle text-center">1</th>
+                    <th class="align-middle text-center">2</th>
+                    <th class="align-middle text-center">3</th>
+                    <th class="align-middle text-center">4</th>
+                    <th class="align-middle text-center">5</th>
+                    <th class="align-middle text-center">6 (4/3) * 100%</th>
                 </tr>
             </thead>
             <tbody>
@@ -183,7 +234,14 @@
                     $totalRealisasiProgram = 0;
                     foreach ($programs->result() as $program): 
                     $paguProgram = $this->target->getAlokasiPaguProgram($program->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
-                    $realisasiProgram = $this->spj->getRealisasiByPartAndProgram($part->id, $program->id, $tahun_anggaran);
+                    
+                    if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+                        $realisasiProgram = $this->spj->getRealisasiByPartAndProgram(null, $program->id, $tahun_anggaran);
+                    } else {
+                        $realisasiProgram = $this->spj->getRealisasiByPartAndProgram($part->id, $program->id, $tahun_anggaran);
+                    }
+                    
+
                     $sisaAnggaran = $paguProgram - $realisasiProgram;
                     $capaian = $paguProgram > 0 ? ($realisasiProgram / $paguProgram) * 100 : 0;
                     $totalPaguProgram += $paguProgram;
@@ -227,12 +285,21 @@
         <table class="table jambo_table bulk_action table-bordered">
             <thead>
                 <tr>
-                    <th rowspan="3" class="align-middle text-center">No</th>
-                    <th rowspan="3" class="align-middle text-center">Kegiatan</th>
+                    <th class="align-middle text-center">No</th>
+                    <th class="align-middle text-center">Kegiatan</th>
                     <th class="align-middle text-center">Total Pagu</th>
                     <th class="align-middle text-center">Total Realisasi</th>
                     <th class="align-middle text-center">Sisa Anggaran</th>
                     <th class="align-middle text-center">Capaian</th>
+                </tr>
+
+                <tr>
+                    <th class="align-middle text-center">1</th>
+                    <th class="align-middle text-center">2</th>
+                    <th class="align-middle text-center">3</th>
+                    <th class="align-middle text-center">4</th>
+                    <th class="align-middle text-center">5</th>
+                    <th class="align-middle text-center">6 (4/3) * 100%</th>
                 </tr>
             </thead>
             <tbody>
@@ -245,7 +312,12 @@
                     $paguKegiatan = $this->target->getAlokasiPaguKegiatan($kegiatan->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
                     $totalPaguKegiatan += $paguKegiatan;
 
-                    $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan($part->id, $kegiatan->id, $tahun_anggaran);
+                    if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+                        $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan(null, $kegiatan->id, $tahun_anggaran);
+                    } else {
+                        $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan($part->id, $kegiatan->id, $tahun_anggaran);
+                    }
+
                     $totalRealisasiPaguKegiatan += $realisasiKegiatan;
 
                     $sisaAnggaran = $paguKegiatan - $realisasiKegiatan;
@@ -292,30 +364,69 @@
         <table class="table jambo_table bulk_action table-bordered">
             <thead>
                 <tr>
-                    <th rowspan="3" class="align-middle text-center">No</th>
-                    <th rowspan="3" class="align-middle text-center">Sub Kegiatan</th>
+                    <th class="align-middle text-center">No</th>
+                    <th class="align-middle text-center">Sub Kegiatan</th>
                     <th class="align-middle text-center">Total Pagu</th>
                     <th class="align-middle text-center">Total Realisasi</th>
                     <th class="align-middle text-center">Sisa Anggaran</th>
                     <th class="align-middle text-center">Capaian</th>
+                </tr>
+
+                <tr>
+                    <th class="align-middle text-center">1</th>
+                    <th class="align-middle text-center">2</th>
+                    <th class="align-middle text-center">3</th>
+                    <th class="align-middle text-center">4</th>
+                    <th class="align-middle text-center">5</th>
+                    <th class="align-middle text-center">6 (4/3) * 100%</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ($sub_kegiatans): ?>
                     <?php 
                     $no = 1;
-                    $totalPaguKegiatan = 0;
-                    $totalRealisasiPaguKegiatan = 0;
+                    $totalPaguSubKegiatan = 0;
+                    $totalRealisasiSubKegiatan = 0;
                     foreach ($sub_kegiatans->result() as $sub_kegiatan): 
+                        $paguSubKegiatan = $this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
+                        $totalPaguSubKegiatan += $paguSubKegiatan;
+
+                        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+                            $realisasiSubKegiatan = $this->spj->getRealisasiByPartAndSubKegiatan(null, $sub_kegiatan->id, $tahun_anggaran);
+                        } else {
+                            $realisasiSubKegiatan = $this->spj->getRealisasiByPartAndSubKegiatan($part->id, $sub_kegiatan->id, $tahun_anggaran);
+                        }
+
+                        $totalRealisasiSubKegiatan += $realisasiSubKegiatan;
                     ?>
                         <tr>
                             <td class="text-center"><?= $no++ ?></td>
                             <td><?= $sub_kegiatan->nama ?></td>
                             <td class="text-right">
-                                Rp. <?= nominal($this->target->getAlokasiPaguSubKegiatan($sub_kegiatan->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0) ?>
+                                Rp. <?= nominal($paguSubKegiatan) ?>
+                            </td>
+                            <td class="text-right">
+                                Rp. <?= nominal($realisasiSubKegiatan) ?>
+                            </td>
+                            <td class="text-right">
+                                Rp. <?= nominal($paguSubKegiatan - $realisasiSubKegiatan) ?>
+                            </td>
+                            <td class="text-right">
+                                <?php
+                                $totalRealisasiPerSubKegiatan = $realisasiSubKegiatan ?? 0;
+                                $capaian = $paguSubKegiatan > 0 ? ($totalRealisasiPerSubKegiatan / $paguSubKegiatan) * 100 : 0;
+                                echo number_format($capaian, 2) . '%';
+                                ?>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php endforeach; ?>`
+                    <tr>
+                        <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPaguSubKegiatan) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalRealisasiSubKegiatan) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPaguSubKegiatan - $totalRealisasiSubKegiatan) ?></td>
+                        <td class="text-right font-weight-bold"><?= $totalPaguSubKegiatan > 0 ? number_format(($totalRealisasiSubKegiatan / $totalPaguSubKegiatan) * 100, 2) : 0 ?>%</td>
+                    </tr>
                 <?php else: ?>
                     <tr>
                         <td class="text-center" colspan="2">Data tidak tersedia</td>

@@ -510,34 +510,43 @@ class ModelSpj extends CI_Model
 	}
 
 	// get total pagu murni berdasarkan part
-	public function getTotalPaguMurniByPart($part, $ta)
+	public function getTotalPaguMurniByPart($part = null, $ta)
 	{
 		$this->db->select_sum('total_pagu_awal');
 		$this->db->from('t_pagu');
-		$this->db->where('fid_part', $part);
+		if($part !== null)
+		{
+			$this->db->where('fid_part', $part);
+		}
 		$this->db->where('tahun', $ta);
 		$this->db->where('is_perubahan', '0');
 		$q = $this->db->get();
 		return $q->row()->total_pagu_awal;
 	}
 
-	public function getTotalPaguPerubahanByPart($part, $ta)
+	public function getTotalPaguPerubahanByPart($part = null, $ta, $is_perubahan = '1')
 	{
 		$this->db->select_sum('total_pagu_awal');
 		$this->db->from('t_pagu');
-		$this->db->where('fid_part', $part);
+		if($part !== null)
+		{
+			$this->db->where('fid_part', $part);
+		}
 		$this->db->where('tahun', $ta);
-		$this->db->where('is_perubahan', '1');
+		$this->db->where('is_perubahan', $is_perubahan);
 		$q = $this->db->get();
 		return $q->row()->total_pagu_awal;
 	}
 
 	// get total realisasi berdasarkan part
-	public function getTotalRealisasiByPart($part, $ta)
+	public function getTotalRealisasiByPart($part = null, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj_riwayat');
-		$this->db->where('entri_by_part', $part);
+		if($part !== null)
+		{
+			$this->db->where('entri_by_part', $part);
+		}
 		$this->db->where('is_status', 'APPROVE');
 		$this->db->where('tahun', $ta);
 		$q = $this->db->get();
@@ -579,11 +588,14 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getRealisasiByPartAndProgram($part, $program_id, $ta)
+	public function getRealisasiByPartAndProgram($part = null, $program_id, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj');
-		$this->db->where('fid_part', $part);
+		if($part !== null)
+		{
+			$this->db->where('fid_part', $part);
+		}
 		$this->db->where('fid_program', $program_id);
 		$this->db->where('is_status', 'SELESAI');
 		$this->db->where('tahun', $ta);
@@ -591,11 +603,14 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getRealisasiByPartAndKegiatan($part, $kegiatan_id, $ta)
+	public function getRealisasiByPartAndKegiatan($part = null, $kegiatan_id, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj');
-		$this->db->where('fid_part', $part);
+		if($part !== null)
+		{
+			$this->db->where('fid_part', $part);
+		}
 		$this->db->where('fid_kegiatan', $kegiatan_id);
 		$this->db->where('is_status', 'SELESAI');
 		$this->db->where('tahun', $ta);
@@ -603,11 +618,14 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getRealisasiByPartAndSubKegiatan($part, $sub_kegiatan_id, $ta)
+	public function getRealisasiByPartAndSubKegiatan($part = null, $sub_kegiatan_id, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj');
-		$this->db->where('fid_part', $part);
+		if($part !== null)
+		{
+			$this->db->where('fid_part', $part);
+		}
 		$this->db->where('fid_sub_kegiatan', $sub_kegiatan_id);
 		$this->db->where('is_status', 'SELESAI');
 		$this->db->where('tahun', $ta);
