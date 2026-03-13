@@ -539,7 +539,7 @@ class ModelSpj extends CI_Model
 	}
 
 	// get total realisasi berdasarkan part
-	public function getTotalRealisasiByPart($part = null, $ta)
+	public function getTotalRealisasiByPart($part = null, $filter_tanggal = null, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj_riwayat');
@@ -547,6 +547,17 @@ class ModelSpj extends CI_Model
 		{
 			$this->db->where('entri_by_part', $part);
 		}
+
+		if($filter_tanggal !== null)
+		{
+			$tanggal = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) <=', $end_date);
+		}
+
 		$this->db->where('is_status', 'APPROVE');
 		$this->db->where('tahun', $ta);
 		$q = $this->db->get();
@@ -554,10 +565,27 @@ class ModelSpj extends CI_Model
 	}
 
 	// get total realiasi berdasarkan part dana status SPJ (BARU, VERIFIKASI, PENDING, CAIR, TMS)
-	public function getTotalRealisasiByPartAndStatus($part, $ta, $status)
+	public function getTotalRealisasiByPartAndStatus($part, $filter_tanggal = null, $ta, $status)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj');
+		if($filter_tanggal !== null)
+		{
+			$tanggal = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+			if($status === 'ENTRI') {
+				$this->db->where('DATE(entri_at) >=', $start_date);
+				$this->db->where('DATE(entri_at) <=', $end_date);
+			}
+
+			if(in_array($status, ['VERIFIKASI', 'VERIFIKASI_ADMIN'])) {
+				$this->db->where('DATE(verify_at) >=', $start_date);
+				$this->db->where('DATE(verify_at) <=', $end_date);
+			}
+			
+		}
 		$this->db->where('fid_part', $part);
 		$this->db->where_in('is_status', $status);
 		$this->db->where('tahun', $ta);
@@ -565,10 +593,19 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getTotalRealisasiByPartAndStatusAdmin($part, $ta, $is_status)
+	public function getTotalRealisasiByPartAndStatusAdmin($part, $filter_tanggal = null, $ta, $is_status)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj_riwayat');
+		if($filter_tanggal !== null)
+		{
+			$tanggal = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) <=', $end_date);
+		}
 		$this->db->where('entri_by_part', $part);
 		$this->db->where_in('is_status', $is_status);
 		$this->db->where('tahun', $ta);
@@ -576,11 +613,20 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getTotalRealisasiByPartAndStatusBendahara($part, $ta, $is_status)
+	public function getTotalRealisasiByPartAndStatusBendahara($part, $filter_tanggal = null, $ta, $is_status)
 	{
 		$this->db->select_sum('spj_riwayat.jumlah');
 		$this->db->from('spj_riwayat');
 		$this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token');
+		if($filter_tanggal !== null)
+		{
+			$tanggal = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+			$this->db->where('DATE(spj_riwayat.approve_at) >=', $start_date);
+            $this->db->where('DATE(spj_riwayat.approve_at) <=', $end_date);
+		}
 		$this->db->where('spj_riwayat.entri_by_part', $part);
 		$this->db->where_in('spj_payment.status', $is_status);
 		$this->db->where('spj_riwayat.tahun', $ta);
@@ -588,7 +634,7 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getRealisasiByPartAndProgram($part = null, $program_id, $ta)
+	public function getRealisasiByPartAndProgram($part = null, $filter_tanggal = null, $program_id, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj');
@@ -596,6 +642,17 @@ class ModelSpj extends CI_Model
 		{
 			$this->db->where('fid_part', $part);
 		}
+
+		if($filter_tanggal !== null)
+		{
+			$tanggal = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) <=', $end_date);
+		}
+
 		$this->db->where('fid_program', $program_id);
 		$this->db->where('is_status', 'SELESAI');
 		$this->db->where('tahun', $ta);
@@ -603,7 +660,7 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getRealisasiByPartAndKegiatan($part = null, $kegiatan_id, $ta)
+	public function getRealisasiByPartAndKegiatan($part = null, $filter_tanggal = null,  $kegiatan_id, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj');
@@ -611,6 +668,17 @@ class ModelSpj extends CI_Model
 		{
 			$this->db->where('fid_part', $part);
 		}
+		
+		if($filter_tanggal !== null)
+		{
+			$tanggal = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) <=', $end_date);
+		}
+
 		$this->db->where('fid_kegiatan', $kegiatan_id);
 		$this->db->where('is_status', 'SELESAI');
 		$this->db->where('tahun', $ta);
@@ -618,7 +686,7 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function getRealisasiByPartAndSubKegiatan($part = null, $sub_kegiatan_id, $ta)
+	public function getRealisasiByPartAndSubKegiatan($part = null, $filter_tanggal = null, $sub_kegiatan_id, $ta)
 	{
 		$this->db->select_sum('jumlah');
 		$this->db->from('spj');
@@ -626,6 +694,17 @@ class ModelSpj extends CI_Model
 		{
 			$this->db->where('fid_part', $part);
 		}
+
+		if($filter_tanggal !== null)
+		{
+			$tanggal = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
+			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) <=', $end_date);
+		}
+
 		$this->db->where('fid_sub_kegiatan', $sub_kegiatan_id);
 		$this->db->where('is_status', 'SELESAI');
 		$this->db->where('tahun', $ta);

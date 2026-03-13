@@ -1,3 +1,6 @@
+
+<?php $filter_tanggal = isset($_GET['filter_tanggal']) ? $_GET['filter_tanggal'] : null ?>
+
 <?= form_open(base_url("app/spj/monitor"), ['class' => 'form-horizontal', 'method' => 'GET']); ?>
 <div class="border p-2 mb-3 bg-light rounded-bottom">
     <div class="row">
@@ -7,7 +10,7 @@
                 <label for="filter_tanggal">Filter Tanggal</label>
                     <div class="controls">
                         <div class="input-prepend input-group">
-                            <input type="text" autocomplete="off" name="filter_tanggal" id="filter_tanggal" class="form-control" />
+                            <input type="text" autocomplete="off" name="filter_tanggal" id="filter_tanggal" class="form-control" value="<?= $filter_tanggal ?>" />
                         </div>
                         
                     </div>
@@ -58,9 +61,9 @@
         <div class="tile-stats">
             <?php
             if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
-                $totalRealisasi = $this->spj->getTotalRealisasiByPart(null, $tahun_anggaran);
+                $totalRealisasi = $this->spj->getTotalRealisasiByPart(null, $filter_tanggal, $tahun_anggaran);
             } else {
-                $totalRealisasi = $this->spj->getTotalRealisasiByPart($part, $tahun_anggaran);
+                $totalRealisasi = $this->spj->getTotalRealisasiByPart($part, $filter_tanggal, $tahun_anggaran);
             }
             ?>
             <div class="icon"><i class="fa fa-list-alt"></i></div>
@@ -155,40 +158,95 @@
             </thead>
             <tbody>
                 <?php if (count($listpart) > 0): ?>
-                    <?php $no = 1;
-                    foreach ($listpart as $part): ?>
+                    <?php 
+                    $no = 1;
+
+                    $totalUsulanBaru = 0;
+                    $totalUsulanVerifikasi = 0;
+                    $totalPersetujuan = 0;
+                    $totalTolak = 0;
+                    $totalPerbaikan = 0;
+                    $totalPendingPerbaikan = 0;
+                    $totalPending = 0;
+                    $totalCair = 0;
+                    $totalTolakBendahara = 0;
+                    $totalCapaian = 0;
+
+                    foreach ($listpart as $part): 
+                    // Pagu Murni atau Perubahan
+                    $totalPaguPerubahan = $this->spj->getTotalPaguPerubahanByPart($part->id, $tahun_anggaran);
+                    $totalPaguMurni = $this->spj->getTotalPaguMurniByPart($part->id, $tahun_anggaran);
+
+                    // Usulan Baru/Verifikasi
+                    $usulanBaru = $this->spj->getTotalRealisasiByPartAndStatus($part->id, $filter_tanggal, $tahun_anggaran, ['ENTRI']);
+                    $usulanVerifikasi = $this->spj->getTotalRealisasiByPartAndStatus($part->id, $filter_tanggal, $tahun_anggaran, ['VERIFIKASI', 'VERIFIKASI_ADMIN']);
+                    $totalUsulanBaru += $usulanBaru;
+                    $totalUsulanVerifikasi += $usulanVerifikasi;
+
+                    //Persetujuan/Tolak
+                    $persetujuan = $this->spj->getTotalRealisasiByPartAndStatusAdmin($part->id, $filter_tanggal, $tahun_anggaran, ['APPROVE']);
+                    $tolak = $this->spj->getTotalRealisasiByPartAndStatusAdmin($part->id, $filter_tanggal, $tahun_anggaran, ['TMS', 'BTL']);
+                    $totalPersetujuan += $persetujuan;
+                    $totalTolak += $tolak;
+
+                    // Bedahara
+                    $perbaikan = $this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $filter_tanggal, $tahun_anggaran, ['PERBAIKAN']);
+                    $pendingPerbaikan = $this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $filter_tanggal, $tahun_anggaran, ['PENDING - PERBAIKAN']);
+                    $pending = $this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $filter_tanggal, $tahun_anggaran, ['PENDING']);
+                    $cair = $this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $filter_tanggal, $tahun_anggaran, ['CAIR']);
+                    $tolakBendahara = $this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $filter_tanggal, $tahun_anggaran, ['TOLAK']);
+                    $totalPerbaikan += $perbaikan;
+                    $totalPendingPerbaikan += $pendingPerbaikan;
+                    $totalPending += $pending;
+                    $totalCair += $cair;
+                    $totalTolakBendahara += $tolakBendahara;
+
+                    // Capaian
+                    if ($is_perubahan ? $totalPaguPerubahan : $totalPaguMurni > 0) {
+                        $capaian = (($persetujuan)/($is_perubahan ? $totalPaguPerubahan : $totalPaguMurni)) * 100;
+                    } else {
+                        $capaian = 0;
+                    }
+                    ?>
                         <tr>
                             <!-- No -->
                             <td class="text-center"><?= $no++ ?></td>
                             <!-- Bidang/Bagian -->
                             <td><?= $part->nama ?></td>
                             <!-- Usulan Baru -->
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatus($part->id, $tahun_anggaran, ['ENTRI'])); ?></td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatus($part->id, $tahun_anggaran, ['VERIFIKASI', 'VERIFIKASI_ADMIN'])); ?></td>
+                            <td class="text-right">Rp. <?= nominal($usulanBaru); ?></td>
+                            <td class="text-right">Rp. <?= nominal($usulanVerifikasi); ?></td>
                             <!-- Persetujuan/Tolak -->
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatusAdmin($part->id, $tahun_anggaran, ['APPROVE'])); ?></td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatusAdmin($part->id, $tahun_anggaran, ['TMS', 'BTL'])); ?></td>
+                            <td class="text-right">Rp. <?= nominal($persetujuan); ?></td>
+                            <td class="text-right">Rp. <?= nominal($tolak); ?></td>
                             <!-- Bendahara -->
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $tahun_anggaran, ['PERBAIKAN'])); ?></td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $tahun_anggaran, ['PENDING - PERBAIKAN'])); ?></td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $tahun_anggaran, ['PENDING'])); ?></td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $tahun_anggaran, ['CAIR'])); ?></td>
-                            <td class="text-right">Rp. <?= nominal($this->spj->getTotalRealisasiByPartAndStatusBendahara($part->id, $tahun_anggaran, ['TOLAK'])); ?></td>
+                            <td class="text-right">Rp. <?= nominal($perbaikan); ?></td>
+                            <td class="text-right">Rp. <?= nominal($pendingPerbaikan); ?></td>
+                            <td class="text-right">Rp. <?= nominal($pending); ?></td>
+                            <td class="text-right">Rp. <?= nominal($cair); ?></td>
+                            <td class="text-right">Rp. <?= nominal($tolak); ?></td>
                             <!-- Capaian -->
                             <td class="text-right">
-                                <?php
-                                if ($is_perubahan ? $this->spj->getTotalPaguPerubahanByPart($part->id, $tahun_anggaran) : $this->spj->getTotalPaguMurniByPart($part->id, $tahun_anggaran) > 0) {
-                                    $capaian = ($this->spj->getTotalRealisasiByPartAndStatusAdmin($part->id, $tahun_anggaran, ['APPROVE']) /
-                                        ($is_perubahan ? $this->spj->getTotalPaguPerubahanByPart($part->id, $tahun_anggaran) : $this->spj->getTotalPaguMurniByPart($part->id, $tahun_anggaran))) * 100;
-                                } else {
-                                    $capaian = 0;
-                                }
-
-                                echo number_format($capaian, 2) . '%';
-                                ?>
+                                <?= number_format($capaian, 2) . '%'; ?>
+                                <?php $totalCapaian += $capaian;  ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
+                    <tr>
+                        <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalUsulanBaru); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalUsulanVerifikasi); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPersetujuan); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalTolak); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPerbaikan); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPendingPerbaikan); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPending); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalCair); ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalTolakBendahara); ?></td>
+                        <td class="text-right font-weight-bold">
+                            <?= number_format($totalCapaian, 2) . '%'; ?>
+                        </td>
+                    </tr>
                 <?php else: ?>
                     <tr>
                         <td class="text-center" colspan="9">Data tidak tersedia</td>
@@ -236,9 +294,9 @@
                     $paguProgram = $this->target->getAlokasiPaguProgram($program->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
                     
                     if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
-                        $realisasiProgram = $this->spj->getRealisasiByPartAndProgram(null, $program->id, $tahun_anggaran);
+                        $realisasiProgram = $this->spj->getRealisasiByPartAndProgram(null, $filter_tanggal, $program->id, $tahun_anggaran);
                     } else {
-                        $realisasiProgram = $this->spj->getRealisasiByPartAndProgram($part->id, $program->id, $tahun_anggaran);
+                        $realisasiProgram = $this->spj->getRealisasiByPartAndProgram($part->id, $filter_tanggal, $program->id, $tahun_anggaran);
                     }
                     
 
@@ -313,9 +371,9 @@
                     $totalPaguKegiatan += $paguKegiatan;
 
                     if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
-                        $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan(null, $kegiatan->id, $tahun_anggaran);
+                        $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan(null, $filter_tanggal, $kegiatan->id, $tahun_anggaran);
                     } else {
-                        $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan($part->id, $kegiatan->id, $tahun_anggaran);
+                        $realisasiKegiatan = $this->spj->getRealisasiByPartAndKegiatan($part->id, $filter_tanggal, $kegiatan->id, $tahun_anggaran);
                     }
 
                     $totalRealisasiPaguKegiatan += $realisasiKegiatan;
@@ -392,9 +450,9 @@
                         $totalPaguSubKegiatan += $paguSubKegiatan;
 
                         if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
-                            $realisasiSubKegiatan = $this->spj->getRealisasiByPartAndSubKegiatan(null, $sub_kegiatan->id, $tahun_anggaran);
+                            $realisasiSubKegiatan = $this->spj->getRealisasiByPartAndSubKegiatan(null, $filter_tanggal, $sub_kegiatan->id, $tahun_anggaran);
                         } else {
-                            $realisasiSubKegiatan = $this->spj->getRealisasiByPartAndSubKegiatan($part->id, $sub_kegiatan->id, $tahun_anggaran);
+                            $realisasiSubKegiatan = $this->spj->getRealisasiByPartAndSubKegiatan($part->id, $filter_tanggal, $sub_kegiatan->id, $tahun_anggaran);
                         }
 
                         $totalRealisasiSubKegiatan += $realisasiSubKegiatan;
