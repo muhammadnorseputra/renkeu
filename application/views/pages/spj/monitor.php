@@ -161,7 +161,7 @@
                 <?php if (count($listpart) > 0): ?>
                     <?php 
                     $no = 1;
-
+                    
                     $totalUsulanBaru = 0;
                     $totalUsulanVerifikasi = 0;
                     $totalPersetujuan = 0;
@@ -171,7 +171,6 @@
                     $totalPending = 0;
                     $totalCair = 0;
                     $totalTolakBendahara = 0;
-                    $totalCapaian = 0;
 
                     foreach ($listpart as $part): 
                     // Pagu Murni atau Perubahan
@@ -215,36 +214,128 @@
                             <!-- Bidang/Bagian -->
                             <td><?= $part->nama ?></td>
                             <!-- Usulan Baru -->
-                            <td class="text-right">Rp. <?= nominal($usulanBaru); ?></td>
-                            <td class="text-right">Rp. <?= nominal($usulanVerifikasi); ?></td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($usulanBaru); ?></span>
+                                </div>
+                            </td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($usulanVerifikasi); ?></span>
+                                </div>    
+                            </td>
                             <!-- Persetujuan/Tolak -->
-                            <td class="text-right">Rp. <?= nominal($persetujuan); ?></td>
-                            <td class="text-right">Rp. <?= nominal($tolak); ?></td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between text-success">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($persetujuan); ?></span>
+                                </div>    
+                            </td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between text-danger">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($tolak); ?></span>
+                                </div>    
+                            </td>
                             <!-- Bendahara -->
-                            <td class="text-right">Rp. <?= nominal($perbaikan); ?></td>
-                            <td class="text-right">Rp. <?= nominal($pendingPerbaikan); ?></td>
-                            <td class="text-right">Rp. <?= nominal($pending); ?></td>
-                            <td class="text-right">Rp. <?= nominal($cair); ?></td>
-                            <td class="text-right">Rp. <?= nominal($tolak); ?></td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span> <?= nominal($perbaikan); ?></span>
+                                </div>    
+                           </td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($usulanBaru); ?></span>
+                                </div>    
+                            <?= nominal($pendingPerbaikan); ?></td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($pending); ?></span>
+                                </div>    
+                            </td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($cair); ?></span>
+                                </div>    
+                            </td>
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?= nominal($tolak); ?></span>
+                                </div>    
+                            </td>
                             <!-- Capaian -->
                             <td class="text-right">
                                 <?= number_format($capaian, 2) . '%'; ?>
-                                <?php $totalCapaian += $capaian;  ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                     <tr>
                         <td colspan="2" class="text-center font-weight-bold">Total</td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalUsulanBaru); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalUsulanVerifikasi); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPersetujuan); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalTolak); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPerbaikan); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPendingPerbaikan); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPending); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalCair); ?></td>
-                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalTolakBendahara); ?></td>
                         <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalUsulanBaru); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalUsulanVerifikasi); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between text-success">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalPersetujuan); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between text-danger">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalTolak); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalPerbaikan); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalPendingPerbaikan); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalPending); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalCair); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?= nominal($totalTolakBendahara); ?></span>
+                        </div>     
+                        </td>
+                        <td class="text-right font-weight-bold">
+                            <?php  
+                            $totalCapaian = @($totalPersetujuan/($is_perubahan ? $alokasiPaguPerubahan : $alokasiPagu)) * 100;
+                            ?>
                             <?= number_format($totalCapaian, 2) . '%'; ?>
                         </td>
                     </tr>
