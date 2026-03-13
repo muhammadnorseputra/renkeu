@@ -19,6 +19,7 @@
         </div>
         <div class="col-md-2">
             <button type="submit" id="btn_filter" class="btn btn-primary mt-4"><i class="fa fa-filter"></i> Terapkan</button>
+            <button type="button" class="btn btn-secondary mt-4" onclick="window.location.href = '<?= base_url('app/spj/monitor') ?>'"><i class="fa fa-repeat"></i> Reset</button>
         </div>
     </div>
 </div>
