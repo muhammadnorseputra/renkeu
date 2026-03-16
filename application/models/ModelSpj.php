@@ -197,7 +197,7 @@ class ModelSpj extends CI_Model
 						OR FIND_IN_SET('11', periode) 
 						OR FIND_IN_SET('12', periode) 
 						THEN total ELSE 0 END) AS triwulan_4
-				FROM t_pagu_limit WHERE tahun = $tahun AND is_perubahan = $is_perubahan
+				FROM t_pagu_limit WHERE tahun = '$tahun' AND is_perubahan = '$is_perubahan'
 			");
 		return $query->row();
 	}
