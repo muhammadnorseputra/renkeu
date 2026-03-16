@@ -171,9 +171,9 @@
                     </label>
                     <div class="col-md-10 col-sm-6">
                         <select name="periode[]" id="periode" class="form-control" multiple>
+                            <?php $pecah_periode = !empty($detail->fid_periode) ? explode(',', $detail->fid_periode) : []; ?>
                             <?php foreach (bulanIndo() as $key => $val): ?>
-                                <option value="<?= $key; ?>"
-                                    <?= in_array($key, $data['result']['periode'] ?? []) ? 'selected' : ''; ?>>
+                                <option value="<?= $key; ?>" <?= in_array($key, $pecah_periode) ? 'selected' : ''; ?>>
                                     <?= $val; ?>
                                 </option>
                             <?php endforeach; ?>
@@ -219,6 +219,8 @@
                         <td><?= @$this->indikator->getReferensiSubKegiatan($data['result']['ref_sub_kegiatan'])->row()->nama; ?></td>
                     </tr>
                 </table>
+
+                <?php var_dump($data['result']) ?>
                 <table class="table table-bordered">
                     <tr>
                         <td colspan="3" class="bg-light text-dark"><b>Indikator</b></td>

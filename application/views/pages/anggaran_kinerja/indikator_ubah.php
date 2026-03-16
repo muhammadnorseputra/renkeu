@@ -132,7 +132,9 @@
                             <select name="parent_kegiatan" id="parent_kegiatan" class="form-control" required>
                                 <option value="">-- Pilih Kegiatan --</option>
                                 <?php foreach ($data['kegiatans']->result() as $kegiatan): ?>
-                                    <?php $selectedKegiatan = $detail->fid_kegiatan === $kegiatan->id ? 'selected' : ''; ?>
+                                    <?php 
+                                    $parentId = $this->indikator->getParentSubKegiatan($detail->fid_sub_kegiatan);
+                                    $selectedKegiatan = $parentId === $kegiatan->id ? 'selected' : ''; ?>
                                     <option value="<?= $kegiatan->id; ?>" <?= $selectedKegiatan; ?>><?= $kegiatan->nama; ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -148,7 +150,6 @@
                         </div>
                     </div>
                 <?php endif; ?>
-
                 <div class="form-group row">
                     <label class="col-form-label col-md-2 col-sm-3 label-align" for="indikator">Nama Indikator <span class="text-danger">*</span>
                     </label>
@@ -175,9 +176,11 @@
                     </label>
                     <div class="col-md-10 col-sm-6">
                         <select name="periode" id="periode" class="form-control" required>
-                            <?php foreach (bulanIndo() as $key => $val): ?>
-                                <option value="<?= $key; ?>"
-                                    <?= in_array($key, $detail->periode ?? []) ? 'selected' : ''; ?>>
+                            <?php 
+                                $pecah_periode = !empty($detail->fid_periode) ? explode(',', $detail->fid_periode) : [];
+                                foreach (bulanIndo() as $key => $val): 
+                            ?>
+                                <option value="<?= $key; ?>" <?= in_array($key, $pecah_periode) ? 'selected' : ''; ?>>
                                     <?= $val; ?>
                                 </option>
                             <?php endforeach; ?>
@@ -367,6 +370,7 @@
                     // Karena server mengirimkan HTML, bukan JSON
                     let data = await response.json();
                     subKegiatanSelect.html(data);
+                    $("select[name='ref_sub_kegiatan']").val('<?= $detail->fid_sub_kegiatan ?>').trigger("change")
 
                 } catch (error) {
                     console.error(error);
@@ -387,7 +391,8 @@
             let kegiatanId = $(this).val();
             await loadSubKegiatan(kegiatanId);
         });
-
+        
+        
         $("select[name='referensi'],select[name='ref_tujuan'],select[name='ref_sasaran'],select[name='ref_program'],select[name='parent_kegiatan'],select[name='ref_kegiatan'],select[name='ref_sub_kegiatan'], select[name='ref_jenis_indikator']").select2();
         $("select#periode").select2({
             placeholder: '-- Pilih Periode Indikator --',

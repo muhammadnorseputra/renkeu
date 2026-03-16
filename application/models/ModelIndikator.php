@@ -149,4 +149,9 @@ class ModelIndikator extends CI_Model
     {
         return $this->db->get_where('ref_jenis_indikators', ['id' => $id]);
     }
+
+    public function getParentSubKegiatan($subid)
+    {
+        return $this->db->select('fid_kegiatan')->from('ref_sub_kegiatans')->where('id', $subid)->get()->row()->fid_kegiatan;
+    }
 }
