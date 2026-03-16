@@ -173,7 +173,7 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
-	public function LimitTransaksiTriwulan($tahun)
+	public function LimitTransaksiTriwulan($tahun, $is_perubahan)
 	{
 		$query = $this->db->query("
 				SELECT 
@@ -197,7 +197,7 @@ class ModelSpj extends CI_Model
 						OR FIND_IN_SET('11', periode) 
 						OR FIND_IN_SET('12', periode) 
 						THEN total ELSE 0 END) AS triwulan_4
-				FROM t_pagu_limit WHERE tahun = $tahun
+				FROM t_pagu_limit WHERE tahun = $tahun AND is_perubahan = $is_perubahan
 			");
 		return $query->row();
 	}
@@ -602,6 +602,7 @@ class ModelSpj extends CI_Model
 			$tanggal = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
             $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+
 
 			$this->db->where('DATE(approve_at) >=', $start_date);
             $this->db->where('DATE(approve_at) <=', $end_date);

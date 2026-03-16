@@ -21,6 +21,8 @@ class Dashboard extends CI_Controller
 	 * @see https://codeigniter.com/userguide3/general/urls.html
 	 */
 	public $ta;
+	public $is_perubahan;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -34,6 +36,7 @@ class Dashboard extends CI_Controller
 		$this->load->model('ModelRealisasi', 'realisasi');
 		$this->load->model('ModelUsers', 'user');
 		$this->ta = $this->session->userdata('tahun_anggaran');
+		$this->is_perubahan = $this->session->userdata('is_perubahan');
 	}
 
 	public function index()
@@ -83,7 +86,7 @@ class Dashboard extends CI_Controller
 			$spj_count_cair[] = (int) $this->spj->getJumlahSpjByStatusCair($part->id, 'CAIR', $this->ta) ?? 0;
 		endforeach;
 
-		$limit_anggaran = $this->spj->LimitTransaksiTriwulan($this->ta);
+		$limit_anggaran = $this->spj->LimitTransaksiTriwulan($this->ta, $this->is_perubahan);
 
 		$data = [
 			'title' => 'Dashboard',
