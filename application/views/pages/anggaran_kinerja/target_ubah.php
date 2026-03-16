@@ -68,7 +68,7 @@
         </div>
         <hr />
         <div class="form-group">
-            <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/target') ?>'"><i class="fa fa-close mr-2"></i>Batal</button>
+            <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href='<?= base_url('app/target?periode='. $periode_id) ?>'"><i class="fa fa-close mr-2"></i>Batal</button>
             <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
         </div>
         <?= form_close(); ?>
