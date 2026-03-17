@@ -38,20 +38,13 @@ class Indikator extends CI_Controller
             'title' => 'Indikator Kinerja',
             'content' => 'pages/anggaran_kinerja/indikator',
             'autoload_js' => [
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.js',
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
-                'template/custom-js/tabel-indikator.js',
-                'template/backend/vendors/datatables.net/js/jquery.dataTables.min.js',
-                'template/backend/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js',
-                'template/backend/vendors/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'template/backend/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js',
-                'template/backend/vendors/datatables.net-buttons/js/dataTables.buttons.min.js'
             ],
             'autoload_css' => [
                 'template/backend/vendors/select2/dist/css/select2.min.css',
-                'template/backend/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css',
-                'template/backend/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css',
-                'template/backend/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css'
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
             ]
         ];
         $this->load->view('layout/app', $data);

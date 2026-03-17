@@ -219,8 +219,6 @@
                         <td><?= @$this->indikator->getReferensiSubKegiatan($data['result']['ref_sub_kegiatan'])->row()->nama; ?></td>
                     </tr>
                 </table>
-
-                <?php var_dump($data['result']) ?>
                 <table class="table table-bordered">
                     <tr>
                         <td colspan="3" class="bg-light text-dark"><b>Indikator</b></td>

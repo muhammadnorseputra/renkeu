@@ -226,12 +226,14 @@ class Target extends CI_Controller
 			$data = [
 				'nama' => $post['nama'],
 				'fid_part' => $part_id,
-				'fid_jenis_indikator' => $post['jenis_indikator']
+				'fid_jenis_indikator' => $post['jenis_indikator'],
+				'fid_periode' => $post['periode_id']
 			];
 		} else {
 			$data = [
 				'nama' => $post['nama'],
 				'fid_part' => $part_id,
+				'fid_periode' => $post['periode_id']
 			];
 		}
 
@@ -249,7 +251,8 @@ class Target extends CI_Controller
 				'is_jenis' => (int) $post['is_jenis'],
 				'fid_indikator' => $post['id'],
 				'tahun' => $post['tahun'],
-				'created_by' => $this->session->userdata('user_name')
+				'created_by' => $this->session->userdata('user_name'),
+				'fid_periode' => $post['periode_id']
 			];
 
 			// Update 
@@ -283,7 +286,7 @@ class Target extends CI_Controller
 
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
 			if ($dbcek->num_rows() > 0) {
-				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id'], 'fid_periode' => $post['periode_id']]);
+				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id']]);
 			} else {
 				$this->crud->insert('t_target', $insert);
 			}
