@@ -80,6 +80,14 @@ class Datatables extends CI_Controller
                 $btnVerifikasi = '';
             endif;
 
+            if($r->is_jenis === 'RENCANA'):
+                $jenisDokumen = '<span class="badge badge-info p-2"><i class="fa fa-file mr-1"></i> Rencana Pengelolaan Resiko</span>';
+            elseif($r->is_jenis === 'HASIL'):
+                $jenisDokumen = '<span class="badge badge-primary p-2"><i class="fa fa-file mr-1"></i> Hasil Monev Pengelolaan Resiko</span>';
+            else:
+                $jenisDokumen = '<span class="badge badge-secondary p-2"><i class="fa fa-file mr-1"></i> Jenis Dokumen Tidak Diketahui</span>';
+            endif;
+
 
             $btnAksi = '
             <!-- Download / Status -->
@@ -99,7 +107,7 @@ class Datatables extends CI_Controller
             $row['periode'] = $r->periode;
             $row['tahun'] = $r->tahun;
             $row['user'] = $r->created_by;
-            $row['file'] = '<span class="badge badge-light p-2"><i class="fa fa-file mr-2"></i> ' . $r->nama_dokumen . '</span> ' . $terverifikasi;
+            $row['file'] = $jenisDokumen . ' ' . $terverifikasi;
             $row['action'] = $btnAksi;
             $data[] = $row;
         }
@@ -108,6 +116,67 @@ class Datatables extends CI_Controller
             "draw" => @$_POST['draw'],
             "recordsTotal" => $this->datatables->make_count_all_pengelolaan_resiko(),
             "recordsFiltered" => $this->datatables->make_count_filtered_pengelolaan_resiko(),
+            "data" => $data,
+        );
+        //output to json format
+        header('Content-Type: application/json');
+        echo json_encode($output);
+    }
+
+    public function kinerja_non_pk()
+    {
+        $db = $this->datatables->make_datatables_kinerja_non_pk();
+        $data = array();
+        $no = @$_POST['start'];
+
+        foreach ($db as $r) {
+
+            $filename = $r->file_path;
+            $server_path = FCPATH . 'template/upload/dokumen_pk/' . $filename;
+            $public_url  = base_url('template/upload/dokumen_pk/' . $filename);
+            $file_exists = file_exists($server_path) && is_file($server_path);
+            
+            if ($file_exists):
+                $unduh = '<a href="' . $public_url . '" target="_blank" rel="noopener" class="btn btn-success" title="Unduh dokumen Pengelolaan Resiko">
+                    <i class="fa fa-download mr-1"></i> Unduh
+                </a>';
+            else:
+                $unduh = '<button class="btn btn-outline-secondary" disabled title="File belum tersedia">
+                    <i class="fa fa-download mr-1"></i> Unduh
+                </button>';
+            endif;
+
+            if($r->is_jenis === 'IKI'):
+                $jenisDokumen = '<span class="badge badge-info p-2"><i class="fa fa-file mr-1"></i> IKI</span>';
+            elseif($r->is_jenis === 'MONEV'):
+                $jenisDokumen = '<span class="badge badge-primary p-2"><i class="fa fa-file mr-1"></i> MONEV IKI</span>';
+            else:
+                $jenisDokumen = '<span class="badge badge-secondary p-2"><i class="fa fa-file mr-1"></i> Jenis Dokumen Tidak Diketahui</span>';
+            endif;
+
+            $btnAksi = '
+            <!-- Download / Status -->
+            <div class="d-flex align-items-center" style="gap:.5rem; white-space:nowrap;">
+                ' . $unduh . '
+            </div>
+            ';
+
+            $no++;
+            $row = array();
+            $row['no'] = $no;
+            $row['bidang'] = $r->nama_part;
+            $row['jenis'] = $jenisDokumen;
+            $row['file'] = $r->nama_dokumen;
+            $row['user'] = $r->created_by;
+            $row['tahun'] = $r->tahun;
+            $row['action'] = $btnAksi;
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => @$_POST['draw'],
+            "recordsTotal" => $this->datatables->make_count_all_kinerja_non_pk(),
+            "recordsFiltered" => $this->datatables->make_count_filtered_kinerja_non_pk(),
             "data" => $data,
         );
         //output to json format

@@ -25,99 +25,80 @@
                 Fitur unggah Dokumen Kinerja Non Perjanjian Kerja (PK) saat ini telah dinonaktifkan oleh administrator.
             </div>
         <?php endif; ?>
-        <div class="table-responsive">
-            <table class="table table-borderless table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        <th style="width:5%">No</th>
-                        <th style="width:30%">Bidang</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $no = 1;
-                    foreach ($bidang->result() as $row) : ?>
-                        <?php
-                            $filename = 'PK_' . $row->id . '_' . $this->session->userdata('tahun_anggaran') . '.pdf';
-                            $server_path = FCPATH . 'template/upload/dokumen_pk/' . $filename;
-                            $public_url  = base_url('template/upload/dokumen_pk/' . $filename);
-                            $file_exists = file_exists($server_path) && is_file($server_path);
-                            $uid = 'file_' . $row->id;
-                        ?>
-                        <tr>
-                            <td class="align-middle"><?= $no++ ?></td>
-                            <td class="align-middle"><?= htmlspecialchars($row->nama) ?></td>
-                            <td>
-                                <div class="d-flex align-items-center" style="gap:0.75rem; flex-wrap:wrap;">
-                                    <?php if(getSetting('DokumenPK')): ?>
-                                    <!-- Modern Upload Card -->
-                                    <form action="<?= base_url('app/target/upload_pk') ?>" method="post" enctype="multipart/form-data" class="d-flex align-items-center" style="gap:.5rem; flex:1; min-width:0;">
-                                        <input type="hidden" name="part_id" value="<?= $row->id ?>">
-
-                                        <div class="custom-file" style="flex:1; min-width:0;">
-                                            <input type="file" name="dokumen_pk" id="<?= $uid ?>" accept="application/pdf,application/zip,application/rar" class="custom-file-input" required style="display:none;">
-                                            <label for="<?= $uid ?>" class="btn btn-outline-secondary btn-block text-truncate mb-0" style="text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                                <i class="fa fa-file-zip-o text-danger mr-2" aria-hidden="true"></i>
-                                                <span class="file-label">Pilih file anda...</span>
-                                            </label>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-primary" style="white-space:nowrap;">
-                                            <i class="fa fa-upload mr-1"></i> Upload
-                                        </button>
-                                    </form>
-                                    <?php endif; ?>
-
-                                    <!-- Download / Status -->
-                                    <div class="d-flex align-items-center" style="gap:.5rem; white-space:nowrap;">
-                                        <?php if ($file_exists): ?>
-                                            <a href="<?= $public_url ?>" target="_blank" rel="noopener" class="btn btn-success" title="Unduh dokumen PK">
-                                                <i class="fa fa-download mr-1"></i> Unduh
-                                            </a>
-                                        <?php else: ?>
-                                            <button class="btn btn-outline-secondary" disabled title="File belum tersedia">
-                                                <i class="fa fa-download mr-1"></i> Unduh
-                                            </button>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+        <?php if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR', 'SUPER_ADMIN'])): ?>
+        <?= form_open(base_url('app/dokuments/filter_kinerja_non_pk'), ['class' => 'form-horizontal border p-3 mb-3 mx-2 bg-light', 'id' => 'filterFormKinerjaNonPK', 'data-parsley-validate' => '']) ?>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="filter_bidang">Filter Bidang</label>
+                        <select name="filter_bidang" id="filter_bidang" class="form-control">
+                            <option value="">Semua Bidang</option>
+                            <?php foreach ($list_bidang as $bidang) { ?>
+                                <option value="<?= $bidang->id ?>"><?= $bidang->nama ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <!-- Button submit filter -->
+                <div class="col-md-3 align-self-center">
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Filter</button>
+                    <!-- Button reset filter -->
+                    <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset Filter</button>
+                </div>
+            </div>
+        <?= form_close(); ?>
+        <?php endif; ?>
+        <table class="table table-borderless table-hover" id="table-kinerja-non-pk">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width:5%">No</th>
+                    <th>Bidang</th>
+                    <th>Jenis</th>
+                    <th>File</th>
+                    <th>Upload By</th>
+                    <th>Tahun</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+        </table>
     </div>
 </div>
 
-<!-- Inline JS to improve UX: show chosen filename and support keyboard/drag lightly -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('input[type="file"][name="dokumen_pk"]').forEach(function (input) {
-        var label = input.closest('.custom-file')?.querySelector('.file-label') || null;
-        if (!label) return;
-
-        input.addEventListener('change', function (e) {
-            var f = e.target.files[0];
-            if (f) {
-                label.textContent = f.name;
-                label.title = f.name;
-            } else {
-                label.textContent = 'Pilih file anda...';
-            }
-        });
-
-        // allow clicking the visible label to open file dialog
-        var visibleLabel = input.closest('.custom-file')?.querySelector('label[for="' + input.id + '"]');
-        if (visibleLabel) {
-            visibleLabel.addEventListener('keydown', function (ev) {
-                if (ev.key === 'Enter' || ev.key === ' ') {
-                    ev.preventDefault();
-                    input.click();
-                }
-            });
-        }
-    });
-});
-</script>
+<!-- Modal Unggah Dokumen -->
+<div class="modal fade" id="unggahDokumen" tabindex="-1" aria-labelledby="unggahDokumenLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <?= form_open_multipart('app/uploads/kinerja_non_pk', ['class' => 'needs-validation', 'novalidate' => '', 'data-parsley-validate' => '']) ?>
+      <div class="modal-header">
+        <h5 class="modal-title" id="unggahDokumenLabel">Unggah Dokumen Kinerja Non PK</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- untuk unggah dokumen / perbaikan dokumen silahkan upload ulang -->
+        <div class="alert alert-info" role="alert">
+        Jika ada perbaikan dokumen, silahkan unggah ulang dengan memilih file yang benar pada jenis dokumen dan tahun yang sama.
+        </div>
+        <div class="form-group">
+            <label for="jenis_dokumen">Jenis Dokumen</label>
+            <select name="jenis_dokumen" id="jenis_dokumen" class="form-control" required>
+                <option value="">Pilih Jenis Dokumen</option>
+                <option value="IKI">IKI</option>
+                <option value="MONEV">Monev IKI</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="file">Pilih File PDF / Excel</label>
+            <input type="file" class="form-control-file" id="file" name="file" accept=".pdf,.xlsx" required>
+        </div>
+        
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </div>
+    <?= form_close(); ?>
+    </div>
+  </div>
+</div>

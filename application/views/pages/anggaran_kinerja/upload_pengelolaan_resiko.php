@@ -95,8 +95,16 @@
              </select>
         </div>
         <div class="form-group">
-            <label for="file">Pilih File PDF</label>
-            <input type="file" class="form-control-file" id="file" name="file" accept=".pdf" required>
+            <label for="jenis_dokumen">Jenis Dokumen</label>
+            <select name="jenis_dokumen" id="jenis_dokumen" class="form-control" required>
+                <option value="">Pilih Jenis Dokumen</option>
+                <option value="RENCANA">Dokumen Perencanaan Pengelolaan Resiko</option>
+                <option value="HASIL">Monev Pengelolaan Resiko</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="file">Pilih File PDF / Excel</label>
+            <input type="file" class="form-control-file" id="file" name="file" accept=".pdf,.xlsx" required>
         </div>
         
     </div>

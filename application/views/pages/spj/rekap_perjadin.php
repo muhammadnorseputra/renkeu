@@ -66,6 +66,7 @@
                         <th>Bulan</th>
                         <th>Tahun</th>
                         <th>Upload By</th>
+                        <th>Upload Time</th>
                         <th>Catatan</th>
                         <th>Aksi</th>
                     </tr>

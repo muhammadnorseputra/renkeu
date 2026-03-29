@@ -42,12 +42,10 @@ class Uploads extends CI_Controller
         $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
         $namafile = 'Pengelolaan-Resiko-' . $namapart .'-'. $periode . '-' . $tahun .'-'. generateRandomString();
 
-        
-        
         // validasi form dan upload file ke folder /template/upload/dokumen_pengelolaan_resiko/
 		$config = [
 			'upload_path'   => './template/upload/dokumen_pengelolaan_resiko/',
-			'allowed_types' => 'pdf',
+			'allowed_types' => 'pdf|xlsx|xls',
 			'max_size'      => 2120, // 2MB
 			'file_name'     => $namafile,
 			'overwrite'     => true
@@ -62,7 +60,7 @@ class Uploads extends CI_Controller
 		}
 
         // Cek apakah sudah ada file untuk part dan tahun yg sama
-		$existing = $this->crud->getWhere('t_dokumen_pengelolaan_resiko', ['fid_part' => $part_id, 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
+		$existing = $this->crud->getWhere('t_dokumen_pengelolaan_resiko', ['fid_part' => $part_id, 'is_jenis' => $this->input->post('jenis_dokumen'), 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
         // jika sudah ada, hapus file lama dari server
         if ($existing->num_rows() > 0) {
             $oldFile = $existing->row()->file_path;
@@ -75,6 +73,7 @@ class Uploads extends CI_Controller
         $upload_data = $this->upload->data();
 
 		$data = [
+			'is_jenis' => $this->input->post('jenis_dokumen'),
             'periode' => $periode,
 			'fid_part' => $part_id,
             'nama_dokumen_ori' => $getFileName,
@@ -89,7 +88,7 @@ class Uploads extends CI_Controller
 
         // jika sudah ada record, lakukan update; jika belum, insert baru
 		if ($existing->num_rows() > 0) {
-			$db = $this->crud->update('t_dokumen_pengelolaan_resiko', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'periode' => $periode, 'created_by' => $this->session->userdata('user_name')]);
+			$db = $this->crud->update('t_dokumen_pengelolaan_resiko', $data, ['fid_part' => $part_id, 'is_jenis' => $this->input->post('jenis_dokumen'), 'tahun' => $tahun, 'periode' => $periode, 'created_by' => $this->session->userdata('user_name')]);
             if($db) {
                 $this->session->set_flashdata('alert_type', 'success');
                 $this->session->set_flashdata('alert_msg', 'Dokument Pengelolaan Resiko berhasil diperbarui');
@@ -109,6 +108,83 @@ class Uploads extends CI_Controller
             $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Pengelolaan Resiko');
         }
         return redirect(base_url('app/dokuments/pengelolaan_resiko'));
+    }
+
+	public function kinerja_non_pk()
+    {
+		$jenis = $this->input->post('jenis_dokumen');
+		$is_perubahan = $this->session->userdata('is_perubahan');
+		$tahun = $this->session->userdata('tahun_anggaran');
+        $part_id = $this->session->userdata('part');
+        $getFileName = $_FILES['file']['name'];
+        $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
+        $namafile = 'Kinerja-Non-PK-' . $namapart .'-'. $jenis . '-' . $tahun. '-'.$is_perubahan .'-'. generateRandomString();
+
+        // validasi form dan upload file ke folder /template/upload/dokumen_pk/
+		$config = [
+			'upload_path'   => './template/upload/dokumen_pk/',
+			'allowed_types' => 'pdf|xlsx|xls',
+			'max_size'      => 2120, // 2MB
+			'file_name'     => $namafile,
+			'overwrite'     => true
+		];
+
+        $this->load->library('upload', $config);
+
+		if (!$this->upload->do_upload('file')) {
+			$this->session->set_flashdata('alert_type', 'error');
+			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
+			return redirect(base_url('app/dokuments/perjanjian_kerja'));
+		}
+
+        // Cek apakah sudah ada file untuk part dan tahun yg sama
+		$existing = $this->crud->getWhere('t_dokumen_pk', ['fid_part' => $part_id, 'is_jenis' => $this->input->post('jenis_dokumen'),  'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
+        // jika sudah ada, hapus file lama dari server
+        if ($existing->num_rows() > 0) {
+            $oldFile = $existing->row()->file_path;
+            $oldFilePath = FCPATH . 'template/upload/dokumen_pk/' . $oldFile;
+            if (file_exists($oldFilePath) && is_file($oldFilePath)) {
+                unlink($oldFilePath);
+            }
+        }
+
+        $upload_data = $this->upload->data();
+
+		$data = [
+			'is_jenis' => $this->input->post('jenis_dokumen'),
+			'is_perubahan' => $is_perubahan,
+			'fid_part' => $part_id,
+			'nama_dokumen' => $namafile,
+			'file_path' => $upload_data['file_name'],
+			'ukuran_file' => $upload_data['file_size'],
+			'tipe_file' => $upload_data['file_type'],
+			'tahun' => $tahun,
+			'created_by' => $this->session->userdata('user_name'),
+			'created_at' => DateTimeInput()
+		];
+
+        // jika sudah ada record, lakukan update; jika belum, insert baru
+		if ($existing->num_rows() > 0) {
+			$db = $this->crud->update('t_dokumen_pk', $data, ['fid_part' => $part_id, 'is_jenis' => $this->input->post('jenis_dokumen'), 'tahun' => $tahun, 'is_perubahan' => $is_perubahan, 'created_by' => $this->session->userdata('user_name')]);
+            if($db) {
+                $this->session->set_flashdata('alert_type', 'success');
+                $this->session->set_flashdata('alert_msg', 'Dokument Kinerja Non PK berhasil diperbarui');
+            } else {
+                $this->session->set_flashdata('alert_type', 'error');
+                $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Dokument Kinerja Non PK');
+            }
+            return redirect(base_url('app/dokuments/perjanjian_kerja'));
+		}
+
+        $db = $this->crud->insert('t_dokumen_pk', $data);
+        if($db) {
+            $this->session->set_flashdata('alert_type', 'success');
+            $this->session->set_flashdata('alert_msg', 'Dokument Kinerja Non PK berhasil diunggah');
+        } else {
+            $this->session->set_flashdata('alert_type', 'error');
+            $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Dokument Kinerja Non PK');
+        }
+        return redirect(base_url('app/dokuments/perjanjian_kerja'));
     }
 
 }

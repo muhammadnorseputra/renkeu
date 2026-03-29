@@ -1343,6 +1343,9 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             $row['bulan'] = bulan($r->bulan) .' <br/> '. $terverifikasi;
             $row['tahun'] = $r->tahun;
             $row['user'] = $r->created_by;
+            $row['time'] = time_ago_id($r->created_at, [
+                'show_time' => true,
+            ]);
             $row['catatan'] = $r->catatan ?? '-';
             $row['action'] = $btnAksi;
             $data[] = $row;
@@ -1397,15 +1400,15 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
         $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString().'-'.$this->session->userdata('user_name');
 
         // Cek apakah sudah ada file untuk part, bulan, tahun dan created_by yg sama
-		$existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
+		// $existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
         // jika sudah ada, hapus file lama dari server
-        if ($existing->num_rows() > 0) {
-            $oldFile = $existing->row()->file_path;
-            $oldFilePath = FCPATH . 'template/upload/dokumen_perjadin/' . $oldFile;
-            if (file_exists($oldFilePath) && is_file($oldFilePath)) {
-                unlink($oldFilePath);
-            }
-        }
+        // if ($existing->num_rows() > 0) {
+        //     $oldFile = $existing->row()->file_path;
+        //     $oldFilePath = FCPATH . 'template/upload/dokumen_perjadin/' . $oldFile;
+        //     if (file_exists($oldFilePath) && is_file($oldFilePath)) {
+        //         unlink($oldFilePath);
+        //     }
+        // }
         
 
         // validasi form dan upload file ke folder /template/upload/dokumen_perjadin/
@@ -1441,17 +1444,17 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 		];
 
         // jika sudah ada record, lakukan update; jika belum, insert baru
-		if ($existing->num_rows() > 0) {
-			$db = $this->crud->update('t_dokumen_perjadin', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'bulan' => $bulan, 'created_by' => $this->session->userdata('user_name')]);
-            if($db) {
-                $this->session->set_flashdata('alert_type', 'success');
-                $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diperbarui');
-            } else {
-                $this->session->set_flashdata('alert_type', 'error');
-                $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Rekap Perjadin');
-            }
-            return redirect(base_url('app/spj/rekap_perjadin'));
-		}
+		// if ($existing->num_rows() > 0) {
+		// 	$db = $this->crud->update('t_dokumen_perjadin', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'bulan' => $bulan, 'created_by' => $this->session->userdata('user_name')]);
+        //     if($db) {
+        //         $this->session->set_flashdata('alert_type', 'success');
+        //         $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diperbarui');
+        //     } else {
+        //         $this->session->set_flashdata('alert_type', 'error');
+        //         $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Rekap Perjadin');
+        //     }
+        //     return redirect(base_url('app/spj/rekap_perjadin'));
+		// }
         
 
         $db = $this->crud->insert('t_dokumen_perjadin', $data);

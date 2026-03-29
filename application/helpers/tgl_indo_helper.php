@@ -328,6 +328,86 @@ if (!function_exists('bulan_range')) {
     }
 }
 
+if ( ! function_exists('time_ago_id'))
+{
+    function time_ago_id($datetime, $options = [])
+    {
+        // Default options
+        $defaults = [
+            'timezone' => 'Asia/Jakarta',
+            'show_time' => true,
+            'long_format_limit' => 7 // hari (lebih dari ini tampil tanggal)
+        ];
+
+        $opt = array_merge($defaults, $options);
+
+        date_default_timezone_set($opt['timezone']);
+
+        $timestamp = strtotime($datetime);
+        $current_time = time();
+        $diff = $current_time - $timestamp;
+
+        $time_format = date('H:i', $timestamp);
+        $date_format = date('d M Y', $timestamp);
+
+        // Baru saja
+        if ($diff < 60) {
+            return '<span class="text-success"><i class="fa fa-clock-o"></i> </span>baru saja';
+        }
+
+        // Menit
+        if ($diff < 3600) {
+            $minutes = floor($diff / 60);
+            return $minutes == 1 
+                ? '1 menit yang lalu' 
+                : $minutes . ' menit yang lalu';
+        }
+
+        // Jam
+        if ($diff < 86400) {
+            $hours = floor($diff / 3600);
+            return $hours == 1 
+                ? '1 jam yang lalu' 
+                : $hours . ' jam yang lalu';
+        }
+
+        // Hari
+        $days = floor($diff / 86400);
+
+        if ($days == 1) {
+            return $opt['show_time'] 
+                ? 'kemarin, ' . $time_format 
+                : 'kemarin';
+        }
+
+        if ($days < $opt['long_format_limit']) {
+            return $opt['show_time']
+                ? $days . ' hari yang lalu, ' . $time_format
+                : $days . ' hari yang lalu';
+        }
+
+        // Minggu
+        if ($days < 30) {
+            $weeks = floor($days / 7);
+            return $weeks == 1 
+                ? '1 minggu yang lalu' 
+                : $weeks . ' minggu yang lalu';
+        }
+
+        // Bulan
+        if ($days < 365) {
+            $months = floor($days / 30);
+            return $months == 1 
+                ? '1 bulan yang lalu' 
+                : $months . ' bulan yang lalu';
+        }
+
+        // Lebih dari batas → tampil tanggal normal
+        return $opt['show_time'] 
+            ? $date_format . ', ' . $time_format 
+            : $date_format;
+    }
+}
 
 // RUN
 // echo shortdate_indo('2017-09-5');
