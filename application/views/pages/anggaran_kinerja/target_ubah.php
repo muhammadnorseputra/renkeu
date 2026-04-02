@@ -3,16 +3,10 @@
         <?= form_open(base_url("app/target/ubah_proses"), ['id' => 'formIndikatorUbah', 'data-parsley-validate' => ''], ['id' => $id_indikator, 'periode_id' => $periode_id]); ?>
         <div class="form-group">
             <label class="col-form-label label-align" for="tahun">Target Tahun</label>
-            <select name="tahun" id="tahun" class="form-control" required="required" readonly data-parsley-errors-container="#help-block-tahun">
-                <option value="">Pilih Tahun</option>
-                <?php
-                $year = date('Y');
-                for ($i = $year; $i <= $year + 3; $i++) {
-                    $selected = date('Y') == $i ? 'selected' : 'disabled';
-                    echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
-                }
-                ?>
-            </select>
+            <?php  
+            $tahun = $row->tahun ?? $this->session->userdata('tahun_anggaran');
+            ?>
+            <input type="text" name="tahun" id="tahun" class="form-control" value="<?= $tahun ?>" readonly>
             <div id="help-block-tahun" class="row col-md-12"></div>
         </div>
         <div class="form-group">
@@ -87,7 +81,7 @@
                     $data,
                     (response) => {
                         if (response === 200) {
-                            window.location.href = `${_uri}/app/target`;
+                            window.location.href = `${_uri}/app/target?periode=<?= $periode_id ?>`;
                         }
                     },
                     "json"

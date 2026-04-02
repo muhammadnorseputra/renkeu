@@ -48,7 +48,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <th rowspan="2" class="align-middle sticky-col">Program/Kegiatan/Sub Kegiatan</th>
                     <th rowspan="2" class="align-middle">Indikator Kinerja</th>
                     <th colspan="2">Realisasi</th>
-                    <th colspan="3">Aksi</th>
+                    <th colspan="4">Aksi</th>
                 </tr>
                 <tr class="text-center">
                     <th>Anggaran (Rp)</th>
@@ -58,8 +58,9 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <?php if (privilages('priv_verify_kinerja')): ?>
                         <th>Verifikasi</th>
                     <?php else: ?>
-                        <th>Catatan</th>
+                        <th>Catatan Verifikator</th>
                     <?php endif; ?>
+                    <th>Faktor/Tindak Lajut</th>
                 </tr>
             </thead>
             <tbody>
@@ -330,7 +331,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
 
                             $no_level_2 = 1;
                             foreach ($kegiatans->result() as $kegiatan) :
-                                if ($this->session->userdata('role') === 'ADMIN') :
+                                if (in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN', 'VERIFICATOR'])) :
                                     $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id], null);
                                 else:
                                     $indikator_kegiatan = $this->realisasi->getIndikator(

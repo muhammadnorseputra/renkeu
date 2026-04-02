@@ -129,7 +129,7 @@ $("form#formRealisasi").on("submit", function (e) {
 			data,
 			function (res) {
 				if (res.status) {
-					// window.location.reload();
+					window.location.reload();
 				}
 				return alert(res.message);
 			},

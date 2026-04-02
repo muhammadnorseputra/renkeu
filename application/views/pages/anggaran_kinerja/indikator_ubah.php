@@ -245,6 +245,11 @@
                         <td width="2%">:</td>
                         <td><?= periodeToBulan($data['result']['periode']); ?></td>
                     </tr>
+                    <tr>
+                        <td width="20%">Tahun</td>
+                        <td width="2%">:</td>
+                        <td><?= $this->session->userdata('tahun_anggaran'); ?></td>
+                    </tr>
                 </table>
                 <?= form_open(base_url('app/indikator/update'), ['id' => 'formStep3'], [
                     'id' => $detail->id,
