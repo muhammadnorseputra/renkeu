@@ -68,7 +68,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                 $no_level_0 = "#";
                 $tujuan = $this->target->getTujuan(['t.tahun' => $this->session->userdata('tahun_anggaran')]);
                 foreach ($tujuan->result() as $t) :
-                    $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id, 'i.fid_periode' => $periode_id], $this->session->userdata('part'));
+                    $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], $this->session->userdata('part'));
                     $tr = "";
                     $rowspan = "";
                     if ($indikator_tujuan->num_rows() > 0):
@@ -153,7 +153,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     $no_level_0_1 = "#1";
                     $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
                     foreach ($sasaran->result() as $s) :
-                        $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id, 'i.fid_periode' => $periode_id], null);
+                        $indikator_sasaran = $this->realisasi->getIndikator(['i.fid_sasaran' => $s->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                         $tr = "";
                         $rowspan = "";
                         if ($indikator_sasaran->num_rows() > 0):
@@ -239,9 +239,9 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
                         foreach ($programs->result() as $program) :
                             if ($this->session->userdata('role') === 'USER') {
-                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id, 'i.fid_periode' => $periode_id], $this->session->userdata('part'));
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], $this->session->userdata('part'));
                             } else {
-                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id, 'i.fid_periode' => $periode_id], null);
+                                $indikator_program = $this->realisasi->getIndikator(['fid_program' => $program->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                             }
                             $tr = "";
                             $rowspan = "";
@@ -332,10 +332,10 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             $no_level_2 = 1;
                             foreach ($kegiatans->result() as $kegiatan) :
                                 if (in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN', 'VERIFICATOR'])) :
-                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id], null);
+                                    $indikator_kegiatan = $this->realisasi->getIndikator(['fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                                 else:
                                     $indikator_kegiatan = $this->realisasi->getIndikator(
-                                        ['fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id],
+                                        ['fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')],
                                         $this->session->userdata('part')
                                     );
                                 endif;
@@ -420,9 +420,9 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 $no_level_3 = 1;
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
                                     if ($this->session->userdata('role') === 'USER') :
-                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id], $this->session->userdata('part'));
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], $this->session->userdata('part'));
                                     else:
-                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id], null);
+                                        $indikator_sub_kegiatan = $this->realisasi->getIndikator(['fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                                     endif;
                                     $tr = "";
                                     $rowspan = "";

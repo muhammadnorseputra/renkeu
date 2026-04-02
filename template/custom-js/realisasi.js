@@ -57,7 +57,9 @@ function InputRealisasi(id, periode) {
 				.prop("required", res?.target?.is_jenis !== "2" ? false : true);
 			$modal
 				.find("input[name='keterangan_eviden']")
-				.val(res?.target?.eviden_jenis);
+				.val(res?.target?.eviden_jenis)
+				.prop("readonly", res?.target?.is_jenis !== "2")
+				.prop("required", res?.target?.is_jenis !== "2" ? false : true);
 			$modal.find("textarea[name='link']").val(res?.realisasi?.eviden_link);
 		}
 	);

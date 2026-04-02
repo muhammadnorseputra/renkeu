@@ -61,7 +61,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                 $no_level_0 = "#";
                 $tujuan = $this->target->getTujuan(['t.tahun' => $this->session->userdata('tahun_anggaran')]);
                 foreach ($tujuan->result() as $t) :
-                    $indikator_tujuan = $this->target->getIndikator(['i.fid_tujuan' => $t->id, 'i.fid_periode' => $periode_id], null);
+                    $indikator_tujuan = $this->target->getIndikator(['i.fid_tujuan' => $t->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                     $tr = "";
                     $rowspan = "";
                     if ($indikator_tujuan->num_rows() > 0):
@@ -121,7 +121,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                     $no_level_0_1 = "#1";
                     $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
                     foreach ($sasaran->result() as $s) :
-                        $indikator_sasaran = $this->target->getIndikator(['i.fid_sasaran' => $s->id, 'i.fid_periode' => $periode_id], null);
+                        $indikator_sasaran = $this->target->getIndikator(['i.fid_sasaran' => $s->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                         $tr = "";
                         $rowspan = "";
                         if ($indikator_sasaran->num_rows() > 0):
@@ -181,7 +181,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                         $no_level_1 = 1;
                         $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
                         foreach ($programs->result() as $program) :
-                            $indikator_program = $this->target->getIndikator(['i.fid_program' => $program->id, 'i.fid_periode' => $periode_id], null);
+                            $indikator_program = $this->target->getIndikator(['i.fid_program' => $program->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                             $tr = "";
                             $rowspan = "";
                             if ($indikator_program->num_rows() > 0):
@@ -245,7 +245,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
 
                             $no_level_2 = 1;
                             foreach ($kegiatans->result() as $kegiatan) :
-                                $indikator_kegiatan = $this->target->getIndikator(['i.fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id], null);
+                                $indikator_kegiatan = $this->target->getIndikator(['i.fid_kegiatan' => $kegiatan->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                                 $tr = "";
                                 $rowspan = "";
                                 if ($indikator_kegiatan->num_rows() > 0):
@@ -304,7 +304,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 $sub_kegiatans = $this->target->sub_kegiatans($kegiatan->id);
                                 $no_level_3 = 1;
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
-                                    $indikator_sub_kegiatan = $this->target->getIndikator(['i.fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id], null);
+                                    $indikator_sub_kegiatan = $this->target->getIndikator(['i.fid_sub_kegiatan' => $sub_kegiatan->id, 'i.fid_periode' => $periode_id, 'i.tahun' => $this->session->userdata('tahun_anggaran')], null);
                                     $tr = "";
                                     $rowspan = "";
                                     if ($indikator_sub_kegiatan->num_rows() > 0):
