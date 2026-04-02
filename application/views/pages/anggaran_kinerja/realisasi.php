@@ -323,7 +323,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 <?= $tr ?>
                             </tr>
                             <?php
-                            if ($this->session->userdata('role') === 'ADMIN') :
+                            if (in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN', 'VERIFICATOR'])) :
                                 $kegiatans = $this->realisasi->kegiatans($program->id);
                             else :
                                 $kegiatans = $this->realisasi->kegiatans($program->id, $this->session->userdata('part'));
