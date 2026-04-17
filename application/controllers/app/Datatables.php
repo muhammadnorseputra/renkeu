@@ -66,7 +66,7 @@ class Datatables extends CI_Controller
                 $btnDelete = '';
             endif;
 
-            if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR'])):
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR', 'SUPER_ADMIN'])):
                 if($r->is_kunci == 0):
                     $btnVerifikasi = '<button type="button" class="btn btn-primary" onclick="VerifikasiDokumen(' . $r->id . ')" title="Verifikasi Dokumen">
                     <i class="fa fa-check mr-1"></i> Verifikasi
@@ -98,16 +98,26 @@ class Datatables extends CI_Controller
             </div>
             ';
 
-            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2"><i class="fa fa-check-circle mr-1"></i> Terverifikasi</span>' : '<span class="badge badge-warning p-2"><i class="fa fa-exclamation-circle mr-1"></i> Belum Terverifikasi</span>';
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR', 'SUPER_ADMIN'])) {
+                $catatan = '<span class="text-danger">' . $r->catatan . '</span> <button class="btn btn-sm btn-outline-primary" title="Buat/Edit Catatan" onclick="Catatan(' . $r->id . ')">
+                    <i class="fa fa-comment"></i>
+                </button>';
+            } else {
+                $catatan = '<span class="text-danger">' . $r->catatan . '</span>';
+            }
+
+            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2"><i class="fa fa-check-circle mr-1"></i> Terverifikasi</span>' : '<span class="badge badge-warning p-2"><i class="fa fa-exclamation-circle mr-1"></i> Belum Diverifikasi</span>';
 
             $no++;
             $row = array();
             $row['no'] = $no;
             $row['bidang'] = $r->nama_part;
             $row['periode'] = $r->periode;
+            $row['file'] = $jenisDokumen . ' ' . $r->nama_dokumen_ori;
+            $row['status'] = $terverifikasi;
             $row['tahun'] = $r->tahun;
             $row['user'] = $r->created_by;
-            $row['file'] = $jenisDokumen . ' ' . $terverifikasi;
+            $row['catatan'] = $catatan;
             $row['action'] = $btnAksi;
             $data[] = $row;
         }
@@ -154,21 +164,46 @@ class Datatables extends CI_Controller
                 $jenisDokumen = '<span class="badge badge-secondary p-2"><i class="fa fa-file mr-1"></i> Jenis Dokumen Tidak Diketahui</span>';
             endif;
 
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR', 'SUPER_ADMIN'])):
+                if($r->is_kunci == 0):
+                    $btnVerifikasi = '<button type="button" class="btn btn-primary" onclick="VerifikasiDokumen(\'' . $r->id . '\',\'' . $r->nama_dokumen_ori . '\',\'' . $r->periode . '\',\'' . $r->is_kunci . '\',\'' . $r->catatan . '\')" title="Verifikasi Dokumen">
+                    <i class="fa fa-check mr-1"></i> Verifikasi
+                </button>';
+                else:
+                    $btnVerifikasi = '<button type="button" class="btn btn-warning" title="Unverifikasi Dokumen" onclick="VerifikasiDokumen(\'' . $r->id . '\',\'' . $r->nama_dokumen_ori . '\',\'' . $r->periode . '\',\'' . $r->is_kunci . '\',\'' . $r->catatan . '\')">
+                        <i class="fa fa-repeat mr-1"></i> Verifikasi Ulang
+                    </button>';
+                endif;
+            else:
+                $btnVerifikasi = '';
+            endif;
+
+            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2"><i class="fa fa-check-circle mr-1"></i> Terverifikasi</span>' : '<span class="badge badge-warning p-2"><i class="fa fa-exclamation-circle mr-1"></i> Belum Diverifikasi</span>';
+
             $btnAksi = '
             <!-- Download / Status -->
             <div class="d-flex align-items-center" style="gap:.5rem; white-space:nowrap;">
                 ' . $unduh . '
+                ' . $btnVerifikasi . '
             </div>
             ';
+
+            if($r->is_kunci == 1) {
+                $catatan = '<span class="text-success">' . $r->catatan . '</span>';
+            } else {
+                $catatan = '<span class="text-danger">' . $r->catatan . '</span>';
+            }
 
             $no++;
             $row = array();
             $row['no'] = $no;
             $row['bidang'] = $r->nama_part;
+            $row['periode'] = $r->periode;
             $row['jenis'] = $jenisDokumen;
-            $row['file'] = $r->nama_dokumen;
+            $row['file'] = $r->nama_dokumen_ori . ' ' . $terverifikasi;
             $row['user'] = $r->created_by;
             $row['tahun'] = $r->tahun;
+            $row['catatan'] = $catatan;
             $row['action'] = $btnAksi;
             $data[] = $row;
         }

@@ -120,6 +120,53 @@ class Dokuments extends CI_Controller
 
     }
 
+    public function get_catatan_pengelolaan_resiko()
+    {
+        $id = $this->input->post('id');
+        if (empty($id)) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'ID dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        $dok = $this->crud->getWhere('t_dokumen_pengelolaan_resiko', ['id' => $id])->row();
+        if (!$dok) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['pesan' => 'Berhasil mengambil catatan', 'status' => true, 'catatan' => $dok->catatan]);
+    }
+
+    public function simpan_catatan_pengelolaan_resiko()
+    {
+        $id = $this->input->post('id');
+        $catatan = $this->input->post('catatan');
+
+        if (empty($id)) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'ID dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        // transaction
+        $this->db->trans_begin();
+        $this->crud->update('t_dokumen_pengelolaan_resiko', ['catatan' => $catatan], ['id' => $id]);
+        $this->db->trans_commit();
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Gagal menyimpan catatan', 'status' => false]);
+            return;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['pesan' => 'Berhasil menyimpan catatan', 'status' => true]);
+    }
+
     public function perjanjian_kerja()
 	{
 		$data = [
@@ -138,4 +185,34 @@ class Dokuments extends CI_Controller
 		];
 		$this->load->view('layout/app', $data);
 	}
+
+    public function verifikasi_dokument_non_pk()
+    {
+        $post = $this->input->post();
+        $id = $post['id'];
+        $is_kunci = $post['is_kunci'];
+        $catatan = $post['catatan'] ?? '';
+
+        if (empty($id) || !isset($is_kunci)) {
+            header('Content-Type: application/json');
+            echo json_encode(['message' => 'ID dokumen atau status verifikasi tidak ditemukan', 'status' => false]);
+            return; 
+        }
+
+        // transaction
+        $this->db->trans_begin();
+        $this->crud->update('t_dokumen_pk', ['is_kunci' => $is_kunci, 'catatan' => $catatan], ['id' => $id]);
+        $this->db->trans_commit();
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            header('Content-Type: application/json');
+            echo json_encode(['message' => 'Gagal memverifikasi dokumen', 'status' => false]);
+            return;
+        }
+
+        $status_text = $is_kunci == 1 ? 'Terverifikasi' : 'Belum Diverifikasi';
+        header('Content-Type: application/json');
+        echo json_encode(['message' => 'Berhasil memperbarui status verifikasi - '. $status_text, 'status' => true, 'is_kunci' => $is_kunci]);
+    }
 }

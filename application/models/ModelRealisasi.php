@@ -221,7 +221,7 @@ class ModelRealisasi extends CI_Model
     {
         $this->db->select_sum('persentase');
         $this->db->select_sum('eviden');
-        $this->db->select('eviden_jenis, eviden_link, faktor_pendorong, faktor_penghambat, tindak_lanjut, is_jenis, status');
+        $this->db->select('id, eviden_jenis, eviden_link, faktor_pendorong, faktor_penghambat, tindak_lanjut, is_jenis, status');
         $this->db->from('t_realisasi');
         $this->db->where('fid_indikator', $indikator_id);
         if (!empty($periode_start) && !empty($periode_end)) {

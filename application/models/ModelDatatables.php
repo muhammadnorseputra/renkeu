@@ -75,14 +75,14 @@ class ModelDatatables extends CI_Model
 	// ----------------- datatable-kinerja-non-pk --------------------------//
 
 	//set column field database for datatable orderable
-	protected $column_order_kinerja_non_pk = array(null, 'r.nama_part', 't.tahun');
+	protected $column_order_kinerja_non_pk = array(null, 'r.nama_part', 't.periode', 't.tahun');
 	// default order 
 	protected $order_kinerja_non_pk = array('t.id' => 'desc');
 
 	private function _datatables_kinerja_non_pk()
 	{
 
-		$this->db->select('t.id, t.is_jenis, t.nama_dokumen, t.file_path, t.tahun, r.nama AS nama_part, t.created_by, t.created_at');
+		$this->db->select('t.id, t.is_jenis, t.is_kunci, t.periode, t.nama_dokumen, t.nama_dokumen_ori, t.file_path, t.tahun, r.nama AS nama_part, t.catatan, t.created_by, t.created_at');
 		$this->db->from('t_dokumen_pk AS t');
 		$this->db->join('ref_parts as r', 't.fid_part=r.id');
         $this->db->where('t.tahun', $this->session->userdata('tahun_anggaran'));

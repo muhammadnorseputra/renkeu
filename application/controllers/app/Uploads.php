@@ -151,10 +151,12 @@ class Uploads extends CI_Controller
         $upload_data = $this->upload->data();
 
 		$data = [
+			'periode' => $this->input->post('periode'),
 			'is_jenis' => $this->input->post('jenis_dokumen'),
 			'is_perubahan' => $is_perubahan,
 			'fid_part' => $part_id,
 			'nama_dokumen' => $namafile,
+			'nama_dokumen_ori' => $getFileName,
 			'file_path' => $upload_data['file_name'],
 			'ukuran_file' => $upload_data['file_size'],
 			'tipe_file' => $upload_data['file_type'],

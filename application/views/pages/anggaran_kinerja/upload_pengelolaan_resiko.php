@@ -56,9 +56,11 @@
                     <th style="width:5%">No</th>
                     <th>Bidang</th>
                     <th>Periode</th>
+                    <th>File</th>
+                    <th>Status</th>
                     <th>Tahun</th>
                     <th>Upload By</th>
-                    <th>File</th>
+                    <th>Catatan</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -113,6 +115,33 @@
         <button type="submit" class="btn btn-primary">Upload</button>
     </div>
     <?= form_close(); ?>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah Catatan -->
+<div class="modal fade" id="tambahCatatan" tabindex="-1" aria-labelledby="tambahCatatanLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <?= form_open_multipart('app/dokument/catatan_pengelola_resiko', ['class' => 'needs-validation', 'novalidate' => '', 'data-parsley-validate' => '']) ?>
+        <input type="hidden" name="id" id="id">
+        <div class="modal-header">
+            <h5 class="modal-title" id="tambahCatatanLabel">Tambah Catatan</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="catatan">Berikan Catatan</label>
+                <textarea name="catatan" cols="30" rows="5" id="catatan" class="form-control" placeholder="Masukkan catatan disini..." required></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Simpan Catatan</button>
+        </div>
+        <?= form_close(); ?>
     </div>
   </div>
 </div>

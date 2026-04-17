@@ -17,7 +17,7 @@
         <?php if(getSetting('DokumenPK')): ?>
             <div class="alert alert-info" role="alert">
                 <i class="fa fa-info-circle mr-2"></i>
-                Unggah Dokumen Kinerja Non Perjanjian Kerja (PK) dalam format PDF yang di kompresi dengan ZIP/RAR. Maksimal ukuran file adalah 5MB. File yang diunggah akan menimpa file sebelumnya untuk bidang dan tahun anggaran yang sama.
+                Unggah Dokumen Kinerja Non Perjanjian Kerja (PK) dalam format PDF yang di kompresi dengan ZIP/RAR. Maksimal ukuran file adalah 2MB. File yang diunggah akan menimpa file sebelumnya untuk bidang dan tahun anggaran yang sama.
             </div>
             <?php else: ?>
             <div class="alert alert-warning text-dark" role="alert">
@@ -53,10 +53,12 @@
                 <tr>
                     <th style="width:5%">No</th>
                     <th>Bidang</th>
+                    <th>Periode</th>
                     <th>Jenis</th>
                     <th>File</th>
                     <th>Upload By</th>
                     <th>Tahun</th>
+                    <th>Catatan</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -78,7 +80,19 @@
       <div class="modal-body">
         <!-- untuk unggah dokumen / perbaikan dokumen silahkan upload ulang -->
         <div class="alert alert-info" role="alert">
-        Jika ada perbaikan dokumen, silahkan unggah ulang dengan memilih file yang benar pada jenis dokumen dan tahun yang sama.
+        Jika ada perbaikan dokumen, silahkan unggah ulang dengan memilih file yang benar pada jenis yang sama.
+        </div>
+        <div class="form-group">
+            <label for="periode">Periode</label>
+            <select name="periode" id="periode" class="form-control" required>
+                <option value="">Pilih Periode</option>
+                <optgroup label="Triwulan">
+                    <option value="TW1">Triwulan 1</option>
+                    <option value="TW2">Triwulan 2</option>
+                    <option value="TW3">Triwulan 3</option>
+                    <option value="TW4">Triwulan 4</option>
+                </optgroup>
+             </select>
         </div>
         <div class="form-group">
             <label for="jenis_dokumen">Jenis Dokumen</label>
@@ -97,6 +111,48 @@
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary">Upload</button>
+    </div>
+    <?= form_close(); ?>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Verifikasi Dokumen -->
+<div class="modal fade" id="verifikasiDokumen" tabindex="-1" aria-labelledby="verifikasiDokumenLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <?= form_open_multipart('app/dokuments/verifikasi_dokument_non_pk', ['class' => 'needs-validation', 'id' => 'formVerifikasiDokumenNonPK', 'novalidate' => '', 'data-parsley-validate' => ''], ['id' => '']) ?>
+      <div class="modal-header">
+        <h5 class="modal-title" id="verifikasiDokumenLabel">Verifikasi Dokumen Kinerja Non PK</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+            <label for="nama_dokumen">Nama Dokumen</label>
+            <input type="text" class="form-control" id="nama_dokumen" name="nama_dokumen" disabled>
+        </div>
+        <div class="form-group">
+            <label for="periode">Periode</label>
+            <input type="text" class="form-control" id="periode" name="periode" disabled>
+        </div>
+        <div class="form-group">
+            <label for="is_kunci">Status Verifikasi</label>
+            <select name="is_kunci" id="is_kunci" class="form-control" required>
+                <option value="">Pilih Status Verifikasi</option>
+                <option value="1">Setuju</option>
+                <option value="0">Tolak/Perbaikan</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="catatan">Catatan Verifikator (Opsional)</label>
+            <textarea name="catatan" id="catatan" class="form-control" rows="6" placeholder="Masukkan catatan jika menolak atau meminta perbaikan"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
     </div>
     <?= form_close(); ?>
     </div>

@@ -1,10 +1,16 @@
 const MODAL_UNGGAH_DOKUMEN = $("#unggahDokumen");
+const MODAL_TAMBAH_CATATAN = $("#tambahCatatan");
 const FILTER = $("#filterFormPengelolaanResiko");
 
 // Reset form dan validasi saat modal ditutup
 MODAL_UNGGAH_DOKUMEN.on("hidden.bs.modal", function () {
 	MODAL_UNGGAH_DOKUMEN.find("form")[0].reset();
 	MODAL_UNGGAH_DOKUMEN.find("form").parsley().reset();
+});
+
+MODAL_TAMBAH_CATATAN.on("hidden.bs.modal", function () {
+	MODAL_TAMBAH_CATATAN.find("form")[0].reset();
+	MODAL_TAMBAH_CATATAN.find("form").parsley().reset();
 });
 
 // Buttons Add
@@ -44,9 +50,11 @@ var tablePengelolaanResiko = $("#table-pengelolaan-resiko").DataTable({
 		{ data: "no", orderable: false },
 		{ data: "bidang", orderable: true },
 		{ data: "periode", orderable: true },
+		{ data: "file", orderable: false },
+		{ data: "status", orderable: false },
 		{ data: "tahun", orderable: true },
 		{ data: "user", orderable: false },
-		{ data: "file", orderable: false },
+		{ data: "catatan", orderable: false },
 		{
 			data: "action",
 			orderable: false,
@@ -82,6 +90,77 @@ FILTER.on("submit", async function (e) {
 	e.preventDefault();
 	await tablePengelolaanResiko.ajax.reload();
 });
+
+MODAL_TAMBAH_CATATAN.find("form").on("submit", async function (e) {
+	e.preventDefault();
+	const form = this;
+	const formData = new FormData(form);
+
+	// Validasi menggunakan Parsley
+	if (!$(form).parsley().isValid()) {
+		return;
+	}
+
+	try {
+		const resp = await fetch(`${_uri}/app/dokuments/simpan_catatan_pengelolaan_resiko`, {
+			method: "POST",
+			headers: {
+				"X-Requested-With": "XMLHttpRequest",
+			},
+			body: formData,
+		});
+		const data = await resp.json();
+		if (resp.ok && data.status) {
+			$.notify(data.pesan, {
+				timer: 800,
+				delay: 100,
+				type: "success",
+			});
+			MODAL_TAMBAH_CATATAN.modal("hide");
+			if (typeof tablePengelolaanResiko !== "undefined") {
+				tablePengelolaanResiko.ajax.reload(null, false);
+			}
+		} else {
+			$.notify(data.pesan, {
+				timer: 800,
+				delay: 100,
+				type: "danger",
+			});
+		}
+	} catch (err) {
+		alert("Terjadi kesalahan koneksi : " + err.message);
+	}
+});
+
+async function Catatan(id) {
+	if (!id) return;
+	try {
+		
+		const formData = new FormData();
+		formData.append("id", id);
+
+		const resp = await fetch(
+			`${_uri}/app/dokuments/get_catatan_pengelolaan_resiko`,
+			{
+				method: "POST",
+				headers: {
+					"X-Requested-With": "XMLHttpRequest",
+				},
+				body: formData, // id dikirim sebagai FormData
+			},
+		);
+		const data = await resp.json();
+		if (resp.ok && data.status) {
+			MODAL_TAMBAH_CATATAN.find("textarea[name='catatan']").val(data.catatan);
+			MODAL_TAMBAH_CATATAN.find("input[name='id']").val(id);
+			MODAL_TAMBAH_CATATAN.modal("show");
+		} else {
+			alert("Gagal mengambil catatan: " + data.pesan);
+		}
+	} catch (err) {
+		alert("Terjadi kesalahan koneksi : " + err.message);
+	}
+}
 
 async function ResetFilter() {
 	FILTER[0].reset();
