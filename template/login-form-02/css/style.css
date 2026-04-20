@@ -24,12 +24,13 @@ h2 {
   font-size: 20px; }
 
 .half, .half .container > .row {
-  height: 100vh;
-  min-height: 700px; }
+  height: auto;
+  min-height: 100vh; 
+}
 
 @media (max-width: 991.98px) {
   .half .bg {
-    height: 200px; } }
+    height: 300px; } }
 
 .half .contents {
   background: #f6f7fc; }

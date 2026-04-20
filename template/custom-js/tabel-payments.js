@@ -1,3 +1,5 @@
+const FILTER_FORM_PAYMENT = $("#filterFormPayment");
+
 var modalPayment = $("#modalPayment");
 var tabelPayment = $("#table-spj-payment").DataTable({
 	stateSave: true,
@@ -10,7 +12,7 @@ var tabelPayment = $("#table-spj-payment").DataTable({
 	orderCellsTop: true,
 	deferRender: true,
 	pagingType: "full_numbers",
-	responsive: false,
+	responsive: true,
 	datatype: "json",
 	order: [],
 	scrollCollapse: false,
@@ -22,12 +24,20 @@ var tabelPayment = $("#table-spj-payment").DataTable({
 		url: `${_uri}/app/payment/ajaxTable`,
 		type: "POST",
 		data: function (d) {
-			d.filter_status = $("#filterStatus").val() || ""; // kirim value select box ke server
+			d.filter_status =
+				FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || "";
+			d.filter_bidang =
+				FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || "";
+			d.filter_tanggal =
+				FILTER_FORM_PAYMENT.find("input[name='filter_tanggal']").val() || "";
 		},
 	},
 	columns: [
 		{ data: "no", orderable: false },
-		{ data: "no_buku", orderable: true },
+		{ data: "no_verifikasi", orderable: true },
+		{ data: "tgl_verifikasi", orderable: true },
+		{ data: "no_bku", orderable: true },
+		{ data: "tgl_bku", orderable: true },
 		{ data: "kode_uraian", orderable: true },
 		{ data: "nama_uraian", orderable: false },
 		{ data: "periode", orderable: true },
@@ -43,27 +53,18 @@ var tabelPayment = $("#table-spj-payment").DataTable({
 			next: `<i class="fa fa-long-arrow-right"></i>`,
 		},
 	},
-	initComplete: function () {
-		// Tambahkan select box ke area filter (search box)
-		var filterHtml = `
-			<label style="margin-left:10px;">
-				<select id="filterStatus" class="form-control form-control-sm" style="width:150px; display:inline-block;">
-					<option value="PENDING" selected>PENDING</option>
-					<option value="CAIR">CAIR</option>
-					<option value="PERBAIKAN">PERBAIKAN</option>
-					<option value="TOLAK">TOLAK</option>
-				</select>
-			</label>
-		`;
-		// sisipkan setelah search box bawaan DataTables
-		$("#table-spj-payment_filter").append(filterHtml);
-
-		// Reload data ketika select berubah
-		$("#filterStatus").on("change", function () {
-			tabelPayment.ajax.reload();
-		});
-	},
 });
+
+FILTER_FORM_PAYMENT.on("submit", function (e) {
+	e.preventDefault();
+	tabelPayment.ajax.reload();
+});
+
+async function ResetFilter() {
+	FILTER_FORM_PAYMENT[0].reset();
+	let newUrl = `${_uri}/app/payment/ajaxTable`;
+	tabelPayment.ajax.url(newUrl).load();
+}
 
 async function ProsesApprover(btn) {
 	// disabld button submit & select
@@ -160,10 +161,17 @@ modalPayment.find("#verifikasi_status").on("change", function () {
 	const $this = $(this);
 	const val = $this.val();
 	const $verifikasiCatatan = $("#verifikasi_catatan");
+	const $verifikasiCair = $("#verifikasi_cair");
 	const $catatan = $("textarea[name='catatan']");
 
 	const isRejectedOrFix = val === "TOLAK" || val === "PERBAIKAN";
-
+	const isCair = val === "CAIR";
+	// Toggle tampilan input nomor dan tanggal BKU
+	$verifikasiCair
+		.toggleClass("d-none", !isCair)
+		.toggleClass("d-block", isCair)
+		.find("input")
+		.prop("required", isCair);
 	// Toggle tampilan catatan verifikasi
 	$verifikasiCatatan.toggleClass("d-none", !isRejectedOrFix);
 	$verifikasiCatatan.toggleClass("d-block", isRejectedOrFix);
@@ -172,7 +180,7 @@ modalPayment.find("#verifikasi_status").on("change", function () {
 	$catatan.prop("required", isRejectedOrFix);
 	$catatan.attr(
 		"placeholder",
-		isRejectedOrFix ? "Masukkan catatan verifikasi" : ""
+		isRejectedOrFix ? "Masukkan catatan verifikasi" : "",
 	);
 });
 
@@ -235,6 +243,15 @@ $("form#formApprover").on("submit", async function (e) {
 function TemplateTablePayment(row) {
 	if (!row) return `Data is Empty`;
 
+	let tanggalIndo = new Date(row.tanggal_verifikasi).toLocaleDateString(
+		"id-ID",
+		{
+			day: "2-digit",
+			month: "long",
+			year: "numeric",
+		},
+	);
+
 	return `
 		<table class="table table-bordered">
 			<tr>
@@ -250,8 +267,12 @@ function TemplateTablePayment(row) {
 				<td class="text-success">Rp. ${rupiah(row.jumlah)}</td>
 			</tr>
 			<tr>
-				<td width="15%">No. BKU</td>
-				<td>${row.nomor_pembukuan}</td>
+				<td width="15%">Nomor Verifikasi</td>
+				<td>${row.nomor_verifikasi}</td>
+			</tr>
+			<tr>
+				<td width="15%">Tanggal Verifikasi</td>
+				<td>${tanggalIndo}</td>
 			</tr>
 			<tr class="bg-light">
 				<td width="20%">Catatan Verifikator</td>
@@ -263,4 +284,60 @@ function TemplateTablePayment(row) {
 
 function rupiah(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+$("#filter_tanggal").daterangepicker({
+	showDropdowns: false,
+	autoApply: true,
+	drops: "auto",
+	opens: "center",
+	autoUpdateInput: false,
+	locale: {
+		format: "DD/MM/YYYY",
+		separator: " - ",
+		cancelLabel: "Clear",
+	},
+	ranges: {
+		Today: [moment(), moment()],
+		Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+		"Last 7 Days": [moment().subtract(6, "days"), moment()],
+		"Last 30 Days": [moment().subtract(29, "days"), moment()],
+		"This Month": [moment().startOf("month"), moment().endOf("month")],
+		"Last Month": [
+			moment().subtract(1, "month").startOf("month"),
+			moment().subtract(1, "month").endOf("month"),
+		],
+	},
+});
+
+$('#filter_tanggal').on(
+	"apply.daterangepicker",
+	function (ev, picker) {
+		$(this).val(
+			picker.startDate.format("DD/MM/YYYY") +
+				" - " +
+				picker.endDate.format("DD/MM/YYYY"),
+		);
+	},
+);
+
+$('#filter_tanggal').on(
+	"cancel.daterangepicker",
+	function (ev, picker) {
+		$(this).val("");
+	},
+);
+
+function UnduhData() {
+	const filterStatus = FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || "";
+	const filterBidang = FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || "";
+	const filterTanggal = FILTER_FORM_PAYMENT.find("input[name='filter_tanggal']").val() || "";
+
+	const params = new URLSearchParams({
+		filter_status: filterStatus,
+		filter_bidang: filterBidang,
+		filter_tanggal: filterTanggal,
+	});
+	
+	window.open(`${_uri}/app/payment/export?${params.toString()}`, "_blank");
 }

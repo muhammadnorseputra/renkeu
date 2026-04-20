@@ -13,30 +13,36 @@
                 <div class="row">
                     <!-- CONTENT -->
                     <div class="col-sm-12">
-                        <div class="card-box table-responsive">
-                            <form action="#" id="FilterForm" class="d-flex mx-3 border-bottom mb-2">
-                                <a href="<?= base_url('app/indikator/baru'); ?>" class="btn btn-secondary"><i class="fa fa-plus"></i> Tambah Indikator</a>
-                                <div class="from-group">
-                                    <select name="periode" id="periode" class="form-control rounded-left">
-                                        <option value="">-- Pilih Periode --</option>
-                                        <?php foreach (bulanIndo() as $key => $val): ?>
-                                            <option value="<?= $key; ?>"><?= $val; ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                        <form action="#" id="FilterForm" class="form-horizontal border p-3 mb-3 mx-2 bg-light">
+                            <div class="row">
+                                <div class="col-md-3 border-right">
+                                    <div class="from-group">
+                                        <label for="periode">Filter Periode</label>
+                                        <select name="periode" id="periode" class="form-control">
+                                            <option value="">-- Pilih Periode --</option>
+                                            <?php foreach (bulanIndo() as $key => $val): ?>
+                                                <option value="<?= $key; ?>"><?= $val; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="from-group">
-                                    <select name="type" id="type" class="form-control rounded-right">
-                                        <option value="">-- Pilih Referensi --</option>
-                                        <?php if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])): ?>
-                                        <option value="Tujuan">- Tujuan</option>
-                                        <option value="Sasaran">- Sasaran</option>
-                                        <?php endif; ?>
-                                        <option value="Program">- Program</option>
-                                        <option value="Kegiatan">- Kegiatan</option>
-                                        <option value="SubKegiatan">- Sub Kegiatan</option>
-                                    </select>
+                                <div class="col-md-3">
+                                    <div class="from-group">
+                                        <label for="type">Filter Jenis</label>
+                                        <select name="type" id="type" class="form-control">
+                                            <option value="">-- Pilih Referensi --</option>
+                                            <?php if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])): ?>
+                                            <option value="Tujuan">- Tujuan</option>
+                                            <option value="Sasaran">- Sasaran</option>
+                                            <?php endif; ?>
+                                            <option value="Program">- Program</option>
+                                            <option value="Kegiatan">- Kegiatan</option>
+                                            <option value="SubKegiatan">- Sub Kegiatan</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </form>
+                            </div>
+                        </form>
                             <table id="table-indikator" class="table jambo_table bulk_action dt-responsive" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
@@ -50,7 +56,6 @@
                                 </thead>
                             </table>
                         </div>
-                    </div>
                     <!-- /CONTENT -->
                 </div>
             </div>
@@ -81,6 +86,15 @@
         let $periode = $form.find("select[name='periode']");
         let $type = $form.find("select[name='type']");
 
+        // add button to datatable
+        $.fn.dataTable.ext.buttons.add = {
+            text: '<i class="fa fa-upload"></i> Tambah Indikator',
+            action: function (e, dt, node, config) {
+                window.location.href = `${_uri}/app/indikator/baru`
+            },
+            className: "btn btn-primary",
+        };
+
         // === Inisialisasi DataTable ===
         var datatable = $("#table-indikator").DataTable({
             stateSave: true,
@@ -94,6 +108,16 @@
             responsive: true,
             datatype: "json",
             scrollCollapse: true,
+            layout: {
+                topStart: [
+                    {
+                        buttons: ["add"],
+                    },
+                    "pageLength",
+                ],
+                bottomStart: ["info"],
+                bottomEnd: ["paging"],
+            },
             lengthMenu: [
                 [10, 25, 50, -1],
                 [10, 25, 50, "All"]

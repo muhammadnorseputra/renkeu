@@ -137,7 +137,7 @@
                 'ref_subkegiatan' => $post['ref_subkegiatan'],
             ]
         ) ?>
-        <button type="submit" class="btn btn-danger btn-sm rounded-0"><i class="fa fa-print mr-2"></i> Cetak</button>
+        <button type="submit" class="btn btn-danger btn-sm rounded-0"><i class="fa fa-print mr-2"></i> Cetak Belanja Kegiatan</button>
         <?= form_close() ?>
     </div>
 </div>

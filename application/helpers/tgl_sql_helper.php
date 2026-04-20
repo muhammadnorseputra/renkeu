@@ -71,6 +71,11 @@ function formatToSQL($date) {
     return date("Y-m-d", strtotime($date));
 }
 
+function formatToHuman($tanggal)
+{
+    return date('d-m-Y', strtotime($tanggal));
+}
+
 /**
  * Ubah format tanggal dari database (Y-m-d) ke format Indonesia (d-m-Y)
  *

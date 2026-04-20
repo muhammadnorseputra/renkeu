@@ -96,6 +96,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                     foreach ($tujuan->result() as $t) :
                         $indikator_tujuan = $this->realisasi->getIndikator(['i.fid_tujuan' => $t->id], $this->session->userdata('part'));
                         $tr = "";
+                        $rowspan = "";
                         if ($indikator_tujuan->num_rows() > 0):
                             $indikator = $indikator_tujuan->result_array();
                             $toEnd = count($indikator);

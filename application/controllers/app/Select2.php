@@ -159,4 +159,5 @@ class Select2 extends CI_Controller
         endif;
         echo json_encode($all);
     }
+
 }

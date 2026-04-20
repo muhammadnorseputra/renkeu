@@ -78,29 +78,9 @@ class Realisasi extends CI_Controller
 		echo json_encode($data);
 	}
 
-	public function input()
+	public function simpanRealisasi()
 	{
 		$post = $this->input->post();
-
-		// $target = $this->target->getTarget($post['id']);
-
-		// if (isset($post['persentase']) && $post['persentase'] > $target->persentase) {
-		// 	echo json_encode([
-		// 		'message' => 'Realisasi melebihi target persentase !',
-		// 		'status' => false
-		// 	]);
-		// 	return false;
-		// 	die();
-		// }
-
-		// if (isset($post['jumlah_eviden']) &&  $post['jumlah_eviden'] > $target->eviden_jumlah) {
-		// 	echo json_encode([
-		// 		'message' => 'Realisasi melebihi target eviden !',
-		// 		'status' => false
-		// 	]);
-		// 	return false;
-		// 	die();
-		// }
 
 		if($post['is_jenis'] === "0"):
 			// Tambahkan validasi atau logika khusus untuk jenis 0 di sini
@@ -120,7 +100,6 @@ class Realisasi extends CI_Controller
 			'eviden' => isset($post['jumlah_eviden']) ? $post['jumlah_eviden'] : 0,
 			'eviden_link' => $post['link'],
 			'eviden_jenis' => $post['keterangan_eviden'],
-			'status' => 'VERIFIKASI', // Default status
 			'entri_by' => $this->session->userdata('user_name'),
 			'entri_at' => DateTimeInput(),
 		];
@@ -132,10 +111,20 @@ class Realisasi extends CI_Controller
 			'eviden' => isset($post['jumlah_eviden']) ? $post['jumlah_eviden'] : 0,
 			'eviden_jenis' => $post['keterangan_eviden'],
 			'eviden_link' => $post['link'],
-			'status' => 'VERIFIKASI',
 			'update_by' => $this->session->userdata('user_name'),
 			'update_at' => DateTimeInput(),
 		];
+
+		// Tentukan status berdasarkan aksi yang dipilih
+		if($post['status_entri'] === "AJUKAN"):
+			$insert['status'] = "VERIFIKASI";
+			$update['status'] = "VERIFIKASI";
+		endif;
+
+		if($post['status_entri'] === "DRAF"):
+			$insert['status'] = "ENTRI";
+			$update['status'] = "ENTRI";
+		endif;
 
 		$whr = [
 			'fid_indikator' => $post['id'],
@@ -291,6 +280,136 @@ class Realisasi extends CI_Controller
 			}
 		}
 
+		echo json_encode($msg);
+	}
+
+	public function getCatatanKinerja()
+	{
+		$post = $this->input->post();
+		$whr = [
+			'id' => $post['realisasi_id'],
+			'fid_indikator' => $post['indikator_id'],
+			'fid_periode' => $post['periode_id']
+		];
+		
+		$db = $this->crud->getWhere('t_realisasi', $whr);
+		
+		if ($db->num_rows() == 0) {
+			$data = [
+				'catatan' => null,
+				'status' => false
+			];
+			echo json_encode($data);
+			return false;
+		} 
+
+		$data = [
+			'catatan' => $db->row()->catatan_kinerja,
+			'status' => true
+		];
+		echo json_encode($data);
+	}
+
+	public function simpanCatatanKinerja()
+	{
+		$post = $this->input->post();
+		$whr = [
+			'id' => $post['realisasi_id'],
+		];
+		
+		$update = [
+			'catatan_kinerja' => $post['catatan']
+		];
+
+		$this->db->trans_start();
+		$this->crud->update('t_realisasi', $update, $whr);
+		$this->db->trans_complete();
+		
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			$msg = [
+				'message' => 'Catatan kinerja gagal disimpan !',
+				'status' => false
+			];
+			header('Content-Type: application/json');
+			echo json_encode($msg);
+			return false;
+		}
+
+		$msg = [
+			'message' => 'Catatan kinerja berhasil disimpan !',
+			'status' => true
+		];
+
+		header('Content-Type: application/json');
+		echo json_encode($msg);
+	}
+
+	public function getFaktorKinerja()
+	{
+		$post = $this->input->post();
+		$whr = [
+			'id' => $post['realisasi_id'],
+			'fid_indikator' => $post['indikator_id'],
+			'fid_periode' => $post['periode_id']
+		];
+		
+		$db = $this->crud->getWhere('t_realisasi', $whr);
+		
+		if ($db->num_rows() == 0) {
+			$data = [
+				'faktor_pendorong' => null,
+				'faktor_penghambat' => null,
+				'tindak_lanjut' => null,
+				'status' => false
+			];
+			echo json_encode($data);
+			return false;
+		} 
+
+		$data = [
+			'faktor_pendorong' => $db->row()->faktor_pendorong,
+			'faktor_penghambat' => $db->row()->faktor_penghambat,
+			'tindak_lanjut' => $db->row()->tindak_lanjut,
+			'status' => true
+		];
+		echo json_encode($data);
+	}
+
+	public function simpanFaktorKinerja()
+	{
+		$post = $this->input->post();
+		$whr = [
+			'id' => $post['realisasi_id'],
+		];
+		
+		$update = [
+			'faktor_pendorong' => $post['faktor_pendorong'],
+			'faktor_penghambat' => $post['faktor_penghambat'],
+			'tindak_lanjut' => $post['tindak_lanjut']
+		];
+
+		$this->db->trans_start();
+		$this->crud->update('t_realisasi', $update, $whr);
+		$this->db->trans_complete();
+		
+		if ($this->db->trans_status() === FALSE) {
+			$this->db->trans_rollback();
+			$msg = [
+				'message' => 'Faktor kinerja gagal disimpan !',
+				'status' => false
+			];
+			header('Content-Type: application/json');
+			echo json_encode($msg);
+			return false;
+		}
+
+		$msg = [
+			'message' => 'Faktor kinerja berhasil disimpan !',
+			'status' => true
+		];
+
+		header('Content-Type: application/json');
 		echo json_encode($msg);
 	}
 }

@@ -41,10 +41,17 @@ class Spj extends CI_Controller
         $jmlSpjEntriPerbaikan = $this->crud->getWhere('spj', ['is_status' => 'ENTRI', 'catatan !=' => null, 'fid_part' => $this->session->userdata('part'), 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows() ?? 0;
         $jmlSpjVerfikasi = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI', 'fid_part' => $this->session->userdata('part'), 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows() ?? 0;
         $jmlSpjApprove = $this->crud->getWhere('spj', ['is_status' => 'VERIFIKASI_ADMIN', 'fid_part' => $this->session->userdata('part'), 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows() ?? 0;
+
+        if(in_array($this->session->userdata('role'), ['VERIFICATOR', 'ADMIN'])) {
+            $list_bidang = $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result();
+        } else {
+            $list_bidang = $this->crud->getWhere('ref_parts', ['id' => $this->session->userdata('part')])->result();
+        }
         
         $data = [
             'title' => 'SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/index',
+            'list_bidang' => $list_bidang,
             'data' => [
                 'jml_spj_baru' => $jmlSpjEntri,
                 'jml_spj_perbaikan' => $jmlSpjEntriPerbaikan,
@@ -54,11 +61,10 @@ class Spj extends CI_Controller
             'autoload_js' => [
                 'template/custom-js/list.min.js',
                 'template/custom-js/list-state.js',
-                'template/backend/vendors/datatables.net/js/jquery.dataTables.min.js',
-                'template/backend/vendors/datatables.net-responsive/js/dataTables.responsive.min.js',
-                'https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js',
-                'https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js',
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/backend/vendors/moment/min/moment.min.js',
+                'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.js',
                 'template/custom-js/blockUI/jquery.blockUI.js',
                 'template/custom-js/tabel-verifikasi.js',
                 'template/custom-js/tabel-verifikasi-selesai.js',
@@ -66,9 +72,8 @@ class Spj extends CI_Controller
                 'template/custom-js/spj.js',
             ],
             'autoload_css' => [
-                'template/backend/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css',
-                'template/backend/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css',
-                'https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css',
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
+                'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.css',
             ]
         ];
         $this->load->view('layout/app', $data);
@@ -96,6 +101,7 @@ class Spj extends CI_Controller
                         <th width="10%">Jumlah (Rp)</th>
                         <th>Status</th>
                         <th width="18%">Tanggal Entri</th>
+                        <th>Jumlah Penerima</th>
                         <th>Berkas</th>
                         <th class="text-center" colspan="3">Aksi</th>
                     </tr>
@@ -104,7 +110,7 @@ class Spj extends CI_Controller
         $no = 1;
         foreach ($db->result() as $r):
             // Catatan
-            $catatan = isset($r->catatan) && !empty($r->catatan) && $r->is_status === 'ENTRI' ? '<span class="text-danger"><i class="fa fa-exclamation-triangle mr-2"></i> ' . substr($r->catatan, 0, 60) . '...</span>' : '';
+            $catatan = isset($r->catatan) && !empty($r->catatan) && $r->is_status === 'ENTRI' ? '<span class="text-danger"><i class="fa fa-exclamation-triangle mr-2"></i> ' . substr($r->catatan, 0, 70) . '...</span>' : '';
             // Status
             if ($r->is_status === 'ENTRI') {
                 $status = '<span class="badge p-2 badge-secondary"><i class="fa fa-edit mr-2"></i> ENTRI</span>';
@@ -126,13 +132,19 @@ class Spj extends CI_Controller
                 $link = '<i class="text-secondary">Kosong</i>';
             }
 
-            // cek apakah usulan sudah pernah di verifikasi admin atau belum
-            $isDeleteDisabled = $r->verify_by !== null || $r->approve_by !== null ? 'disabled' : '';
+            // cek di riwayat apakah ada atau tidak
+            $history = $this->crud->getWhere('spj_riwayat', ['token' => $r->token])->num_rows();
+            // jika ada riwayat maka tidak bisa di hapus
+            if ($history > 0) {
+                $isDeleteDisabled = 'disabled';
+            } else {
+                $isDeleteDisabled = '';
+            }
 
             if ($r->is_status === 'VERIFIKASI' || $r->is_status === 'VERIFIKASI_ADMIN') {
-                $detail = '<button onclick="window.location.replace(\'' . base_url('app/spj/buatusul?step=0&status=' . $r->is_status . '&token=' . $r->token) . '\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
-            } elseif ($r->is_status === 'APPROVE' || $r->is_status === 'TMS' || $r->is_status === 'SELESAI_TMS' || $r->is_status === 'BTL' || $r->is_status === 'SELESAI_BTL') {
                 $detail = '<button onclick="window.location.replace(\'' . base_url('app/spj/buatusul?step=3&status=' . $r->is_status . '&token=' . $r->token) . '\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
+            } elseif ($r->is_status === 'APPROVE' || $r->is_status === 'TMS' || $r->is_status === 'SELESAI_TMS' || $r->is_status === 'BTL' || $r->is_status === 'SELESAI_BTL') {
+                $detail = '<button onclick="window.location.replace(\'' . base_url('app/spj/buatusul?step=4&status=' . $r->is_status . '&token=' . $r->token) . '\')" type="button" class="btn btn-sm btn-success m-0 rounded-0"><i class="fa fa-eye"></i> <br> Detail</button>';
             } else {
                 $detail = '
                         <td class="text-center">
@@ -146,6 +158,17 @@ class Spj extends CI_Controller
                         </td>
                     ';
             }
+
+            // jumlah penerima manfaat
+                $db_jml_penerima_manfaat = $this->crud->getWhere('spj_relasi_publik', ['token' => $r->token])->num_rows();
+    
+                if ($db_jml_penerima_manfaat > 0) {
+                    $jml_penerima_manfaat = '<span class="text-info"><i class="fa fa-users mr-2"></i> ' . $db_jml_penerima_manfaat . '</span>';
+                } else 
+                {
+                    $jml_penerima_manfaat = '<span class="text-secondary"><i class="fa fa-users mr-2"></i> 0</span>';
+                }
+
             $html .= '<tr>
                 <td class="text-center">
                     ' . $no . '
@@ -168,6 +191,9 @@ class Spj extends CI_Controller
                 <td>
                     <i class="fa fa-calendar mr-1"></i> ' . longdate_indo(substr($r->entri_at, 0, 10)) . "<br>  <i class='fa fa-clock-o mr-1'></i> " . substr($r->entri_at, 10, 6) .
                 '</td>
+                <td>
+                    ' . $jml_penerima_manfaat . '
+                </td>   
                 <td width="5%" class="text-center">
                     ' . $link . '
                 </td>
@@ -279,8 +305,8 @@ class Spj extends CI_Controller
 
         if ($input['status'] == 'MS') {
             $update = [
-                'nomor_pembukuan' => $input['nomor'],
-                'tanggal_pembukuan' => formatToSQL($input['tanggal']),
+                'nomor_verifikasi' => $input['nomor'],
+                'tanggal_verifikasi' => formatToSQL($input['tanggal']),
                 'is_status' => 'VERIFIKASI_ADMIN',
                 'is_realisasi' => $input['is_realisasi'],
                 'catatan' => '',
@@ -298,8 +324,8 @@ class Spj extends CI_Controller
             ];
         } elseif ($input['status'] == 'TMS' || $input['status'] == 'BTL') {
             $update = [
-                'nomor_pembukuan' => '',
-                'tanggal_pembukuan' => '',
+                'nomor_verifikasi' => '',
+                'tanggal_verifikasi' => '',
                 'is_realisasi' => '',
                 'catatan' => $input['catatan'],
                 'is_status' => $input['status'],
@@ -355,11 +381,12 @@ class Spj extends CI_Controller
     {
         // Kirim Notifikasi WA ke user
         $getUser = $this->users->profile_username($getSpj->entri_by)->row();
+        $session = $this->session->userdata();
 
         // Keterangan No BKU jika status MS
         if ($input['status'] === 'MS') {
-            $note_tambahan = 'No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
-Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
+            $note_tambahan = 'No. Verifikasi : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
+Tgl. Verifikasi : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
 Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '';
             $is_proses_admin = 'Selanjutnya akan diverifikasi oleh Admin.';
         } else {
@@ -367,25 +394,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             $is_proses_admin = '';
         }
 
-        $send = TeleSendMessage($getUser->telegram_id, '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
--------------
-📝 Uraian   : ' . $getSpj->uraian . '  
-💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
-⏰ Spj Bulan : ' . bulan(strtoupper($getSpj->bulan)) . '
-📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
--------------
-📌 Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
-' . $note_tambahan . '
-
-Telah diverifikasi dengan status <b>' . $input['status'] . '</b>. ' . $is_proses_admin . ' 
-Silahkan cek aplikasi Digta Sunanpraja.  
--------------
-<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
-        ');
+        $send = TeleSendMessage($getUser->telegram_id, TemplateMessageHasilVerifikasi($getSpj, $input, $note_tambahan, $is_proses_admin, $session));
 
         return $send;
     }
@@ -393,29 +402,9 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
     private function sendNotifyAdmin($getSpj, $input, $user_admin = 'abduh')
     {
         // Kirim Notifikasi WA ke Admin
+        $session = $this->session->userdata();
         $getAdmin = $this->users->profile_username($user_admin)->row();
-        $sendAdmin = TeleSendMessage($getAdmin->telegram_id, '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
--------------
-📝 Uraian   : ' . $getSpj->uraian . '  
-💰 Jumlah   : Rp. ' . nominal($getSpj->jumlah) . ' 
-⏰ Spj Bulan : ' . bulan(strtoupper($getSpj->bulan)) . '
-📅 Tgl. Entri : ' . longdate_indo(substr($getSpj->entri_at, 0, 10)) . '
--------------
-No. BKU : ' . (isset($input['nomor']) && !empty($input['nomor']) ? $input['nomor'] : '-') . '
-Tgl. BKU : ' . (isset($input['tanggal']) && !empty($input['tanggal']) ? longdate_indo(formatToSQL($input['tanggal'])) : '-') . '
-Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisasi']) ? $input['is_realisasi'] : '-') . '
-Verifikator : ' . $this->session->userdata('user_name') . '
-Catatan : ' . (isset($input['catatan']) && !empty($input['catatan']) ? $input['catatan'] : '-') . '
--------------
-Telah diverifikasi dengan status <b>' . $input['status'] . '</b>.  
-Silahkan cek aplikasi Digta Sunanpraja.  
-
-<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>
-        ');
+        $sendAdmin = TeleSendMessage($getAdmin->telegram_id, TemplateMessageHasilVerifikasiAdmin($getSpj, $input, $session));
 
         return $sendAdmin;
     }
@@ -469,10 +458,10 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
             'kode_sub_kegiatan' => $kode_sub_kegiatan,
             'kode_uraian' => $kode_uraian,
             'koderek' => $detailUsul->koderek,
-            'nomor_pembukuan' => @$detailUsul->nomor_pembukuan,
+            'nomor_verifikasi' => @$detailUsul->nomor_verifikasi,
             'bulan' => $detailUsul->bulan,
             'tahun' => $detailUsul->tahun,
-            'tanggal_pembukuan' => @$detailUsul->tanggal_pembukuan,
+            'tanggal_verifikasi' => @$detailUsul->tanggal_verifikasi,
             'jumlah' => $detailUsul->jumlah,
             'uraian' => $detailUsul->uraian,
             'is_status' => $is_status === 'SELESAI' ? 'APPROVE' : $detailUsul->is_status,
@@ -507,8 +496,9 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
         ];
 
         $this->db->trans_start(); // mulai transaksi otomatis
+        $session = $this->session->userdata();
         $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
-        $send_message = TeleSendMessage($getUser->telegram_id, $this->TemplateMessageApproval($detailUsul, $is_status));
+        $send_message = TeleSendMessage($getUser->telegram_id, TemplateMessageApproval($detailUsul, $is_status, $session));
         $update_to_spj = $this->crud->update('spj', $update, $whr);
         $save_to_riwayat = $this->crud->insert('spj_riwayat', $insert);
         $save_to_log = $this->historis->insert($info);
@@ -541,33 +531,11 @@ by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_
         echo json_encode($msg);
     }
 
-    private function TemplateMessageApproval($detailUsul, $is_status)
-    {
-        $statusText = ($is_status === 'SELESAI') ? 'APPROVE' : $detailUsul->is_status;
-
-        $message = '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
--------------
-📝 Uraian   : ' . $detailUsul->uraian . '  
-💰 Jumlah   : Rp. ' . nominal($detailUsul->jumlah) . ' 
-⏰ Spj Bulan : ' . bulan(strtoupper($detailUsul->bulan)) . '
-📅 Tgl. Entri : ' . longdate_indo(substr($detailUsul->entri_at, 0, 10)) . '
--------------
-Telah difinalisasi <b>ADMIN</b> dengan status <b>' . $statusText . '</b>.  
-Silahkan cek aplikasi Digta Sunanpraja.  
--------------
-⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).  
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '
-<i>by ' . $this->session->userdata('role') . ' (' . $this->session->userdata('user_name') . ')</i>';
-
-        return $message;
-    }
-
 
     public function verifikasi_selesai()
     {
-        $db = $this->spj->make_datatables_verifikasi_selesai();
+        $filter = $this->input->get();
+        $db = $this->spj->make_datatables_verifikasi_selesai($filter);
         $data = array();
         $no = @$_POST['start'];
 
@@ -581,6 +549,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
             $no++;
             $row = array();
             $row['no'] = $no;
+            $row['no_verifikasi'] = $r->nomor_verifikasi;
             $row['no_buku'] = $r->nomor_pembukuan;
             // $row[] = '<br>' . $r->kode_program . '<br>' . $r->kode_kegiatan . ' <br> ' . $r->kode_sub_kegiatan . ' <br> ' . $r->kode_uraian;
             $row['kode_uraian'] = "<br>" . $r->kode_uraian;
@@ -599,8 +568,8 @@ Silahkan cek aplikasi Digta Sunanpraja.
 
         $output = array(
             "draw" => @$_POST['draw'],
-            "recordsTotal" => $this->spj->make_count_all_verifikasi_selesai(),
-            "recordsFiltered" => $this->spj->make_count_filtered_verifikasi_selesai(),
+            "recordsTotal" => $this->spj->make_count_all_verifikasi_selesai($filter),
+            "recordsFiltered" => $this->spj->make_count_filtered_verifikasi_selesai($filter),
             "data" => $data,
         );
         //output to json format
@@ -772,18 +741,63 @@ Silahkan cek aplikasi Digta Sunanpraja.
             'list_program' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'))->result(),
             'detail' => @$detail,
             'autoload_js' => [
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.js',
+                'template/backend/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js',
                 'template/backend/vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js',
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
                 'template/backend/vendors/parsleyjs/dist/parsley.min.js',
                 'template/custom-js/blockUI/jquery.blockUI.js',
                 'template/custom-js/spj_usul.js',
+                'template/custom-js/tabel-penerima-manfaat.js',
                 'template/custom-js/rupiah.js',
             ],
             'autoload_css' => [
-                'template/backend/vendors/select2/dist/css/select2.min.css'
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
+                'template/backend/vendors/select2/dist/css/select2.min.css',
             ]
         ];
         $this->load->view('layout/app', $data);
+    }
+
+    public function final()
+    {
+        $input = $this->input->post();
+        $token = $input['token'];
+
+        $update = [
+            'is_status' => 'VERIFIKASI',
+        ];
+
+        $whr = [
+            'token' => $token
+        ];
+
+        // notif wa
+        $user = $this->crud->getWhere('spj', ['token' => $input['token']])->row();
+        $penerima = $this->crud->getWhere('spj_relasi_publik', ['token' => $input['token']]);
+        $getUser = $this->users->profile_username($user->entri_by)->row();
+        $send = TeleSendMessage($getUser->telegram_id, TemplateMessageFinal($getUser, $user, $penerima->num_rows()));
+
+        $info = [
+            'token' => $input['token'],
+            'status' => 'KIRIM USULAN',
+            'keterangan' => 'USULAN DIKIRIM',
+            'created_at' => DateTimeInput(),
+            'created_by' => $this->session->userdata('user_name'),
+            'tahun' => $this->session->userdata('tahun_anggaran'),
+        ];
+
+        $db = $this->crud->update('spj', $update, $whr);
+        $log = $this->historis->insert($info);
+
+        if ($db && $log && $send) {
+            $msg = ['msg' => 'Usulan SPJ Berhasil Di Finalisasi', 'status' => true, 'redirect' => base_url('app/spj/buatusul?step=4&status=VERIFIKASI&token=' . $input['token']), 'send_wa' => $send];
+        } else {
+            $msg = ['msg' => 'Usulan SPJ Gagal Di Finalisasi', 'status' => false, 'send_wa' => $send];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($msg);
     }
 
     public function carikode()
@@ -810,7 +824,7 @@ Silahkan cek aplikasi Digta Sunanpraja.
             'nama_subkegiatan' => $kode_subkegiatan->nama,
             'kode_uraian' => $kode_uraian->kode,
             'nama_uraian' => $kode_uraian->nama,
-            'kode' => $kode_kegiatan->kode . "." . $kode_subkegiatan->kode . "." . $kode_uraian->kode,
+            'kode' => $kode_uraian->kode,
             'pagu' => [
                 'total_pa' => $totalPaguAwal,
                 'realisasi_pa' => $totalRealisasiPagu,
@@ -832,6 +846,106 @@ Silahkan cek aplikasi Digta Sunanpraja.
         }
 
         return $totalSisaPagu;
+    }
+
+    public function get_penerima_manfaat($token)
+    {
+        $db = $this->spj->make_datatables_penerima_manfaat($token);
+        $data = array();
+        $no = @$_POST['start'];
+
+        foreach ($db as $r) {
+
+            $no++;
+            $row = array();
+            $row['no'] = $no;
+            $row['organisasi'] = $r->organisasi;
+            $row['perorangan'] = $r->perorangan;
+            if($r->is_status === 'ENTRI') {
+                $row['action'] = '<button class="btn btn-sm btn-danger" onclick="HapusPenerimaManfaat(' . $r->id . ')"><i class="fa fa-trash"></i></button>';
+            } else {
+                $row['action'] = '<span class="badge badge-secondary p-2">Diverifikasi</span>';
+            }
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => @$_POST['draw'],
+            "recordsTotal" => $this->spj->make_count_all_penerima_manfaat($token),
+            "recordsFiltered" => $this->spj->make_count_filtered_penerima_manfaat($token),
+            "data" => $data,
+        );
+        //output to json format
+        header('Content-Type: application/json');
+        echo json_encode($output);
+    }
+
+    public function tambah_penerima_manfaat()
+    {
+        $input = $this->input->post();
+
+        $this->db->trans_start(); // mulai transaction
+
+        $data = [
+            'token'       => $input['token'],
+            'organisasi'  => $input['organisasi'],
+            'perorangan'  => $input['perorangan'],
+            'tahun'       => $this->session->userdata('tahun_anggaran'),
+            'created_at'  => DateTimeInput(),
+            'created_by'  => $this->session->userdata('user_name'),
+        ];
+
+        $this->crud->insert('spj_relasi_publik', $data);
+
+        $this->db->trans_complete(); // selesaikan transaction
+
+        if ($this->db->trans_status() === FALSE) {
+
+            $this->db->trans_rollback();
+
+            $msg = [
+                'pesan' => 'Penerima Manfaat Gagal Ditambahkan',
+                'status'  => false
+            ];
+
+        } else {
+
+            $this->db->trans_commit();
+
+            $msg = [
+                'pesan' => 'Penerima Manfaat Berhasil Ditambahkan',
+                'status' => true
+            ];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($msg);
+
+    }
+
+    public function hapus_penerima_manfaat()
+    {
+        $input = $this->input->post();
+        $id = $input['id'];
+
+        $this->db->trans_start(); // mulai transaction
+        $this->crud->deleteWhere('spj_relasi_publik', ['id' => $id]);
+        $this->db->trans_complete(); // selesaikan transaction
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $msg = [
+                'pesan' => 'Penerima Manfaat Gagal Dihapus',
+                'status'  => false
+            ];
+        } else {
+            $this->db->trans_commit();
+            $msg = [
+                'pesan' => 'Penerima Manfaat Berhasil Dihapus',
+                'status' => true
+            ];
+        }
+        header('Content-Type: application/json');
+        echo json_encode($msg);
     }
 
     public function cek_angkas($uraian_id, $periode_id = null)
@@ -919,7 +1033,9 @@ Silahkan cek aplikasi Digta Sunanpraja.
                 'bulan' => date("m"),
                 'tahun' => $input['tahun'],
                 'uraian' => $input['uraian'],
-                'jumlah' => get_only_numbers($input['jumlah'])
+                'jumlah' => get_only_numbers($input['jumlah']),
+                'entri_perbaikan_at' => DateTimeInput(),
+                'entri_perbaikan_by' => $this->session->userdata('user_name'),
             ];
             $db = $this->crud->update('spj', $data, ['token' => $input['token']]);
             $isToken = $input['token'];
@@ -990,43 +1106,13 @@ Silahkan cek aplikasi Digta Sunanpraja.
         ];
         $data = [
             'berkas_link' => $input['link'],
-            'is_status' => 'VERIFIKASI'
         ];
         $db = $this->crud->update('spj', $data, $whr);
 
-        // notif wa
-        $user = $this->crud->getWhere('spj', ['token' => $input['token']])->row();
-        $getUser = $this->users->profile_username($user->entri_by)->row();
-        $send = TeleSendMessage($getUser->telegram_id, '
-<b>DIGTA SUNANPRAJA</b>
-📢 <b>Notifikasi Usulan SPJ</b>
-Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di verifikasi.
--------------
-📝 Uraian   : ' . $user->uraian . '
-💰 Jumlah   : Rp. ' . nominal($user->jumlah) . '
-⏰ Spj Bulan : ' . bulan(strtoupper($user->bulan)) . '
-📌 Status   : ' . $user->is_status . '
-➡️ Link Berkas : ' . $user->berkas_link . '
--------------
-<i>⚠️ Mohon untuk tidak dibalas, pesan ini dibuat secara otomatis (bot).
-' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '</i>
-        ');
-
-        $info = [
-            'token' => $input['token'],
-            'status' => 'KIRIM USULAN',
-            'keterangan' => 'USULAN DIKIRIM',
-            'created_at' => DateTimeInput(),
-            'created_by' => $this->session->userdata('user_name'),
-            'tahun' => $this->session->userdata('tahun_anggaran'),
-        ];
-
-        $log = $this->historis->insert($info);
-
-        if ($db && $send && $log) {
-            $status = ['msg' => 'Oke, berhasil dikirim', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=2&status=verifikasi&token=' . $input['token']), 'send_wa' => $send];
+        if ($db) {
+            $status = ['msg' => 'Prosess, berhasil disimpan', 'code' => 200, 'redirect' => base_url('app/spj/buatusul?step=3&status=review&token=' . $input['token'])];
         } else {
-            $status = ['msg' => 'Gagal', 'code' => 400, 'send_wa' => $send];
+            $status = ['msg' => 'Gagal', 'code' => 400];
         }
         echo json_encode($status);
     }
@@ -1067,4 +1153,667 @@ Halo ' . $getUser->nama . ', usulan SPJ anda telah dikirim selanjutnya akan di v
         }
         echo json_encode($msg);
     }
+
+    public function monitor()
+    {
+        $tahun_anggaran = $this->session->userdata('tahun_anggaran');
+        $is_perubahan = $this->session->userdata('is_perubahan');
+        $part = $this->session->userdata('part');
+
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listpart = $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result();
+        } else {
+            $listpart = $this->crud->getWhere('ref_parts', ['id' => $part])->result();
+        }
+
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listprogram = $this->target->program(null, null, $tahun_anggaran);
+        } else {
+            $listprogram = $this->target->program(null, $part, $tahun_anggaran);
+        }
+
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listkegiatan = $this->db->order_by('kode', 'asc')
+                                ->where('tahun', $tahun_anggaran)
+                                ->get('ref_kegiatans');
+        } else {
+            $listkegiatan = $this->db->order_by('kode', 'asc')
+                                ->where('fid_part', $part)
+                                ->where('tahun', $tahun_anggaran)
+                                ->get('ref_kegiatans');
+        }
+
+        if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $listsubkegiatan = $this->db->select('sk.id, sk.kode, sk.nama')
+                                    ->order_by('sk.kode', 'asc')
+                                    ->join('ref_kegiatans as k', 'sk.fid_kegiatan = k.id')
+                                    ->where('sk.tahun', $tahun_anggaran)
+                                    ->get('ref_sub_kegiatans as sk');
+        } else {
+            $listsubkegiatan = $this->db->select('sk.id, sk.kode, sk.nama')
+                                    ->order_by('sk.kode', 'asc')
+                                    ->join('ref_kegiatans as k', 'sk.fid_kegiatan = k.id')
+                                    ->where('k.fid_part', $part)
+                                    ->where('sk.tahun', $tahun_anggaran)
+                                    ->get('ref_sub_kegiatans as sk');
+        }
+
+        $data = [
+            'title' => 'Monitor SPJ (Surat Pertanggung Jawaban)',
+            'content' => 'pages/spj/monitor',
+            'tahun_anggaran' => $tahun_anggaran,
+            'is_perubahan' => $is_perubahan,
+            'part' => $part,
+            'listpart' => $listpart,
+            'programs' => $listprogram,
+            'kegiatans' => $listkegiatan,
+            'sub_kegiatans' => $listsubkegiatan,
+            'autoload_js' => [
+                'template/backend/vendors/moment/min/moment.min.js',
+                'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.js',
+                'template/custom-js/spj_monitor.js',
+            ],
+            'autoload_css' => [
+                'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.css',
+            ]
+        ];
+        $this->load->view('layout/app', $data);
+    }
+
+    public function autocomplete($type)
+    {
+        $query = $this->input->get('query');
+        $suggestions = [];
+
+        if ($type === 'organisasi') {
+            $results = $this->db->select('organisasi')->like('organisasi', $query)->from('spj_relasi_publik')->group_by('organisasi')->get()->result();
+            foreach ($results as $row) {
+                $suggestions[] = [
+                    'value' => $row->organisasi,
+                    'data' => $row->organisasi
+                ];
+            }
+        }
+
+        if ($type === 'perorangan') {
+            $results = $this->db->select('perorangan')->like('perorangan', $query)->from('spj_relasi_publik')->group_by('perorangan')->get()->result();
+            foreach ($results as $row) {
+                $suggestions[] = [
+                    'value' => $row->perorangan,
+                    'data' => $row->perorangan
+                ];
+            }
+        }
+
+        echo json_encode(['suggestions' => $suggestions]);
+    }
+
+    public function rekap_perjadin()
+    {
+        $data = [
+            'title' => 'Rekap Perjadin SPJ (Surat Pertanggung Jawaban)',
+            'content' => 'pages/spj/rekap_perjadin',
+            'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
+            'is_perubahan' => $this->session->userdata('is_perubahan'),
+            'list_bidang' => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
+            'autoload_js' => [
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.js',
+                'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/custom-js/blockUI/jquery.blockUI.js',
+                'template/custom-js/tabel-perjadin.js',
+            ],
+            'autoload_css' => [
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
+            ]
+        ];
+        $this->load->view('layout/app', $data);
+    }
+
+    public function get_rekap_perjadin()
+    {
+        $filter = $this->input->get();
+        $db = $this->spj->make_datatables_rekap_perjadin($filter);
+        $data = array();
+        $no = @$_POST['start'];
+
+        foreach ($db as $r) {
+
+            $filename = $r->file_path;
+            $server_path = FCPATH . 'template/upload/dokumen_perjadin/' . $filename;
+            $public_url  = base_url('template/upload/dokumen_perjadin/' . $filename);
+            $file_exists = file_exists($server_path) && is_file($server_path);
+            
+            if ($file_exists):
+                $unduh = '<a href="' . $public_url . '" target="_blank" rel="noopener" class="btn btn-success" title="Unduh dokumen PK">
+                    <i class="fa fa-download mr-1"></i> Unduh
+                </a>';
+            else:
+                $unduh = '<button class="btn btn-outline-secondary" disabled title="File belum tersedia">
+                    <i class="fa fa-download mr-1"></i> Unduh
+                </button>';
+            endif;
+
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR'])):
+                if($r->is_kunci == 0):
+                $verifikasi = '<button type="button" class="btn btn-primary" onclick="VerifikasiDokumen(' . $r->id . ')" title="Verifikasi Dokumen">
+                    <i class="fa fa-check mr-1"></i> Verifikasi
+                </button>';
+                else:
+                    $verifikasi = '<button type="button" class="btn btn-danger" title="Unverifikasi Dokumen" onclick="VerifikasiDokumen(' . $r->id . ')">
+                        <i class="fa fa-times mr-1"></i> Unverifikasi
+                    </button>';
+                endif;
+                $btnCatatan = '
+                    <button type="button" class="btn btn-info" title="Catatan Dokumen" onclick="CatatanDokumen(' . $r->id . ',\''.$r->catatan.'\')">
+                        <i class="fa fa-edit mr-1"></i> Tambakan Catatan
+                    </button>
+                ';
+            else:
+                $verifikasi = '';
+                $btnCatatan = '';
+            endif;
+
+            if(in_array($this->session->userdata('role'), ['USER']) && $r->is_kunci == 0 && $r->created_by == $this->session->userdata('user_name')):
+                $btnDelete = '
+                    <button type="button" class="btn btn-danger" title="Hapus Dokumen" onclick="HapusDokumen(' . $r->id . ')">
+                        <i class="fa fa-trash mr-1"></i> Hapus
+                    </button>
+                    ';
+            else:
+                $btnDelete = '';
+            endif;
+
+
+            $btnAksi = '
+            <!-- Download / Status -->
+            <div class="d-flex align-items-center" style="gap:.5rem; white-space:nowrap;">
+                ' . $unduh . '
+                ' . $verifikasi . '
+                ' . $btnCatatan . '
+                ' . $btnDelete . '
+            </div>
+            ';
+
+            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2"><i class="fa fa-check-circle mr-1"></i> Terverifikasi</span>' : '<span class="badge badge-warning p-2"><i class="fa fa-exclamation-circle mr-1"></i> Belum Diverifikasi</span>';
+
+            $no++;
+            $row = array();
+            $row['no'] = $no;
+            $row['bidang'] = $r->nama_part;
+            $row['bulan'] = bulan($r->bulan) .' <br/> '. $terverifikasi;
+            $row['tahun'] = $r->tahun;
+            $row['user'] = $r->created_by;
+            $row['time'] = time_ago_id($r->created_at, [
+                'show_time' => true,
+            ]);
+            $row['catatan'] = $r->catatan ?? '-';
+            $row['action'] = $btnAksi;
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => @$_POST['draw'],
+            "recordsTotal" => $this->spj->make_count_all_rekap_perjadin($filter),
+            "recordsFiltered" => $this->spj->make_count_filtered_rekap_perjadin($filter),
+            "data" => $data,
+        );
+        //output to json format
+        header('Content-Type: application/json');
+        echo json_encode($output);
+    }
+
+    public function delete_dokumen_perjadin()
+    {
+        $id = $this->input->post('id');
+        $dok = $this->crud->getWhere('t_dokumen_perjadin', ['id' => $id])->row();
+
+        if (!$dok) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        $filePath = FCPATH . 'template/upload/dokumen_perjadin/' . $dok->file_path;
+
+        if (file_exists($filePath) && is_file($filePath)) {
+            unlink($filePath);
+        }
+
+        $db = $this->crud->deleteWhere('t_dokumen_perjadin', ['id' => $id]);
+
+        if ($db) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen berhasil dihapus', 'status' => true]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Gagal menghapus dokumen', 'status' => false]);
+        }
+    }
+
+    public function upload_rekap_perjadin()
+    {
+        $getFileName = $_FILES['file']['name'];
+        $bulan = $this->input->post('bulan');
+        $tahun = $this->session->userdata('tahun_anggaran');
+        $part_id = $this->session->userdata('part');
+        $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
+        $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString().'-'.$this->session->userdata('user_name');
+
+        // Cek apakah sudah ada file untuk part, bulan, tahun dan created_by yg sama
+		// $existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
+        // jika sudah ada, hapus file lama dari server
+        // if ($existing->num_rows() > 0) {
+        //     $oldFile = $existing->row()->file_path;
+        //     $oldFilePath = FCPATH . 'template/upload/dokumen_perjadin/' . $oldFile;
+        //     if (file_exists($oldFilePath) && is_file($oldFilePath)) {
+        //         unlink($oldFilePath);
+        //     }
+        // }
+        
+
+        // validasi form dan upload file ke folder /template/upload/dokumen_perjadin/
+		$config = [
+			'upload_path'   => './template/upload/dokumen_perjadin/',
+			'allowed_types' => 'pdf|xls|xlsx',
+			'max_size'      => 2120, // 2MB
+			'file_name'     => $namafile,
+			'overwrite'     => true
+		];
+
+        $this->load->library('upload', $config);
+
+		if (!$this->upload->do_upload('file')) {
+			$this->session->set_flashdata('alert_type', 'error');
+			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
+			return redirect(base_url('app/spj/rekap_perjadin'));
+		}
+
+        $upload_data = $this->upload->data();
+
+		$data = [
+            'bulan' => $bulan,
+			'fid_part' => $part_id,
+            'nama_dokumen_ori' => $getFileName,
+			'nama_dokumen' => $namafile,
+			'file_path' => $upload_data['file_name'],
+			'ukuran_file' => $upload_data['file_size'],
+			'tipe_file' => $upload_data['file_type'],
+			'tahun' => $tahun,
+			'created_by' => $this->session->userdata('user_name'),
+			'created_at' => DateTimeInput()
+		];
+
+        // jika sudah ada record, lakukan update; jika belum, insert baru
+		// if ($existing->num_rows() > 0) {
+		// 	$db = $this->crud->update('t_dokumen_perjadin', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'bulan' => $bulan, 'created_by' => $this->session->userdata('user_name')]);
+        //     if($db) {
+        //         $this->session->set_flashdata('alert_type', 'success');
+        //         $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diperbarui');
+        //     } else {
+        //         $this->session->set_flashdata('alert_type', 'error');
+        //         $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Rekap Perjadin');
+        //     }
+        //     return redirect(base_url('app/spj/rekap_perjadin'));
+		// }
+        
+
+        $db = $this->crud->insert('t_dokumen_perjadin', $data);
+        if($db) {
+            $this->session->set_flashdata('alert_type', 'success');
+            $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diunggah');
+        } else {
+            $this->session->set_flashdata('alert_type', 'error');
+            $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Rekap Perjadin');
+        }
+        return redirect(base_url('app/spj/rekap_perjadin'));
+    }
+
+    public function verifikasi_dokumen_perjadin()
+    {
+        $id = $this->input->post('id');
+
+        if (empty($id)) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'ID dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        // ambil record saat ini
+        $dok = $this->crud->getWhere('t_dokumen_perjadin', ['id' => $id])->row();
+        if (!$dok) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        // toggle is_kunci: jika 1 jadi 0, jika 0 jadi 1
+        $current = (int) $dok->is_kunci;
+        $new_value = $current === 1 ? 0 : 1;
+
+        $status_text = $new_value === 1 ? 'Terverifikasi' : 'Belum Terverifikasi';
+
+        // transaction
+        $this->db->trans_begin();
+        $this->crud->update('t_dokumen_perjadin', ['is_kunci' => $new_value, 'catatan' => ''], ['id' => $id]);
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $msg = ['pesan' => 'Gagal memverifikasi dokumen', 'status' => false];
+        } else {
+            $this->db->trans_commit();
+            $msg = ['pesan' => 'Berhasil memperbarui status verifikasi - '. $status_text, 'status' => true, 'is_kunci' => $new_value];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($msg);
+    }
+
+    public function tambah_catatan_perjadin()
+    {
+        $id = $this->input->post('id');
+        $catatan = $this->input->post('catatan');
+
+        if (empty($id)) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'ID dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        // transaction
+        $this->db->trans_begin();
+        $this->crud->update('t_dokumen_perjadin', ['catatan' => $catatan], ['id' => $id]); 
+        
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Gagal menambahkan catatan', 'status' => false]);
+        } else {
+            $this->db->trans_commit();
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Catatan berhasil ditambahkan', 'status' => true]);
+        }
+    }
+
+    public function rekap_pajak()
+    {
+        $data = [
+            'title' => 'Rekap Pajak Pusat & Daerah',
+            'content' => 'pages/spj/rekap_pajak',
+            'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
+            'is_perubahan' => $this->session->userdata('is_perubahan'),
+            'list_bidang' => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
+            'autoload_js' => [
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.js',
+                'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+                'template/custom-js/tabel-pajak.js',
+            ],
+            'autoload_css' => [
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
+            ]
+        ];
+        $this->load->view('layout/app', $data);
+    }
+
+    public function get_rekap_pajak()
+    {
+        $db = $this->spj->make_datatables_rekap_pajak();
+        $data = array();
+        $no = @$_POST['start'];
+
+        foreach ($db as $r) {
+
+            $filename = $r->file_path;
+            $server_path = FCPATH . 'template/upload/dokumen_pajak/' . $filename;
+            $public_url  = base_url('template/upload/dokumen_pajak/' . $filename);
+            $file_exists = file_exists($server_path) && is_file($server_path);
+            
+            if ($file_exists):
+                $unduh = '<a href="' . $public_url . '" target="_blank" rel="noopener" class="btn btn-success" title="Unduh dokumen PK">
+                    <i class="fa fa-download mr-1"></i> Unduh
+                </a>';
+            else:
+                $unduh = '<button class="btn btn-outline-secondary" disabled title="File belum tersedia">
+                    <i class="fa fa-download mr-1"></i> Unduh
+                </button>';
+            endif;
+
+            if(in_array($this->session->userdata('role'), ['ADMIN', 'VERIFICATOR'])):
+                if($r->is_kunci == 0):
+                $verifikasi = '<button type="button" class="btn btn-primary" onclick="VerifikasiDokumen(' . $r->id . ')" title="Verifikasi Dokumen">
+                    <i class="fa fa-check mr-1"></i> Verifikasi
+                </button>';
+                else:
+                    $verifikasi = '<button type="button" class="btn btn-danger" title="Unverifikasi Dokumen" onclick="VerifikasiDokumen(' . $r->id . ')">
+                        <i class="fa fa-times mr-1"></i> Unverifikasi
+                    </button>';
+                endif;
+                $btnCatatan = '
+                    <button type="button" class="btn btn-info" title="Catatan Dokumen" onclick="CatatanDokumen(' . $r->id . ',\''.$r->catatan.'\')">
+                        <i class="fa fa-edit mr-1"></i> Tambakan Catatan
+                    </button>
+                ';
+            else:
+                $verifikasi = '';
+                $btnCatatan = '';
+            endif;
+
+            if(in_array($this->session->userdata('role'), ['USER']) && $r->is_kunci == 0 && $r->created_by == $this->session->userdata('user_name')):
+                $btnDelete = '
+                    <button type="button" class="btn btn-danger" title="Hapus Dokumen" onclick="HapusDokumen(' . $r->id . ')">
+                        <i class="fa fa-trash mr-1"></i> Hapus
+                    </button>
+                    ';
+            else:
+                $btnDelete = '';
+            endif;
+
+
+            $btnAksi = '
+            <!-- Download / Status -->
+            <div class="d-flex align-items-center" style="gap:.5rem; white-space:nowrap;">
+                ' . $unduh . '
+                ' . $verifikasi . '
+                ' . $btnCatatan . '
+                ' . $btnDelete . '
+            </div>
+            ';
+
+            $terverifikasi = $r->is_kunci == 1 ? '<span class="badge badge-success p-2"><i class="fa fa-check-circle mr-1"></i> Terverifikasi</span>' : '<span class="badge badge-warning p-2"><i class="fa fa-exclamation-circle mr-1"></i> Belum Diverifikasi</span>';
+
+            $no++;
+            $row = array();
+            $row['no'] = $no;
+            $row['bidang'] = $r->nama_part;
+            $row['periode'] = $r->periode .' <br/> '. $terverifikasi;
+            $row['jenis_dokumen'] = $r->jenis_dokumen;
+            $row['tahun'] = $r->tahun;
+            $row['user'] = $r->created_by;
+            $row['catatan'] = $r->catatan ?? '-';
+            $row['action'] = $btnAksi;
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => @$_POST['draw'],
+            "recordsTotal" => $this->spj->make_count_all_rekap_pajak(),
+            "recordsFiltered" => $this->spj->make_count_filtered_rekap_pajak(),
+            "data" => $data,
+        );
+        //output to json format
+        header('Content-Type: application/json');
+        echo json_encode($output);
+    }
+
+    public function upload_rekap_pajak()
+    {
+        $getFileName = $_FILES['file']['name'];
+        $periode = $this->input->post('periode');
+        $tahun = $this->session->userdata('tahun_anggaran');
+        $jenis_dokumen = $this->input->post('jenis_dokumen');
+        $part_id = $this->session->userdata('part');
+        $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
+        $namafile = 'Rekapitulasi-' . $namapart .'-'. $jenis_dokumen . '-' . $periode . '-' . $tahun .'-'. generateRandomString();
+
+        // Cek apakah sudah ada file untuk part dan tahun yg sama
+		$existing = $this->crud->getWhere('t_dokumen_pajak', ['fid_part' => $part_id, 'jenis_dokumen' => $jenis_dokumen, 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
+        // jika sudah ada, hapus file lama dari server
+        if ($existing->num_rows() > 0) {
+            $oldFile = $existing->row()->file_path;
+            $oldFilePath = FCPATH . 'template/upload/dokumen_pajak/' . $oldFile;
+            if (file_exists($oldFilePath) && is_file($oldFilePath)) {
+                unlink($oldFilePath);
+            }
+        }
+        
+        // validasi form dan upload file ke folder /template/upload/dokumen_pajak/
+		$config = [
+			'upload_path'   => './template/upload/dokumen_pajak/',
+			'allowed_types' => 'pdf|xls|xlsx',
+			'max_size'      => 2120, // 2MB
+			'file_name'     => $namafile,
+			'overwrite'     => true
+		];
+
+        $this->load->library('upload', $config);
+
+		if (!$this->upload->do_upload('file')) {
+			$this->session->set_flashdata('alert_type', 'error');
+			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
+			return redirect(base_url('app/spj/rekap_pajak'));
+		}
+
+        $upload_data = $this->upload->data();
+
+		$data = [
+            'periode' => $periode,
+            'jenis_dokumen' => $jenis_dokumen,
+			'fid_part' => $part_id,
+            'nama_dokumen_ori' => $getFileName,
+			'nama_dokumen' => $namafile,
+			'file_path' => $upload_data['file_name'],
+			'ukuran_file' => $upload_data['file_size'],
+			'tipe_file' => $upload_data['file_type'],
+			'tahun' => $tahun,
+			'created_by' => $this->session->userdata('user_name'),
+			'created_at' => DateTimeInput()
+		];
+
+        // jika sudah ada record, lakukan update; jika belum, insert baru
+		if ($existing->num_rows() > 0) {
+			$db = $this->crud->update('t_dokumen_pajak', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'periode' => $periode, 'jenis_dokumen' => $jenis_dokumen, 'created_by' => $this->session->userdata('user_name')]);
+            if($db) {
+                $this->session->set_flashdata('alert_type', 'success');
+                $this->session->set_flashdata('alert_msg', 'Rekap Pajak berhasil diperbarui');
+            } else {
+                $this->session->set_flashdata('alert_type', 'error');
+                $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Rekap Pajak');
+            }
+            return redirect(base_url('app/spj/rekap_pajak'));
+		}
+
+        $db = $this->crud->insert('t_dokumen_pajak', $data);
+        if($db) {
+            $this->session->set_flashdata('alert_type', 'success');
+            $this->session->set_flashdata('alert_msg', 'Rekap Pajak berhasil diunggah');
+        } else {
+            $this->session->set_flashdata('alert_type', 'error');
+            $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Rekap Pajak');
+        }
+        return redirect(base_url('app/spj/rekap_pajak'));
+    }
+
+    public function verifikasi_dokumen_pajak()
+    {
+        $id = $this->input->post('id');
+
+        if (empty($id)) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'ID dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        // ambil record saat ini
+        $dok = $this->crud->getWhere('t_dokumen_pajak', ['id' => $id])->row();
+        if (!$dok) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        // toggle is_kunci: jika 1 jadi 0, jika 0 jadi 1
+        $current = (int) $dok->is_kunci;
+        $new_value = $current === 1 ? 0 : 1;
+
+        $status_text = $new_value === 1 ? 'Terverifikasi' : 'Belum Terverifikasi';
+
+        // transaction
+        $this->db->trans_begin();
+        $this->crud->update('t_dokumen_pajak', ['is_kunci' => $new_value, 'catatan' => ''], ['id' => $id]);
+
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            $msg = ['pesan' => 'Gagal memverifikasi dokumen', 'status' => false];
+        } else {
+            $this->db->trans_commit();
+            $msg = ['pesan' => 'Berhasil memperbarui status verifikasi - '. $status_text, 'status' => true, 'is_kunci' => $new_value];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($msg);
+    }
+
+    public function tambah_catatan_pajak()
+    {
+        $id = $this->input->post('id');
+        $catatan = $this->input->post('catatan');
+
+        if (empty($id)) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'ID dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        // transaction
+        $this->db->trans_begin();
+        $this->crud->update('t_dokumen_pajak', ['catatan' => $catatan], ['id' => $id]); 
+        
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Gagal menambahkan catatan', 'status' => false]);
+        } else {
+            $this->db->trans_commit();
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Catatan berhasil ditambahkan', 'status' => true]);
+        }
+    }
+
+    public function delete_dokumen_pajak()
+    {
+        $id = $this->input->post('id');
+        $dok = $this->crud->getWhere('t_dokumen_pajak', ['id' => $id])->row();
+
+        if (!$dok) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen tidak ditemukan', 'status' => false]);
+            return;
+        }
+
+        $filePath = FCPATH . 'template/upload/dokumen_pajak/' . $dok->file_path;
+
+        if (file_exists($filePath) && is_file($filePath)) {
+            unlink($filePath);
+        }
+
+        $db = $this->crud->deleteWhere('t_dokumen_pajak', ['id' => $id]);
+
+        if ($db) {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Dokumen berhasil dihapus', 'status' => true]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['pesan' => 'Gagal menghapus dokumen', 'status' => false]);
+        }
+    }
+
 }

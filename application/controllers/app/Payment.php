@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Payment extends CI_Controller
 {
 
@@ -32,6 +35,8 @@ class Payment extends CI_Controller
         $this->load->model('ModelPayment', 'payment');
         $this->load->model('ModelUsers', 'user');
         $this->load->model('ModelLog', 'historis');
+        
+        $this->load->helper('telegram');
     }
 
     public function index()
@@ -67,7 +72,10 @@ class Payment extends CI_Controller
             $no++;
             $row = array();
             $row['no'] = $no;
-            $row['no_buku'] = $r->nomor_pembukuan;
+            $row['no_verifikasi'] = $r->nomor_verifikasi;
+            $row['tgl_verifikasi'] = $r->tanggal_verifikasi ? longdate_indo($r->tanggal_verifikasi) : '-';
+            $row['no_bku'] = $r->nomor_pembukuan;
+            $row['tgl_bku'] = $r->tanggal_pembukuan ? longdate_indo($r->tanggal_pembukuan) : '-';
             $row['kode_uraian'] = "<br>" . $r->kode_uraian;
             $row['nama_uraian'] = $r->nama_part . '<br> - <b>' . $r->nama_uraian . '</b>';
             $row['periode'] = bulan($r->fid_periode);
@@ -97,12 +105,23 @@ class Payment extends CI_Controller
         ];
 
         if ($post['verifikasi_status'] === 'CAIR') {
-            $update = [
+            $updatePayment = [
                 'status' => 'CAIR',
                 'cair_at' => DateTimeInput(),
                 'approver_by' => $this->session->userdata('user_name'),
                 'catatan' => null
             ];
+
+            $updateSpj = [
+                'nomor_pembukuan' => $post['nomor_bku'],
+                'tanggal_pembukuan' => $post['tanggal_bku'],
+            ];
+
+            $updateRiwayatSpj = [
+                'nomor_pembukuan' => $post['nomor_bku'],
+                'tanggal_pembukuan' => $post['tanggal_bku'],
+            ];
+            
             // insert log
             $info = [
                 'token' => $post['token'],
@@ -114,11 +133,22 @@ class Payment extends CI_Controller
             ];
 
             $this->db->trans_start();
-            $this->crud->update('spj_payment', $update, $whr);
+            $this->crud->update('spj', $updateSpj, $whr);
+            $this->crud->update('spj_payment', $updatePayment, $whr);
+            $this->crud->update('spj_riwayat', $updateRiwayatSpj, $whr);
             $this->historis->insert($info);
+
+            // notif telegram
+            $detailUsul = $this->crud->getWhere('spj', ['token' => $post['token']])->row();
+            $is_status = 'CAIR';
+            $session = $this->session->userdata();
+            $getUser = $this->users->profile_username($detailUsul->entri_by)->row();
+            $send_message = TeleSendMessage($getUser->telegram_id, TemplateMessageApprovalBendahara($detailUsul, $is_status, $session));
+
             $this->db->trans_complete();
 
             if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
                 $msg = [
                     'message' => 'SPJ gagal di proses',
                     'status' => false
@@ -127,6 +157,8 @@ class Payment extends CI_Controller
                 return false;
             }
 
+            $this->db->trans_commit();
+            
             $msg = [
                 'message' => 'SPJ telah di proses',
                 'status' => true
@@ -158,6 +190,7 @@ class Payment extends CI_Controller
             $this->db->trans_complete();
 
             if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
                 $msg = [
                     'message' => 'SPJ gagal diproses perbaikan !',
                     'status' => false
@@ -166,6 +199,7 @@ class Payment extends CI_Controller
                 return false;
             }
 
+            $this->db->trans_commit();
             $msg = [
                 'message' => 'SPJ telah diproses perbaikan !',
                 'status' => true
@@ -197,6 +231,7 @@ class Payment extends CI_Controller
             $this->db->trans_complete();
 
             if ($this->db->trans_status() === false) {
+                $this->db->trans_rollback();
                 $msg = [
                     'message' => 'SPJ gagal ditolak !',
                     'status' => false
@@ -205,6 +240,7 @@ class Payment extends CI_Controller
                 return false;
             }
 
+            $this->db->trans_commit();
             $msg = [
                 'message' => 'SPJ berhasil ditolak !',
                 'status' => true
@@ -309,5 +345,76 @@ class Payment extends CI_Controller
                 return '<i class="fa fa-calendar"></i> - <br> <i class="fa fa-clock-o"></i> -';
                 break;
         }
+    }
+
+    public function export() {
+
+        $this->load->helper('nominal');
+
+        $filters = $this->input->get();
+        $spj = $this->payment->getRekapSpjHasilVerifikasi($filters);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'NOMOR VERIFIKASI');
+        $sheet->setCellValue('B1', 'TANGGAL VERIFIKASI');
+        $sheet->setCellValue('C1', 'NOMOR BKU');
+        $sheet->setCellValue('D1', 'TANGGAL BKU');
+        $sheet->setCellValue('E1', 'KODE URAIAN');
+        $sheet->setCellValue('F1', 'URAIAN');
+        $sheet->setCellValue('G1', 'PERIODE');
+        $sheet->setCellValue('H1', 'STATUS VERIFIKASI');
+        $sheet->setCellValue('I1', 'JUMLAH');
+
+        //OPTION
+        $sheet->getDefaultColumnDimension()->setAutoSize(true);
+        $sheet->setAutoFilter('A1:I1');
+        $sheet->getStyle('A1:I1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['argb' => 'FFFFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => [
+                    'argb' => 'FF4CAF50',
+                ],
+            ],
+        ]);
+
+        $protection = $sheet->getProtection(); // dengan password yang diinginkan
+        $protection->setPassword(date('dmY')); // Ganti dengan password yang diinginkan
+        $protection->setSheet(true);
+        $protection->setSort(true);
+        $protection->setInsertRows(true);
+        $protection->setFormatCells(true);
+        
+        $col = 2;
+        $no = 1;
+        foreach ($spj->result() as $item) {
+            $sheet->setCellValue('A' . $col, $item->nomor_verifikasi);
+            $sheet->setCellValue('B' . $col, formatToHuman($item->tanggal_verifikasi));
+            $sheet->setCellValue('C' . $col, $item->nomor_pembukuan);
+            $sheet->setCellValue('D' . $col, formatToHuman($item->tanggal_pembukuan));
+            $sheet->setCellValue('E' . $col, $item->kode_uraian);
+            $sheet->setCellValue('F' . $col, $item->uraian);
+            $sheet->setCellValue('G' . $col, $item->fid_periode);
+            $sheet->setCellValue('H' . $col, $item->status_verifikasi);
+            $sheet->setCellValue('I' . $col, nominal($item->jumlah));
+            $no++;
+            $col++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'DATA-SPJ-' . date('d-m-Y');
+
+        // header download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 }

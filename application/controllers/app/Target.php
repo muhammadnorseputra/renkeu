@@ -82,8 +82,8 @@ class Target extends CI_Controller
 		// validasi form dan upload file ke folder /template/upload/dokumen_pk/
 		$config = [
 			'upload_path'   => './template/upload/dokumen_pk/',
-			'allowed_types' => 'pdf',
-			'max_size'      => 2120, // 2MB
+			'allowed_types' => 'zip|rar|pdf',
+			'max_size'      => 5120, // 5MB
 			'file_name'     => $file_name,
 			'overwrite'     => true
 		];
@@ -221,11 +221,21 @@ class Target extends CI_Controller
 
 	public function ubah_proses()
 	{
-	$post = $this->input->post();
-    $id_indikator = $post['id']; // dari form_open hidden input
+		$post = $this->input->post();
+		$part_id = implode(",", $post['bidang']);
 
-    $dataInsert = [];
-    $dataUpdate = [];
+		if (isset($post['jenis_indikator'])) {
+			$data = [
+				'nama' => $post['nama'],
+				'fid_part' => $part_id,
+				'fid_jenis_indikator' => $post['jenis_indikator']
+			];
+		} else {
+			$data = [
+				'nama' => $post['nama'],
+				'fid_part' => $part_id,
+			];
+		}
 
 		$whr = [
 			'id' => $post['id'],
@@ -247,7 +257,8 @@ class Target extends CI_Controller
 				'is_jenis' => (int) $post['is_jenis'],
 				'fid_indikator' => $post['id'],
 				'tahun' => $post['tahun'],
-				'created_by' => $this->session->userdata('user_name')
+				'created_by' => $this->session->userdata('user_name'),
+				'fid_periode' => $post['periode_id']
 			];
 
 			// Update 
@@ -280,23 +291,12 @@ class Target extends CI_Controller
 			}
 
 			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
+			
 			if ($dbcek->num_rows() > 0) {
-				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id'], 'fid_periode' => $post['periode_id']]);
+				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id']]);
 			} else {
 				$this->crud->insert('t_target', $insert);
 			}
-		} else {
-			$msg = 400;
-		}
-
-    // Eksekusi batch
-    if (!empty($dataUpdate)) {
-        $this->db->update_batch('target_table', $dataUpdate, 'id');
-    }
-    if (!empty($dataInsert)) {
-        $this->db->insert_batch('target_table', $dataInsert);
-    }
-		echo json_encode($msg);
 	}
 
 	public function cetak($tahun)

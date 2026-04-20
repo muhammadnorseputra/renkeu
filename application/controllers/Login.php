@@ -105,7 +105,7 @@ class Login extends CI_Controller
             'check_in' => DateTimeInput(),
             'check_out' => $row->check_out,
             'tahun_anggaran' => $this->input->post('tahun', true),
-            'is_perubahan' => getSetting('StatusAnggaran'),
+            'is_perubahan' => $this->input->post('is_perubahan', true),
             'is_valid_profile' => $row->is_valid,
         );
         $this->db->update('t_users', ['check_in' => DateTimeInput()], ['id' => $row->id]);

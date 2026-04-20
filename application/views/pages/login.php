@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
   <!-- Favicons -->
-  <link href="<?= base_url('template/assets/logo.png') ?>" rel="icon">
-  <link href="<?= base_url('template/assets/logo.png') ?>" rel="apple-touch-icon">
+  <link href="<?= base_url('template/assets/Logo DSP Warna/Logo3.png') ?>" rel="icon">
+  <link href="<?= base_url('template/assets/Logo DSP Warna/Logo3.png') ?>" rel="apple-touch-icon">
 
   <link rel="stylesheet" href="<?= base_url('template/login-form-02/fonts/icomoon/icons.css') ?>">
 
@@ -32,17 +32,17 @@
 
 <body>
   <div class="d-lg-flex half">
-    <div class="bg order-1 order-md-2" style="background-image: url('<?= base_url('template/assets/1-Tahulah-Pian-Tugu-Paringin_RVN.webp') ?>'); background-position:center; background-size: cover; background-repeat: no-repeat;"></div>
-    <div class="contents order-2 order-md-1">
+    <div class="bg order-1 order-md-2" style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-position:center; background-size: cover; background-repeat: no-repeat;"></div>
+    <div class="contents order-2 order-md-2">
       <div class="container">
-        <div class="row align-items-center justify-content-center">
-          <div class="col-md-7">
+        <div class="row align-items-start justify-content-center">
+          <div class="col-md-10">
             <!-- App Logo -->
             <?php if (getSetting('APPLogo') != '') : ?>
-              <center><img style="margin:30px;" src="<?= base_url('template/assets/logo.png') ?>" width="120" alt="Logo Application"></center>
+              <center><img style="margin:30px;" src="<?= base_url('template/assets/Logo DSP Warna/Logo5.png') ?>" width="210" alt="Logo Application"></center>
             <?php endif; ?>
             <?php if (getSetting('APPName') != '') : ?>
-              <h3 class="text-center">Log In - <strong><?= getSetting('APPName') ?></strong></h3>
+              <h3 class="text-center">Log In</strong></h3>
             <?php endif; ?>
             <p class="mb-4 text-center"><?= getSetting('APPDescription') ?></p>
             <?php
@@ -51,6 +51,9 @@
               $this->session->csrf_token = hash('sha1', time());
             }
             ?>
+          </div>
+          <div class="col-md-8" style="padding-bottom: 30px;">
+
             <div id="message"></div>
             <?= form_open(base_url('login/cek_akun'), ['autocomplete' => 'off', 'id' => 'f_login', 'class' => 'toggle-disabled'], ['token' => $this->session->csrf_token, 'continue' => $urlRef]); ?>
             <div class="form-group first">
@@ -67,6 +70,14 @@
                   echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
                 }
                 ?>
+              </select>
+            </div>
+            <div class="form-group first">
+              <label for="is_perubahan">Status Anggaran</label>
+              <select name="is_perubahan" id="is_perubahan" class="form-control" required>
+                <option value="" selected>-- Pilih Status Anggaran --</option>
+                <option value="0">Anggaran Murni</option>
+                <option value="1">Anggaran Perubahan</option>
               </select>
             </div>
             <div class="form-group first">
@@ -91,7 +102,7 @@
               <span class="ml-auto"><a href="https://wa.me/6282151815132/?text=Halo%20Admin%20Aplikasi%20<?= getSetting('APPName') ?>,%20saya%20mau%20reset%20password." target="_blank" class="forgot-pass">Forgot Password</a></span>
             </div>
 
-            <button type="submit" role="button" class="btn btn-block btn-success">Masuk</button>
+            <button type="submit" role="button" class="btn btn-block btn-info">Masuk</button>
 
             <?= form_close(); ?>
           </div>

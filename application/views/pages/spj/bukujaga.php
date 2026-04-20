@@ -1,6 +1,6 @@
 <div class="x_panel">
     <div class="x_title">
-        <h2><i class="fa fa-book mr-2"></i> Buku Jaga Kegiatan</h2>
+        <h2><i class="fa fa-book mr-2"></i> Buku Jaga Belanja Kegiatan</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
             <li><button class="btn btn-sm btn-light rounded-full px-2 py-0 mx-2 my-0" onclick="return introJs().start()"><i class="fa fa-info-circle"></i></button></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>

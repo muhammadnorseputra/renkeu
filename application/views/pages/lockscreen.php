@@ -34,7 +34,7 @@
           <div class="row justify-content-center">
             <div class="col-md-8">
               <div class="mb-4 text-center">
-                <img style="margin:15px auto;" class="rounded-circle" src="<?= base_url('template/assets/picture_akun/' . $this->session->userdata('pic')) ?>" width="50" alt="<?= $this->session->userdata('user_name'); ?>">
+                <img style="margin:15px auto;" class="rounded-circle" src="<?= base_url('template/assets/picture_akun/' . $this->session->userdata('pic')) ?>" width="150" alt="<?= $this->session->userdata('user_name'); ?>">
                 <h3>Welcome back, <?= $this->session->userdata('nama'); ?></h3>
                 <p class="mb-4 text-secondary">Silahkan login kembali, dengan mengisi password anda.</p>
               </div>

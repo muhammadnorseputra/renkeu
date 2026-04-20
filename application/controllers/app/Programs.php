@@ -556,6 +556,9 @@ class Programs extends CI_Controller
         $no = 1;
         $total_all_pagu = 0;
         $total_all_pagu_perubahan = 0;
+        $warnaClassTotal = '';
+        $hasilTotal = 0;
+        
         foreach ($db->result() as $r) :
             //get jumlah spj berdasarkan id uraian
             $jmlSpj = $this->crud->getWhere('spj', ['fid_uraian' => $r->id])->num_rows();
@@ -1573,7 +1576,7 @@ class Programs extends CI_Controller
     {
         if ($form === 'subkegiatan') {
             $kode = $this->input->post('kode_subkegiatan');
-            $db = $this->crud->getWhere('ref_sub_kegiatans', ['kode' => $kode]);
+            $db = $this->crud->getWhere('ref_sub_kegiatans', ['kode' => $kode, 'tahun' => $this->session->userdata('tahun_anggaran')]);
             if ($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
             } else {
@@ -1584,7 +1587,7 @@ class Programs extends CI_Controller
 
         if ($form === 'namaprogram') {
             $kode = $this->input->post('program');
-            $db = $this->crud->getWhere('ref_programs', ['nama' => $kode]);
+            $db = $this->crud->getWhere('ref_programs', ['nama' => $kode, 'tahun' => $this->session->userdata('tahun_anggaran')]);
             if ($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
             } else {
@@ -1595,7 +1598,7 @@ class Programs extends CI_Controller
 
         if ($form === 'kodeprogram') {
             $kode = $this->input->post('kode_program');
-            $db = $this->crud->getWhere('ref_programs', ['kode' => $kode]);
+            $db = $this->crud->getWhere('ref_programs', ['kode' => $kode, 'tahun' => $this->session->userdata('tahun_anggaran')]);
             if ($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
             } else {
@@ -1613,6 +1616,7 @@ class Programs extends CI_Controller
                 ->join('ref_parts AS p', 'k.fid_part=p.id')
                 ->where('k.fid_part', $this->session->userdata('part'))
                 ->where('u.nama', $kode)
+                ->where('k.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get();
             if ($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
@@ -1641,7 +1645,7 @@ class Programs extends CI_Controller
 
         if ($form === 'kegiatan') {
             $kode = $this->input->get('kode_kegiatan');
-            $db = $this->crud->getWhere('ref_kegiatans', ['kode' => $kode]);
+            $db = $this->crud->getWhere('ref_kegiatans', ['kode' => $kode, 'tahun' => $this->session->userdata('tahun_anggaran')]);
             if ($db->num_rows() > 0) {
                 $this->output->set_status_header('400');
             } else {

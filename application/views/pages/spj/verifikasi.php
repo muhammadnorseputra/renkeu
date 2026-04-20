@@ -104,6 +104,45 @@
                 </td>
             </tr>
             <tr>
+                <td class="bg-light text-dark text-center" colspan="3">Pihak Berelasi / Pihak Penerima</td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th width="5%">No.</th>
+                                <th>Nama Organsasi/Instansi/Lembaga</th>
+                                <th>Nama Perorangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $list_penerima = $this->spj->getListPenerimaManfaat($detail->token)->result();
+                            if (count($list_penerima) > 0) :
+                                $no = 1;
+                                foreach ($list_penerima as $penerima) :
+                            ?>
+                                    <tr>
+                                        <td class="text-center"><?= $no++; ?>.</td>
+                                        <td><?= !empty($penerima->organisasi) ? $penerima->organisasi : '-'; ?></td>
+                                        <td><?= !empty($penerima->perorangan) ? $penerima->perorangan : '-'; ?></td>
+                                    </tr>
+                                <?php
+                                endforeach;
+                            else :
+                                ?>
+                                <tr>
+                                    <td colspan="3" class="text-center">-- Data Penerima Manfaat Tidak Ada --</td>
+                                </tr>
+                            <?php
+                            endif;
+                            ?>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
                 <td class="bg-light text-dark text-center" colspan="3">Detail Pengguna</td>
             </tr>
             <tr>
@@ -139,7 +178,7 @@
                 <td class="text-center" valign="middle">Perbaikan <br> (Ubah Status Usulan)</td>
                 <td colspan="3">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <?=
                             form_open(base_url('app/spj/verifikasi_proses'), ['id' => 'formVerifikasi', 'class' => 'form-horizontal', 'data-parsley-validate' => '', 'data-parsley-errors-messages-disabled' => ''], ['status' => 'UBAH_STATUS', 'token' => $detail->token]);
                             ?>
@@ -173,7 +212,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="catatan"><b>Keterangan Perbaikan :</b></label>
-                                <textarea name="catatan" id="catatan" cols="5" rows="3" class="form-control" placeholder="Masukan keterangan perbaikan" required></textarea>
+                                <textarea name="catatan" id="catatan" cols="12" rows="6" class="form-control" placeholder="Masukan keterangan perbaikan" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary rounded-0"><i class="fa fa-save mr-2"></i> Proses</button>
                             <?=
@@ -197,15 +236,15 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="nomor"><b>Nomor Buku :</b></label>
-                                <input type="text" name="nomor" class="form-control" value="<?= $detail->nomor_pembukuan ?>" required="required" <?= $disabled_tms ?>>
+                                <label for="nomor"><b>Nomor Verifikasi :</b></label>
+                                <input type="text" name="nomor" class="form-control" value="<?= $detail->nomor_verifikasi ?>" required="required" <?= $disabled_tms ?>>
                             </div>
-                            <label for="tanggal"><b>Tanggal Buku :</b></label>
+                            <label for="tanggal"><b>Tanggal Verifikasi :</b></label>
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <span class="fa fa-calendar"></span>
                                 </span>
-                                <input type="text" name="tanggal" class="form-control date" id="tanggal" value="<?= format_tanggal($detail->tanggal_pembukuan) ?>" required="required" <?= $disabled_tms ?>>
+                                <input type="text" name="tanggal" class="form-control date" id="tanggal" value="<?= format_tanggal($detail->tanggal_verifikasi) ?>" required="required" <?= $disabled_tms ?>>
                             </div>
                             <div class="form-group">
                                 <label for="is_realisasi"><b>Status Realisasi :</b></label>
