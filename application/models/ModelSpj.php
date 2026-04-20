@@ -53,6 +53,7 @@ class ModelSpj extends CI_Model
 		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
 		$this->db->where('s.entri_by_part', $this->session->userdata('part'));
 		$this->db->where('s.entri_by', $this->session->userdata('user_name'));
+		$this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
 		$this->db->where('s.is_status !=', 'SELESAI');
 		$this->db->where('s.is_status !=', 'SELESAI_TMS');
 		$this->db->where('s.is_status !=', 'SELESAI_BTL');
@@ -81,6 +82,12 @@ class ModelSpj extends CI_Model
 		return $q;
 	}
 
+	public function riwayat_payment($whr)
+	{
+		$q = $this->db->get_where('spj_payment', $whr);
+		return $q;
+	}
+
 	public function getNama($tbl, $id)
 	{
 		return $this->db->get_where($tbl, ['id' => $id])->row()->nama;
@@ -91,13 +98,13 @@ class ModelSpj extends CI_Model
 		return $this->db->get_where($tbl, ['id' => $id])->row()->kode;
 	}
 
-	public function TopTransaksiSPJ()
+	public function TopTransaksiSPJ($limit)
 	{
 		$this->db->select('r.jumlah,r.entri_by,r.entri_at,r.is_status,p.singkatan');
 		$this->db->from('spj_riwayat AS r');
 		$this->db->join('ref_parts AS p', 'r.entri_by_part=p.id');
 		$this->db->where('tahun', $this->session->userdata('tahun_anggaran'));
-		$this->db->limit(5);
+		$this->db->limit($limit);
 		$this->db->order_by('r.id', 'desc');
 		$q = $this->db->get();
 		return $q;
@@ -122,6 +129,33 @@ class ModelSpj extends CI_Model
 		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
 		$this->db->where('p.id', $bulan);
 		$this->db->where('r.is_status', $status);
+		$this->db->where('r.tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	// Jumlah transaksi SPJ Baru (Status Entri)
+	public function TransaksiSpjBaru($bulan, $ta)
+	{
+		$this->db->select_sum('r.jumlah');
+		$this->db->from('spj AS r');
+		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+		$this->db->where('r.is_status', 'ENTRI');
+		$this->db->where('p.id', $bulan);
+		$this->db->where('r.tahun', $ta);
+		$q = $this->db->get();
+		return $q->row()->jumlah;
+	}
+
+	// Jumlah transaksi SPJ sudah CAIR
+	public function TransaksiSpjCair($bulan, $ta)
+	{
+		$this->db->select_sum('s.jumlah');
+		$this->db->from('spj_payment AS r');
+		$this->db->join('spj_riwayat as s', 'r.token=s.token');
+		$this->db->join('t_periode AS p', 's.fid_periode=p.id');
+		$this->db->where('r.status', 'CAIR');
+		$this->db->where('p.id', $bulan);
 		$this->db->where('r.tahun', $ta);
 		$q = $this->db->get();
 		return $q->row()->jumlah;
@@ -190,6 +224,29 @@ class ModelSpj extends CI_Model
 		return $q->num_rows();
 	}
 
+	public function getJumlahSpjByPartBaru($part, $ta)
+	{
+		$this->db->select('id');
+		$this->db->from('spj');
+		$this->db->where('entri_by_part', $part);
+		$this->db->where('is_status', 'ENTRI');
+		$this->db->where('tahun', $ta);
+		$q = $this->db->get();
+		return $q->num_rows();
+	}
+
+	public function getJumlahSpjByStatusCair($part, $status, $ta)
+	{
+		$this->db->select('sp.id');
+		$this->db->from('spj_payment as sp');
+		$this->db->join('spj_riwayat as sr', 'sp.token=sr.token');
+		$this->db->where('sr.entri_by_part', $part);
+		$this->db->where('sp.status', $status);
+		$this->db->where('sp.tahun', $ta);
+		$q = $this->db->get();
+		return $q->num_rows();
+	}
+
 	public function getLimitPagu($uraian_id, $periode_id)
 	{
 		$this->db->select('total, periode');
@@ -205,13 +262,11 @@ class ModelSpj extends CI_Model
 	// set table
 	protected $table = 'spj AS s';
 	//set column field database for datatable orderable
-	protected $column_order = array(null);
-	//set column field database for datatable searchable 
-	protected $column_search = array('kegiatan.koderek');
+	protected $column_order = array(null, 'uraian.kode', null, 's.fid_periode', null, 's.entri_at');
 	// default order 
-	protected $order = array('s.entri_at' => 'asc');
+	protected $order = array('s.created_at');
 	// default select 
-	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan');
+	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian');
 
 	private function _datatables()
 	{
@@ -222,30 +277,40 @@ class ModelSpj extends CI_Model
 		$this->db->join('ref_programs AS program', 's.fid_program=program.id');
 		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
 		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
+		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
+		$this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
 		if ($this->session->userdata('role') === 'ADMIN'):
 			$this->db->where_in('is_status', ['VERIFIKASI_ADMIN', 'APPROVE', 'TMS', 'BTL']);
 		else:
 			$this->db->where_in('is_status', ['VERIFIKASI']);
 		endif;
-		$i = 0;
 
-		foreach ($this->column_search as $item) // loop column 
-		{
-			if (@$_POST['search']['value']) // if datatable send POST for search
-			{
+		// Pencarian global
+		if (!empty($_POST['search']['value'])) {
+			$search = strtolower($_POST['search']['value']);
+			$this->db->group_start()
+				->like('LOWER(uraian.kode)', $search)
+				->or_like('LOWER(uraian.nama)', $search)
+				->or_like('LOWER(part.nama)', $search)
+				->group_end();
+		}
 
-				if ($i === 0) // first loop
-				{
-					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-					$this->db->like($item, $_POST['search']['value']);
-				} else {
-					$this->db->or_like($item, $_POST['search']['value']);
+		// Pencarian per kolom
+		foreach ($_POST['columns'] as $index => $col) {
+			if (!empty($col['search']['value'])) {
+				$search_term = strtolower($col['search']['value']);
+				switch ($index) {
+					case 1:
+						$this->db->like('LOWER(uraian.kode)', $search_term);
+						break;
+					case 2:
+						$this->db->like('LOWER(uraian.nama)', $search_term);
+						break;
+					case 4:
+						$this->db->like('LOWER(part.nama)', $search_term);
+						break;
 				}
-
-				if (count($this->column_search) - 1 == $i) //last loop
-					$this->db->group_end(); //close bracket
 			}
-			$i++;
 		}
 
 		if (isset($_POST['order'])) // here order processing
@@ -275,7 +340,7 @@ class ModelSpj extends CI_Model
 
 	public function make_count_all()
 	{
-		$this->db->from($this->table);
+		$this->_datatables();
 		return $this->db->count_all_results();
 	}
 	// -------------------------------- end-datatable --------------------------//
@@ -283,41 +348,53 @@ class ModelSpj extends CI_Model
 	// ----------------- datatable-verifikasi-selesai --------------------------//
 
 	//set column field database for datatable orderable
-	protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwayat.fid_periode', 'spj_riwayat.jumlah', 'spj_riwayat.entri_at');
-	//set column field database for datatable searchable 
-	protected $column_search_verifikasi_selesai = array('spj_riwayat.nama_uraian', 'spj_riwayat.nama_sub_kegiatan', 'spj_riwayat.nama_kegiatan', 'spj_riwayat.kode_uraian', 'spj_riwayat.kode_kegiatan', 'spj_riwayat.kode_sub_kegiatan');
+	protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwayat.nomor_pembukuan', 'spj_riwayat.kode_uraian', 'spj_riwayat.nama_uraian', 'spj_riwayat.nama_bidang', 'spj_riwayat.fid_periode', 'spj_riwayat.entri_at', 'spj_riwayat.approve_at', 'spj_riwayat.is_status', 'spj_riwayat.jumlah');
+
 	// default order 
-	protected $order_verifikasi_selesai = array('spj_riwayat.entri_at' => 'desc');
+	protected $order_verifikasi_selesai = array('spj_riwayat.approve_at' => 'desc');
 
 	private function _datatables_verifikasi_selesai()
 	{
 
-		$this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id');
+		$this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id,spj_payment.status');
 		$this->db->from('spj_riwayat');
 		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
+		$this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token', 'left');
+		$this->db->where('spj_riwayat.tahun', $this->session->userdata('tahun_anggaran'));
 		if ($this->session->userdata('role') === 'USER') {
 			$this->db->where('entri_by_part', $this->session->userdata('part'));
 		}
 
-		$i = 0;
+		// Pencarian global
+		if (!empty($_POST['search']['value'])) {
+			$search = strtolower($_POST['search']['value']);
+			$this->db->group_start()
+				->like('LOWER(spj_riwayat.nomor_pembukuan)', $search)
+				->or_like('LOWER(spj_riwayat.kode_uraian)', $search)
+				->or_like('LOWER(spj_riwayat.nama_uraian)', $search)
+				->or_like('LOWER(spj_riwayat.nama_part)', $search)
+				->group_end();
+		}
 
-		foreach ($this->column_search_verifikasi_selesai as $item) // loop column 
-		{
-			if (@$_POST['search']['value']) // if datatable send POST for search
-			{
-
-				if ($i === 0) // first loop
-				{
-					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-					$this->db->like($item, $_POST['search']['value']);
-				} else {
-					$this->db->or_like($item, $_POST['search']['value']);
+		// Pencarian per kolom
+		foreach ($_POST['columns'] as $index => $col) {
+			if (!empty($col['search']['value'])) {
+				$search_term = strtolower($col['search']['value']);
+				switch ($index) {
+					case 1:
+						$this->db->like('LOWER(spj_riwayat.nomor_pembukuan)', $search_term);
+						break;
+					case 2:
+						$this->db->like('LOWER(spj_riwayat.kode_uraian)', $search_term);
+						break;
+					case 3:
+						$this->db->like('LOWER(spj_riwayat.nama_uraian)', $search_term);
+						break;
+					case 4: // kolom status
+						$this->db->where('LOWER(spj_riwayat.nama_part)', $search_term);
+						break;
 				}
-
-				if (count($this->column_search_verifikasi_selesai) - 1 == $i) //last loop
-					$this->db->group_end(); //close bracket
 			}
-			$i++;
 		}
 
 		if (isset($_POST['order'])) // here order processing

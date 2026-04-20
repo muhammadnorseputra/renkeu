@@ -15,7 +15,7 @@ $(function () {
 	getInbox().then((data) => {
 		if (data.code === 404) {
 			$("#inbox").html(
-				`<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> <div class="clearfix"></div><br> "${data.msg}" Silahkan klik tombol buat usul spj</div>
+				`<div class="text-center my-5"><i class="fa fa-folder-open mb-4" style="font-size: 64px"></i> <br> <div class="clearfix"></div><br> "${data.msg}" Silahkan klik tombol buat usul spj</div>
 				<div class="row d-flex justify-content-center">
 					${data.result}
 				</div>`
@@ -28,7 +28,7 @@ $(function () {
 		var spjList = new List("spjList", option);
 	});
 
-	$(document).on("click", "#myTab a[href='#inbox']", function (e) {
+	$(document).on("click", "#myTab a[href='#inbox']", async function (e) {
 		let _ = $(this),
 			href = _.attr("href");
 		// console.log(_.attr('href'))
@@ -36,7 +36,7 @@ $(function () {
 		url.searchParams.set("tab", href);
 		history.pushState({}, "", url);
 		NProgress.start();
-		getInbox().then((data) => {
+		await getInbox().then((data) => {
 			if (data.code === 404) {
 				$("#inbox").html(
 					`<div class="text-center my-5">
@@ -57,24 +57,34 @@ $(function () {
 		});
 	});
 
-    $(document).on("click", "#myTab a[href='#verifikasi']", function (e) {
+    $(document).on("click", "#myTab a[href='#verifikasi']", async function (e) {
 		let _ = $(this),
 			href = _.attr("href");
 		// console.log(_.attr('href'))
 		const url = new URL(window.location.href);
 		url.searchParams.set("tab", href);
 		history.pushState({}, "", url);
-		tableVerifikasiSpj.ajax.reload();
+		await tableVerifikasiSpj.ajax.reload();
 	});
 
-	$(document).on("click", "#myTab a[href='#selesai']", function (e) {
+	$(document).on("click", "#myTab a[href='#selesai']", async function (e) {
 		let _ = $(this),
 			href = _.attr("href");
 		// console.log(_.attr('href'))
 		const url = new URL(window.location.href);
 		url.searchParams.set("tab", href);
 		history.pushState({}, "", url);
-		tableVerifikasiSpjSelesai.ajax.reload();
+		await tableVerifikasiSpjSelesai.ajax.reload();
+	});
+
+	$(document).on("click", "#myTab a[href='#payment']", async function (e) {
+		let _ = $(this),
+			href = _.attr("href");
+		// console.log(_.attr('href'))
+		const url = new URL(window.location.href);
+		url.searchParams.set("tab", href);
+		history.pushState({}, "", url);
+		await tabelPayment.ajax.reload();
 	});
 
 	var option = {
@@ -89,11 +99,52 @@ $(function () {
 	};
 });
 
-function HapusUsulan(url) {
-	if(confirm('Apakah anda yakin akan menghapus usulan tersebut ?')) {
-		$.post(url, {}, function(res) {
-			res === 200 ? window.location.reload() : alert('Hapus GAGAL');
-		}, 'json');
+async function LogHistoris(token) {
+	// tampilkan loading di modal-body
+	$("#modalLogHistoris .modal-body").html(
+		"<div class='text-center p-3'>Loading...</div>"
+	);
+	// buka modal lebih awal agar user lihat proses loading
+	$("#modalLogHistoris").modal("show");
+
+	try {
+		const req = await fetch(`${_uri}/app/spj/log_historis/${token}`);
+		const res = await req.json();
+
+		// ganti loading dengan data hasil request
+		$("#modalLogHistoris .modal-body").html(res.result);
+	} catch (error) {
+		// tampilkan pesan error jika gagal
+		$("#modalLogHistoris .modal-body").html(
+			`<div class='text-danger p-3'>Terjadi kesalahan saat memuat data. (${error.message})</div>`
+		);
+	}
+}
+
+async function HapusUsulan(url) {
+	if (confirm("Apakah anda yakin akan menghapus usulan tersebut ?")) {
+		try {
+			const req = await fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+				body: "", // sama seperti $.post(url, {}) → kirim body kosong
+			});
+
+			const res = await req.json();
+
+			if (res !== 200)
+			{
+				alert(res.msg || "Hapus GAGAL");
+				return false;
+			}
+
+			window.location.reload();
+			
+		} catch (err) {
+			alert("Terjadi kesalahan: " + err.message);
+		}
 		return false;
 	}
 }

@@ -27,6 +27,7 @@ class Account extends CI_Controller
         if (!privilages('priv_default')) :
             return show_404();
         endif;
+        $this->load->helper('telegram');
     }
 
     public function index()
@@ -56,6 +57,7 @@ class Account extends CI_Controller
         $nama = $this->input->post('nama');
         $nip = $this->input->post('nip');
         $nohp = $this->input->post('nohp');
+        $telegram_id = $this->input->post('telegram_id');
         $whr = ['id' => decrypt_url($user_id)];
         $path = './template/assets/picture_akun';
         if (!empty($_FILES["file"]["name"])) {
@@ -74,28 +76,49 @@ class Account extends CI_Controller
                 $data = array('upload_data' => $this->upload->data());
                 $image = $data['upload_data']['file_name'];
 
-                $userdata = ['nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'pic' => $image];
+                $userdata = ['is_valid' => "1",'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'telegram_id' => $telegram_id, 'pic' => $image];
 
                 $result = $this->users->update($userdata, $whr);
+                // Send Telegram Notification
+                $send = $this->sendMessageUpdateProfile($telegram_id, $userdata);
 
-                if ($result) {
+                if ($result && $send) {
                     $msg = ['valid' => true, 'pesan' => 'Profile berhasil di perbaharui, silahkan relog untuk melihat perubahan.', 'redirectTo' => urlencode(base_url("app/account"))];
                 } else {
                     $msg = ['valid' => false, 'pesan' => 'Update profil gagal', 'redirectTo' => false];
                 }
             }
-        } elseif (($nama == $profile->nama) && ($nip == $profile->nip) && ($nohp == $profile->nohp) && (empty($_FILES["file"]["name"]))) {
+        } elseif (($nama == $profile->nama) && ($nip == $profile->nip) && ($nohp == $profile->nohp) && ($telegram_id == $profile->telegram_id) && (empty($_FILES["file"]["name"]))) {
             $msg = ['valid' => false, 'pesan' => 'Tidak ada perubahan', 'redirectTo' => false];
         } else {
-            $userdata = ['nama' => $nama, 'nip' => $nip, 'nohp' => $nohp,];
+            $userdata = ['is_valid' => "1", 'nama' => $nama, 'nip' => $nip, 'nohp' => $nohp, 'telegram_id' => $telegram_id];
             $result = $this->users->update($userdata, $whr);
-            if ($result) {
+            // Send Telegram Notification
+            $send = $this->sendMessageUpdateProfile($telegram_id, $userdata);
+            if ($result && $send) {
                 $msg = ['valid' => true, 'pesan' => 'Profile berhasil di perbaharui, silahkan relog untuk melihat perubahan.', 'redirectTo' => urlencode(base_url("app/account"))];
             } else {
                 $msg = ['valid' => false, 'pesan' => 'Update profil gagal', 'redirectTo' => false];
             }
         }
         echo json_encode($msg);
+    }
+
+    private function sendMessageUpdateProfile($chat_id, $data)
+    {
+        $text = '
+        <b>Akun Anda baru saja diperbarui pada ' . longdate_indo(Date('Y-m-d')) . ' ' . substr(DateTimeInput(), 10, 9) . '</b>
+<b>DETAIL PERUBAHAN:</b>
+-----------------------------------
+<b>Nama:</b> ' . $data['nama'] . '
+<b>NIP / NIK:</b> ' . $data['nip'] . '
+<b>No. HP:</b> ' . $data['nohp'] . '
+<b>ID Telegram:</b> ' . $data['telegram_id'] . '
+-----------------------------------
+<i>Jika Anda tidak melakukan perubahan ini, segera hubungi admin.</i>
+        ';
+        $send = TeleSendMessage($chat_id, $text);
+        return $send;
     }
 
     public function update_profile_pwd()
@@ -122,7 +145,7 @@ class Account extends CI_Controller
                 if ($this->form_validation->run() == false) {
                     $msg = ['valid' => false, 'pesan' => validation_errors()];
                 } else {
-                    $data = ['password' => $pwd_new_post];
+                    $data = ['is_valid' => "1", 'password' => $pwd_new_post];
                     $whr = ['id' => $profile->id];
                     $db = $this->users->update_pwd('t_users', $data, $whr);
                     if ($db) {

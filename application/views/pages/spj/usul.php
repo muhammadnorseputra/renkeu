@@ -230,7 +230,10 @@
 
                 <div class="form-group">
                     <label class="col-form-label label-align" for="link">Link Berkas <span class="text-danger">*</span></label>
-                    <textarea name="link" id="link" cols="30" rows="3" class="form-control" required="required" <?= $disabled_status ?>><?= @$detail->berkas_link ?></textarea>
+                    <textarea name="link" id="link" cols="30" rows="3" class="form-control" required="required"
+                        data-parsley-pattern="^(https?:\/\/).+"
+                        data-parsley-pattern-message="Link harus diawali http:// atau https://"
+                        <?= $disabled_status ?>><?= @$detail->berkas_link ?></textarea>
                 </div>
                 <button type="button" class="btn btn-primary rounded-0" onclick="window.location.replace('<?= base_url('app/spj/buatusul?step=0&status=entri&token=' . @$detail->token) ?>')"><i class="fa fa-arrow-left mr-2"></i> Sebelumnya </button>
                 <?php if ((@$detail->is_status === 'ENTRI') || (empty(@$detail->token))) : ?>

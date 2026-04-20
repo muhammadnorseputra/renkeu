@@ -56,6 +56,35 @@ if (! function_exists('bulan')) {
     }
 }
 
+if (!function_exists('periodeToBulan')) {
+    /**
+     * Mengubah array kode bulan (atau string dipisah koma) menjadi nama bulan Indonesia
+     *
+     * @param array|string|null $periode
+     * @return string
+     */
+    function periodeToBulan($periode): string
+    {
+        if (empty($periode)) return '';
+
+        // Jika string seperti "01, 02" ubah jadi array
+        if (is_string($periode)) {
+            $periode = array_map('trim', explode(',', $periode));
+        }
+
+        $bulan = bulanIndo();
+        $namaBulan = [];
+
+        foreach ($periode as $p) {
+            if (isset($bulan[$p])) {
+                $namaBulan[] = $bulan[$p];
+            }
+        }
+
+        return implode(', ', $namaBulan);
+    }
+}
+
 //Format Shortdate
 if (! function_exists('shortdate_indo')) {
     function shortdate_indo($tgl)
@@ -280,12 +309,12 @@ if (!function_exists('bulan_range')) {
 
         // Bersihkan dan pastikan angka valid
         $angka = array_map('intval', $angka);
-        $angka = array_filter($angka, function($val) use ($bulan) {
+        $angka = array_filter($angka, function ($val) use ($bulan) {
             return isset($bulan[$val]);
         });
 
         // Ambil nama bulan
-        $nama_bulan = array_map(function($val) use ($bulan) {
+        $nama_bulan = array_map(function ($val) use ($bulan) {
             return $bulan[$val];
         }, $angka);
 

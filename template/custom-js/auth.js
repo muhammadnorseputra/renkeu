@@ -39,8 +39,6 @@ $(document).ready(function () {
 					);
 				},
 				success: function(response) {
-					
-
 					if (response.valid == true) {
 						$containerMsg.html(`
 						<div class="alert alert-success" role="alert">

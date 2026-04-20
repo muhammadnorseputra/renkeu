@@ -50,17 +50,20 @@ class Dashboard extends CI_Controller
 		$persentase_capaian = @($ProgramTotalRealisasi / $ProgramTotalPaguAwal) * 100;
 
 		// Chart
-		$db_transaksi = $this->spj->TopTransaksiSPJ();
+		$db_transaksi = $this->spj->TopTransaksiSPJ(5);
 		$spj_ms = [];
 		$spj_tms = [];
-		$spj_btl = [];
+		$spj_baru = [];
+		$spj_cair = [];
 		for ($i = 1; $i <= 12; $i++) {
-			$jumlah = @$this->spj->TransaksiSpjBulanan($i, $this->ta) != null ? @$this->spj->TransaksiSpjBulanan($i, $this->ta) : 0;
-			$jumlah_tms = @$this->spj->TransaksiSpjBulananNonMs($i, 'TMS', $this->ta) != null ? @$this->spj->TransaksiSpjBulananNonMs($i, 'TMS', $this->ta) : 0;
-			$jumlah_btl = @$this->spj->TransaksiSpjBulananNonMs($i, 'BTL', $this->ta) != null ? @$this->spj->TransaksiSpjBulananNonMs($i, 'BTL', $this->ta) : 0;
+			$jumlah = $this->spj->TransaksiSpjBulanan($i, $this->ta) ?? 0;
+			$jumlah_tms = $this->spj->TransaksiSpjBulananNonMs($i, 'TMS', $this->ta) ?? 0;
+			$jumlah_baru = $this->spj->TransaksiSpjBaru($i, $this->ta) ?? 0;
+			$jumlah_cair = $this->spj->TransaksiSpjCair($i, $this->ta) ?? 0;
 			$spj_ms[] = [bulan($i), $jumlah];
 			$spj_tms[] = [bulan($i), $jumlah_tms];
-			$spj_btl[] = [bulan($i), $jumlah_btl];
+			$spj_baru[] = [bulan($i), $jumlah_baru];
+			$spj_cair[] = [bulan($i), $jumlah_cair];
 		}
 		// $db_triwulan = $this->spj->getPeriode();
 		$db_parts = $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN']);
@@ -68,14 +71,16 @@ class Dashboard extends CI_Controller
 		$part_jumlah = [];
 		$spj_count_ms = [];
 		$spj_count_tms = [];
-		$spj_count_btl = [];
+		$spj_count_baru = [];
+		$spj_count_cair = [];
 		foreach ($db_parts->result() as $part) :
 			$label[] = $part->singkatan;
-			$jumlah = @$this->spj->getRealisasiSpjByPart($part->id, $this->ta) != null ? @$this->spj->getRealisasiSpjByPart($part->id, $this->ta) : 0;
+			$jumlah = $this->spj->getRealisasiSpjByPart($part->id, $this->ta) ?? 0;
 			$part_jumlah[] = (int) $jumlah;
-			$spj_count_ms[] = (int) @$this->spj->getJumlahSpjByPart($part->id, 'APPROVE', $this->ta);
-			$spj_count_tms[] = (int) @$this->spj->getJumlahSpjByPart($part->id, 'TMS', $this->ta);
-			$spj_count_btl[] = (int) @$this->spj->getJumlahSpjByPart($part->id, 'BTL', $this->ta);
+			$spj_count_ms[] = (int) $this->spj->getJumlahSpjByPart($part->id, 'APPROVE', $this->ta) ?? 0;
+			$spj_count_tms[] = (int) $this->spj->getJumlahSpjByPart($part->id, 'TMS', $this->ta) ?? 0;
+			$spj_count_baru[] = (int) $this->spj->getJumlahSpjByPartBaru($part->id, $this->ta) ?? 0;
+			$spj_count_cair[] = (int) $this->spj->getJumlahSpjByStatusCair($part->id, 'CAIR', $this->ta) ?? 0;
 		endforeach;
 
 		$limit_anggaran = $this->spj->LimitTransaksiTriwulan($this->ta);
@@ -93,7 +98,8 @@ class Dashboard extends CI_Controller
 				'top_transaksi' => $db_transaksi->result(),
 				'spj_ms' => json_encode($spj_ms),
 				'spj_tms' => json_encode($spj_tms),
-				'spj_btl' => json_encode($spj_btl),
+				'spj_baru' => json_encode($spj_baru),
+				'spj_cair' => json_encode($spj_cair),
 				'triwulan_1' => $this->spj->TransaksiTriwulan(["01", "02", "03"], $this->ta),
 				'triwulan_2' => $this->spj->TransaksiTriwulan(["04", "05", "06"], $this->ta),
 				'triwulan_3' => $this->spj->TransaksiTriwulan(["07", "08", "09"], $this->ta),
@@ -106,7 +112,8 @@ class Dashboard extends CI_Controller
 				'part_jumlah' => json_encode($part_jumlah),
 				'spj_count_ms' => json_encode($spj_count_ms),
 				'spj_count_tms' => json_encode($spj_count_tms),
-				'spj_count_btl' => json_encode($spj_count_btl),
+				'spj_count_baru' => json_encode($spj_count_baru),
+				'spj_count_cair' => json_encode($spj_count_cair),
 			],
 			'autoload_css' => [
 				'template/backend/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css'
@@ -118,6 +125,9 @@ class Dashboard extends CI_Controller
 				'template/backend/vendors/Flot/jquery.flot.resize.js',
 				'template/backend/vendors/Flot/jquery.flot.categories.js',
 				'template/backend/vendors/Flot/jquery.flot.tooltip.js',
+				'template/backend/vendors/Flot/jquery.flot.navigate.js',
+				'template/backend/vendors/Flot/jquery.flot.selection.js',
+				'template/backend/vendors/Flot/jquery.flot.threshold.js',
 				'template/backend/vendors/DateJS/build/date.js',
 				'template/backend/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js',
 				'template/custom-js/dashboard.js'
@@ -150,5 +160,39 @@ class Dashboard extends CI_Controller
 			'is_perubahan' => $is_perbahan
 		]);
 		redirect($this->input->post('redirectTo'));
+	}
+
+	public function cekProfile()
+	{
+		$userId = decrypt_url($this->session->userdata('user_id'));
+		$dbCekProfile = $this->user->profile_user_id($userId);
+
+		$profile = $dbCekProfile->row();
+		if ($dbCekProfile && $profile->nohp === "" || $profile->is_valid === "0") {
+			echo json_encode([
+				'status' => false,
+				'message' => 'Profile tidak lengkap ! (No. HP)',
+				'data' => '<p>Untuk meningkatkan keamanan akun Anda, silakan lengkapi informasi profil Anda dengan data yang valid dan terbaru.</p>
+                <p>Silakan lengkapi dan perbarui informasi profil Anda.</p>
+                <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href=\'' . base_url('/app/account') . '\'">Update Profile Disini.</button>'
+			]);
+			return false;
+		}
+
+		if ($dbCekProfile && $profile->nip === "" || $profile->is_valid === "0") {
+			echo json_encode([
+				'status' => false,
+				'message' => 'Profile tidak lengkap ! (NIP/NIK)',
+				'data' => '<p>Untuk meningkatkan keamanan akun Anda, silakan lengkapi informasi profil Anda dengan data yang valid dan terbaru.</p>
+                <p>Silakan lengkapi dan perbarui informasi profil Anda.</p>
+                <button type="button" class="btn btn-danger rounded-0" onclick="window.location.href=\'' . base_url('/app/account') . '\'">Update Profile Disini.</button>'
+			]);
+			return false;
+		}
+
+		echo json_encode([
+			'status' => true,
+			'message' => 'Profile lengkap !'
+		]);
 	}
 }

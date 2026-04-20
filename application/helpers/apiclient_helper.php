@@ -66,7 +66,8 @@ if (! function_exists('api_curl_get')) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // this should be set to true in production
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // this should be set to
 		// execute!
 		$response = curl_exec($ch);
 
@@ -82,7 +83,7 @@ if (! function_exists('api_curl_get')) {
 }
 
 if (! function_exists('api_qr_code')) {
-	function api_qr_code($url = 'http://localhost:5001/session/start', $params = [])
+	function api_qr_code($url, $params = [])
 	{
 
 		$curl = curl_init();
@@ -102,6 +103,10 @@ if (! function_exists('api_qr_code')) {
 			CURLOPT_HTTPHEADER => array(
 				'Content-Type: application/json'
 			),
+			// >>> Disable SSL verification (INSECURE — for testing only)
+			CURLOPT_SSL_VERIFYPEER => false, // do not verify the peer's certificate
+			CURLOPT_SSL_VERIFYHOST => 0,     // do not check the certificate's name against host
+			// <<< end insecure options
 		));
 
 		$response = curl_exec($curl);
@@ -109,4 +114,52 @@ if (! function_exists('api_qr_code')) {
 		curl_close($curl);
 		return $response;
 	}
+}
+
+function sendWaMessage($url, $session, $to, $text, $is_group = false)
+{
+	$curl = curl_init();
+
+	$payload = json_encode([
+		"session"  => $session,
+		"to"       => $to,
+		"text"     => $text,
+		"is_group" => $is_group
+	]);
+
+	curl_setopt_array($curl, [
+		CURLOPT_URL            => $url,
+		CURLOPT_RETURNTRANSFER => true,
+		CURLOPT_ENCODING       => '',
+		CURLOPT_MAXREDIRS      => 10,
+		CURLOPT_TIMEOUT        => 0,
+		CURLOPT_FOLLOWLOCATION => true,
+		CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+		CURLOPT_CUSTOMREQUEST  => 'POST',
+		CURLOPT_POSTFIELDS     => $payload,
+		CURLOPT_HTTPHEADER     => [
+			'Content-Type: application/json'
+		],
+		// Kalau server SSL bermasalah dan butuh skip check (TESTING only):
+		CURLOPT_SSL_VERIFYPEER => false,
+		CURLOPT_SSL_VERIFYHOST => 0,
+	]);
+
+	$response = curl_exec($curl);
+
+	if ($response === false) {
+		$error = curl_error($curl);
+		curl_close($curl);
+		return [
+			"success" => false,
+			"error"   => $error
+		];
+	}
+
+	curl_close($curl);
+
+	return [
+		"success"  => true,
+		"response" => $response
+	];
 }

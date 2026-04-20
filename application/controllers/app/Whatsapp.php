@@ -6,6 +6,7 @@ use Rakit\Validation\Validator;
 class Whatsapp extends CI_Controller {
 
     protected $validator;
+    protected $base_url_api;
 	public function __construct()
     {
         parent::__construct();
@@ -17,6 +18,7 @@ class Whatsapp extends CI_Controller {
         $this->load->model('ModelWhatsapp', 'wa');
         $this->load->helper('qrcode');
         $this->validator = new Validator();
+        $this->base_url_api = 'https://whatsapp.bkpsdm-info.com'; // ganti dengan base url aplikasi Anda
     }
 
     public function index()
@@ -50,7 +52,7 @@ class Whatsapp extends CI_Controller {
         }
 
         try {
-            $response = api_qr_code('http://localhost:5001/session/start', ['session' => $session_name]);
+            $response = api_qr_code($this->base_url_api.'/session/start', ['session' => $session_name]);
             $res = json_decode($response);
 
             if(!$res || $res->qr == '') {
@@ -90,7 +92,7 @@ class Whatsapp extends CI_Controller {
         }
         try {
             $session = decrypt_url($session);
-            $response = api_curl_get('http://localhost:5001/session/logout?session='.$session);
+            $response = api_curl_get($this->base_url_api.'/session/logout?session='.$session);
             $res = json_decode($response);
             if ($res && $res->data == 'success') {
                 $this->session->set_flashdata('success', 'Session '.$session.' stopped successfully');

@@ -26,11 +26,12 @@ class Target extends CI_Controller
 		parent::__construct();
 		cek_session();
 		//  CEK USER PRIVILAGES 
-		if (!privilages('priv_default') && !privilages('priv_anggarankinerja') || !privilages('priv_target_kinerja')):
+		if (!privilages('priv_default') && !privilages('priv_anggarankinerja') || !privilages('priv_target_kinerja') || $this->session->userdata('is_valid_profile') === "0"):
 			return show_404();
 		endif;
 
 		$this->load->model('ModelTarget', 'target');
+		$this->load->model('ModelSpj', 'spj');
 		$this->load->model('ModelCrud', 'crud');
 	}
 
@@ -51,6 +52,78 @@ class Target extends CI_Controller
 			]
 		];
 		$this->load->view('layout/app', $data);
+	}
+
+	public function perjanjian_kerja()
+	{
+		$bidang = $this->target->getBidang();
+		$data = [
+			'title' => 'Dokumen Perjanjian Kinerja',
+			'content' => 'pages/anggaran_kinerja/upload_pk',
+			'bidang' => $bidang,
+			'autoload_js' => [
+				'template/backend/vendors/select2/dist/js/select2.full.min.js',
+				'template/backend/vendors/parsleyjs/dist/parsley.min.js',
+			]
+		];
+		$this->load->view('layout/app', $data);
+	}
+
+	public function upload_pk()
+	{
+		$part_id = $this->input->post('part_id');
+		$namafiles = $_FILES['dokumen_pk']['name'];
+		$tahun = $this->session->userdata('tahun_anggaran');
+		$file_name = 'PK_' . $part_id . '_' . $tahun;
+
+		// Cek apakah sudah ada file untuk part dan tahun yg sama
+		$existing = $this->crud->getWhere('t_dokumen_pk', ['fid_part' => $part_id, 'tahun' => $tahun]);
+
+		// validasi form dan upload file ke folder /template/upload/dokumen_pk/
+		$config = [
+			'upload_path'   => './template/upload/dokumen_pk/',
+			'allowed_types' => 'pdf',
+			'max_size'      => 2120, // 2MB
+			'file_name'     => $file_name,
+			'overwrite'     => true
+		];
+
+		$this->load->library('upload', $config);
+
+		if (!$this->upload->do_upload('dokumen_pk')) {
+			$this->session->set_flashdata('alert_type', 'error');
+			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
+			return redirect(base_url('app/target/perjanjian_kerja'));
+		}
+
+		$upload_data = $this->upload->data();
+
+		$data = [
+			'fid_part' => $part_id,
+			'nama_dokumen' => $namafiles,
+			'file_path' => $upload_data['file_name'],
+			'ukuran_file' => $upload_data['file_size'],
+			'tipe_file' => $upload_data['file_type'],
+			'tahun' => $tahun,
+			'created_by' => $this->session->userdata('user_name'),
+			'created_at' => DateTimeInput()
+		];
+
+		// jika sudah ada record, lakukan update; jika belum, insert baru
+		if ($existing->num_rows() > 0) {
+			$db = $this->crud->update('t_dokumen_pk', $data, ['fid_part' => $part_id, 'tahun' => $tahun]);
+		} else {
+			$db = $this->crud->insert('t_dokumen_pk', $data);
+		}
+
+		if ($db) {
+			$this->session->set_flashdata('alert_type', 'success');
+			$this->session->set_flashdata('alert_msg', 'File berhasil diupload');
+		} else {
+			$this->session->set_flashdata('alert_type', 'error');
+			$this->session->set_flashdata('alert_msg', 'Gagal menyimpan data ke database');
+		}
+		return redirect(base_url('app/target/perjanjian_kerja'));
 	}
 
 	public function tambah_indikator()
@@ -119,14 +192,16 @@ class Target extends CI_Controller
 
 	public function ubah($id, $table, $periode_id)
 	{
-		$periode = $this->crud->getWhere('t_periode', ['is_open' => 'Y']);
-		$row = $this->target->getIndikator(['i.id' => $id]);
+		$row = $this->target->getIndikator(['i.id' => $id, 'i.fid_periode' => $periode_id]);
+		$periode = $this->crud->get('t_periode');
 		$jenis_indikator = $this->crud->get('ref_jenis_indikators');
 		$data = [
 			'title' => 'Ubah Indikator',
-			'content' => 'pages/anggaran_kinerja/indikator_ubah',
+			'content' => 'pages/anggaran_kinerja/target_ubah',
 			'id_indikator' => $id,
 			'table' => $table,
+			'periode' => $periode,
+			'periode_id' => $periode_id,
 			'jenis_indikator' => $jenis_indikator,
 			'periode' => $periode,
 			'periode_id' => $periode_id,
@@ -152,8 +227,10 @@ class Target extends CI_Controller
     $dataInsert = [];
     $dataUpdate = [];
 
-    foreach ($post['is_jenis'] as $periode_id => $is_jenis) {
-        $id_target = $post['id_target'][$periode_id] ?? null;
+		$whr = [
+			'id' => $post['id'],
+			'fid_periode' => $post['periode_id']
+		];
 
         $row = [
             'id_indikator'    => $id_indikator,
@@ -165,16 +242,52 @@ class Target extends CI_Controller
             'updated_at'      => date('Y-m-d H:i:s')
         ];
 
-        if ($id_target) {
-            // Data sudah ada → update
-            $row['id'] = $id_target;
-            $dataUpdate[] = $row;
-        } else {
-            // Data baru → insert
-            $row['created_at'] = date('Y-m-d H:i:s');
-            $dataInsert[] = $row;
-        }
-    }
+			// Insert
+			$insert = [
+				'is_jenis' => (int) $post['is_jenis'],
+				'fid_indikator' => $post['id'],
+				'tahun' => $post['tahun'],
+				'created_by' => $this->session->userdata('user_name')
+			];
+
+			// Update 
+			$update = [
+				'is_jenis' => (int) $post['is_jenis'],
+				'tahun' => $post['tahun'],
+				'update_at' => DateTimeInput(),
+				'update_by' => $this->session->userdata('user_name')
+			];
+
+			// jika jenis = persentase
+			if ((int) $post['is_jenis'] === 1) {
+				$insert = array_merge($insert, [
+					'persentase' => $post['persentase']
+				]);
+				$update = array_merge($update, [
+					'persentase' => $post['persentase']
+				]);
+			}
+			// jika jenis = jumlah
+			if ((int) $post['is_jenis'] === 2) {
+				$insert = array_merge($insert, [
+					'eviden_jumlah' => $post['jumlah_eviden'],
+					'eviden_jenis'  => $post['keterangan_eviden']
+				]);
+				$update = array_merge($update, [
+					'eviden_jumlah' => $post['jumlah_eviden'],
+					'eviden_jenis'  => $post['keterangan_eviden']
+				]);
+			}
+
+			$dbcek = $this->crud->getWhere('t_target', ['fid_indikator' => $post['id']]);
+			if ($dbcek->num_rows() > 0) {
+				$this->crud->update('t_target', $update, ['fid_indikator' => $post['id'], 'fid_periode' => $post['periode_id']]);
+			} else {
+				$this->crud->insert('t_target', $insert);
+			}
+		} else {
+			$msg = 400;
+		}
 
     // Eksekusi batch
     if (!empty($dataUpdate)) {
@@ -207,10 +320,9 @@ class Target extends CI_Controller
 	public function hapus()
 	{
 		$id = $this->input->post('id');
-		$db = $this->crud->deleteWhere('ref_indikators', ['id' => $id]);
+		$db = $this->crud->deleteWhere('t_target', ['fid_indikator' => $id]);
 		if ($db) {
 			$this->crud->deleteWhere('t_realisasi', ['fid_indikator' => $id]);
-			$this->crud->deleteWhere('t_target', ['fid_indikator' => $id]);
 			$msg = 200;
 		} else {
 			$msg = 400;

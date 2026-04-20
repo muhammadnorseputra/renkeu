@@ -38,7 +38,8 @@
         $priv_anggarankinerja = !empty($cek_priv->priv_anggarankinerja) && $cek_priv->priv_anggarankinerja  == 'Y' ? 'checked' : '';
         $priv_target_kinerja = !empty($cek_priv->priv_target_kinerja) && $cek_priv->priv_target_kinerja  == 'Y' ? 'checked' : '';
         $priv_verify_kinerja = !empty($cek_priv->priv_verify_kinerja) && $cek_priv->priv_verify_kinerja  == 'Y' ? 'checked' : '';
-        ?>
+        $priv_payment = !empty($cek_priv->priv_payment) && $cek_priv->priv_payment  == 'Y' ? 'checked' : '';
+      ?>
         <?= form_open(base_url('app/users/privilages_update'), ['id' => 'f_privilage'], ['f_type' => 'privilage', 'uid' => encrypt_url($uid)]); ?>
         <table class="table table-bordered table-condensed">
           <thead class="text-center">
@@ -75,8 +76,8 @@
             <tr>
               <th>#</th>
               <th>Priv Programs</th>
-              <th>Priv Approve</th>
-              <th>Priv Verifikasi</th>
+              <th>Priv Approve SPJ</th>
+              <th>Priv Verifikasi SPJ</th>
               <th>Priv Riwayat SPJ</th>
             </tr>
           </thead>
@@ -104,7 +105,7 @@
           <thead class="text-center">
             <tr>
               <th>#</th>
-              <th>Priv SPJ</th>
+              <th>Priv Usul SPJ</th>
               <th>Priv Buku Jaga</th>
               <th>Priv Anggaran & Kinerja</th>
               <th>Priv Target Kinerja</th>
@@ -133,7 +134,8 @@
           <thead class="text-center">
             <tr>
               <th>#</th>
-              <th>Priv Verify Kinerja</th>
+              <th>Priv Verifikasi Kinerja</th>
+              <th>Priv Payments</th>
             </tr>
           </thead>
           <tbody class="text-center">
@@ -142,6 +144,10 @@
               <td>
                 <input type="checkbox" name="priv_verify_kinerja" value="Y" class="js-switch"
                   <?= $priv_verify_kinerja ?> />
+              </td>
+              <td>
+                <input type="checkbox" name="priv_payment" value="Y" class="js-switch"
+                  <?= $priv_payment ?> />
               </td>
             </tr>
           </tbody>

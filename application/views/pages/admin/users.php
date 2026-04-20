@@ -77,7 +77,7 @@
 					"className": "text-center"
 				}
 			],
-			"dom": 'Bfrtlip',
+			"dom": 'Bfrtpli',
 			"buttons": [{
 					text: '<i class="fa fa-plus mr-2"></i>Tambah',
 					className: 'btn btn-success rounded-0 pull-left',

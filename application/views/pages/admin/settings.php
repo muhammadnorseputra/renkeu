@@ -47,12 +47,9 @@ if (urldecode($tab) === '#periode') {
                                             <td class="text-wrap">
                                                 <?= $r->val ?>
                                                 <!-- Button Edit -->
-                                                <?php if (
-                                                    $r->key === 'APPName' || $r->key === 'APPDescription' ||
-                                                    $r->key === 'APPLogo' || $r->key === 'copyright' || $r->key === 'version_app'
-                                                    && $this->session->userdata('role') === 'SUPER_ADMIN'
-                                                ) : ?>
-                                                    <a href="<?= base_url('/app/settings/ubah/' . encrypt_url($r->key)) ?>" class="btn btn-sm btn-info rounded-pill pull-right"><i class="fa fa-edit"></i></a>
+                                                <?php
+                                                if (in_array($r->key, ['APPName', 'APPDescription', 'copyright', 'version_app', 'StatusAnggaran'])): ?>
+                                                    <a href="<?= base_url('/app/settings/ubah/' . encrypt_url(strtolower($r->key))) ?>" class="btn btn-sm btn-info rounded-pill pull-right"><i class="fa fa-edit"></i></a>
                                                 <?php endif; ?>
                                                 <!-- Logo -->
                                                 <?php if ($r->key === 'APPLogo' && $this->session->userdata('role') === 'SUPER_ADMIN') : ?>

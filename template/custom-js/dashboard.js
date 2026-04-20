@@ -1,4 +1,31 @@
 var intro = introJs();
+var modalInfoProfile = $("#modalInfoProfile");
+
+async function cekProfile() {
+	const response = await fetch(`${_uri}/app/dashboard/cekProfile`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	const data = await response.json(); // Asumsi respons JSON
+	return data;
+}
+
+// Jalankan setelah halaman selesai diload
+document.addEventListener("DOMContentLoaded", async () => {
+	try {
+		const data = await cekProfile();
+		if (!data.status) {
+			modalInfoProfile.find(".modal-body").html(data.data);
+			modalInfoProfile.modal("show"); // pakai jQuery bootstrap modal
+		}
+		console.log(data);
+	} catch (error) {
+		console.error("Gagal cek profile:", error);
+	}
+});
+
 
 var options = {
 	nextLabel: "Selanjutnya",
@@ -40,28 +67,30 @@ intro.setOptions({
 		{
 			title: "Charts",
 			element: document.querySelector("#tour_chart_transaksi"),
-            intro: "Grafik trend realisasi anggaran.",
-            position: "bottom",
-        },
-        {
-            title: "Charts Part",
-            element: document.querySelector("#tour_chart_part"),
-            intro: "Realisasi Terbaru Berdasarkan Bidang / Bagian",
-            position: "bottom",
-            scrollTo: "tooltip"
-        },
-        {
-            title: "Navigasi Aplikasi",
-            element: document.querySelector("#tour_navbar"),
-            intro: "Navigasi aplikasi untuk mengakses fitur-fitur utama.",
-            position: "right",
-            scrollTo: "tooltip"
-        }
+			intro: "Grafik trend realisasi anggaran.",
+			position: "bottom",
+		},
+		{
+			title: "Charts Part",
+			element: document.querySelector("#tour_chart_part"),
+			intro: "Realisasi Terbaru Berdasarkan Bidang / Bagian",
+			position: "bottom",
+			scrollTo: "tooltip",
+		},
+		{
+			title: "Navigasi Aplikasi",
+			element: document.querySelector("#tour_navbar"),
+			intro: "Navigasi aplikasi untuk mengakses fitur-fitur utama.",
+			position: "right",
+			scrollTo: "tooltip",
+		},
 	],
 });
-intro.onbeforechange(async () => {
-  return new Promise((resolve) => {
-    console.log('Performing I/O...');
-    setInterval(resolve, 500);
-  });
-}).start();
+intro
+	.onbeforechange(async () => {
+		return new Promise((resolve) => {
+			console.log("Performing I/O...");
+			setInterval(resolve, 500);
+		});
+	})
+	.start();

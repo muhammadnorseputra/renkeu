@@ -1,4 +1,10 @@
+function PilihPeriode(id) {
+	window.location.replace(`${_uri}/app/target?periode=${id}`);
+}
+
 $(function () {
+	
+
 	let $modal = $(".modal-indikator"),
 		$form = $("form#formIndikator");
 
@@ -53,7 +59,7 @@ $(function () {
 		let $data = {
 			id: id,
 		};
-		let msg = `Apakah anda yakin akan menghapus indikator ${label}`;
+		let msg = `Apakah anda yakin akan menghapus target ${label}`;
 
 		if (confirm(msg)) {
 			$.post(

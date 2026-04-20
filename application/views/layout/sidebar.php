@@ -33,31 +33,35 @@
 
             <h3>NAVIGASI</h3>
             <ul class="nav side-menu">
-                <li><a href="<?= base_url('app/dashboard') ?>" class="loadContent" title="Dashboard"><i class="fa fa-home"></i> Beranda</a></li>
+                <li><a href="<?= base_url('app/dashboard') ?>" class="loadContent" title="Dashboard"><i class="fa fa-home"></i> Dashboard</a></li>
                 <?php if (privilages('priv_programs')): ?>
-                    <li><a href="<?= base_url('app/programs') ?>" class="loadContent" title="Program & Kegiatan"><i class="fa fa-database"></i>Rincian Anggaran </a></li>
+                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/programs') : '#' ?>" class="loadContent" title="Program & Kegiatan" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-database"></i>Rincian Anggaran </a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_spj')): ?>
-                    <li><a href="<?= base_url('app/spj') ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)"><i class="fa fa-dollar"></i> SPJ</a></li>
+                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/spj') : '#' ?>" class="loadContent" title="SPJ (Surat Pertanggung Jawaban)" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-dollar"></i> SPJ</a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_bukujaga')): ?>
-                    <li><a href="<?= base_url('app/bukujaga') ?>" class="loadContent" title="Buku Jaga Kegiatan"><i class="fa fa-book"></i> Buku Jaga</a></li>
+                    <li><a href="<?= $this->session->userdata('is_valid_profile') ? base_url('app/bukujaga') : '#' ?>" class="loadContent" title="Buku Jaga Kegiatan" style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>"><i class="fa fa-book"></i> Buku Jaga</a></li>
                 <?php endif; ?>
                 <?php if (privilages('priv_anggarankinerja')): ?>
-                    <li>
+                    <li style="cursor: <?= $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">
                         <a>
-                            <i class="fa fa-money"></i> Anggaran & Kinerja <span class="fa fa-chevron-down"></span>
+                            <i class="fa fa-dashboard"></i> Kinerja <span class="fa fa-chevron-down"></span>
                         </a>
-                        <ul class="nav child_menu">
-                            <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN', 'USER'])): ?>
-                                <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target Indikator">Target</a></li>
-                            <?php endif; ?>
-                            <li><a href="<?= base_url('app/realisasi') ?>" class="loadContent" title="Realisasi Indikator">Realisasi</a></li>
-                            <li><a href="<?= base_url('app/capaian') ?>" class="loadContent" title="Capaian Indikator">Capaian</a></li>
-                            <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN'])): ?>
-                                <li><a href="<?= base_url('app/capaian/laporan') ?>" class="loadContent" title="Target Laporan">Laporan Tahunan</a></li>
-                            <?php endif ?>
-                        </ul>
+                        <?php if ($this->session->userdata('is_valid_profile') === "1"): ?>
+                            <ul class="nav child_menu">
+                                <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN', 'USER'])): ?>
+                                <li><a href="<?= base_url('app/target/perjanjian_kerja') ?>" class="loadContent" title="Target">Dokumen PK</a></li>
+                                    <li><a href="<?= base_url('app/indikator') ?>" class="loadContent" title="Indikator">Indikator</a></li>
+                                    <li><a href="<?= base_url('app/target') ?>" class="loadContent" title="Target">Target</a></li>
+                                <?php endif; ?>
+                                <li><a href="<?= base_url('app/realisasi') ?>" class="loadContent" title="Realisasi Indikator">Realisasi</a></li>
+                                <?php if (isAuthorizedRole(['ADMIN', 'SUPER_ADMIN'])): ?>
+                                    <li><a href="<?= base_url('app/capaian') ?>" class="loadContent" title="Capaian Indikator">Capaian</a></li>
+                                    <li><a href="<?= base_url('app/capaian/laporan') ?>" class="loadContent" title="Target Laporan">Laporan Tahunan</a></li>
+                                <?php endif ?>
+                            </ul>
+                        <?php endif; ?>
                     </li>
                 <?php endif; ?>
             </ul>
@@ -88,7 +92,7 @@
                         <li><a href="<?= base_url('app/users') ?>"><i class="fa fa-users"></i> Users</a></li>
                     <?php endif; ?>
                     <?php if (privilages('priv_notify')): ?>
-                        <li><a href="<?= base_url('app/whatsapp') ?>"><i class="fa fa-envelope"></i> Whatsapp Notify</a></li>
+                        <!-- <li><a href="<?= base_url('app/whatsapp') ?>"><i class="fa fa-envelope"></i> Whatsapp Notify</a></li> -->
                         <li><a href="<?= base_url('app/messages') ?>"><i class="fa fa-envelope"></i> Web Notify</a></li>
                         <li><a href="<?= base_url('app/settings') ?>"><i class="fa fa-cogs"></i> Settings</a></li>
                     <?php endif; ?>

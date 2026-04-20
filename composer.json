@@ -16,7 +16,8 @@
 		"chriskacerguis/codeigniter-restserver": "*",
 		"rakit/validation": "*",
 		"phpoffice/phpspreadsheet": "^1.23",
-		"chillerlan/php-qrcode": "*"
+		"chillerlan/php-qrcode": "*",
+		"vlucas/phpdotenv": "^2.1"
 	},
 	"config": {
 		"platform": {
