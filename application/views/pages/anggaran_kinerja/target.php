@@ -32,8 +32,8 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 $selected = "";
                             }
                         ?>
-                            <option value="<?= $periode->id ?>" <?= $selected ?>><?= $periode->nama ?>
-                            </option>
+                        <option value="<?= $periode->id ?>" <?= $selected ?>><?= $periode->nama ?>
+                        </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -108,16 +108,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                             }
                         endforeach;
                     else:
-                        $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
-                                        <tr></tr>";
+                        $tr .= "<td colspan='6' rowspan='" . $rowspan . "'></td>
+                                <tr></tr>";
                     endif;
                 ?>
-                    <tr class="bg-warning text-dark">
-                        <td class="text-center" rowspan="<?= @$toEndTujuan ?>"><?= $no_level_0++ ?></td>
-                        <td class="text-left" colspan="2" rowspan="<?= @$toEndTujuan ?>"><?= $t->nama; ?></td>
-                        <?= $tr; ?>
-                    </tr>
-                    <?php
+                <tr class="bg-warning text-dark">
+                    <td class="text-center" rowspan="<?= @$toEndTujuan ?>"><?= $no_level_0++ ?></td>
+                    <td class="text-left" colspan="2" rowspan="<?= @$toEndTujuan ?>"><?= $t->nama; ?></td>
+                    <?= $tr; ?>
+                </tr>
+                <?php
                     $no_level_0_1 = "#1";
                     $sasaran = $this->target->getSasaran(['fid_tujuan' => $t->id, 't.tahun' => $this->session->userdata('tahun_anggaran')]);
                     foreach ($sasaran->result() as $s) :
@@ -168,16 +168,16 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                 }
                             endforeach;
                         else:
-                            $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
+                            $tr .= "<td colspan='6' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                         endif;
                     ?>
-                        <tr class="bg-success text-white">
-                            <td class="text-center" rowspan="<?= @$toEndSasaran ?>"><?= $no_level_0_1 ?></td>
-                            <td class="text-left text-wrap" rowspan="<?= @$toEndSasaran ?>" colspan="2"><?= $s->nama; ?></td>
-                            <?= $tr; ?>
-                        </tr>
-                        <?php
+                <tr class="bg-success text-white">
+                    <td class="text-center" rowspan="<?= @$toEndSasaran ?>"><?= $no_level_0_1 ?></td>
+                    <td class="text-left text-wrap" rowspan="<?= @$toEndSasaran ?>" colspan="2"><?= $s->nama; ?></td>
+                    <?= $tr; ?>
+                </tr>
+                <?php
                         $no_level_1 = 1;
                         $programs = $this->target->program($s->id, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
                         foreach ($programs->result() as $program) :
@@ -226,17 +226,17 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                     }
                                 endforeach;
                             else:
-                                $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
+                                $tr .= "<td colspan='6' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                             endif;
                         ?>
-                            <tr class="bg-secondary text-white">
-                                <td class="text-center align-middle" rowspan="<?= @$toEndProgram ?>"><?= $no_level_1 ?></td>
-                                <td class="align-middle bg-success border-success" rowspan="<?= @$toEndProgram ?>"></td>
-                                <td class="align-middle" rowspan="<?= @$toEndProgram ?>"><?= $program->nama ?></td>
-                                <?= $tr ?>
-                            </tr>
-                            <?php
+                <tr class="bg-secondary text-white">
+                    <td class="text-center align-middle" rowspan="<?= @$toEndProgram ?>"><?= $no_level_1 ?></td>
+                    <td style="border: 0; background-color: #28a745;"></td>
+                    <td class="align-middle" rowspan="<?= @$toEndProgram ?>"><?= $program->nama ?></td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                             if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('user_name') === 'kaban' || $this->session->userdata('role') === 'ADMIN') :
                                 $kegiatans = $this->target->kegiatans($program->id);
                             else:
@@ -289,18 +289,19 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                         }
                                     endforeach;
                                 else:
-                                    $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
+                                    $tr .= "<td colspan='6' rowspan='" . $rowspan . "'></td>
                                                 <tr></tr>";
                                 endif;
                             ?>
-                                <tr class="bg-info text-white">
-                                    <td class="text-center align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $no_level_1 . "." . $no_level_2 ?>
-                                    </td>
-                                    <td class="align-middle bg-success border-success" rowspan="<?= @$toEndKegiatan ?>"></td>
-                                    <td class="align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $kegiatan->nama ?></td>
-                                    <?= $tr ?>
-                                </tr>
-                                <?php
+                <tr class="bg-info text-white">
+                    <td class="text-center align-middle" rowspan="<?= @$toEndKegiatan ?>">
+                        <?= $no_level_1 . "." . $no_level_2 ?>
+                    </td>
+                    <td style="border: 0; background-color: #28a745;"></td>
+                    <td class="align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $kegiatan->nama ?></td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                                 $sub_kegiatans = $this->target->sub_kegiatans($kegiatan->id);
                                 $no_level_3 = 1;
                                 foreach ($sub_kegiatans->result() as $sub_kegiatan) :
@@ -348,31 +349,30 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                                             }
                                         endforeach;
                                     else:
-                                        $tr .= "<td colspan='5' rowspan='" . $rowspan . "'></td>
+                                        $tr .= "<td colspan='6' rowspan='" . $rowspan . "'></td>
                                         <tr></tr>";
                                     endif;
                                 ?>
-                                    <tr>
-                                        <td class="text-center align-middle" rowspan="<?= @$toEndSubKegiatan ?>">
-                                            <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-
-                                        <td class="align-middle bg-success border-bottom-0" rowspan="<?= @$toEndSubKegiatan ?>"></td>
-                                        <td class="align-middle" rowspan="<?= @$toEndSubKegiatan ?>"><?= $sub_kegiatan->nama ?></td>
-                                        <?= $tr ?>
-                                    </tr>
-                                <?php
+                <tr>
+                    <td class="text-center align-middle" rowspan="<?= @$toEndSubKegiatan ?>">
+                        <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
+                    <td style="border: 0; background-color: #28a745;"></td>
+                    <td class="align-middle" rowspan="<?= @$toEndSubKegiatan ?>"><?= $sub_kegiatan->nama ?></td>
+                    <?= $tr ?>
+                </tr>
+                <?php
                                     $no_level_3++;
                                 endforeach;
                                 ?>
-                            <?php
+                <?php
                                 $no_level_2++;
                             endforeach;
                             ?>
-                        <?php
+                <?php
                             $no_level_1++;
                         endforeach;
                         ?>
-                    <?php
+                <?php
                         $no_level_0_1++;
                     endforeach;
                     ?>
@@ -410,7 +410,7 @@ $periode_id = isset($_GET['periode']) ? $_GET['periode'] : $this->spj->getLastPe
                         <?php
                         foreach ($jenis_indikator as $ji) :
                         ?>
-                            <option value="<?= $ji->id ?>"><?= $ji->nama ?></option>
+                        <option value="<?= $ji->id ?>"><?= $ji->nama ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

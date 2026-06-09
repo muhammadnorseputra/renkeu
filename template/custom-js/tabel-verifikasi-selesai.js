@@ -8,13 +8,13 @@ $.fn.dataTable.ext.buttons.reload = {
 };
 
 var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
-	stateSave: true, // ini menyimpan filter, search, pagination
+	stateSave: false, // ini menyimpan filter, search, pagination
 	processing: true,
 	serverSide: true,
 	paging: true,
 	ordering: true,
 	info: true,
-	searching: false,
+	searching: true,
 	select: true,
 	orderCellsTop: true,
 	deferRender: true,

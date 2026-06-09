@@ -399,16 +399,16 @@ class ModelSpj extends CI_Model
 				$search_term = strtolower($col['search']['value']);
 				switch ($index) {
 					case 1:
-						$this->db->like('LOWER(spj_riwayat.nomor_pembukuan)', $search_term);
-						break;
+						$this->db->where('LOWER(spj_riwayat.nomor_verifikasi)', $search_term);
+					break;
 					case 2:
-						$this->db->like('LOWER(spj_riwayat.kode_uraian)', $search_term);
-						break;
+						$this->db->like('LOWER(spj_riwayat.nomor_pembukuan)', $search_term);
+					break;
 					case 3:
-						$this->db->like('LOWER(spj_riwayat.nama_uraian)', $search_term);
-						break;
+						$this->db->like('LOWER(spj_riwayat.kode_uraian)', $search_term);
+					break;
 					case 4: // kolom status
-						$this->db->where('LOWER(spj_riwayat.nama_part)', $search_term);
+						$this->db->like('LOWER(spj_riwayat.nama_uraian)', $search_term);
 						break;
 				}
 			}

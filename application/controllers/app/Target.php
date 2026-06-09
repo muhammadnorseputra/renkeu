@@ -300,7 +300,7 @@ class Target extends CI_Controller
 	public function cetak($tahun)
 	{
 
-		if ($this->session->userdata('role') === 'ADMIN'):
+		if (in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])):
 			$programs = $this->target->program(null, null, $this->session->userdata('tahun_anggaran'));
 		else:
 			$programs = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));

@@ -6,92 +6,93 @@
 
     <title><?= $title ?></title>
     <style>
-        @page {
-            /* margin: 0.3cm 1cm 0.3cm 3.5cm; */
-            margin: 0.3cm 1cm 0.3cm 1cm;
-        }
+    @page {
+        /* margin: 0.3cm 1cm 0.3cm 3.5cm; */
+        margin: 0.3cm 1cm 0.3cm 1cm;
+    }
 
-        body {
-            font-family: sans-serif;
-            margin: 1.5cm 0;
-            font-size: 0.8em;
-        }
+    body {
+        font-family: sans-serif;
+        margin: 1.5cm 0;
+        font-size: 0.8em;
+    }
 
-        #header,
-        #footer {
-            position: fixed;
-            left: 0;
-            right: 0;
-            color: #aaa;
-            font-size: 0.7em;
-        }
+    #header,
+    #footer {
+        position: fixed;
+        left: 0;
+        right: 0;
+        color: #aaa;
+        font-size: 0.7em;
+    }
 
-        #header {
-            top: 0;
-            border-bottom: 0.1pt solid #aaa;
-        }
+    #header {
+        top: 0;
+        border-bottom: 0.1pt solid #aaa;
+    }
 
-        #footer {
-            bottom: 0;
-            border-top: 0.1pt solid #aaa;
-        }
+    #footer {
+        bottom: 0;
+        border-top: 0.1pt solid #aaa;
+    }
 
-        span.page-number {
-            float: right;
-        }
+    span.page-number {
+        float: right;
+    }
 
-        span.page-number:before {
-            content: "Page " counter(page);
-        }
+    span.page-number:before {
+        content: "Page "counter(page);
+    }
 
-        span.author {
-            float: right;
-            font-style: italic;
-        }
+    span.author {
+        float: right;
+        font-style: italic;
+    }
 
-        table {
-            width: 100%;
-            page-break-before: auto;
-        }
+    table {
+        width: 100%;
+        page-break-before: auto;
+    }
 
-        thead {
-            background-color: #fff;
-            font-size: 0.8em;
-        }
+    thead {
+        background-color: #fff;
+        font-size: 0.8em;
+    }
 
-        tbody {
-            background-color: #fff;
-        }
+    tbody {
+        background-color: #fff;
+    }
 
-        th,
-        td {
-            padding: 3pt;
-            border: 1pt solid #aaa;
-        }
+    th,
+    td {
+        padding: 3pt;
+        border: 1pt solid #aaa;
+    }
 
-        table.collapse {
-            border-collapse: collapse;
-            border: 1pt solid #aaa;
-        }
+    table.collapse {
+        border-collapse: collapse;
+        border: 1pt solid #aaa;
+    }
 
-        table.collapse td {
-            border: 1pt solid #aaa;
-        }
+    table.collapse td {
+        border: 1pt solid #aaa;
+    }
 
-        .text-center {
-            text-align: center;
-        }
+    .text-center {
+        text-align: center;
+    }
 
-        .text-right {
-            text-align: right;
-        }
+    .text-right {
+        text-align: right;
+    }
     </style>
 </head>
 
 <body>
 
     <div id="header">
-        <p><?= $post['kodesub'] ?> <?= $post['namasub'] ?> <span class="author">Dicetak oleh : <?= $this->user->profile_username($this->session->userdata('user_name'))->row()->nama ?></span></p>
+        <p><?= $post['kodesub'] ?> <?= $post['namasub'] ?> <span class="author">Dicetak oleh :
+                <?= $this->user->profile_username($this->session->userdata('user_name'))->row()->nama ?></span></p>
     </div>
     <div id="content">
         <table class="collapse">
@@ -149,40 +150,40 @@
                 foreach ($uraians as $uraian):
 
                 ?>
-                    <tr>
-                        <td class="text-center"><?= $no ?></td>
-                        <td><?= $uraian->kode ?></td>
-                        <td class="text-nowrap"><?= $uraian->nama ?></td>
-                        <td class="text-right">
-                            <?php
+                <tr>
+                    <td class="text-center"><?= $no ?></td>
+                    <td><?= $uraian->kode ?></td>
+                    <td class="text-nowrap"><?= $uraian->nama ?></td>
+                    <td class="text-right">
+                        <?php
                             $pagu = @$this->bukujaga->getPagu(['fid_uraian' => $uraian->id], $this->session->userdata('tahun_anggaran'),  $this->session->userdata('is_perubahan'))->total_pagu_awal;
                             $total_pagu += $pagu;
                             echo nominal($pagu);
                             ?>
-                        </td>
-                        <td class="text-right">
-                            <?php
-                            $realisasi_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('is_perubahan'))->jumlah;
+                    </td>
+                    <td class="text-right">
+                        <?php
+                            $realisasi_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('tahun_anggaran'))->jumlah;
                             $total_realisasi_ls += $realisasi_ls;
                             echo nominal($realisasi_ls);
                             ?>
-                        </td>
-                        <td class="text-right">
-                            <?php
-                            $realisasi_not_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('is_perubahan'))->jumlah;
+                    </td>
+                    <td class="text-right">
+                        <?php
+                            $realisasi_not_ls = @$this->bukujaga->getPaguRealisasi(['fid_uraian' => $uraian->id, 'is_realisasi !=' => 'LS', 'is_status' => 'SELESAI'], $this->session->userdata('tahun_anggaran'))->jumlah;
                             $total_realisasi_not_ls += $realisasi_not_ls;
                             echo nominal($realisasi_not_ls);
                             ?>
-                        </td>
-                        <td class="text-right">
-                            <?php
+                    </td>
+                    <td class="text-right">
+                        <?php
                             $realisasi = ($realisasi_ls + $realisasi_not_ls);
                             $sisa_anggaran = ($pagu - $realisasi);
                             $total_sisa_anggaran += $sisa_anggaran;
                             echo nominal($sisa_anggaran);
                             ?>
-                        </td>
-                    </tr>
+                    </td>
+                </tr>
                 <?php $no++;
                 endforeach; ?>
                 <tr>

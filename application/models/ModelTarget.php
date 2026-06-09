@@ -87,6 +87,8 @@ class ModelTarget extends CI_Model
         if (!empty($part_id)) {
             $this->db->where("FIND_IN_SET('{$part_id}', i.fid_part) >", 0);
         }
+
+        
         $this->db->order_by('i.id', 'asc');
         $q = $this->db->get();
         return $q;
