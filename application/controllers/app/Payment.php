@@ -332,15 +332,15 @@ class Payment extends CI_Controller
     {
         switch ($row->status) {
             case 'CAIR':
-                return '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($row->cair_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->cair_at, 10, 6);
+                return '<i class="fa fa-calendar"></i> ' . @longdate_indo(substr($row->cair_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->cair_at, 10, 6);
                 break;
             case 'PENDING':
-                return '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($row->pending_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->pending_at, 10, 6);
+                return '<i class="fa fa-calendar"></i> ' . @longdate_indo(substr($row->pending_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->pending_at, 10, 6);
             case 'PENDING - PERBAIKAN':
             case 'PERBAIKAN':
-                return '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($row->perbaikan_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->perbaikan_at, 10, 6);
+                return '<i class="fa fa-calendar"></i> ' . @longdate_indo(substr($row->perbaikan_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->perbaikan_at, 10, 6);
             case 'TOLAK':
-                return '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($row->tolak_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->tolak_at, 10, 6);
+                return '<i class="fa fa-calendar"></i> ' . @longdate_indo(substr($row->tolak_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($row->tolak_at, 10, 6);
             default:
                 return '<i class="fa fa-calendar"></i> - <br> <i class="fa fa-clock-o"></i> -';
                 break;
