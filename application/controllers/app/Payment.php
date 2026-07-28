@@ -73,13 +73,13 @@ class Payment extends CI_Controller
             $row                          = [];
             $row['no']                    = $no;
             $row['no_verifikasi']         = $r->nomor_verifikasi;
-            $row['tgl_verifikasi']        = $r->tanggal_verifikasi ? longdate_indo($r->tanggal_verifikasi) : '-';
+            $row['tgl_verifikasi']        = $r->tanggal_verifikasi ? @longdate_indo($r->tanggal_verifikasi) : '-';
             $row['no_bku']                = $r->nomor_pembukuan;
             $row['tgl_bku']               = $r->tanggal_pembukuan ? @longdate_indo($r->tanggal_pembukuan) : '-';
             $row['kode_uraian']           = "<br>" . $r->kode_uraian;
             $row['nama_uraian']           = $r->nama_part . '<br> - <b>' . $r->nama_uraian . '</b>';
             $row['periode']               = bulan($r->fid_periode);
-            $row['tgl_approve']           = '<i class="fa fa-calendar"></i> ' . longdate_indo(substr($r->approve_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($r->approve_at, 10, 6);
+            $row['tgl_approve']           = '<i class="fa fa-calendar"></i> ' . @longdate_indo(substr($r->approve_at, 0, 10)) . ' <br> <i class="fa fa-clock-o"></i>' . substr($r->approve_at, 10, 6);
             $row['tgl_approve_bendahara'] = $tgl_approve_bendahara;
             $row['status']                = $status;
             $row['jumlah']                = $r->is_status === 'APPROVE' ? "<b class='text-success'> Rp. " . nominal((int) $r->jumlah) . "</b>" : "<b class='text-danger'> Rp. " . nominal((int) $r->jumlah) . "</b>";
