@@ -105,7 +105,22 @@
         </ul>
         <div class="clearfix"></div>
     </div>
-    <div class="x_content" style="display: none;">
+    <div class="x_content">
+        <canvas id="chartBelanjaHarian" height="130" data-chart='<?= htmlspecialchars(json_encode($chartData ?? ['usulan' => [], 'verifikasi' => [], 'cair' => []]), ENT_QUOTES) ?>'></canvas>
+        <div id="chartSummary" class="row mt-3 text-center" style="display:none;">
+            <div class="col-md-4">
+                <h5 class="text-info mb-0" id="sumUsulan">Rp. 0</h5>
+                <small class="text-muted">Total Usulan</small>
+            </div>
+            <div class="col-md-4">
+                <h5 class="text-warning mb-0" id="sumVerifikasi">Rp. 0</h5>
+                <small class="text-muted">Total Verifikasi</small>
+            </div>
+            <div class="col-md-4">
+                <h5 class="text-success mb-0" id="sumCair">Rp. 0</h5>
+                <small class="text-muted">Total Cair</small>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -116,6 +116,114 @@ if (! function_exists('api_qr_code')) {
 	}
 }
 
+/**
+ * GET data dari API eksternal dengan custom headers dan request body.
+ *
+ * Digunakan untuk endpoint yang menerima GET + JSON body (non-standar tapi
+ * dimiliki beberapa API seperti SILKA).
+ *
+ * @param  string $url     Endpoint URL
+ * @param  array  $headers Assoc array header kustom, e.g. ['apiKey' => 'xxx']
+ * @param  array  $body    Data yang dikirim sebagai JSON body (walaupun GET)
+ * @return array           ['success' => bool, 'data' => mixed, 'error' => string|null]
+ */
+function api_get_with_headers($url, $headers = [], $body = [])
+{
+    $ch = curl_init();
+
+    // Encode body menjadi JSON
+    $jsonBody = json_encode($body);
+
+    // Set header default + header kustom
+    $httpHeaders = ['Content-Type: application/json'];
+    foreach ($headers as $key => $value) {
+        $httpHeaders[] = "$key: $value";
+    }
+
+    curl_setopt_array($ch, [
+        CURLOPT_URL            => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST  => 'POST', // Gunakan POST untuk mengirim body, walaupun GET
+        CURLOPT_POSTFIELDS     => $jsonBody,
+        CURLOPT_HTTPHEADER     => $httpHeaders,
+        CURLOPT_SSL_VERIFYPEER => false, // sesuaikan di production
+        CURLOPT_SSL_VERIFYHOST => 0,     // sesuaikan di production
+        CURLOPT_TIMEOUT        => 30,
+    ]);
+
+    $response = curl_exec($ch);
+
+    if ($response === false) {
+        $error = curl_error($ch);
+        curl_close($ch);
+        return ['success' => false, 'data' => null, 'error' => $error];
+    }
+
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $decoded = json_decode($response, true);
+
+    return [
+        'success'  => $httpCode >= 200 && $httpCode < 300,
+        'data'     => $decoded,
+        'error'    => $httpCode >= 300 ? "HTTP $httpCode" : null,
+    ];
+}
+
+/**
+ * Ambil data pegawai berdasarkan Unit Organisasi (UNOR) dari API SILKA.
+ *
+ * Endpoint: http://silka.balangankab.go.id/services/pegawaiWithBasicAuth/getPegawaiByUnor
+ * Method  : GET + JSON body + custom header apiKey
+ *
+ * @param  string $unor_id  ID unit organisasi (default: 1120)
+ * @return array            Data pegawai atau array kosong jika gagal
+ */
+function silka_get_pegawai_by_unor($unor_id = '1120')
+{
+    $url  = 'http://silka.balangankab.go.id/services/pegawaiWithBasicAuth/getPegawaiByUnor';
+    $args = [
+        'headers' => ['apiKey' => 'bkpsdm6811'],
+        'body'    => ['unor_id' => $unor_id],
+    ];
+
+    $result = api_get_with_headers($url, $args['headers'], $args['body']);
+
+    if (!$result['success']) {
+        log_message('error', '[SILKA] Gagal ambil pegawai UNOR ' . $unor_id . ': ' . $result['error']);
+        return [];
+    }
+
+    return $result['data'];
+}
+
+/**
+ * Ambil data pegawai PPPK dari API SILKA.
+ *
+ * Endpoint: http://silka.balangankab.go.id/services/pppk
+ * Method  : GET + JSON body + custom header apiKey
+ *
+ * @return array            Data pegawai PPPK atau array kosong jika gagal
+ */
+function silka_get_pppk($unor_id = '1120')
+{
+    $url  = 'http://silka.balangankab.go.id/services/pppk';
+    $args = [
+        'headers' => ['apiKey' => 'bkpsdm6811'],
+        'body'    => ['unor_id' => $unor_id],
+    ];
+
+    $result = api_get_with_headers($url, $args['headers'], $args['body']);
+
+    if (!$result['success']) {
+        log_message('error', '[SILKA] Gagal ambil data PPPK UNOR ' . $unor_id . ': ' . $result['error']);
+        return [];
+    }
+
+    return $result['data'];
+}
+
 function sendWaMessage($url, $session, $to, $text, $is_group = false)
 {
 	$curl = curl_init();

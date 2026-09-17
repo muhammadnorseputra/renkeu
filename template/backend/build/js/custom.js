@@ -113,17 +113,8 @@ function init_sidebar() {
         }
 
         isNav = $BODY.hasClass("nav-md"); // update darkMode when clicked
-        if (!isNav) {
-            // $BODY.addClass("nav-sm").removeClass("nav-md");
-            $.post(`${_uri}/settings/updatevalue`, {keyword: 'toggleNavbar', value: 'nav-md'}, function(e) {
-                console.log(e);
-            }, 'json');
-        } else {
-            // $BODY.addClass("nav-md").removeClass("nav-sm");
-            $.post(`${_uri}/settings/updatevalue`, {keyword: 'toggleNavbar', value: 'nav-sm'}, function(e) {
-                console.log(e);
-            }, 'json');
-        }
+        // Simpan state sidebar (expand/collapse) ke localStorage, bukan server
+        localStorage.setItem('sidebar_state', isNav ? 'nav-sm' : 'nav-md');
         
         $BODY.toggleClass('nav-sm nav-md');
 
@@ -131,6 +122,20 @@ function init_sidebar() {
 
         $('.dataTable').each(function () { $(this).dataTable().fnDraw(); });
     });
+
+    // Restore state sidebar dari localStorage saat halaman dimuat/refresh.
+    // Berlaku juga untuk BFCache (back/forward) via pageshow.
+    var restoreSidebar = function () {
+        var saved = localStorage.getItem('sidebar_state');
+        if (saved === 'nav-sm' && $BODY.hasClass('nav-md')) {
+            $BODY.removeClass('nav-md').addClass('nav-sm');
+            $SIDEBAR_MENU.find('li.active ul').hide();
+            $SIDEBAR_MENU.find('li.active').addClass('active-sm').removeClass('active');
+            setContentHeight();
+        }
+    };
+    restoreSidebar();
+    $(window).on('pageshow', restoreSidebar);
 
     // check active menu
     $SIDEBAR_MENU.find('a[href="' + CURRENT_URL + '"]').parent('li').addClass('current-page');

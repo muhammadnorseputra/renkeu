@@ -713,6 +713,72 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
+	// Belanja Harian chart data
+	public function getBelanjaHarian($part = null, $filter_tanggal = null, $ta)
+	{
+		$result = ['usulan' => [], 'verifikasi' => [], 'cair' => [], 'range' => null];
+
+		if(empty($filter_tanggal)) {
+			// default: seluruh tahun anggaran
+			$start_date = $ta . '-01-01';
+			$end_date = $ta . '-12-31';
+		} else {
+			$tanggal = explode(' - ', $filter_tanggal);
+			if(count($tanggal) < 2) return $result;
+
+			$start_obj = DateTime::createFromFormat('d/m/Y', $tanggal[0]);
+			$end_obj = DateTime::createFromFormat('d/m/Y', $tanggal[1]);
+			if(!$start_obj || !$end_obj) return $result;
+
+			$start_date = $start_obj->format('Y-m-d');
+			$end_date = $end_obj->format('Y-m-d');
+		}
+
+		$result['range'] = ['start' => $start_date, 'end' => $end_date];
+
+		// Usulan (ENTRI)
+		$this->db->select('DATE(entri_at) as tanggal, SUM(jumlah) as total');
+		$this->db->from('spj');
+		$this->db->where('is_status', 'ENTRI');
+		$this->db->where('DATE(entri_at) >=', $start_date);
+		$this->db->where('DATE(entri_at) <=', $end_date);
+		if($part !== null) $this->db->where('fid_part', $part);
+		$this->db->group_by('DATE(entri_at)');
+		$this->db->order_by('DATE(entri_at)', 'asc');
+		foreach($this->db->get()->result() as $row) {
+			$result['usulan'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
+		}
+
+		// Verifikasi (VERIFIKASI + VERIFIKASI_ADMIN)
+		$this->db->select('DATE(verify_at) as tanggal, SUM(jumlah) as total');
+		$this->db->from('spj');
+		$this->db->where_in('is_status', ['VERIFIKASI', 'VERIFIKASI_ADMIN']);
+		$this->db->where('DATE(verify_at) >=', $start_date);
+		$this->db->where('DATE(verify_at) <=', $end_date);
+		if($part !== null) $this->db->where('fid_part', $part);
+		$this->db->group_by('DATE(verify_at)');
+		$this->db->order_by('DATE(verify_at)', 'asc');
+		foreach($this->db->get()->result() as $row) {
+			$result['verifikasi'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
+		}
+
+		// Cair (spj_payment.status = CAIR)
+		$this->db->select('DATE(sr.approve_at) as tanggal, SUM(sr.jumlah) as total');
+		$this->db->from('spj_riwayat as sr');
+		$this->db->join('spj_payment as sp', 'sr.token = sp.token');
+		$this->db->where('sp.status', 'CAIR');
+		$this->db->where('DATE(sr.approve_at) >=', $start_date);
+		$this->db->where('DATE(sr.approve_at) <=', $end_date);
+		if($part !== null) $this->db->where('sr.entri_by_part', $part);
+		$this->db->group_by('DATE(sr.approve_at)');
+		$this->db->order_by('DATE(sr.approve_at)', 'asc');
+		foreach($this->db->get()->result() as $row) {
+			$result['cair'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
+		}
+
+		return $result;
+	}
+
 	public function getListPenerimaManfaat($token)
 	{
 		$this->db->select('*');

@@ -272,6 +272,22 @@ if (! function_exists('jamServer')) {
 }
 
 /**
+ * Format datetime (Y-m-d H:i:s) ke format Indonesia: 13 Sep 2026 14:30 WIB (+1 jam)
+ */
+if (! function_exists('datetime_indo')) {
+    function datetime_indo($datetime)
+    {
+        if (empty($datetime)) {
+            return '';
+        }
+        $ts = strtotime($datetime) + 3600; // +1 jam
+        $tgl = date_indo(date('Y-m-d', $ts));
+        $jam = date('H:i', $ts);
+        return trim($tgl . ' ' . $jam) . ' WIB';
+    }
+}
+
+/**
  * Ambil waktu sekarang +1 jam dengan timezone Asia/Jakarta
  * @return string
  */

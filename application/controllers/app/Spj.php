@@ -1198,6 +1198,14 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
                                     ->get('ref_sub_kegiatans as sk');
         }
 
+        // Belanja Harian chart data
+        $filter_tanggal = $this->input->get('filter_tanggal');
+        $chartPart = null;
+        if(!in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
+            $chartPart = $part;
+        }
+        $chartData = $this->spj->getBelanjaHarian($chartPart, $filter_tanggal, $tahun_anggaran);
+
         $data = [
             'title' => 'Monitor SPJ (Surat Pertanggung Jawaban)',
             'content' => 'pages/spj/monitor',
@@ -1208,8 +1216,10 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             'programs' => $listprogram,
             'kegiatans' => $listkegiatan,
             'sub_kegiatans' => $listsubkegiatan,
+            'chartData' => $chartData,
             'autoload_js' => [
                 'template/backend/vendors/moment/min/moment.min.js',
+                'template/backend/vendors/Chart.js/dist/Chart.min.js',
                 'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.js',
                 'template/custom-js/spj_monitor.js',
             ],

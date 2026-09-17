@@ -1,5 +1,14 @@
 $(function() {
+    // Splash screen: tampilkan saat navigasi dimulai, sembunyikan saat konten selesai dimuat
+    function showSplash() {
+        $('#splash-screen').removeClass('hidden');
+    }
+    function hideSplash() {
+        $('#splash-screen').addClass('hidden');
+    }
+
     function loadContent(url, title=null, target='renderContent') {
+        showSplash();
         $.ajax({
             method: 'POST',
             url: url,
@@ -7,11 +16,13 @@ $(function() {
             async: 'async',
             cache: false,
             error: function(XMLHttpRequest) {
+                hideSplash();
                 alert(XMLHttpRequest.status + ' - ' + XMLHttpRequest.statusText);
             },
             success: function(data) {
                 $('#' + target).html(data);
                 document.title = " " + (title ?? '-');
+                hideSplash();
             }
         })
     }
