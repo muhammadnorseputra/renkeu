@@ -41,10 +41,8 @@ if (urldecode($tab) === '#payment') {
     $payment = '';
 }
 ?>
-<div class="row"
-    style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 10px;">
-    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
-        style="flex: 0 0 auto; min-width: 250px;">
+<div class="row" style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 10px;">
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6" style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-inbox"></i></div>
             <div class="count">Input - Baru</div>
@@ -53,8 +51,7 @@ if (urldecode($tab) === '#payment') {
         </div>
     </div>
 
-    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
-        style="flex: 0 0 auto; min-width: 250px;">
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6" style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-edit"></i></div>
             <div class="count">Input - Perbaikan</div>
@@ -63,8 +60,7 @@ if (urldecode($tab) === '#payment') {
         </div>
     </div>
 
-    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
-        style="flex: 0 0 auto; min-width: 250px;">
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6" style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-clock-o"></i></div>
             <div class="count">Proses - Verifikasi</div>
@@ -73,8 +69,7 @@ if (urldecode($tab) === '#payment') {
         </div>
     </div>
 
-    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
-        style="flex: 0 0 auto; min-width: 250px;">
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6" style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-check-circle"></i></div>
             <div class="count">Proses - Approval</div>
@@ -83,8 +78,7 @@ if (urldecode($tab) === '#payment') {
         </div>
     </div>
 
-    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
-        style="flex: 0 0 auto; min-width: 250px;">
+    <div class="animated flipInY col-lg-3 col-md-3 col-sm-6" style="flex: 0 0 auto; min-width: 250px;">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-university"></i></div>
             <div class="count">Proses - Pending</div>
@@ -98,189 +92,211 @@ if (urldecode($tab) === '#payment') {
     <div class="col-md-12">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item float-right">
-                <a class="nav-link pb-4 font-weight-bold <?= $inbox ?>" style="font-size:16px" id="inbox-tab" data-toggle="tab" href="#inbox" role="tab" aria-controls="inbox" aria-selected="<?= $is_active_inbox ?>"><i class="fa fa-inbox mr-2"></i>Utama</a>
+                <a class="nav-link pb-4 font-weight-bold <?= $inbox ?>" style="font-size:16px" id="inbox-tab"
+                    data-toggle="tab" href="#inbox" role="tab" aria-controls="inbox"
+                    aria-selected="<?= $is_active_inbox ?>"><i class="fa fa-inbox mr-2"></i>Utama</a>
             </li>
             <?php if (privilages('priv_verifikasi')) : ?>
-                <li class="nav-item ml-2">
-                    <a class="nav-link pb-4 font-weight-bold <?= $verifikasi ?>" style="font-size:16px" id="verifikasi-tab" data-toggle="tab" href="#verifikasi" role="tab" aria-controls="verifikasi" aria-selected="<?= $is_active_verifikasi ?>"><i class="fa fa-lock mr-2"></i>Verifikasi</a>
-                </li>
+            <li class="nav-item ml-2">
+                <a class="nav-link pb-4 font-weight-bold <?= $verifikasi ?>" style="font-size:16px" id="verifikasi-tab"
+                    data-toggle="tab" href="#verifikasi" role="tab" aria-controls="verifikasi"
+                    aria-selected="<?= $is_active_verifikasi ?>"><i class="fa fa-lock mr-2"></i>Verifikasi</a>
+            </li>
             <?php endif; ?>
             <?php if (privilages('priv_riwayat_spj')) : ?>
-                <li class="nav-item ml-2">
-                    <a class="nav-link pb-4 font-weight-bold <?= $selesai ?>" style="font-size:16px" id="selesai-tab" data-toggle="tab" href="#selesai" role="tab" aria-controls="selesai" aria-selected="<?= $is_active_selesai ?>"><i class="fa fa-check-circle mr-2"></i>Selesai</a>
-                </li>
+            <li class="nav-item ml-2">
+                <a class="nav-link pb-4 font-weight-bold <?= $selesai ?>" style="font-size:16px" id="selesai-tab"
+                    data-toggle="tab" href="#selesai" role="tab" aria-controls="selesai"
+                    aria-selected="<?= $is_active_selesai ?>"><i class="fa fa-check-circle mr-2"></i>Selesai</a>
+            </li>
             <?php endif; ?>
             <?php if (privilages('priv_payment')) : ?>
-                <li class="nav-item ml-2">
-                    <a class="nav-link pb-4 font-weight-bold <?= $payment ?>" style="font-size:16px" id="payment-tab" data-toggle="tab" href="#payment" role="tab" aria-controls="payment" aria-selected="<?= $is_active_payment ?>"><i class="fa fa-credit-card mr-2"></i>Pembayaran</a>
-                </li>
+            <li class="nav-item ml-2">
+                <a class="nav-link pb-4 font-weight-bold <?= $payment ?>" style="font-size:16px" id="payment-tab"
+                    data-toggle="tab" href="#payment" role="tab" aria-controls="payment"
+                    aria-selected="<?= $is_active_payment ?>"><i class="fa fa-credit-card mr-2"></i>Pembayaran</a>
+            </li>
             <?php endif; ?>
         </ul>
         <div class="x_panel" style="border-top:0">
             <div class="x_content">
                 <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane <?= $inbox ?> <?= $is_show_inbox ?>" id="inbox" role="tabpanel" aria-labelledby="inbox-tab"></div>
+                    <div class="tab-pane <?= $inbox ?> <?= $is_show_inbox ?>" id="inbox" role="tabpanel"
+                        aria-labelledby="inbox-tab"></div>
                     <?php if (privilages('priv_verifikasi')) : ?>
-                        <div class="tab-pane <?= $verifikasi ?> <?= $is_show_verifikasi ?>" id="verifikasi" role="tabpanel" aria-labelledby="verifikasi-tab">
-                            <div class="table-responsive">
-                                <table id="table-spj" class="table dt-responsive nowrap jambo_table bulk_action" cellspacing="0" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center align-middle" width="5%">No</th>
-                                            <th>Kode</th>
-                                            <th>Uraian</th>
-                                            <th>SPJ Periode/Bulan</th>
-                                            <th>Bidang/Bagian</th>
-                                            <th>User Usul</th>
-                                            <th>Status</th>
-                                            <th data-priority="2">Jumlah (Rp)</th>
-                                            <th data-priority="1"></th>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-center align-middle" width="5%">#</th>
-                                            <th class="filterhead"></th>
-                                            <th class="filterhead"></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th data-priority="2"></th>
-                                            <th data-priority="1"></th>
-                                        </tr>
-                                    </thead>
-                                </table>
-                            </div>
+                    <div class="tab-pane <?= $verifikasi ?> <?= $is_show_verifikasi ?>" id="verifikasi" role="tabpanel"
+                        aria-labelledby="verifikasi-tab">
+                        <div class="table-responsive">
+                            <table id="table-spj" class="table dt-responsive nowrap jambo_table bulk_action"
+                                cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center align-middle" width="5%">No</th>
+                                        <th>Kode</th>
+                                        <th>Uraian</th>
+                                        <th>SPJ Periode/Bulan</th>
+                                        <th>Bidang/Bagian</th>
+                                        <th>User Usul</th>
+                                        <th>Status</th>
+                                        <th data-priority="2">Jumlah (Rp)</th>
+                                        <th data-priority="1"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center align-middle" width="5%">#</th>
+                                        <th class="filterhead"></th>
+                                        <th class="filterhead"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th data-priority="2"></th>
+                                        <th data-priority="1"></th>
+                                    </tr>
+                                </thead>
+                            </table>
                         </div>
+                    </div>
                     <?php endif; ?>
                     <?php if (privilages('priv_riwayat_spj')) : ?>
-                        <div class="tab-pane <?= $selesai ?> <?= $is_show_selesai ?>" id="selesai" role="tabpanel" aria-labelledby="selesai-tab">
-                                <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterForm', 'data-parsley-validate' => '']) ?>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="filter_bidang">Filter Bidang</label>
-                                            <select name="filter_bidang" id="filter_bidang" class="form-control">
-                                                <option value="">Semua Bidang</option>
-                                                <?php foreach ($list_bidang as $bidang) { ?>
-                                                    <option value="<?= $bidang->id ?>"><?= $bidang->nama ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <!-- Button submit filter -->
-                                    <div class="col-md-3 align-self-end">
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Filter</button>
-                                        <!-- Button reset filter -->
-                                        <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset Filter</button>
-                                    </div>
+                    <div class="tab-pane <?= $selesai ?> <?= $is_show_selesai ?>" id="selesai" role="tabpanel"
+                        aria-labelledby="selesai-tab">
+                        <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterForm', 'data-parsley-validate' => '']) ?>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="filter_bidang">Filter Bidang</label>
+                                    <select name="filter_bidang" id="filter_bidang" class="form-control">
+                                        <option value="">Semua Bidang</option>
+                                        <?php foreach ($list_bidang as $bidang) { ?>
+                                        <option value="<?= $bidang->id ?>"><?= $bidang->nama ?></option>
+                                        <?php } ?>
+                                    </select>
                                 </div>
-                                <?= form_close(); ?>
-
-                                <table id="table-spj-selesai" class="table dt-responsive nowrap jambo_table">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" width="5%" data-priority="1">No. Urut</th>
-                                            <th>No. Verifikasi</th>
-                                            <th>No. BKU</th>
-                                            <th>Kode</th>
-                                            <th data-priority="2">Uraian</th>
-                                            <th>Bidang/Bagian</th>
-                                            <th>Periode/SPJ Bulan</th>
-                                            <th data-priority="3">User Usul</th>
-                                            <th>Tanggal Finalisasi</th>
-                                            <th>Status - Admin</th>
-                                            <th>Status - Bendahara</th>
-                                            <th data-priority="4">Jumlah (Rp)</th>
-                                            <th data-priority="1"></th>
-                                        </tr>
-                                        <tr>
-                                            <th class="text-center" width="5%">#</th>
-                                            <th class="filterhead"></th>
-                                            <th class="filterhead"></th>
-                                            <th class="filterhead"></th>
-                                            <th class="filterhead"></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                            </div>
+                            <!-- Button submit filter -->
+                            <div class="col-md-3 align-self-end">
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i>
+                                    Filter</button>
+                                <!-- Button reset filter -->
+                                <button type="button" class="btn btn-secondary ml-2" onclick="ResetFilter()"><i
+                                        class="fa fa-repeat mr-1"></i> Reset Filter</button>
+                            </div>
                         </div>
+                        <?= form_close(); ?>
+
+                        <table id="table-spj-selesai" class="table dt-responsive nowrap jambo_table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" width="5%" data-priority="1">No. Urut</th>
+                                    <th>No. Verifikasi</th>
+                                    <th>No. BKU</th>
+                                    <th>Kode</th>
+                                    <th data-priority="2">Uraian</th>
+                                    <th>Bidang/Bagian</th>
+                                    <th>Periode/SPJ Bulan</th>
+                                    <th data-priority="3">User Usul</th>
+                                    <th>Tanggal Finalisasi</th>
+                                    <th>Status - Admin</th>
+                                    <th>Status - Bendahara</th>
+                                    <th data-priority="4">Jumlah (Rp)</th>
+                                    <th data-priority="1"></th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center" width="5%">#</th>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+                                    <th class="filterhead"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <?php endif; ?>
                     <?php if (privilages('priv_payment')) : ?>
-                        <div class="tab-pane <?= $payment ?> <?= $is_show_payment ?>" id="payment" role="tabpanel" aria-labelledby="payment-tab">
-                                 <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterFormPayment', 'data-parsley-validate' => '', 'autocomplete' => 'off']) ?>
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label for="filter_bidang">Filter Bidang</label>
-                                            <select name="filter_bidang" id="filter_bidang" class="form-control"> 
-                                                <option value="">Semua Bidang</option>
-                                                <?php foreach ($list_bidang as $bidang) { ?>
-                                                    <option value="<?= $bidang->id ?>"><?= $bidang->nama ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <!-- filter status -->
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label for="filter_status">Filter Status</label>
-                                            <select name="filter_status" id="filter_status" class="form-control" required>
-                                                <option value="PENDING" selected>PENDING - APPROVED VERIFIKATOR</option>
-                                                <option value="CAIR">CAIR</option>
-                                                <option value="PERBAIKAN">PERBAIKAN</option>
-                                                <option value="TOLAK">TOLAK</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <fieldset>
-                                            <div class="control-group ">
-                                            <label for="filter_tanggal">Filter Tanggal</label>
-                                                <div class="controls">
-                                                    <div class="input-prepend input-group">
-                                                        <input type="text" autocomplete="off" data-min-year="<?= $this->session->userdata('tahun_anggaran'); ?>" data-max-year="<?= $this->session->userdata('tahun_anggaran') + 1; ?>" name="filter_tanggal" id="filter_tanggal" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                    <!-- Button submit filter -->
-                                    <div class="col-md-5 align-self-end">
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i> Terapkan</button>
-                                        <!-- Button reset filter -->
-                                        <button type="button" class="btn btn-secondary" onclick="ResetFilter()"><i class="fa fa-repeat mr-1"></i> Reset</button>
-                                        <!-- Button Unduh  -->
-                                        <button type="button" class="btn btn-info" onclick="UnduhData()"><i class="fa fa-download mr-1"></i> Unduh Data</button>
-                                    </div>
+                    <div class="tab-pane <?= $payment ?> <?= $is_show_payment ?>" id="payment" role="tabpanel"
+                        aria-labelledby="payment-tab">
+                        <?= form_open(base_url('app/spj/filter_verifikasi_selesai'), ['class' => 'form-horizontal border p-2 mb-3 mx-2 bg-light', 'id' => 'filterFormPayment', 'data-parsley-validate' => '', 'autocomplete' => 'off']) ?>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="filter_bidang">Filter Bidang</label>
+                                    <select name="filter_bidang" id="filter_bidang" class="form-control">
+                                        <option value="">Semua Bidang</option>
+                                        <?php foreach ($list_bidang as $bidang) { ?>
+                                        <option value="<?= $bidang->id ?>"><?= $bidang->nama ?></option>
+                                        <?php } ?>
+                                    </select>
                                 </div>
-                                <?= form_close(); ?>                   
-                                <table id="table-spj-payment" class="table dt-responsive nowrap jambo_table bulk_action" cellspacing="0" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" width="5%">No</th>
-                                            <th>No. Verifikasi</th>
-                                            <th>Tgl. Verifikasi</th>
-                                            <th>No. BKU</th>
-                                            <th>Tgl. BKU</th>
-                                            <th>Kode</th>
-                                            <th>Uraian</th>
-                                            <th>Periode/SPJ Bulan</th>
-                                            <th>Tanggal Approval Admin</th>
-                                            <th>Tanggal Proses Bendahara</th>
-                                            <th>Status</th>
-                                            <th data-priority="2">Jumlah (Rp)</th>
-                                            <th data-priority="1"></th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                            </div>
+                            <!-- filter status -->
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="filter_status">Filter Status</label>
+                                    <select name="filter_status" id="filter_status" class="form-control" required>
+                                        <option value="PENDING" selected>PENDING - APPROVED VERIFIKATOR</option>
+                                        <option value="CAIR">CAIR</option>
+                                        <option value="PERBAIKAN">PERBAIKAN</option>
+                                        <option value="TOLAK">TOLAK</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <fieldset>
+                                    <div class="control-group ">
+                                        <label for="filter_tanggal">Filter Tanggal</label>
+                                        <div class="controls">
+                                            <div class="input-prepend input-group">
+                                                <input type="text" autocomplete="off"
+                                                    data-min-year="<?= $this->session->userdata('tahun_anggaran'); ?>"
+                                                    data-max-year="<?= $this->session->userdata('tahun_anggaran') + 1; ?>"
+                                                    name="filter_tanggal" id="filter_tanggal" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <!-- Button submit filter -->
+                            <div class="col-md-5 align-self-end">
+                                <button type="submit" class="btn btn-primary"><i class="fa fa-filter mr-1"></i>
+                                    Terapkan</button>
+                                <!-- Button reset filter -->
+                                <button type="button" class="btn btn-secondary" onclick="ResetFilter()"><i
+                                        class="fa fa-repeat mr-1"></i> Reset</button>
+                                <!-- Button Unduh  -->
+                                <button type="button" class="btn btn-info" onclick="UnduhData()"><i
+                                        class="fa fa-download mr-1"></i> Unduh Data</button>
+                            </div>
                         </div>
+                        <?= form_close(); ?>
+                        <table id="table-spj-payment" class="table dt-responsive nowrap jambo_table bulk_action"
+                            cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" width="5%">No</th>
+                                    <th>No. Verifikasi</th>
+                                    <th>Tgl. Verifikasi</th>
+                                    <th>No. BKU</th>
+                                    <th>Tgl. BKU</th>
+                                    <th>Kode</th>
+                                    <th>Uraian</th>
+                                    <th>Periode/SPJ Bulan</th>
+                                    <th>Tanggal Approval Admin</th>
+                                    <th>Tanggal Proses Bendahara</th>
+                                    <th>Status</th>
+                                    <th data-priority="2">Jumlah (Rp)</th>
+                                    <th data-priority="1"></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -289,7 +305,8 @@ if (urldecode($tab) === '#payment') {
 </div>
 
 <!-- The Modal -->
-<div class="modal" id="modalLogHistoris" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+<div class="modal" id="modalLogHistoris" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content rounded-0">
 
@@ -308,7 +325,8 @@ if (urldecode($tab) === '#payment') {
 </div>
 
 <!-- The Modal -->
-<div class="modal" id="modalPayment" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+<div class="modal" id="modalPayment" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content rounded-0">
 
@@ -334,7 +352,8 @@ if (urldecode($tab) === '#payment') {
                 <div id="verifikasi_cair">
                     <div class="form-group">
                         <label for="nomor_bku">Nomor BKU</label>
-                        <input type="text" name="nomor_bku" id="nomor_bku" class="form-control" placeholder="Masukan Nomor BKU" required>
+                        <input type="text" name="nomor_bku" id="nomor_bku" class="form-control"
+                            placeholder="Masukan Nomor BKU" required>
                     </div>
                     <div class="form-group">
                         <label for="tanggal_bku">Tanggal BKU</label>
@@ -350,8 +369,7 @@ if (urldecode($tab) === '#payment') {
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i
                         class="fa fa-close mr-2"></i>Batal</button>
-                <button type="submit" class="btn btn-success rounded-0"><i
-                        class="fa fa-save mr-2"></i>Simpan</button>
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
             </div>
             <?= form_close(); ?>
         </div>

@@ -28,6 +28,8 @@ $("#filter_tanggal").on("apply.daterangepicker", function (ev, picker) {
 			" - " +
 			picker.endDate.format("DD/MM/YYYY"),
 	);
+	// auto-submit: chart & cards update by filter
+	$(this).closest("form").submit();
 });
 
 $("#filter_tanggal").on("cancel.daterangepicker", function (ev, picker) {

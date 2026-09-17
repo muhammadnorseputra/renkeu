@@ -87,7 +87,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         foreach ($indikator as $key => $r) :
                             $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($periode_id, $r['indikator_id']);
                             // Aksi
-                            if (($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') && ($isStatusVerifikasi === 'ENTRI' || $isStatusVerifikasi === 'ENTRI_ULANG')) 
+                            if (in_array($this->session->userdata('role'), ['SUPER_ADMIN', 'ADMIN']) && ($isStatusVerifikasi === 'ENTRI' || $isStatusVerifikasi === 'ENTRI_ULANG')) 
                             {
                                 $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi(' . $r['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
                             
@@ -95,16 +95,14 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             
                             // Realisasi by indikator
                             $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, null, $r['indikator_id'], $tahun_anggaran)->row();
-                            if ($realisasi->is_jenis === "2" && $realisasi->status === 'SETUJU') {
+                            if ($realisasi->is_jenis === "2") {
                                 $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                            } elseif ($realisasi->is_jenis === "1" && $realisasi->status === 'SETUJU') {
-                                $sum_realisasi = $realisasi->persentase . "%";
                             } else {
-                                $sum_realisasi = $isStatusVerifikasi;
-                            }
+                                $sum_realisasi = $realisasi->persentase . "%";
+                            } 
 
                             // Button Note
-                            if (in_array($isStatusVerifikasi, ['ENTRI','ENTRI_ULANG'])) {
+                            if (in_array($isStatusVerifikasi, ['ENTRI_ULANG'])) {
                                 $btn_note = '<button class="btn btn-danger btn-sm m-0" onclick="ViewNote(' . $r['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-info-circle"></i></button>';
                             } 
 
@@ -139,6 +137,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                         <td class='align-middle'>" . $r['nama'] . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiTujuan($periode_id, null, $t->id, $tahun_anggaran)) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $isStatusVerifikasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
                                         <td class='align-middle text-center'>" . $btn_verifikasi . $btn_note . "</td>
@@ -150,6 +149,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     <tr class='bg-warning'>
                                         <td class='align-middle'>" . $r['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi  . "</td>
+                                        <td class='align-middle text-center'>" . $isStatusVerifikasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
                                         <td class='align-middle text-center'>" . $btn_verifikasi . $btn_note . "</td>
@@ -179,6 +179,10 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         $rowspan = "";
                         $btn_catatan_kinerja = "";
                         $btn_faktor_kinerja = "";
+                        $btn_note = '';
+                        $btn_verifikasi = '';
+                        $btn_input = '';
+                        $link = "";
                         
                         if ($indikator_sasaran->num_rows() > 0):
                             $indikator = $indikator_sasaran->result_array();
@@ -186,35 +190,28 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                             foreach ($indikator as $key => $r) :
                                 $isStatusVerifikasi = $this->realisasi->isStatusVerifikasi($periode_id, $r['indikator_id']);
                                 // Aksi
-                                if (($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') && ($isStatusVerifikasi === 'ENTRI' || $isStatusVerifikasi === 'ENTRI_ULANG')) :
+                                if (in_array($this->session->userdata('role'), ['SUPER_ADMIN', 'ADMIN']) && ($isStatusVerifikasi === 'ENTRI' || $isStatusVerifikasi === 'ENTRI_ULANG')) :
                                     $btn_input = '<button class="btn btn-primary btn-sm m-0" onclick="InputRealisasi(' . $r['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-pencil"></i></button>';
-                                else:
-                                    $btn_input = '';
+                                    
                                 endif;
 
                                 // Realisasi by indikator
                                 $realisasi = $this->realisasi->getRealisasiByIndikatorId($periode_id, null, $r['indikator_id'], $tahun_anggaran)->row();
-                                if ($realisasi->is_jenis === "2" && $realisasi->status === 'SETUJU') {
+                                if ($realisasi->is_jenis === "2") {
                                     $sum_realisasi = $realisasi->eviden . " " . $realisasi->eviden_jenis;
-                                } elseif ($realisasi->is_jenis === "1" && $realisasi->status === 'SETUJU') {
-                                    $sum_realisasi = $realisasi->persentase . "%";
                                 } else {
-                                    $sum_realisasi = $isStatusVerifikasi;
-                                }
+                                    $sum_realisasi = $realisasi->persentase . "%";
+                                } 
 
                                 // Button Note
-                                if (in_array($isStatusVerifikasi, ['ENTRI','ENTRI_ULANG'])) {
+                                if (in_array($isStatusVerifikasi, ['ENTRI_ULANG'])) {
                                     $btn_note = '<button class="btn btn-danger btn-sm m-0" onclick="ViewNote(' . $r['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-info-circle"></i></button>';
-                                } else {
-                                    $btn_note = '';
-                                }
+                                } 
 
                                 // Button Verifikasi
                                 if (($isStatusVerifikasi === 'VERIFIKASI' || $isStatusVerifikasi === 'SETUJU') && privilages('priv_verify_kinerja')) {
                                     $btn_verifikasi = '<button class="btn btn-default bg-white btn-sm m-0" onclick="Verifikasi(' . $r['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-edit"></i></button>';
-                                } else {
-                                    $btn_verifikasi = '';
-                                }
+                                } 
 
                                 // Button Catatan Kinerja
                                 if(in_array($this->session->userdata('role'), ['USER', 'ADMIN', 'SUPER_ADMIN']) && ($realisasi->id !== null))
@@ -231,9 +228,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                 // Link
                                 if ($realisasi->eviden_link !== null || !empty($realisasi->eviden_link)) {
                                     $link = '<a href="' . $realisasi->eviden_link . '" target="_blank" class="btn btn-warning btn-sm m-0"><i class="fa fa-link"></i></a>';
-                                } else {
-                                    $link = "";
-                                }
+                                } 
 
                                 // Row
                                 $rowspan = $toEndSasaran++;
@@ -244,6 +239,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                         <td class='align-middle'>" . $r['nama'] . "</td>
                                         <td rowspan='" . $rowspan . "' class='align-middle text-right'>" . nominal($this->realisasi->getRealisasiSasaran($periode_id, null, $s->id, $this->session->userdata('tahun_anggaran'))) . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $isStatusVerifikasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
                                         <td class='align-middle text-center'>" . $btn_verifikasi . $btn_note . "</td>
@@ -255,6 +251,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     <tr class='bg-success text-white'>
                                         <td class='align-middle'>" . $r['nama'] . "</td>
                                         <td class='align-middle text-center'>" . $sum_realisasi . "</td>
+                                        <td class='align-middle text-center'>" . $isStatusVerifikasi . "</td>
                                         <td class='align-middle text-center'>" . $btn_input . "</td>
                                         <td class='align-middle text-center'>" . $link . "</td>
                                         <td class='align-middle text-center'>" . $btn_verifikasi . $btn_note . "</td>
@@ -310,7 +307,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                     } 
 
                                     // Button Note
-                                    if (in_array($isStatusVerifikasi, ['ENTRI','ENTRI_ULANG'])) {
+                                    if (in_array($isStatusVerifikasi, ['ENTRI_ULANG'])) {
                                         $btn_note = '<button class="btn btn-danger btn-sm m-0" onclick="ViewNote(' . $ip['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-info-circle"></i></button>';
                                     } else {
                                         $btn_note = '';
@@ -379,7 +376,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                         ?>
                 <tr class="bg-secondary text-white">
                     <td class="text-center align-middle" rowspan="<?= @$toEndProgram ?>"><?= $no_level_1 ?></td>
-                    <td rowspan="<?= @$toEndProgram ?>"></td>
+                    <td style="border: 0; background-color: #28a745;"></td>
                     <td class="align-middle" rowspan="<?= @$toEndProgram ?>"><?= $program->nama ?> </td>
                     <?= $tr ?>
                 </tr>
@@ -424,7 +421,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                         } 
 
                                         // Button Note
-                                        if (in_array($isStatusVerifikasi, ['ENTRI','ENTRI_ULANG'])) {
+                                        if (in_array($isStatusVerifikasi, ['ENTRI_ULANG'])) {
                                             $btn_note = '<button class="btn btn-danger btn-sm m-0" onclick="ViewNote(' . $ik['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-info-circle"></i></button>';
                                         } else {
                                             $btn_note = '';
@@ -494,7 +491,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <td class="text-center align-middle" rowspan="<?= @$toEndKegiatan ?>">
                         <?= $no_level_1 . "." . $no_level_2 ?>
                     </td>
-                    <td rowspan="<?= @$toEndKegiatan ?>"></td>
+                    <td style="border: 0; background-color: #28a745;"></td>
                     <td class="align-middle" rowspan="<?= @$toEndKegiatan ?>"><?= $kegiatan->nama ?></td>
                     <?= $tr ?>
                 </tr>
@@ -538,7 +535,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                                             } 
 
                                             // Button Note
-                                            if (in_array($isStatusVerifikasi, ['ENTRI','ENTRI_ULANG'])) {
+                                            if (in_array($isStatusVerifikasi, ['ENTRI_ULANG'])) {
                                                 $btn_note = '<button class="btn btn-danger btn-sm m-0" onclick="ViewNote(' . $isk['indikator_id'] . ',' . $periode_id . ')"><i class="fa fa-info-circle"></i></button>';
                                             } 
 
@@ -601,7 +598,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                 <tr>
                     <td class="text-center align-middle" rowspan="<?= @$toEndSubKegiatan ?>">
                         <?= $no_level_1 . "." . $no_level_2 . "." . $no_level_3 ?></td>
-                    <td rowspan="<?= @$toEndSubKegiatan ?>"></td>
+                    <td style="border: 0; background-color: #28a745;"></td>
                     <td class="align-middle" rowspan="<?= @$toEndSubKegiatan ?>"><?= $sub_kegiatan->nama ?></td>
                     <?= $tr ?>
                 </tr>
@@ -792,7 +789,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
 <!-- Modal Tambah Catatan Kinerja / Masalah -->
 <div class="modal fade" id="tambahCatatanKinerja" tabindex="-1" aria-labelledby="tambahCatatanLabel" aria-hidden="true"
     data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <?= form_open_multipart('app/realisasi/catatan_kinerja', ['class' => 'needs-validation', 'novalidate' => '', 'data-parsley-validate' => '']) ?>
             <input type="hidden" name="realisasi_id" id="realisasi_id">
@@ -839,7 +836,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                 <?php  
                 $disabled = $this->session->userdata('role') !== 'USER' ? 'disabled' : '';
                 ?>
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="faktor_pendorong">Faktor Pendorong</label>
                     <textarea name="faktor_pendorong" cols="30" rows="5" id="faktor_pendorong" class="form-control"
                         placeholder="Masukkan faktor pendorong disini..." required <?= $disabled ?>></textarea>
@@ -848,7 +845,7 @@ $periode_nama = $this->realisasi->getPeriodeById($periode_id)->row()->nama;
                     <label for="faktor_penghambat">Faktor Penghambat</label>
                     <textarea name="faktor_penghambat" cols="30" rows="5" id="faktor_penghambat" class="form-control"
                         placeholder="Masukkan faktor penghambat disini..." required <?= $disabled ?>></textarea>
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label for="tindak_lanjut">Tindak Lanjut</label>
                     <textarea name="tindak_lanjut" cols="30" rows="5" id="tindak_lanjut" class="form-control"
