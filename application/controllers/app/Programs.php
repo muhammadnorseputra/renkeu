@@ -505,14 +505,14 @@ class Programs extends CI_Controller
     public function uraian()
     {
         if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
-            $db = $this->db->select('u.id,u.fid_kegiatan,u.kode,u.nama,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
+            $db = $this->db->select('u.id,u.fid_kegiatan,u.kode,u.nama,u.is_aktif,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
                 ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get('ref_uraians AS u');
         else:
-            $db = $this->db->select('u.id,u.fid_kegiatan,u.kode,u.nama,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
+            $db = $this->db->select('u.id,u.fid_kegiatan,u.kode,u.nama,u.is_aktif,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
@@ -545,6 +545,7 @@ class Programs extends CI_Controller
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
                         <th>Total SPJ</th>
+                        <th class="text-center">Status Aktif</th>
                         <th class="text-center" colspan="2">Ubah | Hapus</th>
                         <th class="text-right" colspan="2">Alokasi Pagu Awal (Rp)</th>
                         <th class="text-right" colspan="2">Alokasi Pagu Perubahan (Rp)</th>
@@ -567,6 +568,18 @@ class Programs extends CI_Controller
 
             $totalPaguPerubahan = $paguPerubahan->total_pagu_awal ?? 0;
             $totalPaguAwal      = $pagu->total_pagu_awal ?? 0;
+
+            // Switch toggle is_aktif
+            $is_checked = (isset($r->is_aktif) && $r->is_aktif === 'Y') ? 'checked' : '';
+            $switch_aktif = '<td class="text-center align-middle" width="6%">
+                                <div class="d-inline-flex align-items-center justify-content-center position-relative">
+                                    <label class="switch-toggle mb-0" title="' . ($r->is_aktif === 'Y' ? 'Aktif' : 'Tidak Aktif') . '">
+                                        <input type="checkbox" class="toggle-is-aktif" data-id="' . $r->id . '" ' . $is_checked . '>
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <i class="fa fa-spinner fa-spin text-dark switch-loader d-none position-absolute" style="font-size: 13px;"></i>
+                                </div>
+                            </td>';
 
             if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'SUPER_USER' || $this->session->userdata('role') === 'VERIFICATOR'):
                 $button_hapus = '<td width="5%" class="text-center">
@@ -640,6 +653,7 @@ class Programs extends CI_Controller
 					                    <b class="nama">' . ucwords($r->nama) . '</b>
 					                </td>
 					                <td class="text-center">' . $jmlSpj . '</td>
+					                ' . $switch_aktif . '
 					                ' . $button_edit . '
 					                ' . $button_pagu . '
 					                ' . $button_pagu_perubahan . '
@@ -653,7 +667,7 @@ class Programs extends CI_Controller
         endforeach;
         $html .= '
             <tr>
-                <td colspan="6" class="text-right align-middle"><b>Total</b></td>
+                <td colspan="7" class="text-right align-middle"><b>Total</b></td>
                 <td colspan="2"><div class="d-flex justify-content-between"><b>Rp.</b><b>Rp. ' . nominal($total_all_pagu) . '</b></div></td>
                 <td colspan="2"><div class="d-flex justify-content-between"><b>Rp.</b><b>Rp. ' . nominal($total_all_pagu_perubahan) . '</b></div></td>
                 <td><div class="d-flex justify-content-between"><b>Rp.</b><b class="' . $warnaClassTotal . '">' . $hasilTotal . '</b></div></td>
@@ -669,6 +683,32 @@ class Programs extends CI_Controller
         endif;
 
         echo json_encode($data);
+    }
+
+    public function toggle_aktif_uraian()
+    {
+        $id       = $this->input->post('id');
+        $is_aktif = $this->input->post('is_aktif');
+
+        if (!$id || !$is_aktif) {
+            echo json_encode(['status' => false, 'message' => 'Parameter tidak lengkap']);
+            return;
+        }
+
+        $uraian = $this->crud->getWhere('ref_uraians', ['id' => $id])->row();
+        if (!$uraian) {
+            echo json_encode(['status' => false, 'message' => 'Data uraian tidak ditemukan']);
+            return;
+        }
+
+        $val    = ($is_aktif === 'Y') ? 'Y' : 'N';
+        $update = $this->crud->update('ref_uraians', ['is_aktif' => $val], ['id' => $id]);
+
+        if ($update) {
+            echo json_encode(['status' => true, 'is_aktif' => $val, 'message' => 'Status is_aktif berhasil diperbarui']);
+        } else {
+            echo json_encode(['status' => false, 'message' => 'Gagal memperbarui status is_aktif']);
+        }
     }
 
     public function uraian_limit()

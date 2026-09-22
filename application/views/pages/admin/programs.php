@@ -1,3 +1,60 @@
+<style>
+/* Switch toggle styling */
+.switch-toggle {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+.switch-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.switch-toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 20px;
+}
+.switch-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.switch-toggle input:checked + .slider {
+    background-color: #26B99A;
+}
+.switch-toggle input:checked + .slider:before {
+    transform: translateX(18px);
+}
+.switch-toggle input:disabled + .slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.switch-toggle.is-loading {
+    opacity: 0.35;
+    pointer-events: none;
+}
+.switch-loader {
+    pointer-events: none;
+    z-index: 2;
+}
+</style>
 <div class="row">
     <div class="col-md-12">
         <?php
@@ -1979,6 +2036,58 @@
             }, 'json')
         }
     }
+
+    $(document).on('change', '.toggle-is-aktif', async function() {
+        const $checkbox = $(this);
+        const id = $checkbox.data('id');
+        const is_aktif = $checkbox.is(':checked') ? 'Y' : 'N';
+        const $container = $checkbox.closest('div');
+        const $label = $checkbox.closest('.switch-toggle');
+        const $loader = $container.find('.switch-loader');
+
+        // Tampilkan efek loading & nonaktifkan input
+        $checkbox.prop('disabled', true);
+        $label.addClass('is-loading');
+        $loader.removeClass('d-none');
+        if (typeof NProgress !== 'undefined') NProgress.start();
+
+        try {
+            const body = new URLSearchParams();
+            body.append('id', id);
+            body.append('is_aktif', is_aktif);
+
+            const response = await fetch(`${_uri}/app/programs/toggle_aktif_uraian`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: body.toString()
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+
+            const res = await response.json();
+
+            if (res && res.status) {
+                $label.attr('title', is_aktif === 'Y' ? 'Aktif' : 'Tidak Aktif');
+            } else {
+                alert(res && res.message ? res.message : 'Gagal mengubah status');
+                $checkbox.prop('checked', is_aktif !== 'Y');
+            }
+        } catch (error) {
+            console.error('Error toggling is_aktif:', error);
+            $checkbox.prop('checked', is_aktif !== 'Y');
+            alert('Terjadi kesalahan koneksi saat memperbarui status.');
+        } finally {
+            // Hentikan efek loading & aktifkan kembali input
+            $checkbox.prop('disabled', false);
+            $label.removeClass('is-loading');
+            $loader.addClass('d-none');
+            if (typeof NProgress !== 'undefined') NProgress.done();
+        }
+    });
 
     // Mangatse :)
 </script>
