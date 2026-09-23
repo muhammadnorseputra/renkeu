@@ -46,6 +46,7 @@ class Dokuments extends CI_Controller
 			],
             'autoload_css' => [
                 'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
+                'template/custom-css/rekap-perjadin.css',
             ]
 		];
 		$this->load->view('layout/app', $data);

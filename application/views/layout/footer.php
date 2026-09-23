@@ -192,8 +192,16 @@
                     cornerRadius: 6,
                     padding: 10,
                     callbacks: {
+                        title: function (items, data) {
+                            var d = (allDates[items[0].index] || '').split('-');
+                            return d.length === 3 ? 'Tanggal ' + d[2] + '/' + d[1] + '/' + d[0] : data.labels[items[0].index];
+                        },
                         label: function (item, data) {
                             return ' ' + data.datasets[item.datasetIndex].label + ': ' + formatRp(item.yLabel);
+                        },
+                        footer: function (items, data) {
+                            var total = items.reduce(function (sum, item) { return sum + (item.yLabel || 0); }, 0);
+                            return 'Total: ' + formatRp(total);
                         }
                     }
                 },

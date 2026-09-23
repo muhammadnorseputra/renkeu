@@ -35,12 +35,15 @@ class Uploads extends CI_Controller
 
     public function pengelolaan_resiko()
     {
-        $getFileName = $_FILES['file']['name'];
+        $isAjax = $this->input->is_ajax_request();
+
+        $getFileName = $_FILES['file']['name'] ?? '';
         $periode = $this->input->post('periode');
         $tahun = $this->session->userdata('tahun_anggaran');
         $part_id = $this->session->userdata('part');
         $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
         $namafile = 'Pengelolaan-Resiko-' . $namapart .'-'. $periode . '-' . $tahun .'-'. generateRandomString();
+        $jenis_dokumen = $this->input->post('jenis_dokumen');
 
         // validasi form dan upload file ke folder /template/upload/dokumen_pengelolaan_resiko/
 		$config = [
@@ -54,13 +57,19 @@ class Uploads extends CI_Controller
         $this->load->library('upload', $config);
 
 		if (!$this->upload->do_upload('file')) {
+			$err = strip_tags($this->upload->display_errors('', ''));
+			if ($isAjax) {
+				header('Content-Type: application/json');
+				echo json_encode(['status' => false, 'pesan' => $err]);
+				return;
+			}
 			$this->session->set_flashdata('alert_type', 'error');
 			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
 			return redirect(base_url('app/dokuments/pengelolaan_resiko'));
 		}
 
         // Cek apakah sudah ada file untuk part dan tahun yg sama
-		$existing = $this->crud->getWhere('t_dokumen_pengelolaan_resiko', ['fid_part' => $part_id, 'is_jenis' => $this->input->post('jenis_dokumen'), 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
+		$existing = $this->crud->getWhere('t_dokumen_pengelolaan_resiko', ['fid_part' => $part_id, 'is_jenis' => $jenis_dokumen, 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
         // jika sudah ada, hapus file lama dari server
         if ($existing->num_rows() > 0) {
             $oldFile = $existing->row()->file_path;
@@ -73,7 +82,7 @@ class Uploads extends CI_Controller
         $upload_data = $this->upload->data();
 
 		$data = [
-			'is_jenis' => $this->input->post('jenis_dokumen'),
+			'is_jenis' => $jenis_dokumen,
             'periode' => $periode,
 			'fid_part' => $part_id,
             'nama_dokumen_ori' => $getFileName,
@@ -88,11 +97,21 @@ class Uploads extends CI_Controller
 
         // jika sudah ada record, lakukan update; jika belum, insert baru
 		if ($existing->num_rows() > 0) {
-			$db = $this->crud->update('t_dokumen_pengelolaan_resiko', $data, ['fid_part' => $part_id, 'is_jenis' => $this->input->post('jenis_dokumen'), 'tahun' => $tahun, 'periode' => $periode, 'created_by' => $this->session->userdata('user_name')]);
+			$db = $this->crud->update('t_dokumen_pengelolaan_resiko', $data, ['fid_part' => $part_id, 'is_jenis' => $jenis_dokumen, 'tahun' => $tahun, 'periode' => $periode, 'created_by' => $this->session->userdata('user_name')]);
             if($db) {
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => true, 'pesan' => 'Dokument Pengelolaan Resiko berhasil diperbarui']);
+                    return;
+                }
                 $this->session->set_flashdata('alert_type', 'success');
                 $this->session->set_flashdata('alert_msg', 'Dokument Pengelolaan Resiko berhasil diperbarui');
             } else {
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => false, 'pesan' => 'Gagal memperbarui Dokument Pengelolaan Resiko']);
+                    return;
+                }
                 $this->session->set_flashdata('alert_type', 'error');
                 $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Dokument Pengelolaan Resiko');
             }
@@ -101,9 +120,19 @@ class Uploads extends CI_Controller
 
         $db = $this->crud->insert('t_dokumen_pengelolaan_resiko', $data);
         if($db) {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => true, 'pesan' => 'Pengelolaan Resiko berhasil diunggah']);
+                return;
+            }
             $this->session->set_flashdata('alert_type', 'success');
             $this->session->set_flashdata('alert_msg', 'Pengelolaan Resiko berhasil diunggah');
         } else {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => false, 'pesan' => 'Gagal mengunggah Pengelolaan Resiko']);
+                return;
+            }
             $this->session->set_flashdata('alert_type', 'error');
             $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Pengelolaan Resiko');
         }
