@@ -57,7 +57,7 @@ $route['lockscreen'] = 'login/lockscreen';
 $route['app/users/u/(:any)'] = 'app/users/update_profile/$1';
 
 // ! Verifikasi Hasil Kinerja
-$route['app/verifikator-kinerja'] = 'app/verifikatorkinerja';
+$route['app/verifikator-kinerja'] = 'app/verifikatorKinerja';
 
 // ! Mapping Pegawai
 $route['app/pegawai'] = 'app/pegawai';

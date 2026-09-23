@@ -16,7 +16,7 @@ $(document).ready(function () {
                 order: [],
                 lengthMenu: [[10, 25, 50, -1], [10, 25, 50, 'Semua']],
                 ajax: {
-                    url: _uri + '/app/verifikatorkinerja/get_rekap_all',
+                    url: _uri + '/app/verifikatorKinerja/get_rekap_all',
                     type: 'POST'
                 },
                 columnDefs: [
@@ -86,7 +86,7 @@ $(document).ready(function () {
 
             // Auto-select periode yang sudah terisi di DB (jika ada)
             $.ajax({
-                url: _uri + '/app/verifikatorkinerja/get_periode_terisi',
+                url: _uri + '/app/verifikatorKinerja/get_periode_terisi',
                 type: 'post',
                 data: { nip: nip, tahun: tahun },
                 dataType: 'json',
@@ -136,7 +136,7 @@ $(document).ready(function () {
             $('#rekapLoading').removeClass('d-none');
 
             $.ajax({
-                url: _uri + '/app/verifikatorkinerja/get_rekap',
+                url: _uri + '/app/verifikatorKinerja/get_rekap',
                 type: 'post',
                 data: { nip: nip, tahun: tahun },
                 dataType: 'json',
@@ -216,7 +216,7 @@ $(document).ready(function () {
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
                 const res = await $.ajax({
-                    url: _uri + '/app/verifikatorkinerja/get_verifikasi',
+                    url: _uri + '/app/verifikatorKinerja/get_verifikasi',
                     type: 'post',
                     data: { nip: nip, periode: periode, tahun: tahun },
                     dataType: 'json'
@@ -269,7 +269,7 @@ $(document).ready(function () {
 
             try {
                 const res = await $.ajax({
-                    url: _uri + '/app/verifikatorkinerja/save_verifikasi',
+                    url: _uri + '/app/verifikatorKinerja/save_verifikasi',
                     type: 'post',
                     data: data,
                     dataType: 'json'
