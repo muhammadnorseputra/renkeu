@@ -1,0 +1,114 @@
+/* Upload Dropzone */
+.upload-dropzone {
+    border: 2px dashed #c3c9e0;
+    border-radius: 10px;
+    padding: 28px 20px;
+    text-align: center;
+    background: #f8f9fc;
+    cursor: pointer;
+    transition: all .2s ease;
+    position: relative;
+}
+.upload-dropzone:hover,
+.upload-dropzone.drag-over {
+    border-color: #2684ff;
+    background: #eef4ff;
+}
+.upload-dropzone.drag-over {
+    transform: scale(1.01);
+    box-shadow: 0 0 0 3px rgba(38,132,255,.15);
+}
+.upload-dropzone .fa-cloud-upload { opacity: .55; }
+
+/* File preview */
+.upload-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f1f3f9;
+    border: 1px solid #d6dbe6;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 8px;
+}
+.upload-preview-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #d6dbe6;
+    font-size: 20px;
+    color: #1c7d43;
+    flex-shrink: 0;
+}
+.upload-preview-info { flex: 1; min-width: 0; }
+.upload-preview-name {
+    font-weight: 600;
+    font-size: .88rem;
+    color: #232d42;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.upload-preview-meta { font-size: .78rem; color: #6c757d; margin-top: 1px; }
+
+/* Progress */
+.upload-progress { margin-top: 12px; }
+
+/* Jenis Dokumen radio cards */
+.jenis-dokumen-radio {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.jenis-dokumen-radio input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.radio-card {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 18px 14px;
+    border: 2px solid #d6dbe6;
+    border-radius: 10px;
+    background: #f8f9fc;
+    cursor: pointer;
+    transition: all .2s ease;
+    margin-bottom: 0;
+}
+.radio-card:hover {
+    border-color: #2684ff;
+    background: #eef4ff;
+}
+.jenis-dokumen-radio input[type="radio"]:checked + .radio-card {
+    border-color: #2684ff;
+    background: #eef4ff;
+    box-shadow: 0 0 0 3px rgba(38,132,255,.15);
+}
+.radio-card-title {
+    font-weight: 600;
+    color: #232d42;
+}
+.radio-card-desc {
+    font-size: .78rem;
+    color: #6c757d;
+    margin-top: 2px;
+}
+.jenis-dokumen-radio input[type="radio"]:checked + .radio-card .radio-card-title {
+    color: #1a5fd0;
+}
+.parsley-errors-list {
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: .8rem;
+    color: #e74c3c;
+}

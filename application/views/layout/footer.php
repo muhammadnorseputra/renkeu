@@ -8,6 +8,8 @@
     <script src="<?= base_url('template/backend/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js') ?>"></script>
     <!-- Js Notify -->
     <script src="<?= base_url('template/custom-js/bootstrap-notify/bootstrap-notify.min.js') ?>"></script>
+    <!-- Bootstrap Progressbar -->
+    <script src="<?= base_url('template/backend/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js') ?>"></script>
     <!-- Custom Theme Scripts -->
     <script src="<?= base_url('template/backend/build/js/custom.js') ?>"></script>
     <script src="<?= base_url('template/custom-js/admin.js') ?>"></script>

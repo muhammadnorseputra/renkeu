@@ -94,7 +94,7 @@ class Dashboard extends CI_Controller
 			'panel' => [
 				'program_total_pagu' => $ProgramTotalPaguAwal,
 				'program_total_realisasi' => $ProgramTotalRealisasi,
-				'jumlah_indikator' => $db_pegawai_mapping->num_rows(),
+				'jumlah_pegawai' => $db_pegawai_mapping->num_rows(),
 				'persentase_capaian' => $persentase_capaian
 			],
 			'chart' => [

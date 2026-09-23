@@ -1274,6 +1274,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             ],
             'autoload_css' => [
                 'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
+                'template/custom-css/rekap-perjadin.css',
             ]
         ];
         $this->load->view('layout/app', $data);
@@ -1401,82 +1402,75 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
     }
 
     public function upload_rekap_perjadin()
-    {
-        $getFileName = $_FILES['file']['name'];
-        $bulan = $this->input->post('bulan');
-        $tahun = $this->session->userdata('tahun_anggaran');
-        $part_id = $this->session->userdata('part');
-        $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
-        $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString().'-'.$this->session->userdata('user_name');
+        {
+            $isAjax = $this->input->is_ajax_request();
 
-        // Cek apakah sudah ada file untuk part, bulan, tahun dan created_by yg sama
-		// $existing = $this->crud->getWhere('t_dokumen_perjadin', ['fid_part' => $part_id, 'bulan' => $bulan, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
-        // jika sudah ada, hapus file lama dari server
-        // if ($existing->num_rows() > 0) {
-        //     $oldFile = $existing->row()->file_path;
-        //     $oldFilePath = FCPATH . 'template/upload/dokumen_perjadin/' . $oldFile;
-        //     if (file_exists($oldFilePath) && is_file($oldFilePath)) {
-        //         unlink($oldFilePath);
-        //     }
-        // }
-        
+            $getFileName = $_FILES['file']['name'] ?? '';
+            $bulan = $this->input->post('bulan');
+            $tahun = $this->session->userdata('tahun_anggaran');
+            $part_id = $this->session->userdata('part');
+            $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
+            $namafile = 'Rekapitulasi Perjalanan Dinas-' . $namapart . '-' . $bulan . '-' . $tahun.'-'. generateRandomString().'-'.$this->session->userdata('user_name');
 
-        // validasi form dan upload file ke folder /template/upload/dokumen_perjadin/
-		$config = [
-			'upload_path'   => './template/upload/dokumen_perjadin/',
-			'allowed_types' => 'pdf|xls|xlsx',
-			'max_size'      => 2120, // 2MB
-			'file_name'     => $namafile,
-			'overwrite'     => true
-		];
+            // validasi form dan upload file ke folder /template/upload/dokumen_perjadin/
+            $config = [
+                'upload_path'   => './template/upload/dokumen_perjadin/',
+                'allowed_types' => 'pdf|xls|xlsx',
+                'max_size'      => 2120, // 2MB
+                'file_name'     => $namafile,
+                'overwrite'     => true
+            ];
 
-        $this->load->library('upload', $config);
+            $this->load->library('upload', $config);
 
-		if (!$this->upload->do_upload('file')) {
-			$this->session->set_flashdata('alert_type', 'error');
-			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
-			return redirect(base_url('app/spj/rekap_perjadin'));
-		}
+            if (!$this->upload->do_upload('file')) {
+                $err = strip_tags($this->upload->display_errors('', ''));
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => false, 'pesan' => $err]);
+                    return;
+                }
+                $this->session->set_flashdata('alert_type', 'error');
+                $this->session->set_flashdata('alert_msg', $this->upload->display_errors());
+                return redirect(base_url('app/spj/rekap_perjadin'));
+            }
 
-        $upload_data = $this->upload->data();
+            $upload_data = $this->upload->data();
 
-		$data = [
-            'bulan' => $bulan,
-			'fid_part' => $part_id,
-            'nama_dokumen_ori' => $getFileName,
-			'nama_dokumen' => $namafile,
-			'file_path' => $upload_data['file_name'],
-			'ukuran_file' => $upload_data['file_size'],
-			'tipe_file' => $upload_data['file_type'],
-			'tahun' => $tahun,
-			'created_by' => $this->session->userdata('user_name'),
-			'created_at' => DateTimeInput()
-		];
+            $data = [
+                'bulan' => $bulan,
+                'fid_part' => $part_id,
+                'nama_dokumen_ori' => $getFileName,
+                'nama_dokumen' => $namafile,
+                'file_path' => $upload_data['file_name'],
+                'ukuran_file' => $upload_data['file_size'],
+                'tipe_file' => $upload_data['file_type'],
+                'tahun' => $tahun,
+                'created_by' => $this->session->userdata('user_name'),
+                'created_at' => DateTimeInput()
+            ];
 
-        // jika sudah ada record, lakukan update; jika belum, insert baru
-		// if ($existing->num_rows() > 0) {
-		// 	$db = $this->crud->update('t_dokumen_perjadin', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'bulan' => $bulan, 'created_by' => $this->session->userdata('user_name')]);
-        //     if($db) {
-        //         $this->session->set_flashdata('alert_type', 'success');
-        //         $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diperbarui');
-        //     } else {
-        //         $this->session->set_flashdata('alert_type', 'error');
-        //         $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Rekap Perjadin');
-        //     }
-        //     return redirect(base_url('app/spj/rekap_perjadin'));
-		// }
-        
+            $db = $this->crud->insert('t_dokumen_perjadin', $data);
 
-        $db = $this->crud->insert('t_dokumen_perjadin', $data);
-        if($db) {
-            $this->session->set_flashdata('alert_type', 'success');
-            $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diunggah');
-        } else {
-            $this->session->set_flashdata('alert_type', 'error');
-            $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Rekap Perjadin');
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                if ($db) {
+                    echo json_encode(['status' => true, 'pesan' => 'Rekap Perjadin berhasil diunggah']);
+                } else {
+                    echo json_encode(['status' => false, 'pesan' => 'Gagal mengunggah Rekap Perjadin']);
+                }
+                return;
+            }
+
+            if ($db) {
+                $this->session->set_flashdata('alert_type', 'success');
+                $this->session->set_flashdata('alert_msg', 'Rekap Perjadin berhasil diunggah');
+            } else {
+                $this->session->set_flashdata('alert_type', 'error');
+                $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Rekap Perjadin');
+            }
+            return redirect(base_url('app/spj/rekap_perjadin'));
         }
-        return redirect(base_url('app/spj/rekap_perjadin'));
-    }
 
     public function verifikasi_dokumen_perjadin()
     {
@@ -1559,6 +1553,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
             ],
             'autoload_css' => [
                 'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.css',
+                'template/custom-css/rekap-perjadin.css',
             ]
         ];
         $this->load->view('layout/app', $data);
@@ -1656,81 +1651,100 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && !empty($input['is_realisas
 
     public function upload_rekap_pajak()
     {
-        $getFileName = $_FILES['file']['name'];
-        $periode = $this->input->post('periode');
-        $tahun = $this->session->userdata('tahun_anggaran');
-        $jenis_dokumen = $this->input->post('jenis_dokumen');
-        $part_id = $this->session->userdata('part');
-        $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
-        $namafile = 'Rekapitulasi-' . $namapart .'-'. $jenis_dokumen . '-' . $periode . '-' . $tahun .'-'. generateRandomString();
+            $isAjax = $this->input->is_ajax_request();
 
-        // Cek apakah sudah ada file untuk part dan tahun yg sama
-		$existing = $this->crud->getWhere('t_dokumen_pajak', ['fid_part' => $part_id, 'jenis_dokumen' => $jenis_dokumen, 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
-        // jika sudah ada, hapus file lama dari server
-        if ($existing->num_rows() > 0) {
-            $oldFile = $existing->row()->file_path;
-            $oldFilePath = FCPATH . 'template/upload/dokumen_pajak/' . $oldFile;
-            if (file_exists($oldFilePath) && is_file($oldFilePath)) {
-                unlink($oldFilePath);
+            $getFileName = $_FILES['file']['name'] ?? '';
+            $periode = $this->input->post('periode');
+            $tahun = $this->session->userdata('tahun_anggaran');
+            $jenis_dokumen = $this->input->post('jenis_dokumen');
+            $part_id = $this->session->userdata('part');
+            $namapart = $this->crud->getWhere('ref_parts', ['id' => $part_id])->row()->singkatan;
+            $namafile = 'Rekapitulasi-' . $namapart .'-'. $jenis_dokumen . '-' . $periode . '-' . $tahun .'-'. generateRandomString();
+
+            // Cek apakah sudah ada file untuk part dan tahun yg sama
+    		$existing = $this->crud->getWhere('t_dokumen_pajak', ['fid_part' => $part_id, 'jenis_dokumen' => $jenis_dokumen, 'periode' => $periode, 'tahun' => $tahun, 'created_by' => $this->session->userdata('user_name')]);
+            // jika sudah ada, hapus file lama dari server
+            if ($existing->num_rows() > 0) {
+                $oldFile = $existing->row()->file_path;
+                $oldFilePath = FCPATH . 'template/upload/dokumen_pajak/' . $oldFile;
+                if (file_exists($oldFilePath) && is_file($oldFilePath)) {
+                    unlink($oldFilePath);
+                }
             }
-        }
         
-        // validasi form dan upload file ke folder /template/upload/dokumen_pajak/
-		$config = [
-			'upload_path'   => './template/upload/dokumen_pajak/',
-			'allowed_types' => 'pdf|xls|xlsx',
-			'max_size'      => 2120, // 2MB
-			'file_name'     => $namafile,
-			'overwrite'     => true
-		];
+            // validasi form dan upload file ke folder /template/upload/dokumen_pajak/
+    		$config = [
+    			'upload_path'   => './template/upload/dokumen_pajak/',
+    			'allowed_types' => 'pdf|xls|xlsx',
+    			'max_size'      => 2120, // 2MB
+    			'file_name'     => $namafile,
+    			'overwrite'     => true
+    		];
 
-        $this->load->library('upload', $config);
+            $this->load->library('upload', $config);
 
-		if (!$this->upload->do_upload('file')) {
-			$this->session->set_flashdata('alert_type', 'error');
-			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
-			return redirect(base_url('app/spj/rekap_pajak'));
-		}
+    		if (!$this->upload->do_upload('file')) {
+                $err = strip_tags($this->upload->display_errors('', ''));
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => false, 'pesan' => $err]);
+                    return;
+                }
+    			$this->session->set_flashdata('alert_type', 'error');
+    			$this->session->set_flashdata('alert_msg', $this->upload->display_errors());
+    			return redirect(base_url('app/spj/rekap_pajak'));
+    		}
 
-        $upload_data = $this->upload->data();
+            $upload_data = $this->upload->data();
 
-		$data = [
-            'periode' => $periode,
-            'jenis_dokumen' => $jenis_dokumen,
-			'fid_part' => $part_id,
-            'nama_dokumen_ori' => $getFileName,
-			'nama_dokumen' => $namafile,
-			'file_path' => $upload_data['file_name'],
-			'ukuran_file' => $upload_data['file_size'],
-			'tipe_file' => $upload_data['file_type'],
-			'tahun' => $tahun,
-			'created_by' => $this->session->userdata('user_name'),
-			'created_at' => DateTimeInput()
-		];
+    		$data = [
+                'periode' => $periode,
+                'jenis_dokumen' => $jenis_dokumen,
+    			'fid_part' => $part_id,
+                'nama_dokumen_ori' => $getFileName,
+    			'nama_dokumen' => $namafile,
+    			'file_path' => $upload_data['file_name'],
+    			'ukuran_file' => $upload_data['file_size'],
+    			'tipe_file' => $upload_data['file_type'],
+    			'tahun' => $tahun,
+    			'created_by' => $this->session->userdata('user_name'),
+    			'created_at' => DateTimeInput()
+    		];
 
-        // jika sudah ada record, lakukan update; jika belum, insert baru
-		if ($existing->num_rows() > 0) {
-			$db = $this->crud->update('t_dokumen_pajak', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'periode' => $periode, 'jenis_dokumen' => $jenis_dokumen, 'created_by' => $this->session->userdata('user_name')]);
+            // jika sudah ada record, lakukan update; jika belum, insert baru
+    		if ($existing->num_rows() > 0) {
+    			$db = $this->crud->update('t_dokumen_pajak', $data, ['fid_part' => $part_id, 'tahun' => $tahun, 'periode' => $periode, 'jenis_dokumen' => $jenis_dokumen, 'created_by' => $this->session->userdata('user_name')]);
+                if($db) {
+                    $this->session->set_flashdata('alert_type', 'success');
+                    $this->session->set_flashdata('alert_msg', 'Rekap Pajak berhasil diperbarui');
+                } else {
+                    $this->session->set_flashdata('alert_type', 'error');
+                    $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Rekap Pajak');
+                }
+                return redirect(base_url('app/spj/rekap_pajak'));
+    		}
+        
+            $db = $this->crud->insert('t_dokumen_pajak', $data);
+
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                if ($db) {
+                    echo json_encode(['status' => true, 'pesan' => 'Rekap Pajak berhasil diunggah']);
+                } else {
+                    echo json_encode(['status' => false, 'pesan' => 'Gagal mengunggah Rekap Pajak']);
+                }
+                return;
+            }
+
             if($db) {
                 $this->session->set_flashdata('alert_type', 'success');
-                $this->session->set_flashdata('alert_msg', 'Rekap Pajak berhasil diperbarui');
+                $this->session->set_flashdata('alert_msg', 'Rekap Pajak berhasil diunggah');
             } else {
                 $this->session->set_flashdata('alert_type', 'error');
-                $this->session->set_flashdata('alert_msg', 'Gagal memperbarui Rekap Pajak');
+                $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Rekap Pajak');
             }
             return redirect(base_url('app/spj/rekap_pajak'));
-		}
-
-        $db = $this->crud->insert('t_dokumen_pajak', $data);
-        if($db) {
-            $this->session->set_flashdata('alert_type', 'success');
-            $this->session->set_flashdata('alert_msg', 'Rekap Pajak berhasil diunggah');
-        } else {
-            $this->session->set_flashdata('alert_type', 'error');
-            $this->session->set_flashdata('alert_msg', 'Gagal mengunggah Rekap Pajak');
         }
-        return redirect(base_url('app/spj/rekap_pajak'));
-    }
 
     public function verifikasi_dokumen_pajak()
     {

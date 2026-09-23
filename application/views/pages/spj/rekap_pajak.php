@@ -109,15 +109,25 @@
             Jika ada perbaikan dokumen, silahkan unggah ulang dengan memilih file yang benar pada jenis, periode dan tahun yang sama.
          </div>
          <div class="form-group">
-            <label for="jenis_dokumen">Jenis Dokumen</label>
-            <select name="jenis_dokumen" id="jenis_dokumen" class="form-control" required>
-                <option value="">Pilih Jenis Dokumen</option>
-                <option value="PAJAK_PUSAT">Pajak Negara</option>
-                <option value="PAJAK_DAERAH">Pajak Daerah</option>
-            </select>
+            <label>Jenis Dokumen <span class="text-danger">*</span></label>
+            <div class="jenis-dokumen-radio">
+                <input type="radio" name="jenis_dokumen" id="jenis_pajak_pusat" value="PAJAK_PUSAT" required data-parsley-required="true" data-parsley-required-message="Pilih jenis dokumen">
+                <label for="jenis_pajak_pusat" class="radio-card">
+                    <i class="fa fa-building fa-2x text-primary mb-2"></i>
+                    <div class="radio-card-title">Pajak Negara</div>
+                    <div class="radio-card-desc">Pajak Pusat / Negara</div>
+                </label>
+
+                <input type="radio" name="jenis_dokumen" id="jenis_pajak_daerah" value="PAJAK_DAERAH" required data-parsley-required="true" data-parsley-required-message="Pilih jenis dokumen">
+                <label for="jenis_pajak_daerah" class="radio-card">
+                    <i class="fa fa-building fa-2x text-success mb-2"></i>
+                    <div class="radio-card-title">Pajak Daerah</div>
+                    <div class="radio-card-desc">Pajak Daerah / Provinsi</div>
+                </label>
+            </div>
         </div>
          <div class="form-group">
-            <label for="periode">Periode</label>
+            <label for="periode">Periode <span class="text-danger">*</span></label>
             <select name="periode" id="periode" class="form-control" required>
                 <option value="">Pilih Periode</option>
                 <!-- option group -->
@@ -148,14 +158,39 @@
              </select>
         </div>
         <div class="form-group">
-            <label for="file">Pilih File Excel</label>
-            <input type="file" class="form-control-file" id="file" name="file" accept=".xlsx,.xls" required>
+            <label>Pilih File Excel / PDF <span class="text-danger">*</span></label>
+            <div class="upload-dropzone" id="uploadDropzone">
+                <i class="fa fa-cloud-upload fa-3x text-primary"></i>
+                <p class="mb-1 mt-2"><strong>Seret &amp; letakkan file di sini</strong></p>
+                <p class="text-muted mb-2">atau klik untuk memilih file</p>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="btnBrowseFile"><i class="fa fa-folder-open mr-1"></i> Pilih File</button>
+                <input type="file" class="d-none" id="file" name="file" accept=".xlsx,.xls,.pdf" required>
+            </div>
+            <div class="upload-preview d-none" id="uploadPreview">
+                <div class="upload-preview-icon"><i class="fa fa-file-excel-o"></i></div>
+                <div class="upload-preview-info">
+                    <div class="upload-preview-name" id="previewFileName">-</div>
+                    <div class="upload-preview-meta" id="previewFileMeta">-</div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger" id="btnRemoveFile" title="Hapus file"><i class="fa fa-times"></i></button>
+            </div>
+        </div>
+        <div class="upload-progress d-none" id="uploadProgress">
+            <div class="d-flex justify-content-between mb-1">
+                <small class="text-muted" id="progressStatus">Mengunggah...</small>
+                <small class="text-muted" id="progressPercent">0%</small>
+            </div>
+            <div class="progress" style="height: 8px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" id="progressBar" role="progressbar" style="width: 0%"></div>
+            </div>
         </div>
         
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button type="button" class="btn btn-primary" id="btnUpload" disabled>
+            <i class="fa fa-upload mr-1"></i> Upload
+        </button>
     </div>
     <?= form_close(); ?>
     </div>

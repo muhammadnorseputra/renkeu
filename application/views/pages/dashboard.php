@@ -26,10 +26,10 @@
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
         <div class="tile-stats">
             <div class="icon"><i class="fa fa-flag"></i></div>
-            <h3>Indikator </h3>
-            <p>Jumlah Indikator Outcome/Output.</p>
+            <h3>Pegawai </h3>
+            <p>Jumlah Pegawai Mapping.</p>
             <hr>
-            <div class="count"><?php echo $panel['jumlah_indikator'] ?> indikator</div>
+            <div class="count"><?php echo $panel['jumlah_pegawai'] ?> pegawai</div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">

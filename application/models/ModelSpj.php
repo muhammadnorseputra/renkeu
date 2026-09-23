@@ -719,9 +719,9 @@ class ModelSpj extends CI_Model
 		$result = ['usulan' => [], 'verifikasi' => [], 'cair' => [], 'range' => null];
 
 		if(empty($filter_tanggal)) {
-			// default: seluruh tahun anggaran
-			$start_date = $ta . '-01-01';
-			$end_date = $ta . '-12-31';
+			// default: bulan sekarang
+			$start_date = date('Y-m-01');
+			$end_date = date('Y-m-t');
 		} else {
 			$tanggal = explode(' - ', $filter_tanggal);
 			if(count($tanggal) < 2) return $result;
