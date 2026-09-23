@@ -43,7 +43,7 @@ class Dashboard extends CI_Controller
 	{
 		// Panel Dashboard
 		$db_program = $this->crud->getWhere('ref_programs', ['tahun' => $this->ta]);
-		$db_indikator = $this->crud->getWhere('ref_indikators', ['tahun' => $this->ta]);
+		$db_pegawai_mapping = $this->crud->get('pegawai');
 		$ProgramTotalPaguAwal = 0;
 		$ProgramTotalRealisasi = 0;
 		foreach ($db_program->result() as $r) :
@@ -94,7 +94,7 @@ class Dashboard extends CI_Controller
 			'panel' => [
 				'program_total_pagu' => $ProgramTotalPaguAwal,
 				'program_total_realisasi' => $ProgramTotalRealisasi,
-				'jumlah_indikator' => $db_indikator->num_rows(),
+				'jumlah_indikator' => $db_pegawai_mapping->num_rows(),
 				'persentase_capaian' => $persentase_capaian
 			],
 			'chart' => [
@@ -132,6 +132,7 @@ class Dashboard extends CI_Controller
 				'template/backend/vendors/Flot/jquery.flot.selection.js',
 				'template/backend/vendors/Flot/jquery.flot.threshold.js',
 				'template/backend/vendors/DateJS/build/date.js',
+				'template/backend/vendors/flot.curvedlines/curvedLines.js',
 				'template/backend/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js',
 				'template/custom-js/dashboard.js'
 			]

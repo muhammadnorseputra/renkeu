@@ -28,21 +28,40 @@ class Pegawai extends CI_Controller
         $mapped = $this->crud->get('pegawai')->result();
         $mapped_nips = array_column($mapped, 'nip');
         $mapped_bidang = [];
+        $mapped_pegawai = [];
         foreach ($mapped as $m) {
             $mapped_bidang[$m->nip] = $m->fid_part;
+            $mapped_pegawai[$m->nip] = $m;
         }
 
+        $synced_pns  = count(array_intersect($mapped_nips, array_column($pegawai_pns, 'nip_baru')));
+        $synced_pppk = count(array_intersect($mapped_nips, array_column($pegawai_pppk, 'nipppk')));
+        $sudah_sync  = $synced_pns + $synced_pppk;
+        $total_asn   = count($pegawai_pns) + count($pegawai_pppk);
+        $belum_sync  = $total_asn - $sudah_sync;
+
         $data = [
-            'title'       => 'Mapping Pegawai',
-            'content'     => 'pages/pegawai',
-            'pegawai_pns' => $pegawai_pns,
-            'pegawai_pppk'=> $pegawai_pppk,
-            'total_asn'   => count($pegawai_pns) + count($pegawai_pppk),
-            'list_bidang' => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
-            'mapped_nips' => $mapped_nips,
-            'mapped_bidang' => $mapped_bidang,
-            'message'     => isset($response_pns['message']) ? $response_pns['message'] : '',
-            'api_ok'      => isset($response_pns['status']) && $response_pns['status'] === true,
+            'title'          => 'Mapping Pegawai',
+            'content'        => 'pages/pegawai',
+            'pegawai_pns'    => $pegawai_pns,
+            'pegawai_pppk'   => $pegawai_pppk,
+            'total_asn'      => $total_asn,
+            'sudah_sync'     => $sudah_sync,
+            'belum_sync'     => $belum_sync,
+            'synced_pns'     => $synced_pns,
+            'synced_pppk'    => $synced_pppk,
+            'list_bidang'    => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
+            'mapped_nips'    => $mapped_nips,
+            'mapped_bidang'  => $mapped_bidang,
+            'mapped_pegawai' => $mapped_pegawai,
+            'message'        => isset($response_pns['message']) ? $response_pns['message'] : '',
+            'api_ok'         => isset($response_pns['status']) && $response_pns['status'] === true,
+            'autoload_css'   => [
+                'template/custom-css/pegawai.css',
+            ],
+            'autoload_js'    => [
+                'template/custom-js/pegawai.js',
+            ],
         ];
         $this->load->view('layout/app', $data);
     }

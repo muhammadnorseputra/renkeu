@@ -54,6 +54,60 @@
     pointer-events: none;
     z-index: 2;
 }
+.budget-pills {
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #dbeafe;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #f8fbff 0%, #eefaf5 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 8px 24px rgba(31, 78, 121, .08);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+.budget-pills .nav-item {
+    margin: 0 !important;
+}
+.budget-pills .nav-link {
+    display: inline-flex;
+    align-items: center;
+    height: 42px;
+    padding: 0 16px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    color: #52677a;
+    background: rgba(255,255,255,.72);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .06);
+    transition: .2s ease;
+    white-space: nowrap;
+}
+.budget-pills .nav-link i,
+.budget-pills .nav-link span.fa {
+    color: #26B99A !important;
+}
+.budget-pills .nav-link:hover {
+    color: #1f4e79;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(31, 78, 121, .12);
+}
+.budget-pills .nav-link.active {
+    color: #fff !important;
+    background: linear-gradient(135deg, #1f4e79 0%, #26B99A 100%) !important;
+    box-shadow: 0 10px 24px rgba(38, 185, 154, .28);
+}
+.budget-pills .nav-link.active i,
+.budget-pills .nav-link.active span.fa {
+    color: #fff !important;
+}
+.budget-panel {
+    border: 0 !important;
+    margin-top: 12px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+    overflow: hidden;
+}
 </style>
 <div class="row">
     <div class="col-md-12">
@@ -130,7 +184,7 @@
             $is_active_limit = false;
         }
         ?>
-        <ul class="nav nav-tabs" id="myTab" role="tablist" style="overflow-x: auto; display: flex; flex-wrap: nowrap;">
+        <ul class="nav nav-pills budget-pills" id="myTab" role="tablist" style="overflow-x: auto; display: flex; flex-wrap: nowrap;">
             <?php
             if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
             ?>
@@ -162,7 +216,7 @@
                 </li>
             <?php endif; ?>
         </ul>
-        <div class="x_panel" style="border-top:0">
+        <div class="x_panel budget-panel">
             <div class="x_content">
                 <div class="tab-content" id="myTabContent">
                     <?php
@@ -572,6 +626,13 @@
                 <div class="form-group">
                     <label for="nama_uraian">Uraian <span class="text-danger">*</span></label>
                     <input type="text" id="nama_uraian" name="nama_uraian" class="form-control" required data-parsley-trigger="focusout">
+                </div>
+                <div class="form-group">
+                    <label class="d-block mb-1">Status Aktif</label>
+                    <label class="switch-toggle mb-0" title="Aktif">
+                        <input type="checkbox" name="is_aktif" value="Y" checked>
+                        <span class="slider round"></span>
+                    </label>
                 </div>
             </div>
             <div class="modal-footer">

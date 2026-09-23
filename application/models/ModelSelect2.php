@@ -93,7 +93,7 @@ class ModelSelect2 extends CI_Model
     }
     public function getUraian($kegiatanId, $subKegiatanId, $search)
     {
-        $this->db->select('u.id, u.kode, u.nama');
+        $this->db->select('u.id, u.kode, u.nama, u.is_aktif');
         $this->db->from('ref_uraians as u');
         $this->db->join('ref_kegiatans as k', 'u.fid_kegiatan=k.id');
         $this->db->where('u.fid_kegiatan', $kegiatanId);

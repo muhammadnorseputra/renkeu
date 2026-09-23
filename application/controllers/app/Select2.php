@@ -114,6 +114,7 @@ class Select2 extends CI_Controller
             $data['id'] = $u->id;
             $data['text'] = $u->kode . " - " . $u->nama;
             $data['kode'] = $u->kode;
+            $data['disabled'] = $u->is_aktif === 'N';
             $all[] = $data;
         }
         echo json_encode($all);

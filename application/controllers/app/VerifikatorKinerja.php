@@ -51,6 +51,15 @@ class VerifikatorKinerja extends CI_Controller
             'content'   => 'pages/verifikator_kinerja',
             'bidang'    => array_values($per_bidang),
             'priv_edit' => privilages('priv_verifikasi_kinerja'),
+            'autoload_css' => [
+                'template/custom-css/verifikator-kinerja.css',
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/b-3.2.4/r-3.0.3/datatables.min.css',
+            ],
+            'autoload_js' => [
+                'https://cdn.datatables.net/v/bs4/dt-2.3.7/b-3.2.4/r-3.0.3/datatables.min.js',
+                'https://cdn.datatables.net/buttons/3.2.4/js/buttons.colVis.min.js',
+                'template/custom-js/verifikator-kinerja.js',
+            ],
         ];
         $this->load->view('layout/app', $data);
     }
@@ -61,7 +70,7 @@ class VerifikatorKinerja extends CI_Controller
     public function get_periode_terisi()
     {
         $nip   = $this->input->post('nip');
-        $tahun = $this->input->post('tahun');
+        $tahun = $this->session->userdata('tahun_anggaran');
 
         $rows = $this->crud->getWhere('t_verify_kinerja', [
             'nip'   => $nip,
@@ -96,7 +105,7 @@ class VerifikatorKinerja extends CI_Controller
     {
         $nip     = $this->input->post('nip');
         $periode = $this->input->post('periode');
-        $tahun   = $this->input->post('tahun');
+        $tahun   = $this->session->userdata('tahun_anggaran');
 
         $row = $this->crud->getWhere('t_verify_kinerja', [
             'nip'     => $nip,
@@ -113,7 +122,7 @@ class VerifikatorKinerja extends CI_Controller
     public function get_rekap()
     {
         $nip   = $this->input->post('nip');
-        $tahun = $this->input->post('tahun');
+        $tahun = $this->session->userdata('tahun_anggaran');
 
         $rows = $this->crud->getWhere('t_verify_kinerja', [
             'nip'   => $nip,
@@ -162,7 +171,7 @@ class VerifikatorKinerja extends CI_Controller
     {
         $nip     = $this->input->post('nip');
         $periode = $this->input->post('periode');
-        $tahun   = $this->input->post('tahun');
+        $tahun   = $this->session->userdata('tahun_anggaran');
 
         if (empty($nip) || empty($periode) || empty($tahun)) {
             echo json_encode(['status' => false, 'pesan' => 'Data NIP, periode, dan tahun wajib diisi.']);
@@ -208,5 +217,49 @@ class VerifikatorKinerja extends CI_Controller
             'status' => $ok,
             'pesan'  => $ok ? 'Data verifikasi berhasil disimpan.' : 'Gagal menyimpan data verifikasi.',
         ]);
+    }
+
+    /**
+     * Rekap verifikasi semua pegawai (server-side DataTable)
+     */
+    public function get_rekap_all()
+    {
+        $this->load->model('ModelDatatables', 'datatables');
+        $db = $this->datatables->make_datatables_rekap_verifikasi_all();
+        $data = array();
+        $no = @$_POST['start'];
+
+        foreach ($db as $r) {
+            $row = array();
+            $row[] = ++$no;
+            $row[] = $r->nip;
+            $row[] = $r->nama_lengkap;
+            $row[] = $r->jabatan;
+            $row[] = $r->pangkat;
+            $row[] = $r->jenis;
+            $row[] = $r->bidang_nama;
+            $row[] = $r->bidang_singkatan;
+            $tw_full = '<span class="text-success font-weight-bold"><i class="fa fa-check-circle"></i> 6/6</span>';
+            $tw_cell = function ($c) use ($tw_full) {
+                return $c >= 6 ? $tw_full : '<span class="text-muted">' . $c . '/6</span>';
+            };
+            $row[] = $tw_cell($r->tw1_count);
+            $row[] = $tw_cell($r->tw2_count);
+            $row[] = $tw_cell($r->tw3_count);
+            $row[] = $tw_cell($r->tw4_count);
+            $row[] = $r->total_count . '/24';
+            $row[] = $r->status_label === 'Lengkap'
+                ? '<span class="badge badge-success">Lengkap</span>'
+                : '<span class="badge badge-warning">Belum Lengkap</span>';
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw"            => intval($_POST['draw']),
+            "recordsTotal"    => $this->datatables->make_count_all_rekap_verifikasi_all(),
+            "recordsFiltered" => $this->datatables->make_count_filtered_rekap_verifikasi_all(),
+            "data"            => $data,
+        );
+        echo json_encode($output);
     }
 }

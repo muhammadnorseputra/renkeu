@@ -1,7 +1,7 @@
 <div class="clearfix"></div>
 <div class="alert alert-primary" role="alert">
-    Selamat datang kembali <strong><?= $this->session->userdata('nama') ?></strong> [ Login as <b><?= strtolower($this->session->userdata('role')); ?></b> ] <br>
-    <?= $this->users->part_detail($this->session->userdata('part')); ?> <br>
+    Selamat datang kembali <strong><?php echo $this->session->userdata('nama') ?></strong> [ Login as <b><?php echo strtolower($this->session->userdata('role')); ?></b> ] <br>
+    <?php echo $this->users->part_detail($this->session->userdata('part')); ?> <br>
 </div>
 <!-- Panel Chart -->
 <div class="row" id="panel">
@@ -11,7 +11,7 @@
             <h3>Target </h3>
             <p>Target Pagu Anggaran.</p>
             <hr>
-            <div class="count">Rp. <?= nominal($panel['program_total_pagu']) ?></div>
+            <div class="count">Rp. <?php echo nominal($panel['program_total_pagu']) ?></div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -20,7 +20,7 @@
             <h3>Realisasi </h3>
             <p>Realisasi Pagu Anggaran.</p>
             <hr>
-            <div class="count">Rp. <?= nominal($panel['program_total_realisasi']) ?></div>
+            <div class="count">Rp. <?php echo nominal($panel['program_total_realisasi']) ?></div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -29,7 +29,7 @@
             <h3>Indikator </h3>
             <p>Jumlah Indikator Outcome/Output.</p>
             <hr>
-            <div class="count"><?= $panel['jumlah_indikator'] ?> indikator</div>
+            <div class="count"><?php echo $panel['jumlah_indikator'] ?> indikator</div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -40,13 +40,13 @@
             <hr>
             <div class="row">
                 <div class="col-md-5">
-                    <div class="count"><?= @round($panel['persentase_capaian'], 2) ?> %</div>
+                    <div class="count"><?php echo @round($panel['persentase_capaian'], 2) ?> %</div>
                 </div>
                 <div class="col-md-7 px-3 px-md-4">
                     <!-- <small>Progres Capaian 100%</small> -->
                     <div class="mt-md-2">
                         <div class="progress m-0" style="width: 100%;">
-                            <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="<?= @round($panel['persentase_capaian'], 2) ?>"></div>
+                            <div class="progress-bar bg-blue" role="progressbar" data-transitiongoal="<?php echo @round($panel['persentase_capaian'], 2) ?>"></div>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
         <div class="x_panel ui-ribbon-container">
             <div class="ui-ribbon-wrapper">
                 <div class="ui-ribbon">
-                    <?= $this->session->userdata('tahun_anggaran'); ?>
+                    <?php echo $this->session->userdata('tahun_anggaran'); ?>
                 </div>
             </div>
             <div class="x_title">
@@ -81,54 +81,54 @@
                     <div class="tiles">
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                            $limit = $chart['limit_triwulan_1'];
-                            $tw_jumlah = $chart['triwulan_1'];
-                            $percentase =  @($tw_jumlah / $limit) * 100;
-                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit          = $chart['limit_triwulan_1'];
+                                $tw_jumlah      = $chart['triwulan_1'];
+                                $percentase     = @($tw_jumlah / $limit) * 100;
+                                $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN I</span>
-                            <h2>Rp. <?= @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                            $limit = $chart['limit_triwulan_2'];
-                            $tw_jumlah = $chart['triwulan_2'];
-                            $percentase =  @($tw_jumlah / $limit) * 100;
-                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit          = $chart['limit_triwulan_2'];
+                                $tw_jumlah      = $chart['triwulan_2'];
+                                $percentase     = @($tw_jumlah / $limit) * 100;
+                                $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN II</span>
-                            <h2>Rp. <?= @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                            $limit = $chart['limit_triwulan_3'];
-                            $tw_jumlah = $chart['triwulan_3'];
-                            $percentase =  @($tw_jumlah / $limit) * 100;
-                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit          = $chart['limit_triwulan_3'];
+                                $tw_jumlah      = $chart['triwulan_3'];
+                                $percentase     = @($tw_jumlah / $limit) * 100;
+                                $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN III</span>
-                            <h2>Rp. <?= @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                            $limit = $chart['limit_triwulan_4'];
-                            $tw_jumlah = $chart['triwulan_4'];
-                            $percentase =  @($tw_jumlah / $limit) * 100;
-                            $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit          = $chart['limit_triwulan_4'];
+                                $tw_jumlah      = $chart['triwulan_4'];
+                                $percentase     = @($tw_jumlah / $limit) * 100;
+                                $percentase_cek = ($percentase != 0) ? $percentase : '';
                             ?>
                             <span>TOTAL TRIWULAN IV</span>
-                            <h2>Rp. <?= @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
                             <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?= @round($percentase_cek, 2) ?>"></div>
+                                <div class="progress-bar" role="progressbar" data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
                             </div>
                         </div>
                     </div>
@@ -141,7 +141,7 @@
         <div class="x_panel ui-ribbon-container">
             <div class="ui-ribbon-wrapper">
                 <div class="ui-ribbon">
-                    <?= $this->session->userdata('tahun_anggaran'); ?>
+                    <?php echo $this->session->userdata('tahun_anggaran'); ?>
                 </div>
             </div>
             <div class="x_title">
@@ -154,12 +154,12 @@
             <div class="x_content">
                 <ul class="list-unstyled top_profiles scroll-view">
                     <?php
-                    foreach ($chart['top_transaksi'] as $top) :
-                        $profile = $this->user->profile_username($top->entri_by)->row();
-                        $tglsql = substr($top->entri_at, 0, 10);
-                        if ($top->is_status === 'APPROVE') {
-                            $status = '<span class="badge badge-primary"><i class="fa fa-check-circle" title="APPROVE"></i></span>';
-                        } elseif ($top->is_status === 'BTL') {
+                        foreach ($chart['top_transaksi'] as $top):
+                            $profile = $this->user->profile_username($top->entri_by)->row();
+                            $tglsql  = substr($top->entri_at, 0, 10);
+                            if ($top->is_status === 'APPROVE') {
+                                $status = '<span class="badge badge-primary"><i class="fa fa-check-circle" title="APPROVE"></i></span>';
+                            } elseif ($top->is_status === 'BTL') {
                             $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> BTL</span>';
                         } elseif ($top->is_status === 'TMS') {
                             $status = '<span class="badge badge-danger"><i class="fa fa-close"></i> TMS</span>';
@@ -169,12 +169,12 @@
                     ?>
                         <li class="media event">
                             <a class="pull-left border-aero profile_thumb">
-                                <img class="aero" src="<?= base_url('template/assets/picture_akun/' . $profile->pic) ?>" alt="<?= $profile->username ?>" width="25">
+                                <img class="aero" src="<?php echo base_url('template/assets/picture_akun/' . $profile->pic) ?>" alt="<?php echo $profile->username ?>" width="25">
                             </a>
                             <div class="media-body">
-                                <a class="title" href="#" data-toggle="tooltip" data-placement="right" title="<?= ucwords(strtolower($profile->nama)) ?>"><small><?= $top->singkatan; ?> | <?= longdate_indo($tglsql) ?></small></a>
-                                <p><strong>Rp. <?= nominal($top->jumlah) ?> </strong></p>
-                                <p><small><?= $profile->nama ?></small><span style="float:right"><?= $status ?></span></p>
+                                <a class="title" href="#" data-toggle="tooltip" data-placement="right" title="<?php echo ucwords(strtolower($profile->nama)) ?>"><small><?php echo $top->singkatan; ?> | <?php echo longdate_indo($tglsql) ?></small></a>
+                                <p><strong>Rp. <?php echo nominal($top->jumlah) ?> </strong></p>
+                                <p><small><?php echo $profile->nama ?></small><span style="float:right"><?php echo $status ?></span></p>
                             </div>
                         </li>
                     <?php endforeach; ?>
@@ -229,120 +229,170 @@
 <script>
     $(function() {
         let SPJMS = {
-            label: "Realisasi SPJ MS",
-            data: <?= $chart['spj_ms'] ?>,
-            lines: {
-                fillColor: "rgba(30, 64, 175, 0.12)"
-            },
-            points: {
-                fillColor: "#fff"
-            },
-        };
-        let SPJTMS = {
-            label: "Realisasi SPJ TMS",
-            data: <?= $chart['spj_tms'] ?>,
-            lines: {
-                fillColor: "rgba(255, 0, 0, 0.12)"
-            },
-            points: {
-                fillColor: "#fff"
-            },
-        };
-        let SPJBARU = {
-            label: "Realisasi SPJ Baru",
-            data: <?= $chart['spj_baru'] ?>,
-            lines: {
-                fillColor: "rgba(255, 165, 0, 0.12)"
-            },
-            points: {
-                fillColor: "#fff"
-            },
-        };
-        let SPJCAIR = {
-            label: "Realisasi SPJ Cair",
-            data: <?= $chart['spj_cair'] ?>,
-            lines: {
-                fillColor: "rgba(75, 192, 75, 0.12)"
-            },
-            points: {
-                fillColor: "#fff"
-            },
-        };
+    label: "Realisasi SPJ MS",
+    data: <?php echo $chart['spj_ms'] ?>,
+    lines: {
+        fillColor: "rgba(30, 64, 175, 0.10)",
+        lineWidth: 3
+    },
+    points: {
+        fillColor: "#fff",
+        lineWidth: 2,
+        radius: 4
+    }
+};
+
+let SPJTMS = {
+    label: "Realisasi SPJ TMS",
+    data: <?php echo $chart['spj_tms'] ?>,
+    lines: {
+        fillColor: "rgba(239, 68, 68, 0.10)",
+        lineWidth: 3
+    },
+    points: {
+        fillColor: "#fff",
+        lineWidth: 2,
+        radius: 4
+    }
+};
+
+let SPJBARU = {
+    label: "Realisasi SPJ Baru",
+    data: <?php echo $chart['spj_baru'] ?>,
+    lines: {
+        fillColor: "rgba(245, 158, 11, 0.10)",
+        lineWidth: 3
+    },
+    points: {
+        fillColor: "#fff",
+        lineWidth: 2,
+        radius: 4
+    }
+};
+
+let SPJCAIR = {
+    label: "Realisasi SPJ Cair",
+    data: <?php echo $chart['spj_cair'] ?>,
+    lines: {
+        fillColor: "rgba(34, 197, 94, 0.10)",
+        lineWidth: 3
+    },
+    points: {
+        fillColor: "#fff",
+        lineWidth: 2,
+        radius: 4
+    }
+};
         let options = {
-            grid: {
-                show: !0,
-                aboveData: !0,
-                color: "#3f3f3f",
-                labelMargin: 20,
-                axisMargin: 0,
-                borderWidth: 0,
-                borderColor: null,
-                minBorderMargin: 1,
-                clickable: !0,
-                hoverable: !0,
-                autoHighlight: !0,
-                mouseActiveRadius: 50,
-            },
-            series: {
-                lines: {
-                    show: !0,
-                    fill: !0,
-                    lineWidth: 2,
-                    steps: !1
-                },
-                points: {
-                    show: !0,
-                    radius: 4,
-                    symbol: "circle",
-                    lineWidth: 2
-                },
-            },
-            legend: {
-                position: "ne",
-                margin: [0, -50],
-                noColumns: 0,
-                labelBoxBorderColor: null,
-                labelFormatter: function(e, a) {
-                    return e + "&nbsp;&nbsp;";
-                },
-                width: 20,
-                height: 1,
-            },
-            colors: [
-                "orange",
-                "blue",
-                "red",
-                "#2c7282",
-                "#6f7a8a",
-                "#f7cb38",
-                "#5a8022",
-            ],
-            shadowSize: !0,
-            tooltip: {
-                cssClass: "flotTip",
-                show: !0,
-                content: function(label, x, y) {
-                    return `${label}: ${y.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
-                }
-            },
-            yaxis: {
-                min: 0,
-                tickFormatter: function(v, axis) {
-                    return `<span>Rp. ${v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</span>`;
-                }
-            },
-            xaxis: {
-                mode: "categories"
-            },
-        };
+    grid: {
+        show: true,
+        aboveData: true,
+        color: "#6b7280",
+        labelMargin: 12,
+        axisMargin: 0,
+        borderWidth: 0,
+        minBorderMargin: 10,
+        clickable: true,
+        hoverable: true,
+        autoHighlight: false,
+        mouseActiveRadius: 20
+    },
+
+    series: {
+        lines: {
+            show: true,
+            fill: true,
+            lineWidth: 3,
+            steps: false,
+            // Smooth / curved line
+            curvedLines: {
+                apply: true
+            }
+        },
+
+        points: {
+            show: true,
+            radius: 4,
+            symbol: "circle",
+            lineWidth: 2,
+            fill: true
+        },
+
+        shadowSize: 0
+    },
+
+    legend: {
+        position: "ne",
+        margin: [10, 10],
+        noColumns: 2,
+        labelBoxBorderColor: null,
+
+        labelFormatter: function(label) {
+            return label + "&nbsp;&nbsp;";
+        }
+    },
+
+    colors: [
+        "#1e40af",
+        "#22c55e",
+        "#ef4444",
+        "#f59e0b",
+    ],
+
+    tooltip: {
+        cssClass: "flotTip",
+        show: true,
+
+        content: function(label, x, y) {
+            return `
+                <div style="
+                    font-size: 12px;
+                    font-weight: 600;
+                    margin-bottom: 4px;
+                ">
+                    ${label}
+                </div>
+
+                <div style="
+                    font-size: 15px;
+                    font-weight: 700;
+                ">
+                    Rp. ${y.toString().replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        '.'
+                    )}
+                </div>
+            `;
+        }
+    },
+
+    yaxis: {
+        min: 0,
+
+        tickFormatter: function(v) {
+            return "Rp. " + v.toString().replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                '.'
+            );
+        }
+    },
+
+    xaxis: {
+        mode: "categories",
+        tickLength: 0
+    },
+
+    // Kurangi efek animasi bawaan / shadow
+    shadowSize: 0
+};
 
         $.plot($("#chart_transaksi"), [SPJBARU, SPJMS, SPJTMS, SPJCAIR], options);
 
         // Pie Charts
         var DataPieParts = {
-            labels: <?= $chart['part_label'] ?>,
+            labels: <?php echo $chart['part_label'] ?>,
             datasets: [{
-                data: <?= $chart['part_jumlah'] ?>,
+                data: <?php echo $chart['part_jumlah'] ?>,
                 backgroundColor: [
                     "#455C73",
                     "#9B59B6",
@@ -380,13 +430,13 @@
             }
         });
 
-        // Bar 
-        const labels = <?= $chart['part_label'] ?>;
+        // Bar
+        const labels = <?php echo $chart['part_label'] ?>;
         const data = {
             labels: labels,
             datasets: [{
                     label: 'BARU',
-                    data: <?= $chart['spj_count_baru'] ?>,
+                    data: <?php echo $chart['spj_count_baru'] ?>,
                     backgroundColor: [
                         'rgba(255, 165, 0, 0.2)',
                         'rgba(255, 165, 0, 0.2)',
@@ -404,7 +454,7 @@
                 },
                 {
                     label: 'APPROVE',
-                    data: <?= $chart['spj_count_ms'] ?>,
+                    data: <?php echo $chart['spj_count_ms'] ?>,
                     backgroundColor: [
                         'rgba(0, 0, 255, 0.2)',
                         'rgba(0, 0, 255, 0.2)',
@@ -421,7 +471,7 @@
                 },
                 {
                     label: 'TMS',
-                    data: <?= $chart['spj_count_tms'] ?>,
+                    data: <?php echo $chart['spj_count_tms'] ?>,
                     backgroundColor: [
                         'rgba(255, 0, 0, 0.2)',
                         'rgba(255, 0, 0, 0.2)',
@@ -438,7 +488,7 @@
                 },
                 {
                     label: 'CAIR',
-                    data: <?= $chart['spj_count_cair'] ?>,
+                    data: <?php echo $chart['spj_count_cair'] ?>,
                     backgroundColor: [
                         'rgba(0, 128, 128, 0.2)',
                         'rgba(0, 128, 128, 0.2)',

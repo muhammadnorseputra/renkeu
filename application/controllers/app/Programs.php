@@ -537,6 +537,9 @@ class Programs extends CI_Controller
         $pagging       = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
         $button_option = '<div class="col-md-6">' . $btnAdd . $btnRekon . $btnExport . '</div>';
 
+        $is_admin = ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN');
+        $th_status_aktif = $is_admin ? '<th class="text-center">Status Aktif</th>' : '';
+
         $html  = '<div id="listUraian"><div class="row">' . $search . $pagging . $button_option . "</div>";
         $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action table-bordered">';
         $html .= '<thead>
@@ -545,7 +548,7 @@ class Programs extends CI_Controller
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
                         <th>Total SPJ</th>
-                        <th class="text-center">Status Aktif</th>
+                        ' . $th_status_aktif . '
                         <th class="text-center" colspan="2">Ubah | Hapus</th>
                         <th class="text-right" colspan="2">Alokasi Pagu Awal (Rp)</th>
                         <th class="text-right" colspan="2">Alokasi Pagu Perubahan (Rp)</th>
@@ -569,17 +572,20 @@ class Programs extends CI_Controller
             $totalPaguPerubahan = $paguPerubahan->total_pagu_awal ?? 0;
             $totalPaguAwal      = $pagu->total_pagu_awal ?? 0;
 
-            // Switch toggle is_aktif
-            $is_checked = (isset($r->is_aktif) && $r->is_aktif === 'Y') ? 'checked' : '';
-            $switch_aktif = '<td class="text-center align-middle" width="6%">
-                                <div class="d-inline-flex align-items-center justify-content-center position-relative">
-                                    <label class="switch-toggle mb-0" title="' . ($r->is_aktif === 'Y' ? 'Aktif' : 'Tidak Aktif') . '">
-                                        <input type="checkbox" class="toggle-is-aktif" data-id="' . $r->id . '" ' . $is_checked . '>
-                                        <span class="slider round"></span>
-                                    </label>
-                                    <i class="fa fa-spinner fa-spin text-dark switch-loader d-none position-absolute" style="font-size: 13px;"></i>
-                                </div>
-                            </td>';
+            // Switch toggle is_aktif - only show for ADMIN and SUPER_ADMIN roles
+            $switch_aktif = '';
+            if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
+                $is_checked = (isset($r->is_aktif) && $r->is_aktif === 'Y') ? 'checked' : '';
+                $switch_aktif = '<td class="text-center align-middle" width="6%">
+                                    <div class="d-inline-flex align-items-center justify-content-center position-relative">
+                                        <label class="switch-toggle mb-0" title="' . ($r->is_aktif === 'Y' ? 'Aktif' : 'Tidak Aktif') . '">
+                                            <input type="checkbox" class="toggle-is-aktif" data-id="' . $r->id . '" ' . $is_checked . '>
+                                            <span class="slider round"></span>
+                                        </label>
+                                        <i class="fa fa-spinner fa-spin text-dark switch-loader d-none position-absolute" style="font-size: 13px;"></i>
+                                    </div>
+                                </td>';
+            endif;
 
             if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'SUPER_USER' || $this->session->userdata('role') === 'VERIFICATOR'):
                 $button_hapus = '<td width="5%" class="text-center">
@@ -665,9 +671,10 @@ class Programs extends CI_Controller
 					            </tr>';
             $no++;
         endforeach;
+        $colspan_total = $is_admin ? 7 : 6;
         $html .= '
             <tr>
-                <td colspan="7" class="text-right align-middle"><b>Total</b></td>
+                <td colspan="' . $colspan_total . '" class="text-right align-middle"><b>Total</b></td>
                 <td colspan="2"><div class="d-flex justify-content-between"><b>Rp.</b><b>Rp. ' . nominal($total_all_pagu) . '</b></div></td>
                 <td colspan="2"><div class="d-flex justify-content-between"><b>Rp.</b><b>Rp. ' . nominal($total_all_pagu_perubahan) . '</b></div></td>
                 <td><div class="d-flex justify-content-between"><b>Rp.</b><b class="' . $warnaClassTotal . '">' . $hasilTotal . '</b></div></td>
@@ -1194,6 +1201,7 @@ class Programs extends CI_Controller
                 'fid_sub_kegiatan' => $p['subkegiatan'],
                 'kode'             => $p['kode_uraian'],
                 'nama'             => $p['nama_uraian'],
+                'is_aktif'         => isset($p['is_aktif']) && $p['is_aktif'] === 'Y' ? 'Y' : 'N',
                 'tahun'            => $this->session->userdata('tahun_anggaran'),
             ];
             $db = $this->crud->insert('ref_uraians', $data);
