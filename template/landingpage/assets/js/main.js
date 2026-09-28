@@ -160,6 +160,46 @@
   });
 
   /**
+   * Team Slider
+   */
+  new Swiper('.team-slider', {
+    speed: 600,
+    loop: true,
+    autoplay: {
+      delay: 4000,
+      disableOnInteraction: false
+    },
+    slidesPerView: 1,
+    pagination: {
+      el: '.team-slider .swiper-pagination',
+      type: 'bullets',
+      clickable: true
+    },
+    navigation: {
+      nextEl: '.team-slider .swiper-button-next',
+      prevEl: '.team-slider .swiper-button-prev'
+    },
+    breakpoints: {
+      320: {
+        slidesPerView: 1,
+        spaceBetween: 20
+      },
+      575: {
+        slidesPerView: 2,
+        spaceBetween: 20
+      },
+      768: {
+        slidesPerView: 3,
+        spaceBetween: 25
+      },
+      1024: {
+        slidesPerView: 4,
+        spaceBetween: 25
+      }
+    }
+  });
+
+  /**
    * Clients Slider
    */
   new Swiper('.screens-slider', {
@@ -171,33 +211,33 @@
     },
     slidesPerView: 'auto',
     pagination: {
-      el: '.swiper-pagination',
+      el: '.screens-slider .swiper-pagination',
       type: 'bullets',
       clickable: true
     },
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20
-      },
-      575: {
-        slidesPerView: 2,
-        spaceBetween: 20
-      },
-      640: {
-        slidesPerView: 3,
-        spaceBetween: 20
-      },
-      992: {
-        slidesPerView: 4,
-        spaceBetween: 20
-      }
-    }
-  });
+        breakpoints: {
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 20
+          },
+          575: {
+            slidesPerView: 2,
+            spaceBetween: 20
+          },
+          640: {
+            slidesPerView: 3,
+            spaceBetween: 20
+          },
+          992: {
+            slidesPerView: 4,
+            spaceBetween: 20
+          }
+        }
+      });
 
-  /**
-   * Initiate  glightbox 
-   */
+      /**
+       * Initiate  glightbox 
+       */
   const glightbox = GLightbox({
     selector: '.glightbox'
   });

@@ -11,14 +11,15 @@ $(document).ready(function () {
 	$.validate({
 		form: "#f_login",
 		lang: "en",
-		showErrorDialogs: true,
+		showErrorDialogs: false,
+		focusFirstField: true,
 		modules: "security, html5, sanitize",
 		//disabledFormFilter: 'form.toggle-disabled',
         // validateOnEvent: false,
 		onError: function ($form) {
 			$containerMsg.html(`
 			<div class="alert alert-danger" role="alert">
-				<i class="icon-block mr-2"></i> Auth access akun failed!
+				<i class="bi bi-exclamation-circle me-2"></i> Auth access akun failed!
 			</div>
 			`);
 			$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
@@ -42,7 +43,7 @@ $(document).ready(function () {
 					if (response.valid == true) {
 						$containerMsg.html(`
 						<div class="alert alert-success" role="alert">
-							<i class="icon-check-circle mr-2"></i> ${response.msg}, mohon tunggu ...
+							<i class="bi bi-check-circle me-2"></i> ${response.msg}, mohon tunggu ...
 						</div>
 						`);
 						setTimeout(() => {
@@ -52,7 +53,7 @@ $(document).ready(function () {
 					}
 					$containerMsg.html(`
 					<div class="alert alert-danger" role="alert">
-						<i class="icon-block mr-2"></i>${response.msg}
+						<i class="bi bi-exclamation-circle me-2"></i>${response.msg}
 					</div>
 					`);
 					$('button[type="submit"]').prop("disabled", false).html(`Masuk`);
@@ -72,15 +73,4 @@ $(document).ready(function () {
 		},
 	});
 
-	$(".toggle-password").click(function () {
-        var passwordInput = $(".password-input");
-        var icon = $(this);
-        if (passwordInput.attr("type") == "password") {
-            passwordInput.attr("type", "text");
-            icon.removeClass("icon-eye").addClass("icon-eye-slash");
-        } else {
-            passwordInput.attr("type", "password");
-            icon.removeClass("icon-eye-slash").addClass("icon-eye");
-        }
-    });
 });

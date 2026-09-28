@@ -20,8 +20,18 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
+		$jml_pegawai = $this->crud->getWhere('t_users', ['is_valid' => '1'])->num_rows();
+		$jml_bidang = $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->num_rows();
+		$tahun_row = $this->crud->getWhere('t_settings', ['key' => 'tahun_anggaran', 'status' => 'Y'])->row();
+		$tahun = $tahun_row ? $tahun_row->val : date('Y');
+		
+		$team = $this->db->query("SELECT u.nama, u.role, u.pic, r.nama AS bidang, r.singkatan FROM t_users u LEFT JOIN ref_parts r ON u.fid_part = r.id WHERE u.is_valid='1' AND u.is_block='N' ORDER BY FIELD(u.role,'SUPER_ADMIN','ADMIN','SUPER_USER','VERIFICATOR','USER','ARSIP_USER','BENDAHARA'), u.nama")->result();
 		$data = [
-			'content' => 'frontend/home'
+			'content' => 'frontend/home',
+			'jml_pegawai' => $jml_pegawai,
+			'jml_bidang' => $jml_bidang,
+			'tahun_anggaran' => $tahun,
+			'team' => $team
 		];
 		$this->load->view('landingpage', $data);
 	}
