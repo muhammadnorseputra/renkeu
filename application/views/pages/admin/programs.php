@@ -732,6 +732,23 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="form-group d-none" id="pagu-perubahan-toggle">
+                    <label class="d-block mb-2">Pagu Perubahan</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipe_pagu_perubahan" id="paguTetap"
+                            value="tetap">
+                        <label class="form-check-label font-weight-bold" for="paguTetap">
+                            <i class="fa fa-lock mr-1"></i>Pagu Tetap
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="tipe_pagu_perubahan" id="paguBerubah"
+                            value="berubah" checked>
+                        <label class="form-check-label font-weight-bold" for="paguBerubah">
+                            <i class="fa fa-pencil mr-1"></i>Berubah
+                        </label>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="jumlah">Jumlah Pagu</label>
                     <input type="text" name="jumlah" id="jumlah" class="form-control" required>
@@ -1297,7 +1314,7 @@ $(function() {
                 delete states[listId];
                 localStorage.setItem('listjs_state', JSON.stringify(states));
             }
-        } catch(e) {}
+        } catch (e) {}
     });
 })
 </script>
@@ -2226,14 +2243,36 @@ function UpdateLimit(id, paguLimit, uraian_id) {
     $modal.modal('show');
 }
 
-function InputPagu(id, url, paguAwal, is_perubahan) {
+function InputPagu(id, url, paguAwal, is_perubahan, paguMurni) {
     let $modal = $(".modal-alokasipagu"),
         $form = $modal.find("form#formAlokasiPagu");
     $modal.modal('show');
 
     $modal.on('shown.bs.modal', function(e) {
-        $form.find('input[name="jumlah"]').val(formatRupiah(paguAwal));
-        $form.find('input[name="is_perubahan"]').val(is_perubahan);
+        // pagu murni untuk opsi Tetap (fallback ke paguAwal jika tidak dikirim)
+        let murni = (typeof paguMurni !== 'undefined' && paguMurni !== null && paguMurni !== '') ? paguMurni :
+            paguAwal;
+        // Tampilkan toggle hanya untuk perubahan
+        if (is_perubahan == 1) {
+            $form.find('#pagu-perubahan-toggle').removeClass('d-none');
+            $form.find('#paguBerubah').prop('checked', true);
+            $form.find('input[name="jumlah"]').val('0');
+            $form.find('input[name="is_perubahan"]').val(1);
+        } else {
+            $form.find('#pagu-perubahan-toggle').addClass('d-none');
+            $form.find('input[name="jumlah"]').val(formatRupiah(paguAwal));
+            $form.find('input[name="is_perubahan"]').val(is_perubahan);
+        }
+        // Handler switch pagu perubahan
+        $form.find('input[name="tipe_pagu_perubahan"]').off('change').on('change', function() {
+            if ($(this).val() === 'tetap') {
+                $form.find('input[name="jumlah"]').val(formatRupiah(murni));
+                $form.find('input[name="is_perubahan"]').val(0);
+            } else {
+                $form.find('input[name="jumlah"]').val('0');
+                $form.find('input[name="is_perubahan"]').val(1);
+            }
+        });
         $form.on("submit", function(e) {
             e.preventDefault();
             $data = $(this).serializeArray();
@@ -2262,6 +2301,8 @@ function InputPagu(id, url, paguAwal, is_perubahan) {
         $form.attr('action', '#');
         $form[0].reset();
         $form.parsley().reset();
+        $form.find('#pagu-perubahan-toggle').addClass('d-none');
+        $form.find('input[name="tipe_pagu_perubahan"]').off('change');
     })
 }
 

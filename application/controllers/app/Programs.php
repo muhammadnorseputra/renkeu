@@ -75,17 +75,17 @@ class Programs extends CI_Controller
         $no    = 1;
         foreach ($db->result() as $r):
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td>
-					                    ' . $r->nama . '
-					                </td>
-					                <td width="5%" class="text-center">
-					                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_unor') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
-					                </td>
-					                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_unors") . '\',\'.modal-unor-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td>
+						                    ' . $r->nama . '
+						                </td>
+						                <td width="5%" class="text-center">
+						                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_unor') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+						                </td>
+						                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_unors") . '\',\'.modal-unor-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+						            </tr>';
             $no++;
         endforeach;
         $html .= '</tbody>';
@@ -115,17 +115,17 @@ class Programs extends CI_Controller
         $no    = 1;
         foreach ($db->result() as $r):
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td>
-					                    ' . $r->nama . '
-					                </td>
-					                <td width="5%" class="text-center">
-					                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_parts') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
-					                </td>
-					                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_parts") . '\',\'.modal-part-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td>
+						                    ' . $r->nama . '
+						                </td>
+						                <td width="5%" class="text-center">
+						                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_parts') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+						                </td>
+						                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_parts") . '\',\'.modal-part-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+						            </tr>';
             $no++;
         endforeach;
         $html .= '</tbody>';
@@ -155,17 +155,17 @@ class Programs extends CI_Controller
         $no    = 1;
         foreach ($db->result() as $r):
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td>
-					                    ' . $r->nama . '
-					                </td>
-					                <td width="5%" class="text-center">
-					                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_tujuan') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
-					                </td>
-					                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_tujuan") . '\',\'.modal-tujuan-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td>
+						                    ' . $r->nama . '
+						                </td>
+						                <td width="5%" class="text-center">
+						                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_tujuan') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+						                </td>
+						                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_tujuan") . '\',\'.modal-tujuan-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+						            </tr>';
             $no++;
         endforeach;
         $html .= '</tbody>';
@@ -195,17 +195,17 @@ class Programs extends CI_Controller
         $no    = 1;
         foreach ($db->result() as $r):
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td>
-					                    ' . $r->nama . '
-					                </td>
-					                <td width="5%" class="text-center">
-					                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_sasaran') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
-					                </td>
-					                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_sasaran") . '\',\'.modal-sasaran-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td>
+						                    ' . $r->nama . '
+						                </td>
+						                <td width="5%" class="text-center">
+						                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_sasaran') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+						                </td>
+						                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_sasaran") . '\',\'.modal-sasaran-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+						            </tr>';
             $no++;
         endforeach;
         $html .= '</tbody>';
@@ -228,7 +228,7 @@ class Programs extends CI_Controller
             <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
             </div>
         ';
-        $search     = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+        $search = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
                         <input type="text" class="search form-control" />
                         <div class="input-group-append">
                             <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listProgram" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
@@ -259,8 +259,8 @@ class Programs extends CI_Controller
 
             $disabled_edit = ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'ADMIN') ? '' : 'disabled';
             $button_edit   = '<td width="5%" class="text-center">
-					                <button onclick="window.location.href = \'' . base_url('app/programs/ubah/' . $r->id . '/ref_programs') . '\'" type="button" class="btn btn-info btn-sm rounded-0 m-0" ' . $disabled_edit . '><i class="fa fa-pencil"></i></button>
-					            </td>';
+						                <button onclick="window.location.href = \'' . base_url('app/programs/ubah/' . $r->id . '/ref_programs') . '\'" type="button" class="btn btn-info btn-sm rounded-0 m-0" ' . $disabled_edit . '><i class="fa fa-pencil"></i></button>
+						            </td>';
 
             // Hitung selisih
             $selisih = $totalPaguPerubahan - $totalPaguAwal;
@@ -272,32 +272,32 @@ class Programs extends CI_Controller
             $hasil = $tanda . nominal(abs($selisih));
 
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td class="kode">
-					                    ' . $r->kode . '
-					                </td>
-					                <td class="nama">
-					                    ' . $r->nama . '
-					                </td>
-					                ' . $button_edit . '
-					                <td>
-					                    <div class="d-flex justify-content-between">
-					                        <b>Rp.</b> <b>' . @nominal($totalPaguAwal) . '</b>
-					                    </div>
-					                </td>
-					                <td>
-					                    <div class="d-flex justify-content-between">
-					                        <b>Rp.</b> <b>' . @nominal($totalPaguPerubahan) . '</b>
-					                    </div>
-					                </td>
-					                <td class="text-right">
-					                    <div class="d-flex justify-content-between">
-					                        <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
-					                    </div>
-					                </td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td class="kode">
+						                    ' . $r->kode . '
+						                </td>
+						                <td class="nama">
+						                    ' . $r->nama . '
+						                </td>
+						                ' . $button_edit . '
+						                <td>
+						                    <div class="d-flex justify-content-between">
+						                        <b>Rp.</b> <b>' . @nominal($totalPaguAwal) . '</b>
+						                    </div>
+						                </td>
+						                <td>
+						                    <div class="d-flex justify-content-between">
+						                        <b>Rp.</b> <b>' . @nominal($totalPaguPerubahan) . '</b>
+						                    </div>
+						                </td>
+						                <td class="text-right">
+						                    <div class="d-flex justify-content-between">
+						                        <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
+						                    </div>
+						                </td>
+						            </tr>';
             $no++;
         endforeach;
         $html .= '</tbody>';
@@ -326,7 +326,7 @@ class Programs extends CI_Controller
             <button data-toggle="modal" data-target=".modal-kegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
             </div>
         ';
-        $search  = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+        $search = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
                         <input type="text" class="search form-control" />
                         <div class="input-group-append">
                             <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listKegiatan" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
@@ -357,8 +357,8 @@ class Programs extends CI_Controller
             $totalPaguPerubahan = $this->target->getAlokasiPaguKegiatan($r->id, "1", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal ?? 0;
 
             $button_edit = '<td width="5%" class="text-center">
-					                                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_kegiatans') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
-					                            </td>';
+						                                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_kegiatans') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+						                            </td>';
 
             // Hitung selisih
             $selisih = $totalPaguPerubahan - $totalPaguAwal;
@@ -370,32 +370,32 @@ class Programs extends CI_Controller
             $hasil = $tanda . nominal(abs($selisih));
 
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td class="kode">
-					                    ' . $r->kode . '
-					                </td>
-					                <td valign="middle" class="nama">
-					                    ' . strtoupper($r->nama) . '
-					                </td>
-					                ' . $button_edit . '
-					                <td>
-					                    <div class="d-flex justify-content-between">
-					                        <b>Rp.</b><b>' . @nominal($totalPaguAwal) . '</b>
-					                    </div>
-					                </td>
-					                <td>
-					                    <div class="d-flex justify-content-between">
-					                        <b>Rp.</b><b>' . @nominal($totalPaguPerubahan) . '</b>
-					                    </div>
-					                </td>
-					                <td class="text-right">
-					                    <div class="d-flex justify-content-between">
-					                        <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
-					                    </div>
-					                </td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td class="kode">
+						                    ' . $r->kode . '
+						                </td>
+						                <td valign="middle" class="nama">
+						                    ' . strtoupper($r->nama) . '
+						                </td>
+						                ' . $button_edit . '
+						                <td>
+						                    <div class="d-flex justify-content-between">
+						                        <b>Rp.</b><b>' . @nominal($totalPaguAwal) . '</b>
+						                    </div>
+						                </td>
+						                <td>
+						                    <div class="d-flex justify-content-between">
+						                        <b>Rp.</b><b>' . @nominal($totalPaguPerubahan) . '</b>
+						                    </div>
+						                </td>
+						                <td class="text-right">
+						                    <div class="d-flex justify-content-between">
+						                        <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
+						                    </div>
+						                </td>
+						            </tr>';
             $no++;
         endforeach;
         $html .= '</tbody>';
@@ -429,7 +429,7 @@ class Programs extends CI_Controller
                         <button data-toggle="modal" data-target=".modal-subkegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
                     </div>
             ';
-        $search  = '<div class="col-6 col-md-4">Pencarian <div class="input-group">
+        $search = '<div class="col-6 col-md-4">Pencarian <div class="input-group">
                         <input type="text" class="fuzzy-search form-control" />
                         <div class="input-group-append">
                             <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listSubKegiatan" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
@@ -462,8 +462,8 @@ class Programs extends CI_Controller
             $totalPaguPerubahan = $this->target->getAlokasiPaguSubKegiatan($r->id, "1", $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal ?? 0;
 
             $button_edit = '<td width="5%" class="text-center">
-					                                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_sub_kegiatans') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
-					                            </td>';
+						                                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_sub_kegiatans') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+						                            </td>';
             $alokasi_pagu           = nominal($totalPaguAwal);
             $alokasi_pagu_perubahan = nominal($totalPaguPerubahan);
 
@@ -477,32 +477,32 @@ class Programs extends CI_Controller
             $hasil = $tanda . nominal(abs($selisih));
 
             $html .= '<tr>
-					                    <td class="text-center">
-					                        ' . $no . '
-					                    </td>
-					                    <td class="kode">
-					                        ' . $r->kode . '
-					                    </td>
-					                    <td>
-					                        <span class="nama">' . strtoupper($r->nama) . '</span>
-					                    </td>
-					                    ' . $button_edit . '
-					                    <td>
-					                        <div class="d-flex justify-content-between">
-					                            <b>Rp.</b><b>' . $alokasi_pagu . '</b>
-					                        </div>
-					                    </td>
-					                    <td>
-					                        <div class="d-flex justify-content-between">
-					                            <b>Rp.</b><b>' . $alokasi_pagu_perubahan . '</b>
-					                        </div>
-					                    </td>
-					                    <td class="text-right">
-					                        <div class="d-flex justify-content-between">
-					                            <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
-					                        </div>
-					                    </td>
-					                </tr>';
+						                    <td class="text-center">
+						                        ' . $no . '
+						                    </td>
+						                    <td class="kode">
+						                        ' . $r->kode . '
+						                    </td>
+						                    <td>
+						                        <span class="nama">' . strtoupper($r->nama) . '</span>
+						                    </td>
+						                    ' . $button_edit . '
+						                    <td>
+						                        <div class="d-flex justify-content-between">
+						                            <b>Rp.</b><b>' . $alokasi_pagu . '</b>
+						                        </div>
+						                    </td>
+						                    <td>
+						                        <div class="d-flex justify-content-between">
+						                            <b>Rp.</b><b>' . $alokasi_pagu_perubahan . '</b>
+						                        </div>
+						                    </td>
+						                    <td class="text-right">
+						                        <div class="d-flex justify-content-between">
+						                            <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
+						                        </div>
+						                    </td>
+						                </tr>';
             $no++;
         endforeach;
         $html .= '</tbody>';
@@ -548,7 +548,7 @@ class Programs extends CI_Controller
 
         $btnExport = '<div class="float-right"><a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/uraian') . '"><i class="fa fa-download"></i> Export</a></div>';
 
-        $search        = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+        $search = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
                             <input type="text" class="search form-control" />
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listUraian" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
@@ -557,7 +557,7 @@ class Programs extends CI_Controller
         $pagging       = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
         $button_option = '<div class="col-md-5">' . $btnAdd . $btnRekon . $btnExport . '</div>';
 
-        $is_admin = ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN');
+        $is_admin        = ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN');
         $th_status_aktif = $is_admin ? '<th class="text-center">Status Aktif</th>' : '';
 
         $html  = '<div id="listUraian"><div class="row">' . $search . $pagging . $button_option . "</div>";
@@ -595,57 +595,57 @@ class Programs extends CI_Controller
             // Switch toggle is_aktif - only show for ADMIN and SUPER_ADMIN roles
             $switch_aktif = '';
             if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
-                $is_checked = (isset($r->is_aktif) && $r->is_aktif === 'Y') ? 'checked' : '';
+                $is_checked   = (isset($r->is_aktif) && $r->is_aktif === 'Y') ? 'checked' : '';
                 $switch_aktif = '<td class="text-center align-middle" width="6%">
-                                    <div class="d-inline-flex align-items-center justify-content-center position-relative">
-                                        <label class="switch-toggle mb-0" title="' . ($r->is_aktif === 'Y' ? 'Aktif' : 'Tidak Aktif') . '">
-                                            <input type="checkbox" class="toggle-is-aktif" data-id="' . $r->id . '" ' . $is_checked . '>
-                                            <span class="slider round"></span>
-                                        </label>
-                                        <i class="fa fa-spinner fa-spin text-dark switch-loader d-none position-absolute" style="font-size: 13px;"></i>
-                                    </div>
-                                </td>';
+		                                    <div class="d-inline-flex align-items-center justify-content-center position-relative">
+		                                        <label class="switch-toggle mb-0" title="' . ($r->is_aktif === 'Y' ? 'Aktif' : 'Tidak Aktif') . '">
+		                                            <input type="checkbox" class="toggle-is-aktif" data-id="' . $r->id . '" ' . $is_checked . '>
+		                                            <span class="slider round"></span>
+		                                        </label>
+		                                        <i class="fa fa-spinner fa-spin text-dark switch-loader d-none position-absolute" style="font-size: 13px;"></i>
+		                                    </div>
+		                                </td>';
             endif;
 
             if ($this->session->userdata('role') === 'SUPER_ADMIN' || $this->session->userdata('role') === 'SUPER_USER' || $this->session->userdata('role') === 'VERIFICATOR'):
                 $button_hapus = '<td width="5%" class="text-center">
-										            <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_uraians') . '\',\'URAIAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
-										        </td>';
+												            <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_uraians') . '\',\'URAIAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+												        </td>';
             else:
                 $button_hapus = '<td></td>';
             endif;
             $button_edit = '<td width="5%" class="text-center">
-					                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_uraians') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
-					                ' . $button_hapus . '
-					            </td>';
+						                <a href="' . base_url('app/programs/ubah/' . $r->id . '/ref_uraians') . '" type="button" class="btn btn-info btn-sm rounded-0 m-0"><i class="fa fa-pencil"></i></a>
+						                ' . $button_hapus . '
+						            </td>';
 
             // Pagu Awal
             $is_disabled_pagu_awal  = $this->session->userdata('is_perubahan') === "1" ? 'disabled' : '';
             $total_all_pagu        += $totalPaguAwal;
             $button_pagu            = '<td width="10%" class="text-right"
-					                                <div class="text-right">
-					                                        <div class="d-flex justify-content-between">
-					                                            <b>Rp.</b><b>' . nominal($totalPaguAwal) . '</b>
-					                                        </div>
-					                                        <td class="text-center">
-					                                            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\',0)" type="button" class="btn btn-info btn-sm rounded m-0" ' . $is_disabled_pagu_awal . '><i class="fa fa-money"></i></button>
-					                                        </td>
-					                                    </div>
-					                            </td>';
+						                                <div class="text-right">
+						                                        <div class="d-flex justify-content-between">
+						                                            <b>Rp.</b><b>' . nominal($totalPaguAwal) . '</b>
+						                                        </div>
+						                                        <td class="text-center">
+						                                            <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguAwal . '\',0)" type="button" class="btn btn-info btn-sm rounded m-0" ' . $is_disabled_pagu_awal . '><i class="fa fa-money"></i></button>
+						                                        </td>
+						                                    </div>
+						                            </td>';
 
             // Pagu Perubahan
             $is_disabled_pagu_perubahan  = $this->session->userdata('is_perubahan') === "0" ? 'disabled' : '';
             $total_all_pagu_perubahan   += $totalPaguPerubahan;
             $button_pagu_perubahan       = '<td width="10%" class="text-right">
-					                                        <div class="text-right">
-					                                            <div class="d-flex justify-content-between">
-					                                                <b>Rp.</b><b>' . nominal($totalPaguPerubahan) . '</b>
-					                                            </div>
-					                                            <td class="text-center">
-					                                                <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguPerubahan . '\',1)" type="button" class="btn btn-info btn-sm rounded m-0" ' . $is_disabled_pagu_perubahan . '><i class="fa fa-money"></i></button>
-					                                            </td>
-					                                        </div>
-					                                    </td>';
+						                                        <div class="text-right">
+						                                            <div class="d-flex justify-content-between">
+						                                                <b>Rp.</b><b>' . nominal($totalPaguPerubahan) . '</b>
+						                                            </div>
+						                                            <td class="text-center">
+						                                                <button onclick="InputPagu(' . $r->id . ',\'' . base_url('app/programs/input/ref_uraians') . '\',\'' . $totalPaguPerubahan . '\',1,\'' . $totalPaguAwal . '\')" type="button" class="btn btn-info btn-sm rounded m-0" ' . $is_disabled_pagu_perubahan . '><i class="fa fa-money"></i></button>
+						                                            </td>
+						                                        </div>
+						                                    </td>';
 
             // Hitung selisih
             $selisih = $totalPaguPerubahan - $totalPaguAwal;
@@ -665,34 +665,34 @@ class Programs extends CI_Controller
             $hasilTotal = $tandaTotal . nominal(abs($total_selisih));
 
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td>
-					                    ' . $r->kode_kegiatan . ' <br>
-					                    ' . $r->kode_sub_kegiatan . ' <br>
-					                    <b class="kode">' . $r->kode . '</b>
-					                </td>
-					                <td valign="middle">
-					                    ' . ucwords($r->nama_kegiatan) . ' <br>
-					                    ' . ucwords($r->nama_sub_kegiatan) . ' <br>
-					                    <b class="nama">' . ucwords($r->nama) . '</b>
-					                </td>
-					                <td class="text-center">' . $jmlSpj . '</td>
-					                ' . $switch_aktif . '
-					                ' . $button_edit . '
-					                ' . $button_pagu . '
-					                ' . $button_pagu_perubahan . '
-					                <td class="text-right">
-					                    <div class="d-flex justify-content-between">
-					                        <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
-					                    </div>
-					                </td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td>
+						                    ' . $r->kode_kegiatan . ' <br>
+						                    ' . $r->kode_sub_kegiatan . ' <br>
+						                    <b class="kode">' . $r->kode . '</b>
+						                </td>
+						                <td valign="middle">
+						                    ' . ucwords($r->nama_kegiatan) . ' <br>
+						                    ' . ucwords($r->nama_sub_kegiatan) . ' <br>
+						                    <b class="nama">' . ucwords($r->nama) . '</b>
+						                </td>
+						                <td class="text-center">' . $jmlSpj . '</td>
+						                ' . $switch_aktif . '
+						                ' . $button_edit . '
+						                ' . $button_pagu . '
+						                ' . $button_pagu_perubahan . '
+						                <td class="text-right">
+						                    <div class="d-flex justify-content-between">
+						                        <b>Rp.</b><b class="' . $warnaClass . '">' . $hasil . '</b>
+						                    </div>
+						                </td>
+						            </tr>';
             $no++;
         endforeach;
-        $colspan_total = $is_admin ? 7 : 6;
-        $html .= '
+        $colspan_total  = $is_admin ? 7 : 6;
+        $html          .= '
             <tr>
                 <td colspan="' . $colspan_total . '" class="text-right align-middle"><b>Total</b></td>
                 <td colspan="2"><div class="d-flex justify-content-between"><b>Rp.</b><b>Rp. ' . nominal($total_all_pagu) . '</b></div></td>
@@ -717,13 +717,13 @@ class Programs extends CI_Controller
         $id       = $this->input->post('id');
         $is_aktif = $this->input->post('is_aktif');
 
-        if (!$id || !$is_aktif) {
+        if (! $id || ! $is_aktif) {
             echo json_encode(['status' => false, 'message' => 'Parameter tidak lengkap']);
             return;
         }
 
         $uraian = $this->crud->getWhere('ref_uraians', ['id' => $id])->row();
-        if (!$uraian) {
+        if (! $uraian) {
             echo json_encode(['status' => false, 'message' => 'Data uraian tidak ditemukan']);
             return;
         }
@@ -767,7 +767,7 @@ class Programs extends CI_Controller
         ';
         $button_option = '<div class="col-md-3">' . $btnAdd . '</div>';
 
-        $search  = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+        $search = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
                         <input type="text" class="search form-control" />
                         <div class="input-group-append">
                             <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listLimit" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
@@ -813,34 +813,34 @@ class Programs extends CI_Controller
             }
 
             $html .= '<tr>
-					                <td class="text-center">
-					                    ' . $no . '
-					                </td>
-					                <td>
-					                    ' . $r->kode_kegiatan . ' <br>
-					                    ' . $r->kode_sub_kegiatan . ' <br>
-					                    <b class="kode">' . $r->kode . '</b>
-					                </td>
-					                <td valign="middle">
-					                    ' . ucwords($r->nama_kegiatan) . ' <br>
-					                    ' . ucwords($r->nama_sub_kegiatan) . ' <br>
-					                    <b class="nama">' . ucwords($r->nama) . '</b>
-					                </td>
-					                <td class="text-right">
-					                    <b>' . nominal(($getTotalPaguAwal - $total_limit_per_uraian[$r->id])) . '</b>
-					                </td>
-					                <td width="10%" class="text-right">
-					                    <b>' . ($total_limit === 0 ? 'UNLIMITED' : nominal($total_limit)) . '</b>
-					                </td>
-					                    <td class="text-center">
-					                        <button onclick="UpdateLimit(' . $r->id . ',\'' . $total_limit . '\',\'' . $r->uraian_id . '\')" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
-					                    </td>
-					                    <td class="text-center">
-					                        <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/t_pagu_limit') . '\',\'LIMIT ANGGARAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
-					                    </td>
-					                </td>
-					                <td class="text-center">' . bulan_range($r->periode) . '</td>
-					            </tr>';
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td>
+						                    ' . $r->kode_kegiatan . ' <br>
+						                    ' . $r->kode_sub_kegiatan . ' <br>
+						                    <b class="kode">' . $r->kode . '</b>
+						                </td>
+						                <td valign="middle">
+						                    ' . ucwords($r->nama_kegiatan) . ' <br>
+						                    ' . ucwords($r->nama_sub_kegiatan) . ' <br>
+						                    <b class="nama">' . ucwords($r->nama) . '</b>
+						                </td>
+						                <td class="text-right">
+						                    <b>' . nominal(($getTotalPaguAwal - $total_limit_per_uraian[$r->id])) . '</b>
+						                </td>
+						                <td width="10%" class="text-right">
+						                    <b>' . ($total_limit === 0 ? 'UNLIMITED' : nominal($total_limit)) . '</b>
+						                </td>
+						                    <td class="text-center">
+						                        <button onclick="UpdateLimit(' . $r->id . ',\'' . $total_limit . '\',\'' . $r->uraian_id . '\')" type="button" class="btn btn-info btn-sm rounded m-0"><i class="fa fa-money"></i></button>
+						                    </td>
+						                    <td class="text-center">
+						                        <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/t_pagu_limit') . '\',\'LIMIT ANGGARAN\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+						                    </td>
+						                </td>
+						                <td class="text-center">' . bulan_range($r->periode) . '</td>
+						            </tr>';
             $no++;
         endforeach;
         $html .= '
@@ -1415,8 +1415,8 @@ class Programs extends CI_Controller
 
     public function detail_limit_periode()
     {
-        $id   = $this->input->get('id');
-        $row  = $this->crud->getWhere('t_pagu_limit', ['id' => $id])->row();
+        $id  = $this->input->get('id');
+        $row = $this->crud->getWhere('t_pagu_limit', ['id' => $id])->row();
 
         $selected = array_filter(array_map('intval', explode(',', $row->periode ?? '')));
 

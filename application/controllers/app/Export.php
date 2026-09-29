@@ -1,12 +1,10 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Export extends CI_Controller
 {
@@ -15,10 +13,10 @@ class Export extends CI_Controller
      * Index Page for this controller.
      *
      * Maps to the following URL
-     * 		http://example.com/index.php/welcome
-     *	- or -
-     * 		http://example.com/index.php/welcome/index
-     *	- or -
+     *         http://example.com/index.php/welcome
+     *    - or -
+     *         http://example.com/index.php/welcome/index
+     *    - or -
      * Since this controller is set as the default controller in
      * config/routes.php, it's displayed at http://example.com/
      *
@@ -34,8 +32,8 @@ class Export extends CI_Controller
     {
         parent::__construct();
         cek_session();
-        //  CEK USER PRIVILAGES 
-        if (!privilages('priv_default')):
+        //  CEK USER PRIVILAGES
+        if (! privilages('priv_default')):
             return show_404();
         endif;
         $this->excel = new Spreadsheet();
@@ -44,8 +42,8 @@ class Export extends CI_Controller
         $this->load->model('ModelTarget', 'target');
         $this->load->model('ModelRealisasi', 'realisasi');
         $this->tahun_anggaran = $this->session->userdata('tahun_anggaran');
-        $this->part = $this->session->userdata('part');
-        $this->is_perubahan = $this->session->userdata('is_perubahan');
+        $this->part           = $this->session->userdata('part');
+        $this->is_perubahan   = $this->session->userdata('is_perubahan');
     }
 
     public function program()
@@ -57,44 +55,48 @@ class Export extends CI_Controller
         $sheet->setCellValue('B1', 'KODE');
         $sheet->setCellValue('C1', 'NAMA');
         $sheet->setCellValue('D1', 'TAHUN');
+        $sheet->setCellValue('E1', 'ALOKASI_ANGGARAN_AWAL');
+        $sheet->setCellValue('F1', 'ALOKASI_ANGGARAN_PERUBAHAN');
+        $sheet->setCellValue('G1', 'SELISIH');
 
         // options
         $sheet->getDefaultColumnDimension()->setAutoSize(true);
-        $sheet->getStyle('A1:D1')->applyFromArray([
+        $sheet->getStyle('A1:G1')->applyFromArray([
             'font' => [
-                'bold' => true,
-                'color' => ['argb' => 'FFFFFFFF']
+                'bold'  => true,
+                'color' => ['argb' => 'FFFFFFFF'],
             ],
-            'fill' => array(
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => array('argb' => 'FF4F81BD')
-            )
+            'fill' => [
+                'fillType'   => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF4F81BD'],
+            ],
         ]);
-
-        $protection = $sheet->getProtection();
-        $allowed = $protection->verify(date('d-m-Y'));
-
-        if ($allowed === false) {
-            throw new Exception("Incorrect password");
-        }
 
         $col = 2;
         foreach ($db->result() as $row):
+            $totalPaguAwal      = $this->target->getAlokasiPaguProgram($row->id, "0", $this->tahun_anggaran)->row()->total_pagu_awal ?? 0;
+            $totalPaguPerubahan = $this->target->getAlokasiPaguProgram($row->id, "1", $this->tahun_anggaran)->row()->total_pagu_awal ?? 0;
+            $selisih            = $totalPaguPerubahan - $totalPaguAwal;
+
             $sheet->setCellValue('A' . $col, $row->id);
             $sheet->setCellValueExplicit('B' . $col, $row->kode, DataType::TYPE_STRING);
             $sheet->setCellValue('C' . $col, $row->nama);
             $sheet->setCellValue('D' . $col, $row->tahun);
+            $sheet->setCellValueExplicit('E' . $col, nominal($totalPaguAwal), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('F' . $col, nominal($totalPaguPerubahan), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('G' . $col, nominal($selisih), DataType::TYPE_STRING2);
             $col++;
         endforeach;
 
-        $partId = $this->part;
+        $partId   = $this->part;
         $partName = $this->export->getPartName($partId)->nama;
 
-        $writer = new Xlsx($this->excel);
+        $writer   = new Xlsx($this->excel);
         $filename = 'PROGRAM-' . $partName . '-' . $this->tahun_anggaran;
+        $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filename);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=' . $filename . '.xlsx');
+        header('Content-Disposition: attachment; filename="' . $filename . '.xlsx"');
         header('Cache-Control: max-age=0');
 
         $writer->save('php://output');
@@ -103,14 +105,14 @@ class Export extends CI_Controller
     public function kegiatan()
     {
 
-        if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
+        if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
             $db = $this->db->select('k.id,k.fid_part,k.fid_program,k.kode,k.nama,k.tahun,part.nama as nama_part, prog.nama as nama_program')
                 ->join('ref_parts as part', 'k.fid_part=part.id')
                 ->join('ref_programs as prog', 'k.fid_program=prog.id')
                 ->order_by('k.kode', 'asc')
                 ->where('k.tahun', $this->tahun_anggaran)
                 ->get('ref_kegiatans as k');
-        else :
+        else:
             $db = $this->db->select('k.id,k.fid_part,k.fid_program,k.kode,k.nama,k.tahun,part.nama as nama_part, prog.nama as nama_program')
                 ->join('ref_parts as part', 'k.fid_part=part.id')
                 ->join('ref_programs as prog', 'k.fid_program=prog.id')
@@ -134,17 +136,17 @@ class Export extends CI_Controller
         $sheet->getDefaultColumnDimension()->setAutoSize(true);
         $sheet->getStyle('A1:H1')->applyFromArray([
             'font' => [
-                'bold' => true,
-                'color' => ['argb' => 'FFFFFFFF']
+                'bold'  => true,
+                'color' => ['argb' => 'FFFFFFFF'],
             ],
-            'fill' => array(
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => array('argb' => 'FF4F81BD')
-            )
+            'fill' => [
+                'fillType'   => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF4F81BD'],
+            ],
         ]);
 
         $protection = $sheet->getProtection();
-        $allowed = $protection->verify(date('d-m-Y'));
+        $allowed    = $protection->verify(date('d-m-Y'));
 
         if ($allowed === false) {
             throw new Exception("Incorrect password");
@@ -163,11 +165,12 @@ class Export extends CI_Controller
             $col++;
         endforeach;
 
-        $partId = $this->part;
+        $partId   = $this->part;
         $partName = $this->export->getPartName($partId)->nama;
 
-        $writer = new Xlsx($this->excel);
+        $writer   = new Xlsx($this->excel);
         $filename = 'KEGIATAN-' . $partName . '-' . $this->tahun_anggaran;
+        $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filename);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename=' . $filename . '.xlsx');
@@ -178,12 +181,12 @@ class Export extends CI_Controller
 
     public function sub_kegiatan()
     {
-        if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
-            $db = $this->db->select('sub.*,keg.nama_kegiatan')->order_by('sub.kode', 'asc')
+        if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
+            $db = $this->db->select('sub.*,keg.nama as nama_kegiatan')->order_by('sub.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'sub.fid_kegiatan=keg.id', 'inner')
                 ->where('sub.tahun', $this->tahun_anggaran)
                 ->get('ref_sub_kegiatans AS sub');
-        else :
+        else:
             $db = $this->db->select('sub.id,sub.fid_kegiatan,sub.kode,sub.nama,sub.tahun,keg.nama as nama_kegiatan')
                 ->order_by('sub.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'sub.fid_kegiatan=keg.id', 'inner')
@@ -204,17 +207,17 @@ class Export extends CI_Controller
         $sheet->getDefaultColumnDimension()->setAutoSize(true);
         $sheet->getStyle('A1:F1')->applyFromArray([
             'font' => [
-                'bold' => true,
-                'color' => ['argb' => 'FFFFFFFF']
+                'bold'  => true,
+                'color' => ['argb' => 'FFFFFFFF'],
             ],
-            'fill' => array(
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => array('argb' => 'FF4F81BD')
-            )
+            'fill' => [
+                'fillType'   => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF4F81BD'],
+            ],
         ]);
 
         $protection = $sheet->getProtection();
-        $allowed = $protection->verify(date('d-m-Y'));
+        $allowed    = $protection->verify(date('d-m-Y'));
 
         if ($allowed === false) {
             throw new Exception("Incorrect password");
@@ -232,11 +235,12 @@ class Export extends CI_Controller
             $col++;
         endforeach;
 
-        $partId = $this->part;
+        $partId   = $this->part;
         $partName = $this->export->getPartName($partId)->nama;
 
-        $writer = new Xlsx($this->excel);
+        $writer   = new Xlsx($this->excel);
         $filename = 'SUB-KEGIATAN-' . $partName . '-' . $this->tahun_anggaran;
+        $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filename);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename=' . $filename . '.xlsx');
@@ -247,14 +251,14 @@ class Export extends CI_Controller
 
     public function uraian()
     {
-        if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN') :
+        if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
             $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_sub_kegiatan,u.kode,u.nama,u.tahun,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, keg.fid_part, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
                 ->where('u.tahun', $this->tahun_anggaran)
                 ->get('ref_uraians AS u');
-        else :
+        else:
             $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_sub_kegiatan,u.kode,u.nama,u.tahun,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, keg.fid_part, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
@@ -281,17 +285,17 @@ class Export extends CI_Controller
         $sheet->getDefaultColumnDimension()->setAutoSize(true);
         $sheet->getStyle('A1:K1')->applyFromArray([
             'font' => [
-                'bold' => true,
-                'color' => ['argb' => 'FFFFFFFF']
+                'bold'  => true,
+                'color' => ['argb' => 'FFFFFFFF'],
             ],
-            'fill' => array(
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => array('argb' => 'FF4F81BD')
-            )
+            'fill' => [
+                'fillType'   => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF4F81BD'],
+            ],
         ]);
 
         $protection = $sheet->getProtection();
-        $allowed = $protection->verify(date('d-m-Y'));
+        $allowed    = $protection->verify(date('d-m-Y'));
 
         if ($allowed === false) {
             throw new Exception("Incorrect password");
@@ -300,11 +304,11 @@ class Export extends CI_Controller
 
         $col = 2;
         foreach ($db->result() as $row):
-            $pagu_awal = $this->crud->getWhere('t_pagu', ['fid_uraian' => $row->id, 'is_perubahan' => '0'])->row();
+            $pagu_awal     = $this->crud->getWhere('t_pagu', ['fid_uraian' => $row->id, 'is_perubahan' => '0'])->row();
             $paguPerubahan = $this->crud->getWhere('t_pagu', ['fid_uraian' => $row->id, 'is_perubahan' => '1'])->row();
 
-            $totalPaguAwal = !empty($pagu_awal->total_pagu_awal) ? $pagu_awal->total_pagu_awal : 0;
-            $totalPaguPerubahan = !empty($paguPerubahan->total_pagu_awal) ? $paguPerubahan->total_pagu_awal : 0;
+            $totalPaguAwal      = ! empty($pagu_awal->total_pagu_awal) ? $pagu_awal->total_pagu_awal : 0;
+            $totalPaguPerubahan = ! empty($paguPerubahan->total_pagu_awal) ? $paguPerubahan->total_pagu_awal : 0;
 
             $sheet->setCellValue('A' . $col, $row->id);
             $sheet->setCellValue('B' . $col, $row->fid_part);
@@ -320,11 +324,12 @@ class Export extends CI_Controller
             $col++;
         endforeach;
 
-        $partId = $this->part;
+        $partId   = $this->part;
         $partName = $this->export->getPartName($partId)->nama;
 
-        $writer = new Xlsx($this->excel);
+        $writer   = new Xlsx($this->excel);
         $filename = 'URAIAN-' . $partName . '-' . $this->tahun_anggaran;
+        $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filename);
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename=' . $filename . '.xlsx');
@@ -342,9 +347,9 @@ class Export extends CI_Controller
         endif;
 
         $data = [
-            'title' => 'Target Anggaran & Kinerja  - Tahun ' . $tahun,
+            'title'    => 'Target Anggaran & Kinerja  - Tahun ' . $tahun,
             'programs' => $programs,
-            'tahun' => $tahun
+            'tahun'    => $tahun,
         ];
         $this->load->view('pages/anggaran_kinerja/target_cetak_excel', $data);
     }
@@ -360,11 +365,11 @@ class Export extends CI_Controller
         endif;
 
         $data = [
-            'title' => 'Realisasi Anggaran & Kinerja  - ' . $periode_nama,
-            'programs' => $programs,
-            'tw_id' => $periode_id,
-            'tw_nama' => $periode_nama,
-            'tahun_anggaran' => $this->tahun_anggaran
+            'title'          => 'Realisasi Anggaran & Kinerja  - ' . $periode_nama,
+            'programs'       => $programs,
+            'tw_id'          => $periode_id,
+            'tw_nama'        => $periode_nama,
+            'tahun_anggaran' => $this->tahun_anggaran,
         ];
         $this->load->view('pages/anggaran_kinerja/realisasi_cetak_excel', $data);
     }
@@ -372,7 +377,7 @@ class Export extends CI_Controller
     public function capaian($periode_start, $periode_end)
     {
         $periode_start_name = $this->realisasi->getPeriodeById($periode_start)->row()->nama;
-        $periode_end_name = $this->realisasi->getPeriodeById($periode_end)->row()->nama;
+        $periode_end_name   = $this->realisasi->getPeriodeById($periode_end)->row()->nama;
 
         if ($this->session->userdata('role') === 'ADMIN'):
             $programs = $this->target->program(null, null, $this->tahun_anggaran);
@@ -381,13 +386,13 @@ class Export extends CI_Controller
         endif;
 
         $data = [
-            'title' => 'Capaian Anggaran & Kinerja  - ' . $periode_start_name . ' s/d ' . $periode_end_name,
-            'programs' => $programs,
-            'tahun_anggaran' => $this->session->userdata('tahun_anggaran'),
-            'periode_start' => $periode_start,
-            'periode_end' => $periode_end,
+            'title'              => 'Capaian Anggaran & Kinerja  - ' . $periode_start_name . ' s/d ' . $periode_end_name,
+            'programs'           => $programs,
+            'tahun_anggaran'     => $this->session->userdata('tahun_anggaran'),
+            'periode_start'      => $periode_start,
+            'periode_end'        => $periode_end,
             'periode_start_name' => $periode_start_name,
-            'periode_end_name' => $periode_end_name
+            'periode_end_name'   => $periode_end_name,
         ];
         $this->load->view('pages/anggaran_kinerja/capaian_cetak_excel', $data);
     }
