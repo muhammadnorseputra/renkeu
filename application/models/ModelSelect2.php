@@ -129,7 +129,7 @@ class ModelSelect2 extends CI_Model
 
     public function cekPeriodeByUraian($id)
     {
-        $this->db->select('periode');
+        $this->db->select('id,periode');
         $this->db->from('t_pagu_limit');
         $this->db->where('fid_uraian', $id);
         $q = $this->db->get();

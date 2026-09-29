@@ -183,6 +183,34 @@
         </div>
     </div>
 </div>
+
+<!-- Top/Bottom 5 Program Capaian -->
+<div class="row" id="tour_chart_program_capaian">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Top/Bottom 5 Program Capaian Anggaran</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-success">Top 5 Tertinggi</h5>
+                        <canvas id="chartTop5Program" height="250"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-danger">Bottom 5 Terendah</h5>
+                        <canvas id="chartBottom5Program" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Parts Chart -->
 <div class="row" id="tour_chart_part">
     <div class="col-md-12">
@@ -531,5 +559,91 @@ let SPJCAIR = {
         };
 
         new Chart($(".barChart"), config);
+
+        // Top 5 Program Capaian
+        const top5Data = {
+            labels: <?php echo $chart['top5_program'] ? json_encode(array_column(json_decode($chart['top5_program'], true), 'nama')) : json_encode([]) ?>,
+            datasets: [{
+                label: 'Capaian (%)',
+                data: <?php echo $chart['top5_program'] ? json_encode(array_column(json_decode($chart['top5_program'], true), 'persen')) : json_encode([]) ?>,
+                backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                borderColor: 'rgb(40, 167, 69)',
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('chartTop5Program'), {
+            type: 'horizontalBar',
+            data: top5Data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            max: 100,
+                            callback: function(value) { return value + '%'; }
+                        }
+                    }]
+                },
+                legend: { display: false },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                const prog = <?php echo $chart['top5_program'] ? json_encode(json_decode($chart['top5_program'], true)) : json_encode([]) ?>;
+                                if (!prog[idx]) return '';
+                                return prog[idx].nama + ': ' + prog[idx].persen + '% (Rp ' + prog[idx].realisasi.toLocaleString() + ' / ' + prog[idx].pagu.toLocaleString() + ')';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Bottom 5 Program Capaian
+        const bottom5Data = {
+            labels: <?php echo $chart['bottom5_program'] ? json_encode(array_column(json_decode($chart['bottom5_program'], true), 'nama')) : json_encode([]) ?>,
+            datasets: [{
+                label: 'Capaian (%)',
+                data: <?php echo $chart['bottom5_program'] ? json_encode(array_column(json_decode($chart['bottom5_program'], true), 'persen')) : json_encode([]) ?>,
+                backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                borderColor: 'rgb(220, 53, 69)',
+                borderWidth: 1
+            }]
+        };
+        new Chart(document.getElementById('chartBottom5Program'), {
+            type: 'horizontalBar',
+            data: bottom5Data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            max: 100,
+                            callback: function(value) { return value + '%'; }
+                        }
+                    }]
+                },
+                legend: { display: false },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                const prog = <?php echo $chart['bottom5_program'] ? json_encode(json_decode($chart['bottom5_program'], true)) : json_encode([]) ?>;
+                                if (!prog[idx]) return '';
+                                return prog[idx].nama + ': ' + prog[idx].persen + '% (Rp ' + prog[idx].realisasi.toLocaleString() + ' / ' + prog[idx].pagu.toLocaleString() + ')';
+                            }
+                        }
+                    }
+                }
+            }
+        });
     })
 </script>

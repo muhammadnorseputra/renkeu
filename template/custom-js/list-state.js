@@ -32,7 +32,7 @@
 		if (state.sort) {
 			list.sort(state.sort.valueName, { order: state.sort.order });
 		}
-		if (state.page && list.page) {
+		if (state.page && list.page !== undefined) {
 			list.show((state.page - 1) * list.page + 1, list.page);
 		}
 	}

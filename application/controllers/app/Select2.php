@@ -124,13 +124,18 @@ class Select2 extends CI_Controller
     {
         $q = $this->input->post('q');
         $uraian_id = $this->input->post('uraian_id');
+        $exclude_limit_id = $this->input->post('exclude_limit_id');
 
         $cek_periode = $this->select->cekPeriodeByUraian($uraian_id);
         $disabled_ids = [];
         if ($cek_periode->num_rows() > 0) {
             foreach ($cek_periode->result() as $row) {
+                // Lewati periode milik limit yang sedang diedit
+                if ($exclude_limit_id && (int) $row->id === (int) $exclude_limit_id) {
+                    continue;
+                }
                 // Pecah tiap string jadi array
-                $ids = explode(',', $row->periode); // sesuaikan nama kolom
+                $ids = explode(',', $row->periode);
                 // Bersihkan spasi dan ubah ke integer
                 $ids = array_map('intval', array_map('trim', $ids));
                 // Gabungkan ke array utama
@@ -145,7 +150,6 @@ class Select2 extends CI_Controller
         $all = [];
         if ($db->num_rows() > 0) :
             foreach ($db->result() as $row) :
-                $cek_periode = $this->select->cekPeriodeByUraian($uraian_id);
                 if (in_array($row->id, $disabled_ids)) {
                     $data['disabled'] = true;
                 } else {

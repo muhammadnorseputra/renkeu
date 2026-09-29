@@ -33,6 +33,8 @@ var options = {
 	doneLabel: "Selesai",
 	dontShowAgainLabel: "Jangan lihat ini lagi.",
 	dontShowAgain: true,
+	exitOnOverlayClick: false,
+	exitOnEsc: false,
 };
 
 intro.setOptions({

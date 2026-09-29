@@ -228,9 +228,14 @@ class Programs extends CI_Controller
             <button data-toggle="modal" data-target=".modal-program" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
             </div>
         ';
-        $search     = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
-        $pagging    = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
-        $btnOptions = '<div class="col-md-3">' . $btnAdd . '</div>';
+        $search     = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+                        <input type="text" class="search form-control" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listProgram" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
+                        </div>
+                    </div></div>';
+        $pagging    = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
+        $btnOptions = '<div class="col-md-5">' . $btnAdd . '</div>';
 
         $html  = '<div id="listProgram"><div class="row">' . $search . $pagging . $btnOptions . "</div>";
         $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action table-bordered">';
@@ -321,10 +326,15 @@ class Programs extends CI_Controller
             <button data-toggle="modal" data-target=".modal-kegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
             </div>
         ';
-        $search  = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
-        $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
+        $search  = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+                        <input type="text" class="search form-control" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listKegiatan" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
+                        </div>
+                    </div></div>';
+        $pagging = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
 
-        $btnOptions = '<div class="col-md-3">' . $btnAdd . '</div>';
+        $btnOptions = '<div class="col-md-5">' . $btnAdd . '</div>';
 
         $html  = '<div id="listKegiatan"><div class="row">' . $search . $pagging . $btnOptions . "</div>";
         $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action table-bordered">';
@@ -419,10 +429,15 @@ class Programs extends CI_Controller
                         <button data-toggle="modal" data-target=".modal-subkegiatan" class="btn btn-primary mt-3 rounded-0"><i class="fa fa-plus"></i> Tambah</button>
                     </div>
             ';
-        $search  = '<div class="col-6 col-md-3">Pencarian <input type="text" class="fuzzy-search form-control" /></div>';
-        $pagging = '<div class="col-6 col-md-6">Halaman <ul class="pagination"></ul></div>';
+        $search  = '<div class="col-6 col-md-4">Pencarian <div class="input-group">
+                        <input type="text" class="fuzzy-search form-control" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listSubKegiatan" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
+                        </div>
+                    </div></div>';
+        $pagging = '<div class="col-6 col-md-3">Halaman <ul class="pagination"></ul></div>';
 
-        $button_option = '<div class="col-md-3">' . $btnAdd . '</div>';
+        $button_option = '<div class="col-md-5">' . $btnAdd . '</div>';
 
         $html  = '<div id="listSubKegiatan"><div class="row">' . $search . $pagging . $button_option . "</div>";
         $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action table-bordered">';
@@ -533,9 +548,14 @@ class Programs extends CI_Controller
 
         $btnExport = '<div class="float-right"><a class="btn btn-info mt-3 rounded-0" href="' . base_url('app/export/uraian') . '"><i class="fa fa-download"></i> Export</a></div>';
 
-        $search        = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
+        $search        = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+                            <input type="text" class="search form-control" />
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listUraian" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
+                            </div>
+                        </div></div>';
         $pagging       = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
-        $button_option = '<div class="col-md-6">' . $btnAdd . $btnRekon . $btnExport . '</div>';
+        $button_option = '<div class="col-md-5">' . $btnAdd . $btnRekon . $btnExport . '</div>';
 
         $is_admin = ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN');
         $th_status_aktif = $is_admin ? '<th class="text-center">Status Aktif</th>' : '';
@@ -747,8 +767,13 @@ class Programs extends CI_Controller
         ';
         $button_option = '<div class="col-md-3">' . $btnAdd . '</div>';
 
-        $search  = '<div class="col-5 col-md-3">Pencarian <input type="text" class="search form-control" /></div>';
-        $pagging = '<div class="col-4 col-md-6">Halaman <ul class="pagination"></ul></div>';
+        $search  = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+                        <input type="text" class="search form-control" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listLimit" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
+                        </div>
+                    </div></div>';
+        $pagging = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
 
         $html  = '<div id="listLimit"><div class="row">' . $search . $pagging . $button_option . "</div>";
         $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action table-bordered">';
@@ -1354,6 +1379,11 @@ class Programs extends CI_Controller
             'updated_by' => $this->session->userdata('user_name'),
         ];
 
+        // Handle periode update if provided
+        if (isset($post['periode']) && is_array($post['periode']) && count($post['periode']) > 0) {
+            $update['periode'] = implode(",", $post['periode']);
+        }
+
         $whr = [
             'id' => $id,
         ];
@@ -1381,6 +1411,38 @@ class Programs extends CI_Controller
             'status'  => true,
             'message' => 'Update limit berhasil',
         ]);
+    }
+
+    public function detail_limit_periode()
+    {
+        $id   = $this->input->get('id');
+        $row  = $this->crud->getWhere('t_pagu_limit', ['id' => $id])->row();
+
+        $selected = array_filter(array_map('intval', explode(',', $row->periode ?? '')));
+
+        // Periode milik limit lain pada uraian yang sama -> tidak boleh dipilih ulang
+        $used = [];
+        if ($row) {
+            foreach ($this->crud->getWhere('t_pagu_limit', ['fid_uraian' => $row->fid_uraian])->result() as $r) {
+                if ((int) $r->id === (int) $id) {
+                    continue;
+                }
+                $used = array_merge($used, array_map('intval', explode(',', $r->periode ?? '')));
+            }
+        }
+        $used = array_unique(array_filter($used));
+
+        $options = [];
+        foreach ($this->db->order_by('id', 'asc')->get('t_periode')->result() as $p) {
+            $options[] = [
+                'id'       => (int) $p->id,
+                'nama'     => $p->nama,
+                'selected' => in_array((int) $p->id, $selected),
+                'disabled' => in_array((int) $p->id, $used),
+            ];
+        }
+
+        echo json_encode(['options' => $options]);
     }
 
     public function detail($tbl)
