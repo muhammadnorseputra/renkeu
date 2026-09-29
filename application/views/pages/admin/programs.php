@@ -2491,7 +2491,7 @@ function InputPagu(id, url, paguAwal, is_perubahan, paguMurni) {
         if (is_perubahan == 1) {
             $form.find('#pagu-perubahan-toggle').removeClass('d-none');
             $form.find('#paguBerubah').prop('checked', true);
-            $form.find('input[name="jumlah"]').val('0');
+            $form.find('input[name="jumlah"]').val(formatRupiah(paguAwal));
             $form.find('input[name="is_perubahan"]').val(1);
         } else {
             $form.find('#pagu-perubahan-toggle').addClass('d-none');
@@ -2504,7 +2504,7 @@ function InputPagu(id, url, paguAwal, is_perubahan, paguMurni) {
                 $form.find('input[name="jumlah"]').val(formatRupiah(murni));
                 $form.find('input[name="is_perubahan"]').val(0);
             } else {
-                $form.find('input[name="jumlah"]').val('0');
+                $form.find('input[name="jumlah"]').val(formatRupiah(paguAwal));
                 $form.find('input[name="is_perubahan"]').val(1);
             }
         });
