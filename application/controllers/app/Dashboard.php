@@ -90,9 +90,9 @@ class Dashboard extends CI_Controller
         // Horizontal Bar Top/Bottom 5 Program
         $program_capaian = [];
         foreach ($db_program->result() as $r):
-            $pagu_awal   = $this->target->getAlokasiPaguProgram($r->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal ?? 0;
-            $realisasi   = $this->realisasi->getRealisasiTahunProgram($r->kode, $this->ta) ?? 0;
-            $persen      = $pagu_awal > 0 ? round(($realisasi / $pagu_awal) * 100, 2) : 0;
+            $pagu_awal         = $this->target->getAlokasiPaguProgram($r->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal ?? 0;
+            $realisasi         = $this->realisasi->getRealisasiTahunProgram($r->kode, $this->ta) ?? 0;
+            $persen            = $pagu_awal > 0 ? round(($realisasi / $pagu_awal) * 100, 2) : 0;
             $program_capaian[] = [
                 'kode'      => $r->kode,
                 'nama'      => $r->nama,
@@ -102,7 +102,7 @@ class Dashboard extends CI_Controller
             ];
         endforeach;
         // Sort by persen descending
-        usort($program_capaian, function($a, $b) {
+        usort($program_capaian, function ($a, $b) {
             return $b['persen'] <=> $a['persen'];
         });
         $top5    = array_slice($program_capaian, 0, 5);
@@ -155,8 +155,8 @@ class Dashboard extends CI_Controller
                 'template/backend/vendors/Flot/jquery.flot.navigate.js',
                 'template/backend/vendors/Flot/jquery.flot.selection.js',
                 'template/backend/vendors/Flot/jquery.flot.threshold.js',
-                'template/backend/vendors/DateJS/build/date.js',
                 'template/backend/vendors/flot.curvedlines/curvedLines.js',
+                'template/backend/vendors/DateJS/build/date.js',
                 'template/backend/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js',
                 'template/custom-js/dashboard.js',
             ],

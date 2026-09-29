@@ -713,10 +713,84 @@ class ModelSpj extends CI_Model
 		return $q->row()->jumlah;
 	}
 
+	// Rekap uraian lintas bidang (group by kode uraian, 3 query)
+	public function getUraianRekap($part = null, $filter_tanggal = null, $is_perubahan = "0", $ta)
+	{
+		// 1. List kode uraian unik
+		$this->db->select('u.kode, MAX(u.nama) as nama');
+		$this->db->from('ref_uraians as u');
+		$this->db->where('u.tahun', $ta);
+		if ($part !== null) {
+			$this->db->join('ref_kegiatans as k', 'u.fid_kegiatan = k.id');
+			$this->db->where('k.fid_part', $part);
+		}
+		$this->db->group_by('u.kode');
+		$this->db->order_by('u.kode', 'asc');
+		$uraians = $this->db->get()->result();
+		if (empty($uraians)) return [];
+
+		// 1b. Hitung jml bidang per kode (dari pagu, global tanpa filter part)
+		$this->db->select('u.kode, COUNT(DISTINCT p.fid_part) as jml');
+		$this->db->from('t_pagu as p');
+		$this->db->join('ref_uraians as u', 'p.fid_uraian = u.id');
+		$this->db->where('p.tahun', $ta);
+		$this->db->where('p.is_perubahan', $is_perubahan);
+		$this->db->group_by('u.kode');
+		$this->db->having('jml >', 1);
+		$allowMap = [];
+		foreach ($this->db->get()->result() as $row) {
+			$allowMap[$row->kode] = true;
+		}
+		if (empty($allowMap)) return [];
+
+		// 2. Pagu per kode (sekali query)
+		$this->db->select('u.kode, SUM(p.total_pagu_awal) as total');
+		$this->db->from('t_pagu as p');
+		$this->db->join('ref_uraians as u', 'p.fid_uraian = u.id');
+		$this->db->where('p.tahun', $ta);
+		$this->db->where('p.is_perubahan', $is_perubahan);
+		if ($part !== null) $this->db->where('p.fid_part', $part);
+		$this->db->group_by('u.kode');
+		$paguMap = [];
+		foreach ($this->db->get()->result() as $row) {
+			$paguMap[$row->kode] = (float)$row->total;
+		}
+
+		// 3. Realisasi per kode (sekali query)
+		$this->db->select('u.kode, SUM(s.jumlah) as total');
+		$this->db->from('spj as s');
+		$this->db->join('ref_uraians as u', 's.fid_uraian = u.id');
+		$this->db->where('s.is_status', 'SELESAI');
+		$this->db->where('s.tahun', $ta);
+		if ($part !== null) $this->db->where('s.fid_part', $part);
+		if ($filter_tanggal !== null) {
+			$tanggal = explode(' - ', $filter_tanggal);
+			$start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+			$end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+			$this->db->where('DATE(s.approve_at) >=', $start_date);
+			$this->db->where('DATE(s.approve_at) <=', $end_date);
+		}
+		$this->db->group_by('u.kode');
+		$realMap = [];
+		foreach ($this->db->get()->result() as $row) {
+			$realMap[$row->kode] = (float)$row->total;
+		}
+
+		foreach ($uraians as $u) {
+			$u->pagu = isset($paguMap[$u->kode]) ? $paguMap[$u->kode] : 0;
+			$u->realisasi = isset($realMap[$u->kode]) ? $realMap[$u->kode] : 0;
+		}
+
+		// buang kode tanpa pagu & tanpa realisasi, dan hanya kode yg dipakai >3 bidang
+		return array_values(array_filter($uraians, function ($u) use ($allowMap) {
+			return isset($allowMap[$u->kode]) && ($u->pagu > 0 || $u->realisasi > 0);
+		}));
+	}
+
 	// Belanja Harian chart data
 	public function getBelanjaHarian($part = null, $filter_tanggal = null, $ta)
 	{
-		$result = ['usulan' => [], 'verifikasi' => [], 'cair' => [], 'range' => null];
+		$result = ['usulan' => [], 'verifikasi' => [], 'pending' => [], 'cair' => [], 'range' => null];
 
 		if(empty($filter_tanggal)) {
 			// default: bulan sekarang
@@ -760,6 +834,20 @@ class ModelSpj extends CI_Model
 		$this->db->order_by('DATE(verify_at)', 'asc');
 		foreach($this->db->get()->result() as $row) {
 			$result['verifikasi'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
+		}
+
+		// Pending (spj_payment.status = PENDING / PENDING - PERBAIKAN)
+		$this->db->select('DATE(sr.approve_at) as tanggal, SUM(sr.jumlah) as total');
+		$this->db->from('spj_riwayat as sr');
+		$this->db->join('spj_payment as sp', 'sr.token = sp.token');
+		$this->db->where_in('sp.status', ['PENDING', 'PENDING - PERBAIKAN']);
+		$this->db->where('DATE(sr.approve_at) >=', $start_date);
+		$this->db->where('DATE(sr.approve_at) <=', $end_date);
+		if($part !== null) $this->db->where('sr.entri_by_part', $part);
+		$this->db->group_by('DATE(sr.approve_at)');
+		$this->db->order_by('DATE(sr.approve_at)', 'asc');
+		foreach($this->db->get()->result() as $row) {
+			$result['pending'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
 		}
 
 		// Cair (spj_payment.status = CAIR)

@@ -354,7 +354,7 @@ $(function() {
                 show: true,
                 radius: 4,
                 symbol: "circle",
-                lineWidth: 2,
+                lineWidth: 3,
                 fill: true
             },
 
