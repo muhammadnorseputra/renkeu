@@ -124,6 +124,69 @@
     box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
     overflow: hidden;
 }
+
+/* Modal Rekonsiliasi */
+.modal-rekon .modal-content {
+    border: 0 !important;
+}
+
+.modal-rekon .bg-gradient-success {
+    background: linear-gradient(135deg, #1a8a5c 0%, #26B99A 100%) !important;
+}
+
+.modal-rekon .rounded-lg {
+    border-radius: 12px !important;
+}
+
+.modal-rekon .icon-wrapper {
+    width: 56px;
+    height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-rekon .select-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+}
+
+.modal-rekon .custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 40px;
+}
+
+/* File Upload Area */
+.file-upload-wrapper {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #f8f9fa;
+}
+
+.file-upload-wrapper:hover {
+    border-color: #26B99A !important;
+    background: #f0faf6;
+}
+
+.file-upload-wrapper.dragover {
+    border-color: #26B99A !important;
+    background: #e6f9f1;
+    transform: scale(1.01);
+}
+
+.file-upload-wrapper .upload-icon {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.file-upload-wrapper:hover .upload-icon {
+    opacity: 1;
+}
 </style>
 <div class="row">
     <div class="col-md-12">
@@ -856,39 +919,103 @@
 
 <!-- Modal Rekonsiliasi Anggaran -->
 <div class="modal fade modal-rekon" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <?php echo form_open_multipart(base_url('app/programs/rekon_anggaran'), ['id' => 'formRekonAnggaran', 'data-parsley-validate' => '']); ?>
-        <div class="modal-content rounded-0">
-            <div class="modal-header bg-success text-white rounded-0">
-                <h4 class="modal-title" id="myModalLabel">Rekonsiliasi Anggaran</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-gradient-success text-white border-0 rounded-top py-4 px-4">
+                <div class="d-flex align-items-center">
+                    <div class="icon-wrapper bg-white bg-opacity-20 rounded-circle p-3 mr-3">
+                        <i class="fa fa-file-excel-o fa-2x"></i>
+                    </div>
+                    <div>
+                        <h4 class="modal-title mb-0 fw-semibold">Rekonsiliasi Anggaran</h4>
+                        <small class="opacity-75">Upload file Excel untuk rekonsiliasi data anggaran</small>
+                    </div>
+                </div>
+                <button type="button" class="close text-white opacity-1" data-dismiss="modal" aria-label="Tutup">
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="anggaran">Utk. Anggaran</label>
-                    <select name="anggaran" id="anggaran" required class="form-control"
-                        data-parsley-errors-container="#help-block-anggaran" aria-readonly="true" disabled>
-                        <option value="">-- Anggaran --</option>
-                        <option value="1"
-                            <?php echo $this->session->userdata('is_perubahan') === "1" ? "selected" : ""; ?>>
-                            Perubahan</option>
-                        <option value="0"
-                            <?php echo $this->session->userdata('is_perubahan') === "0" ? "selected" : ""; ?>>
-                            Murni</option>
-                    </select>
-                    <div id="help-block-anggaran" class="help-block"></div>
+            <div class="modal-body p-4">
+                <div class="alert alert-info border-0 bg-light-info text-info mb-4 rounded-lg" role="alert">
+                    <div class="d-flex align-items-start">
+                        <i class="fa fa-info-circle fa-lg mr-3 mt-1"></i>
+                        <div>
+                            <strong>Format File:</strong> .xlsx atau .xls (maksimal 5MB)
+                            <br><small class="text-muted">Pastikan struktur kolom sesuai template yang
+                                disediakan</small>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="excelFile">Pilih File Excel</label>
-                    <input type="file" class="form-control form-control-file" id="excelFile" name="file"
-                        accept=".xlsx,.xls" required>
+
+                <div class="form-group mb-4">
+                    <label for="anggaran" class="form-label fw-medium text-dark mb-2">Jenis Anggaran <span
+                            class="text-danger">*</span></label>
+                    <div class="position-relative">
+                        <select name="anggaran" id="anggaran" required
+                            class="form-control form-control-lg custom-select"
+                            data-parsley-errors-container="#help-block-anggaran" aria-readonly="true" disabled>
+                            <option value="">-- Pilih Jenis Anggaran --</option>
+                            <option value="1"
+                                <?php echo $this->session->userdata('is_perubahan') === "1" ? "selected" : ""; ?>>
+                                Perubahan</option>
+                            <option value="0"
+                                <?php echo $this->session->userdata('is_perubahan') === "0" ? "selected" : ""; ?>>
+                                Murni</option>
+                        </select>
+                        <div class="select-arrow"><i class="fa fa-chevron-down"></i></div>
+                    </div>
+                    <div id="help-block-anggaran" class="help-block text-danger mt-2"></div>
+                    <small class="form-text text-muted">Jenis anggaran ditentukan oleh periode aktif saat ini</small>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="excelFile" class="form-label fw-medium text-dark mb-2">File Excel <span
+                            class="text-danger">*</span></label>
+                    <div class="file-upload-wrapper border-2 border-dashed border-secondary rounded-lg p-4 text-center transition-all"
+                        id="fileUploadArea">
+                        <input type="file" class="form-control form-control-file d-none" id="excelFile" name="file"
+                            accept=".xlsx,.xls" required data-parsley-excluded="false"
+                            data-parsley-errors-container="#help-block-file" aria-describedby="fileHelp">
+                        <div class="upload-icon mb-3">
+                            <i class="fa fa-cloud-upload fa-3x text-secondary"></i>
+                        </div>
+                        <h6 class="fw-medium text-dark mb-1">Seret & lepas file di sini</h6>
+                        <p class="text-muted mb-2">atau klik untuk memilih file</p>
+                        <small class="text-muted d-block" id="fileHelp">Format: .xlsx, .xls | Maks: 5MB</small>
+                        <div class="selected-file-info d-none mt-3 p-2 bg-light rounded text-left">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-file-excel-o text-success fa-lg mr-3"></i>
+                                    <div>
+                                        <div class="fw-medium" id="selectedFileName"></div>
+                                        <small class="text-muted" id="selectedFileSize"></small>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link text-danger p-0" id="removeFile">
+                                    <i class="fa fa-times"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="help-block-file" class="help-block text-danger mt-2"></div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input type="checkbox" class="form-check-input" id="confirmRecon" required>
+                    <label class="form-check-label text-dark" for="confirmRecon">
+                        Saya memastikan data pada file Excel sudah benar dan siap direkonsiliasi
+                    </label>
+                    <div id="help-block-confirm" class="help-block text-danger mt-2"></div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger rounded-0" data-dismiss="modal"><i
-                        class="fa fa-close mr-2"></i>Batal</button>
-                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Submit</button>
+            <div class="modal-footer bg-light border-top-0 px-4 py-3 rounded-bottom">
+                <button type="button" class="btn btn-outline-secondary btn-lg px-4" data-dismiss="modal">
+                    <i class="fa fa-close mr-2"></i>Batal
+                </button>
+                <button type="submit" class="btn btn-success btn-lg px-5" id="btnSubmitRecon">
+                    <i class="fa fa-save mr-2"></i>Submit Rekonsiliasi
+                </button>
             </div>
         </div>
         <?php echo form_close(); ?>
@@ -1854,11 +1981,6 @@ $(function() {
         $('select#periode_update').empty().trigger('change');
     })
 
-    MODAL_REKON_ANGGARAN.on('hidden.bs.modal', function(e) {
-        FORM_REKON_ANGGARAN[0].reset()
-        FORM_REKON_ANGGARAN.parsley().reset();
-    })
-
     FORM_KEGIATAN.parsley();
     FORM_KEGIATAN.on("submit", function(e) {
         e.preventDefault();
@@ -1984,12 +2106,125 @@ $(function() {
     });
 
     FORM_REKON_ANGGARAN.parsley();
+
+    // File upload interaction for Rekonsiliasi
+    (function() {
+        const $area = $('#fileUploadArea');
+        const $input = $('#excelFile');
+        const $info = $area.find('.selected-file-info');
+        const $fileName = $('#selectedFileName');
+        const $fileSize = $('#selectedFileSize');
+        const $removeBtn = $('#removeFile');
+        const $helpBlock = $('#help-block-file');
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function showFile(file) {
+            $fileName.text(file.name);
+            $fileSize.text(formatSize(file.size));
+            $area.addClass('has-file');
+            $info.removeClass('d-none');
+            $area.find('.upload-icon, h6, p').addClass('d-none');
+            $area.find('small#fileHelp').addClass('d-none');
+            $helpBlock.text('');
+            $input.removeClass('parsley-error');
+        }
+
+        function resetFile() {
+            $input.val('');
+            $area.removeClass('has-file');
+            $info.addClass('d-none');
+            $area.find('.upload-icon, h6, p').removeClass('d-none');
+            $area.find('small#fileHelp').removeClass('d-none');
+        }
+
+        $area.on('click', function(e) {
+            if (!$(e.target).closest('#removeFile, .selected-file-info').length) {
+                $input.trigger('click');
+            }
+        });
+
+        $input.on('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const allowed = ['.xlsx', '.xls'];
+                const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                if (!allowed.includes(ext)) {
+                    $helpBlock.text('Format file tidak didukung. Gunakan .xlsx atau .xls');
+                    resetFile();
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    $helpBlock.text('Ukuran file melebihi 5MB');
+                    resetFile();
+                    return;
+                }
+                showFile(file);
+            }
+        });
+
+        $area.on('dragover dragenter', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $area.addClass('dragover');
+        });
+
+        $area.on('dragleave dragend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $area.removeClass('dragover');
+        });
+
+        $area.on('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $area.removeClass('dragover');
+            const file = e.originalEvent.dataTransfer.files[0];
+            if (file) {
+                $input[0].files = e.originalEvent.dataTransfer.files;
+                $input.trigger('change');
+            }
+        });
+
+        $removeBtn.on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            resetFile();
+        });
+
+        // Reset file display when modal hidden
+        MODAL_REKON_ANGGARAN.on('hidden.bs.modal', function() {
+            FORM_REKON_ANGGARAN[0].reset();
+            FORM_REKON_ANGGARAN.parsley().reset();
+            resetFile();
+            $helpBlock.text('');
+            $('#help-block-confirm').text('');
+            $('#confirmRecon').prop('checked', false);
+        });
+    })();
+
     FORM_REKON_ANGGARAN.on("submit", function(e) {
         e.preventDefault();
 
         let $form = $(this);
         let $url = $form.attr('action');
         let $button = $form.find('button[type="submit"]');
+
+        const $fileInput = $('#excelFile');
+        if ($fileInput[0].files.length === 0) {
+            $('#help-block-file').text('Silakan pilih file Excel terlebih dahulu');
+            $fileInput.focus();
+            return false;
+        }
+        if (!$('#confirmRecon').is(':checked')) {
+            $('#help-block-confirm').text('Centang konfirmasi sebelum submit');
+            return false;
+        }
+        $('#help-block-file, #help-block-confirm').text('');
 
         // Gunakan FormData untuk file + data
         let formData = new FormData(this);
@@ -2010,17 +2245,17 @@ $(function() {
                         return window.location.reload();
                     }
                     $button.prop("disabled", false).html(
-                        '<i class="fa fa-save mr-2"></i>Simpan');
+                        '<i class="fa fa-save mr-2"></i>Submit Rekonsiliasi');
                     alert(response.message);
                 },
                 error: function(xhr, status, error) {
                     $button.prop("disabled", false).html(
-                        '<i class="fa fa-save mr-2"></i>Simpan');
+                        '<i class="fa fa-save mr-2"></i>Submit Rekonsiliasi');
                     alert("Terjadi kesalahan: " + error);
                 }
             });
         } catch (err) {
-            $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+            $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Submit Rekonsiliasi');
             alert("Error: " + err);
         }
 
