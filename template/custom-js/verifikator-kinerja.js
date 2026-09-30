@@ -248,6 +248,134 @@ $(document).ready(function () {
             }
         }
 
+        // Dropzone rekon: klik, drag & drop, preview, hapus
+        var $dropzone = $('#rekonDropzone');
+        var $dropEmpty = $('#rekonDropEmpty');
+        var $dropFile = $('#rekonDropFile');
+        var $rekonFile = $('#rekonFile');
+        var rekonSelectedFile = null;
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            var k = 1024, sizes = ['B', 'KB', 'MB', 'GB'], i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        function showRekonFile(file) {
+            rekonSelectedFile = file;
+            $('#rekonFileName').text(file.name);
+            $('#rekonFileSize').text(formatBytes(file.size));
+            $dropEmpty.addClass('d-none');
+            $dropFile.removeClass('d-none');
+        }
+        function clearRekonFile() {
+            rekonSelectedFile = null;
+            $rekonFile.val('');
+            $dropEmpty.removeClass('d-none');
+            $dropFile.addClass('d-none');
+        }
+        $dropzone.on('click', function (e) {
+            if ($(e.target).closest('#rekonRemoveFile').length) return;
+            // klik buatan pada input #rekonFile ikut bubble ke handler ini; stop agar tidak rekursif
+            if (e.target.id === 'rekonFile') return;
+            $rekonFile.trigger('click');
+        });
+        $rekonFile.on('change', function () {
+            if (this.files.length) showRekonFile(this.files[0]);
+        });
+        $('#rekonRemoveFile').on('click', function (e) {
+            e.stopPropagation();
+            clearRekonFile();
+        });
+        $dropzone.on('dragover', function (e) {
+            e.preventDefault();
+            $dropzone.addClass('dragover');
+        });
+        $dropzone.on('dragleave drop', function () {
+            $dropzone.removeClass('dragover');
+        });
+        $dropzone.on('drop', function (e) {
+            e.preventDefault();
+            var files = e.originalEvent.dataTransfer.files;
+            if (files.length) showRekonFile(files[0]);
+        });
+
+        // Submit rekonsiliasi data SAKIPRA (dengan progress upload)
+        $('#formRekonSakipra').on('submit', async function (e) {
+            e.preventDefault();
+            var $btn = $('#btnRekonSakipra');
+            var $result = $('#rekonResult');
+            var $progress = $('#rekonProgress');
+            var $bar = $('#rekonProgressBar');
+            var $pct = $('#rekonProgressPct');
+            var $label = $('#rekonProgressLabel');
+            var $info = $('#rekonProgressInfo');
+
+            if (!rekonSelectedFile) {
+                $result.removeClass('d-none alert-success alert-danger').addClass('alert-warning')
+                    .html('<i class="fa fa-exclamation-triangle mr-1"></i>File Excel belum dipilih.');
+                return;
+            }
+
+            $btn.prop('disabled', true);
+            $btn.find('i').removeClass('fa-refresh').addClass('fa-spinner fa-spin');
+            $result.addClass('d-none');
+            $progress.removeClass('d-none done');
+            $bar.css('width', '0%').attr('aria-valuenow', 0);
+            $pct.text('0%');
+            $label.text('Mengunggah file...');
+            $info.text('');
+
+            // FormData manual: hindari duplikasi entry 'file' (input + rekonSelectedFile)
+            var formData = new FormData();
+            formData.append('file', rekonSelectedFile);
+
+            try {
+                const res = await $.ajax({
+                    url: _uri + '/app/verifikatorKinerja/rekon_sakipra',
+                    type: 'post',
+                    data: formData,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function (evt) {
+                            if (!evt.lengthComputable) return;
+                            var percent = Math.round((evt.loaded / evt.total) * 100);
+                            $bar.css('width', percent + '%').attr('aria-valuenow', percent);
+                            $pct.text(percent + '%');
+                            $info.text(formatBytes(evt.loaded) + ' / ' + formatBytes(evt.total));
+                            if (percent >= 100) {
+                                $label.text('Memproses data...');
+                            }
+                        }, false);
+                        return xhr;
+                    }
+                });
+
+                $bar.css('width', '100%').attr('aria-valuenow', 100);
+                $pct.text('100%');
+                $progress.addClass('done');
+                $label.text(res.status ? 'Selesai' : 'Gagal');
+                $info.text(res.pesan);
+
+                $result.removeClass('d-none').addClass(res.status ? 'alert-success' : 'alert-danger')
+                    .html('<i class="fa ' + (res.status ? 'fa-check-circle' : 'fa-times-circle') + ' mr-1"></i>' + res.pesan);
+                if (res.status) {
+                    $('#formRekonSakipra')[0].reset();
+                    clearRekonFile();
+                }
+            } catch (err) {
+                $progress.addClass('done');
+                $label.text('Gagal');
+                $result.removeClass('d-none').addClass('alert-danger')
+                    .html('<i class="fa fa-times-circle mr-1"></i>Terjadi kesalahan. Silakan coba lagi.');
+            } finally {
+                $btn.prop('disabled', false);
+                $btn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-refresh');
+            }
+        });
+
         // Submit form verifikasi
         $('#formVerifikasi').on('submit', async function (e) {
             e.preventDefault();

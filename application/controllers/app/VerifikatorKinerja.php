@@ -1,4 +1,11 @@
 <?php
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DataValidation;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class VerifikatorKinerja extends CI_Controller
@@ -261,5 +268,238 @@ class VerifikatorKinerja extends CI_Controller
             "data"            => $data,
         );
         echo json_encode($output);
+    }
+
+    /**
+     * Download template Excel rekonsiliasi data SAKIPRA
+     */
+    public function download_template_rekon()
+    {
+        if (!privilages('priv_verifikasi_kinerja')) {
+            return show_404();
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet       = $spreadsheet->getActiveSheet();
+
+        $headers = [
+            'NIP', 'NAMA', 'BIDANG', 'periode', 'unggah_kinerja_harian', 'target_realisasi',
+            'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian',
+        ];
+        foreach ($headers as $i => $h) {
+            $sheet->setCellValue(chr(65 + $i) . '1', $h);
+        }
+
+        // Header style
+        $sheet->getStyle('A1:J1')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF4F81BD']],
+        ]);
+
+        // Pegawai yang sudah di-mapping (punya bidang, selain KABAN) - sama seperti tab Per Bidang
+        $pegawai = $this->db->select('p.nip, p.nama_lengkap, r.nama AS bidang_nama')
+            ->from('pegawai p')
+            ->join('ref_parts r', 'r.id = p.fid_part')
+            ->where('r.singkatan !=', 'KABAN')
+            ->order_by('r.id, p.nama_lengkap', 'ASC')
+            ->get()->result();
+
+        // Status verifikasi existing per NIP+periode
+        $existing = [];
+        foreach ($this->crud->getWhere('t_verify_kinerja', ['tahun' => $this->session->userdata('tahun_anggaran')])->result() as $v) {
+            $existing[$v->nip . '|' . $v->periode] = $v;
+        }
+
+        $indikator = ['unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
+        $row = 2;
+        foreach ($pegawai as $p) {
+            foreach (['TW1', 'TW2', 'TW3', 'TW4'] as $periode) {
+                $v = $existing[$p->nip . '|' . $periode] ?? null;
+                $sheet->setCellValueExplicit('A' . $row, (string) $p->nip, DataType::TYPE_STRING);
+                $sheet->setCellValue('B' . $row, $p->nama_lengkap);
+                $sheet->setCellValue('C' . $row, $p->bidang_nama);
+                $sheet->setCellValue('D' . $row, $periode);
+                foreach ($indikator as $k => $f) {
+                    // Kolom E..J (5..10)
+                    $sheet->setCellValue(chr(69 + $k) . $row, $v ? $v->{$f} : '');
+                }
+                $row++;
+            }
+        }
+        $lastRow = $row - 1;
+
+        // Select box periode: TW1-TW4
+        $dvPeriode = new DataValidation();
+        $dvPeriode->setType(DataValidation::TYPE_LIST)
+            ->setFormula1('"TW1,TW2,TW3,TW4"')
+            ->setAllowBlank(true)
+            ->setShowErrorMessage(true)
+            ->setErrorTitle('Periode tidak valid')
+            ->setError('Pilih TW1, TW2, TW3, atau TW4.');
+        $sheet->setDataValidation('D2:D' . $lastRow, $dvPeriode);
+
+        // Select box 6 indikator: Y / N
+        $dvYN = new DataValidation();
+        $dvYN->setType(DataValidation::TYPE_LIST)
+            ->setFormula1('"Y,N"')
+            ->setAllowBlank(true)
+            ->setShowErrorMessage(true)
+            ->setErrorTitle('Nilai tidak valid')
+            ->setError('Hanya boleh diisi Y atau N.');
+        $sheet->setDataValidation('E2:J' . $lastRow, $dvYN);
+
+        // NIP sebagai teks agar digit tidak berubah desimal
+        $sheet->getStyle('A2:A' . $lastRow)->getNumberFormat()->setFormatCode('@');
+        $sheet->getDefaultColumnDimension()->setAutoSize(true);
+
+        $writer   = new Xlsx($spreadsheet);
+        $filename = 'TEMPLATE-REKON-SAKIPRA-' . ($this->session->userdata('tahun_anggaran') ?: date('Y'));
+        $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filename);
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
+    }
+
+    /**
+     * Rekonsiliasi data SAKIPRA: upload Excel checklist verifikasi (bulk upsert)
+     */
+    public function rekon_sakipra()
+    {
+        if (!privilages('priv_verifikasi_kinerja')) {
+            echo json_encode(['status' => false, 'pesan' => 'Anda tidak memiliki hak akses.']);
+            return;
+        }
+
+        if (empty($_FILES['file']['tmp_name'])) {
+            echo json_encode(['status' => false, 'pesan' => 'File Excel belum dipilih.']);
+            return;
+        }
+
+        if ($_FILES['file']['size'] > 5 * 1024 * 1024) {
+            echo json_encode(['status' => false, 'pesan' => 'Ukuran file maksimal 5MB.']);
+            return;
+        }
+
+        try {
+            $spreadsheet = IOFactory::load($_FILES['file']['tmp_name']);
+            $rows = $spreadsheet->getActiveSheet()->toArray();
+        } catch (Exception $e) {
+            echo json_encode(['status' => false, 'pesan' => 'File tidak dapat dibaca. Pastikan format .xlsx/.xls.']);
+            return;
+        }
+
+        if (count($rows) < 2) {
+            echo json_encode(['status' => false, 'pesan' => 'Data tidak lengkap atau kosong.']);
+            return;
+        }
+
+        // Header -> lowercase, normalisasi spasi/strip
+        $headers = array_map(function ($h) {
+            return strtolower(trim(str_replace([' ', '-'], '_', (string) $h)));
+        }, $rows[0]);
+
+        $required = ['nip', 'periode', 'unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
+        foreach ($required as $col) {
+            if (!in_array($col, $headers, true)) {
+                echo json_encode(['status' => false, 'pesan' => 'Kolom "' . $col . '" tidak ditemukan pada file.']);
+                return;
+            }
+        }
+
+        $tahun = $this->session->userdata('tahun_anggaran');
+        $user  = $this->session->userdata('user_name') ?: 'system';
+        $now   = date('Y-m-d H:i:s');
+        $valid_periode = ['TW1', 'TW2', 'TW3', 'TW4'];
+        $fields = ['unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
+
+        // Daftar NIP yang terdaftar di tabel pegawai (untuk validasi)
+        $valid_nip = [];
+        foreach ($this->db->select('nip')->get('pegawai')->result() as $r) {
+            $valid_nip[trim((string) $r->nip)] = true;
+        }
+
+        $proses = 0;
+        $skip   = 0;
+        $gagal  = [];
+
+        for ($i = 1; $i < count($rows); $i++) {
+            $row = $rows[$i];
+            $get = function ($col) use ($headers, $row) {
+                $idx = array_search($col, $headers, true);
+                if ($idx === false) return null;
+                $val = $row[$idx];
+                // NIP dari Excel bisa berupa float (notasi ilmiah) - kembalikan sebagai string digit
+                if (is_float($val)) return number_format($val, 0, '', '');
+                return trim((string) $val);
+            };
+
+            $nip     = $get('nip');
+            $periode = strtoupper($get('periode'));
+
+            if ($nip === '' || !in_array($periode, $valid_periode, true)) {
+                $gagal[] = 'Baris ' . ($i + 1) . ': NIP kosong atau periode tidak valid.';
+                continue;
+            }
+
+            if (!isset($valid_nip[$nip])) {
+                $gagal[] = 'Baris ' . ($i + 1) . ': NIP ' . $nip . ' tidak terdaftar.';
+                continue;
+            }
+
+            // Skip jika 6 kolom indikator semuanya kosong
+            $raw = [];
+            $allEmpty = true;
+            foreach ($fields as $f) {
+                $raw[$f] = $get($f);
+                if ($raw[$f] !== '' && $raw[$f] !== null) {
+                    $allEmpty = false;
+                }
+            }
+            if ($allEmpty) {
+                $skip++;
+                continue;
+            }
+
+            $data = ['periode' => $periode, 'tahun' => $tahun, 'nip' => $nip];
+            foreach ($fields as $f) {
+                $data[$f] = strtoupper($raw[$f]) === 'Y' ? 'Y' : 'N';
+            }
+
+            $exists = $this->crud->getWhere('t_verify_kinerja', [
+                'nip'     => $nip,
+                'periode' => $periode,
+                'tahun'   => $tahun,
+            ])->row();
+
+            if ($exists) {
+                $data['updated_at'] = $now;
+                $data['updated_by'] = $user;
+                $ok = $this->crud->update('t_verify_kinerja', $data, ['id' => $exists->id]);
+            } else {
+                $data['created_at'] = $now;
+                $data['created_by'] = $user;
+                $ok = $this->crud->insert('t_verify_kinerja', $data);
+            }
+
+            if ($ok) {
+                $proses++;
+            } else {
+                $gagal[] = 'Baris ' . ($i + 1) . ': gagal menyimpan (NIP ' . $nip . ').';
+            }
+        }
+
+        echo json_encode([
+            'status' => $proses > 0,
+            'pesan'  => $proses > 0
+                ? $proses . ' data berhasil direkonsiliasi.' . ($skip ? ' ' . $skip . ' baris kosong dilewati.' : '') . (count($gagal) ? ' ' . count($gagal) . ' baris gagal.' : '')
+                : ($skip ? 'Tidak ada data yang diproses. ' . $skip . ' baris kosong dilewati.' : 'Tidak ada data yang diproses.'),
+            'proses' => $proses,
+            'skip'   => $skip,
+            'gagal'  => $gagal,
+        ]);
     }
 }

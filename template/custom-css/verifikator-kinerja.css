@@ -212,3 +212,68 @@
         border-radius: 8px;
         padding: 4px 8px;
     }
+
+    /* Dropzone upload rekon */
+    .vk-dropzone {
+        border: 2px dashed #c2cdda;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #f8fbff 0%, #f2f6fd 100%);
+        padding: 34px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all .25s;
+    }
+    .vk-dropzone:hover,
+    .vk-dropzone.dragover {
+        border-color: #1a73e8;
+        background: linear-gradient(135deg, #eaf2fe 0%, #e3edfd 100%);
+        box-shadow: 0 4px 14px rgba(26, 115, 232, .15);
+    }
+    .vk-dropzone-icon {
+        display: inline-flex;
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #e8f0fe, #dbe7fb);
+        color: #1a73e8;
+        margin-bottom: 12px;
+        transition: transform .25s;
+    }
+    .vk-dropzone:hover .vk-dropzone-icon,
+    .vk-dropzone.dragover .vk-dropzone-icon {
+        transform: translateY(-4px) scale(1.05);
+    }
+    .vk-dropzone-file {
+        background: #fff;
+        border: 1px solid #d7e2f3;
+        border-radius: 12px;
+        padding: 14px 16px;
+        box-shadow: 0 3px 10px rgba(26, 115, 232, .08);
+    }
+    .vk-file-icon {
+        display: inline-flex;
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        align-items: center;
+        justify-content: center;
+        background: #e7f6ec;
+        color: #28a745;
+        flex-shrink: 0;
+    }
+
+    /* Progress upload */
+    .vk-progress .progress {
+        background: #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .vk-progress .progress-bar {
+        transition: width .25s ease;
+        background: linear-gradient(90deg, #1a73e8, #4285f4);
+    }
+    .vk-progress.done .progress-bar {
+        background: linear-gradient(90deg, #28a745, #52d681);
+    }

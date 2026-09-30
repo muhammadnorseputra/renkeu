@@ -22,6 +22,11 @@
                             <i class="fa fa-table"></i> Rekapitulasi Seluruh Pegawai
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tab-rekon" role="tab">
+                            <i class="fa fa-exchange"></i> Rekon Data SAKIPRA
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -118,6 +123,90 @@
                     <?php endforeach; ?>
                 </div>
             </div>
+
+                    <!-- Tab Rekon Data SAKIPRA -->
+                    <div class="tab-pane fade" id="tab-rekon" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-7">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body p-4">
+                                        <?php if ($priv_edit): ?>
+                                        <div class="alert alert-light border mb-4">
+                                            <div class="d-flex align-items-start">
+                                                <i class="fa fa-info-circle fa-lg text-primary mr-3 mt-1"></i>
+                                                <div>
+                                                    <strong>Format File:</strong> .xlsx atau .xls (maksimal 5MB)
+                                                    <br><small class="text-muted">Kolom: <code>NIP</code>, <code>NAMA</code>, <code>BIDANG</code>, <code>periode</code> (TW1–TW4), serta 6 kolom checklist (<code>unggah_kinerja_harian</code>, <code>target_realisasi</code>, <code>masalah_tindak_lanjut</code>, <code>diskusi_kinerja</code>, <code>data_dukung</code>, <code>simpulan_capaian</code>) dengan nilai <code>Y</code>/<code>N</code>. Template sudah terisi pegawai yang sudah di-mapping (4 baris per pegawai) beserta status verifikasi yang sudah ada.</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <a href="<?= base_url('app/verifikatorKinerja/download_template_rekon') ?>" class="btn btn-outline-primary btn-sm mb-3" id="btnTemplateRekon">
+                                            <i class="fa fa-download"></i> Download Template Excel
+                                        </a>
+
+                                        <form id="formRekonSakipra" enctype="multipart/form-data">
+                                            <div class="form-group mb-3">
+                                                <label class="font-weight-bold mb-2">File Excel <span class="text-danger">*</span></label>
+                                                <div class="vk-dropzone" id="rekonDropzone">
+                                                    <input type="file" class="d-none" id="rekonFile" name="file" accept=".xlsx,.xls">
+                                                    <div class="vk-dropzone-empty" id="rekonDropEmpty">
+                                                        <span class="vk-dropzone-icon"><i class="fa fa-cloud-upload fa-3x"></i></span>
+                                                        <h6 class="font-weight-bold text-dark mb-1">Seret &amp; letakkan file di sini</h6>
+                                                        <p class="text-muted mb-1">atau <span class="text-primary font-weight-bold">klik untuk memilih file</span></p>
+                                                        <small class="text-muted">Format: .xlsx, .xls | Maksimal: 5MB</small>
+                                                    </div>
+                                                    <div class="vk-dropzone-file d-none" id="rekonDropFile">
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="vk-file-icon"><i class="fa fa-file-excel-o fa-2x"></i></span>
+                                                            <div class="flex-grow-1 ml-3 text-left">
+                                                                <div class="font-weight-bold text-truncate" id="rekonFileName">-</div>
+                                                                <small class="text-muted" id="rekonFileSize">-</small>
+                                                            </div>
+                                                            <button type="button" class="btn btn-sm btn-link text-danger p-0 ml-2" id="rekonRemoveFile" title="Hapus">
+                                                                <i class="fa fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-check mb-4">
+                                                <input type="checkbox" class="form-check-input" id="confirmRekonSakipra" required>
+                                                <label class="form-check-label" for="confirmRekonSakipra">
+                                                    Saya memastikan data pada file Excel sudah benar dan siap disinkronkan
+                                                </label>
+                                            </div>
+                                            <div class="text-right">
+                                                <button type="submit" class="btn btn-success" id="btnRekonSakipra">
+                                                    <i class="fa fa-refresh"></i> <span>Sinkron Data</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- Progress upload -->
+                                            <div class="vk-progress d-none mt-3" id="rekonProgress">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <span class="font-weight-bold small"><i class="fa fa-spinner fa-spin fa-primary mr-1"></i> <span id="rekonProgressLabel">Mengunggah file...</span></span>
+                                                    <span class="font-weight-bold small" id="rekonProgressPct">0%</span>
+                                                </div>
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar bg-gradient-primary" id="rekonProgressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <small class="text-muted d-block mt-1" id="rekonProgressInfo"></small>
+                                            </div>
+                                        </form>
+
+                                        <div class="alert d-none mt-3 mb-0" id="rekonResult"></div>
+                                        <?php else: ?>
+                                        <div class="text-center py-5">
+                                            <i class="fa fa-lock fa-3x text-muted d-block mb-2"></i>
+                                            <span class="text-muted">Anda tidak memiliki hak akses untuk rekonsiliasi data SAKIPRA.</span>
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Tab Rekapitulasi Seluruh Pegawai -->
                     <div class="tab-pane fade" id="tab-rekap" role="tabpanel">
