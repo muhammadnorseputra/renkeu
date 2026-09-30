@@ -16,7 +16,6 @@
                         <div class="input-prepend input-group">
                             <input type="text" autocomplete="off" name="filter_tanggal" id="filter_tanggal" class="form-control" value="<?php echo $filter_tanggal ?>" />
                         </div>
-
                     </div>
                 </div>
             </fieldset>

@@ -131,10 +131,13 @@ class Export extends CI_Controller
         $sheet->setCellValue('F1', 'KODE');
         $sheet->setCellValue('G1', 'NAMA');
         $sheet->setCellValue('H1', 'TAHUN');
+        $sheet->setCellValue('I1', 'ALOKASI_ANGGARAN_AWAL');
+        $sheet->setCellValue('J1', 'ALOKASI_ANGGARAN_PERUBAHAN');
+        $sheet->setCellValue('K1', 'SELISIH');
 
         // options
         $sheet->getDefaultColumnDimension()->setAutoSize(true);
-        $sheet->getStyle('A1:H1')->applyFromArray([
+        $sheet->getStyle('A1:K1')->applyFromArray([
             'font' => [
                 'bold'  => true,
                 'color' => ['argb' => 'FFFFFFFF'],
@@ -144,6 +147,9 @@ class Export extends CI_Controller
                 'startColor' => ['argb' => 'FF4F81BD'],
             ],
         ]);
+        // header kontras khusus pagu
+        $sheet->getStyle('I1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF2E75B6']]]);
+        $sheet->getStyle('J1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFED7D31']]]);
 
         $protection = $sheet->getProtection();
         $allowed    = $protection->verify(date('d-m-Y'));
@@ -159,11 +165,32 @@ class Export extends CI_Controller
             $sheet->setCellValue('C' . $col, $row->nama_part);
             $sheet->setCellValue('D' . $col, $row->fid_program);
             $sheet->setCellValue('E' . $col, $row->nama_program);
+            $totalPaguAwal      = $this->target->getAlokasiPaguKegiatan($row->id, "0", $this->tahun_anggaran)->row()->total_pagu_awal ?? 0;
+            $totalPaguPerubahan = $this->target->getAlokasiPaguKegiatan($row->id, "1", $this->tahun_anggaran)->row()->total_pagu_awal ?? 0;
+            $selisih            = $totalPaguPerubahan - $totalPaguAwal;
+
             $sheet->setCellValueExplicit('F' . $col, $row->kode, DataType::TYPE_STRING);
             $sheet->setCellValue('G' . $col, $row->nama);
             $sheet->setCellValue('H' . $col, $row->tahun);
+            $sheet->setCellValueExplicit('I' . $col, nominal($totalPaguAwal), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('J' . $col, nominal($totalPaguPerubahan), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('K' . $col, ($selisih > 0 ? '+' : '') . nominal($selisih), DataType::TYPE_STRING2);
+            if ($selisih != 0): // 0 netral, tanpa warna
+                $sheet->getStyle('K' . $col)->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => $selisih > 0 ? 'FF006100' : 'FF9C0006']],
+                    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $selisih > 0 ? 'FFC6EFCE' : 'FFFFC7CE']],
+                ]);
+            endif;
             $col++;
         endforeach;
+
+        // warna kontras untuk kolom pagu
+        $sheet->getStyle('I2:I' . ($col - 1))->applyFromArray([
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFDDEBF7']], // biru muda
+        ]);
+        $sheet->getStyle('J2:J' . ($col - 1))->applyFromArray([
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFCE4D6']], // oranye muda
+        ]);
 
         $partId   = $this->part;
         $partName = $this->export->getPartName($partId)->nama;
@@ -202,10 +229,13 @@ class Export extends CI_Controller
         $sheet->setCellValue('D1', 'KODE');
         $sheet->setCellValue('E1', 'NAMA');
         $sheet->setCellValue('F1', 'TAHUN');
+        $sheet->setCellValue('G1', 'ALOKASI_ANGGARAN_AWAL');
+        $sheet->setCellValue('H1', 'ALOKASI_ANGGARAN_PERUBAHAN');
+        $sheet->setCellValue('I1', 'SELISIH');
 
         // options
         $sheet->getDefaultColumnDimension()->setAutoSize(true);
-        $sheet->getStyle('A1:F1')->applyFromArray([
+        $sheet->getStyle('A1:I1')->applyFromArray([
             'font' => [
                 'bold'  => true,
                 'color' => ['argb' => 'FFFFFFFF'],
@@ -215,6 +245,9 @@ class Export extends CI_Controller
                 'startColor' => ['argb' => 'FF4F81BD'],
             ],
         ]);
+        // header kontras khusus pagu
+        $sheet->getStyle('G1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF2E75B6']]]);
+        $sheet->getStyle('H1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFED7D31']]]);
 
         $protection = $sheet->getProtection();
         $allowed    = $protection->verify(date('d-m-Y'));
@@ -229,11 +262,32 @@ class Export extends CI_Controller
             $sheet->setCellValue('A' . $col, $row->id);
             $sheet->setCellValue('B' . $col, $row->fid_kegiatan);
             $sheet->setCellValue('C' . $col, $row->nama_kegiatan);
+            $totalPaguAwal      = $this->target->getAlokasiPaguSubKegiatan($row->id, "0", $this->tahun_anggaran)->row()->total_pagu_awal ?? 0;
+            $totalPaguPerubahan = $this->target->getAlokasiPaguSubKegiatan($row->id, "1", $this->tahun_anggaran)->row()->total_pagu_awal ?? 0;
+            $selisih            = $totalPaguPerubahan - $totalPaguAwal;
+
             $sheet->setCellValueExplicit('D' . $col, $row->kode, DataType::TYPE_STRING);
             $sheet->setCellValue('E' . $col, $row->nama);
             $sheet->setCellValue('F' . $col, $row->tahun);
+            $sheet->setCellValueExplicit('G' . $col, nominal($totalPaguAwal), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('H' . $col, nominal($totalPaguPerubahan), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('I' . $col, ($selisih > 0 ? '+' : '') . nominal($selisih), DataType::TYPE_STRING2);
+            if ($selisih != 0): // 0 netral, tanpa warna
+                $sheet->getStyle('I' . $col)->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['argb' => $selisih > 0 ? 'FF006100' : 'FF9C0006']],
+                    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => $selisih > 0 ? 'FFC6EFCE' : 'FFFFC7CE']],
+                ]);
+            endif;
             $col++;
         endforeach;
+
+        // warna kontras untuk kolom pagu
+        $sheet->getStyle('G2:G' . ($col - 1))->applyFromArray([
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFDDEBF7']], // biru muda
+        ]);
+        $sheet->getStyle('H2:H' . ($col - 1))->applyFromArray([
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFCE4D6']], // oranye muda
+        ]);
 
         $partId   = $this->part;
         $partName = $this->export->getPartName($partId)->nama;
