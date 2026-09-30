@@ -42,7 +42,7 @@ env.php
 /template/upload/*
 !template/upload/index.html
 
-node_modules/
+node_modules/git
 *.log
 .codegraph/
 
