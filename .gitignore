@@ -1,4 +1,6 @@
-.DS_Store
+**/.DS_Store
+Thumbs.db
+desktop.ini
 
 application/cache/*
 !application/cache/index.html
@@ -20,7 +22,9 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 # IDE Files
 #-------------------------
 /nbproject/
-.idea/*
+.idea/
+.vscode/
+*.code-workspace
 
 ## Sublime Text cache files
 *.tmlanguage.cache
@@ -36,4 +40,9 @@ env.php
 .env
 
 /template/upload/*
+!template/upload/index.html
+
+node_modules/
+*.log
+.codegraph/
 
