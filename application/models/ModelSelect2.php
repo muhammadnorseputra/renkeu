@@ -106,6 +106,34 @@ class ModelSelect2 extends CI_Model
         $q = $this->db->get();
         return $q;
     }
+
+    public function getUraianCari($search, $partId, $ta, $page = 1, $perPage = 20)
+    {
+        $page = max(1, (int) $page);
+        $perPage = max(1, min(50, (int) $perPage));
+        $offset = ($page - 1) * $perPage;
+        $this->db->select('u.id, u.kode, u.nama, u.is_aktif, b.nama AS bidang_nama, p.nama AS program_nama, k.nama AS kegiatan_nama, s.nama AS sub_nama');
+        $this->db->from('ref_uraians as u');
+        $this->db->join('ref_sub_kegiatans as s', 'u.fid_sub_kegiatan=s.id');
+        $this->db->join('ref_kegiatans as k', 'u.fid_kegiatan=k.id');
+        $this->db->join('ref_programs as p', 'k.fid_program=p.id');
+        $this->db->join('ref_parts as b', 'k.fid_part=b.id', 'left');
+        $this->db->where('p.tahun', $ta);
+        if ($this->session->userdata('role') === 'USER') {
+            $this->db->where('k.fid_part', $partId);
+        }
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like('u.kode', $search);
+            $this->db->or_like('u.nama', $search);
+            $this->db->group_end();
+        }
+        $this->db->order_by('u.kode', 'asc');
+        $this->db->limit($perPage, $offset);
+        $q = $this->db->get();
+        return $q;
+    }
+
     public function cekUraianIdBySpj($uid)
     {
         $this->db->select('id');

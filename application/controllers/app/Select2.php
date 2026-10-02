@@ -120,6 +120,35 @@ class Select2 extends CI_Controller
         echo json_encode($all);
     }
 
+    public function ajaxUraianCari()
+    {
+        $search = $this->input->post('searchTerm');
+        $page = (int) $this->input->post('page') ?: 1;
+        $perPage = 20;
+        $db = $this->select->getUraianCari($search, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'), $page, $perPage)->result();
+        $all = array();
+        $offset = ($page - 1) * $perPage;
+        foreach ($db as $i => $u) {
+            // anak tangga: tiap level terpisah agar render bisa indent bertingkat
+            $levels = array();
+            if (!empty($u->bidang_nama)) $levels[] = array('t' => 'Bidang', 'n' => $u->bidang_nama);
+            $levels[] = array('t' => 'Program', 'n' => $u->program_nama);
+            $levels[] = array('t' => 'Kegiatan', 'n' => $u->kegiatan_nama);
+            $levels[] = array('t' => 'Sub', 'n' => $u->sub_nama);
+            $all[] = array(
+                'id' => $u->id,
+                'no' => $offset + $i + 1,
+                'text' => $u->kode . ' - ' . $u->nama,
+                'levels' => $levels,
+                'disabled' => $u->is_aktif === 'N',
+            );
+        }
+        echo json_encode(array(
+            'results' => $all,
+            'pagination' => array('more' => count($db) === $perPage),
+        ));
+    }
+
     public function ajaxPeriode()
     {
         $q = $this->input->post('q');

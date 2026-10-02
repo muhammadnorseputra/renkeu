@@ -258,7 +258,7 @@ $("input[name='jumlah']").on("keyup", async function (e) {
 	await newRealisasi(start, jml.split(".").join(""));
 	await newLimit(start_limit, jml.split(".").join(""));
 });
-$("form#formCariKode").on("submit", function (e) {
+$("form#formCariKode").on("submit", async function (e) {
 	e.preventDefault();
 	$("input[name='jumlah']").val("");
 	let _ = $(this),
@@ -266,62 +266,65 @@ $("form#formCariKode").on("submit", function (e) {
 		data = _.serialize(),
 		$button = _.find('button[type="submit"]');
 
-	if (_.parsley().isValid()) {
-		$button.text("processing ...").prop("disabled", true);
-		try {
-			$.post(
-				action,
-				data,
-				function (res) {
-					$formStep.find("#loadKegiatan").show().html(`
+	if (!_.parsley().isValid()) return;
+
+	$button
+		.prop("disabled", true)
+		.html('<i class="fa fa-spinner fa-spin mr-1"></i> Memilih ...');
+	try {
+		const req = await fetch(action, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+			body: data,
+		});
+		if (!req.ok) throw new Error(`HTTP ${req.status}`);
+		const res = await req.json();
+
+		$formStep.find("#loadKegiatan").show().html(`
 						<ul class="list-unstyled d-lg-flex flex-column justify-content-start font-weight-bold">
                                 <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-warning mr-2 fa-2x" aria-hidden="true"></i> ${res.nama_kegiatan}</li>
                                 <li class="d-inline-flex align-items-center my-2"><i class="fa fa-file-code-o text-info mr-2 fa-2x" aria-hidden="true"></i> ${res.nama_subkegiatan}</li>
                                 <li class="d-inline-flex align-items-center"><i class="fa fa-file-code-o text-success ml-md- mr-2 fa-2x" aria-hidden="true"></i> ${res.nama_uraian} <i class="fa fa-check-circle text-success ml-2"></i></li>
                             </ul>
 						`);
-					$formStep.find('input[name="koderek"]').val(res.kode);
-					$formStep.find('input[name="ref_part"]').val(res.part_id);
-					$formStep.find('input[name="ref_program"]').val(res.program_id);
-					$formStep.find('input[name="ref_kegiatan"]').val(res.kegiatan_id);
-					$formStep
-						.find('input[name="ref_subkegiatan"]')
-						.val(res.subkegiatan_id);
-					$formStep.find('input[name="ref_uraian"]').val(res.uraian_id);
+		$formStep.find('input[name="koderek"]').val(res.kode);
+		$formStep.find('input[name="ref_part"]').val(res.part_id);
+		$formStep.find('input[name="ref_program"]').val(res.program_id);
+		$formStep.find('input[name="ref_kegiatan"]').val(res.kegiatan_id);
+		$formStep.find('input[name="ref_subkegiatan"]').val(res.subkegiatan_id);
+		$formStep.find('input[name="ref_uraian"]').val(res.uraian_id);
 
-					$formStep
-						.find("h5#jumlah_max")
-						.html(
-							`Rp. ${rupiah(
-								res.pagu.total_sisa_pa,
-							)} <i class="text-success fa fa-external-link-square"></i>`,
-						);
-					$formStep
-						.find("h5#sisa_max")
-						.html(
-							`Rp. ${rupiah(
-								res.pagu.total_sisa_pa,
-							)} <i class="text-danger fa fa-level-down"></i>`,
-						);
-
-					$formStep
-						.find('select[name="periode"]')
-						.prop("disabled", false)
-						.val("")
-						.trigger("change");
-					$formStep.find('select[name="tahun"]').prop("disabled", false);
-					$modal.modal("hide");
-				},
-				"json",
+		$formStep
+			.find("h5#jumlah_max")
+			.html(
+				`Rp. ${rupiah(
+					res.pagu.total_sisa_pa,
+				)} <i class="text-success fa fa-external-link-square"></i>`,
 			);
-		} catch (err) {
-			$formStep.find("#loadKegiatan").hide().html("");
-			$formStep.find('select[name="periode"]').prop("disabled", true);
-			$formStep.find('select[name="tahun"]').prop("disabled", true);
-			alert(err);
-		} finally {
-			$button.prop("disabled", false).text("Pilih");
-		}
+		$formStep
+			.find("h5#sisa_max")
+			.html(
+				`Rp. ${rupiah(
+					res.pagu.total_sisa_pa,
+				)} <i class="text-danger fa fa-level-down"></i>`,
+			);
+
+		$formStep
+			.find('select[name="periode"]')
+			.prop("disabled", false)
+			.val("")
+			.trigger("change");
+		$formStep.find('select[name="tahun"]').prop("disabled", false);
+		$modal.modal("hide");
+	} catch (err) {
+		$formStep.find("#loadKegiatan").hide().html("");
+		$formStep.find('select[name="periode"]').prop("disabled", true);
+		$formStep.find('select[name="tahun"]').prop("disabled", true);
+		alert("Terjadi kesalahan: " + err.message);
+	} finally {
+		$button.prop("disabled", false).html("Pilih");
 	}
 });
 
@@ -390,161 +393,92 @@ $("select[name='periode']").on("change", async function () {
 
 $(function () {
 	$(
-		"select[name='part'],select[name='program'],select[name='kegiatan'],select[name='sub_kegiatan'],select[name='uraian_kegiatan']",
-	).select2({
-		width: "100%",
-		dropdownParent: $("#modelSearchKode"),
-	});
-
-	$(
 		"select[name='periode'],select[name='bulan'],select[name='tahun']",
 	).select2();
 
-	let $modal = $("#modelSearchKode");
-
-	$("select[name='uraian']").select2({
-		// minimumInputLength: 3,
+	$("select[name='uraian_kegiatan']").select2({
 		width: "100%",
 		dropdownParent: $("#modelSearchKode"),
-		allowClear: false,
+		allowClear: true,
+		placeholder: "Ketik kode atau nama uraian ...",
 		ajax: {
-			url: `${_uri}/app/select2/ajaxMultiProgram`,
+			url: `${_uri}/app/select2/ajaxUraianCari`,
 			type: "post",
 			dataType: "json",
-			delay: 200,
+			delay: 250,
 			data: function (params) {
-				return {
-					q: params.term,
-				};
+				return { searchTerm: params.term, page: params.page || 1 };
 			},
-			processResults: function (response) {
-				return {
-					results: response,
-				};
+			processResults: function (data, params) {
+				params.page = params.page || 1;
+				return { results: data.results, pagination: data.pagination };
 			},
-			cache: false,
+			cache: true,
+			// skeleton shimmer saat request (term baru maupun page berikutnya)
+			transport: function (params, success, failure) {
+				const SKELETON = 3;
+				let $drop = $("#modelSearchKode .select2-container--open");
+				let $skel = $();
+				for (let i = 0; i < SKELETON; i++) {
+					$skel = $skel.add(
+						$("<li>", { class: "uraian-skel" }).append(
+							$("<span>", { class: "uraian-skel-badge" }),
+							$("<div>", { class: "uraian-skel-body" }).append(
+								$("<div>", { class: "uraian-skel-line w70" }),
+								$("<div>", { class: "uraian-skel-line w45" }),
+								$("<div>", { class: "uraian-skel-line w90" }),
+								$("<div>", { class: "uraian-skel-line w60" }),
+							),
+						),
+					);
+				}
+				// page 1 = hasil baru → ganti isi list; page >1 = infinite scroll → append
+				if ((params.data.page || 1) === 1) {
+					$drop.find(".select2-results__options").empty();
+				}
+				$drop.find(".select2-results__options").append($skel);
+				const clear = () =>
+					$drop
+						.find(".select2-results__options .uraian-skel")
+						.remove();
+				$.ajax(params)
+					.done(function (data) {
+						clear();
+						success(data);
+					})
+					.fail(function () {
+						clear();
+						failure();
+					});
+			},
 		},
-		// templateResult: formatResults,
-		// templateSelection: formatResults
-	});
-
-	function select2Kegiatan(programId, partId) {
-		$("select[name='kegiatan']").select2({
-			// minimumInputLength: 3,
-			width: "100%",
-			dropdownParent: $("#modelSearchKode"),
-			allowClear: false,
-			ajax: {
-				url: `${_uri}/app/select2/ajaxKegiatan`,
-				type: "post",
-				dataType: "json",
-				delay: 200,
-				data: function (params) {
-					return {
-						searchTerm: params.term,
-						refId: programId,
-						refPart: partId,
-					};
-				},
-				processResults: function (response) {
-					return {
-						results: response,
-					};
-				},
-				cache: false,
-			},
-			// templateResult: formatResults,
-			// templateSelection: formatResults
-		});
-	}
-	select2Kegiatan(
-		$modal.find('select[name="program"]').val(),
-		$modal.find('select[name="part"]').val(),
-	);
-
-	$("select[name='part'],select[name='program']").on("change", function () {
-		$("select[name='kegiatan']").val("").trigger("change");
-		var id_program = $("select[name='program']").val();
-		var id_part = $("select[name='part']").val();
-		select2Kegiatan(id_program, id_part);
-	});
-
-	function select2SubKegiatan(kegiatanId) {
-		$("select[name='sub_kegiatan']").select2({
-			// minimumInputLength: 3,
-			dropdownParent: $("#modelSearchKode"),
-			allowClear: false,
-			ajax: {
-				url: `${_uri}/app/select2/ajaxSubKegiatan`,
-				type: "post",
-				dataType: "json",
-				delay: 200,
-				data: function (params) {
-					return {
-						searchTerm: params.term,
-						refId: kegiatanId,
-					};
-				},
-				processResults: function (response) {
-					return {
-						results: response,
-					};
-				},
-				cache: false,
-			},
-			// templateResult: formatResults,
-			// templateSelection: formatResults
-		});
-	}
-
-	$("select[name='kegiatan']").on("change", function () {
-		let id = $(this).val();
-		$("select[name='sub_kegiatan']").val("").trigger("change");
-		select2SubKegiatan(id);
-	});
-
-	function select2UraianKegiatan(kegiatanId, subKegiatanId) {
-		$("select[name='uraian_kegiatan']").select2({
-			// minimumInputLength: 3,
-			dropdownParent: $("#modelSearchKode"),
-			allowClear: false,
-			ajax: {
-				url: `${_uri}/app/select2/ajaxUraianKegiatan`,
-				type: "post",
-				dataType: "json",
-				delay: 350,
-				data: function (params) {
-					return {
-						searchTerm: params.term,
-						kegiatanId: kegiatanId,
-						subKegiatanId: subKegiatanId,
-					};
-				},
-				processResults: function (response) {
-					return {
-						results: response,
-					};
-				},
-				cache: false,
-			},
-			escapeMarkup: function (m) {
-				return m;
-			},
-			// templateResult: formatResults,
-			// templateSelection: formatResults
-		});
-	}
-
-	$("select[name='kegiatan'],select[name='sub_kegiatan']").on(
-		"change",
-		function () {
-			// let id = $(this).val();
-			$("select[name='uraian_kegiatan']").val("").trigger("change");
-			var kegiatanId = $("select[name='kegiatan']").val();
-			var subKegiatanId = $("select[name='sub_kegiatan']").val();
-			select2UraianKegiatan(kegiatanId, subKegiatanId);
+		templateResult: function (res) {
+			if (!res.id) return res.text;
+			let $box = $("<div>", { class: "uraian-opt" });
+			$box.append(
+				$("<span>", { class: "uraian-no" }).text(res.no || ""),
+			);
+			let $body = $("<div>", { class: "uraian-body" });
+			$body.append(
+				$("<div>", { class: "uraian-title" }).text(res.text),
+			);
+			let $steps = $("<div>", { class: "uraian-steps" });
+			$.each(res.levels || [], function (i, lv) {
+				$steps.append(
+					$("<div>", { class: "uraian-step d" + i }).append(
+						$("<span>", { class: "uraian-lvl" }).text(lv.t),
+						$("<span>", { class: "uraian-stepname" }).text(lv.n),
+					),
+				);
+			});
+			$body.append($steps);
+			$box.append($body);
+			return $box;
 		},
-	);
+		templateSelection: function (res) {
+			return res.text || res.id;
+		},
+	});
 
 	$("input#organisasi").autocomplete({
 		serviceUrl: `${_uri}/app/spj/autocomplete/organisasi`,

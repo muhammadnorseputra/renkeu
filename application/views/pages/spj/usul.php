@@ -534,6 +534,72 @@
 </style>
 
 <!-- The Modal -->
+<style>
+#modelSearchKode .select2-results__option { padding: 0; }
+#modelSearchKode .uraian-opt { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-bottom: 1px solid #edf0f3; }
+#modelSearchKode .uraian-no { flex: 0 0 26px; height: 26px; line-height: 26px; text-align: center; font-size: 12px; font-weight: 700; color: #fff; background: #28a745; border-radius: 4px; }
+#modelSearchKode .uraian-body { min-width: 0; }
+#modelSearchKode .uraian-title { font-weight: 700; font-size: 13.5px; line-height: 1.35; color: #1a1d21; }
+#modelSearchKode .uraian-hier { font-size: 12px; line-height: 1.45; color: #5b636b; margin-top: 2px; }
+#modelSearchKode .uraian-steps { position: relative; margin-top: 6px; }
+#modelSearchKode .uraian-steps::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 2px; background: linear-gradient(180deg, #28a745, #1976d2, #ef6c00, #8e24aa); }
+#modelSearchKode .uraian-step { position: relative; display: flex; align-items: center; gap: 6px; margin-top: 3px; padding: 2px 0 2px 8px; }
+#modelSearchKode .uraian-step::before { content: ""; position: absolute; top: 50%; height: 2px; margin-top: -1px; border-radius: 2px; background: #cfd6dc; }
+#modelSearchKode .uraian-step.d0 { margin-left: 6px; }
+#modelSearchKode .uraian-step.d0::before { left: -6px; width: 6px; }
+#modelSearchKode .uraian-step.d1 { margin-left: 22px; }
+#modelSearchKode .uraian-step.d1::before { left: -22px; width: 22px; }
+#modelSearchKode .uraian-step.d2 { margin-left: 38px; }
+#modelSearchKode .uraian-step.d2::before { left: -38px; width: 38px; }
+#modelSearchKode .uraian-step.d3 { margin-left: 54px; }
+#modelSearchKode .uraian-step.d3::before { left: -54px; width: 54px; }
+#modelSearchKode .uraian-step::after { content: ""; position: absolute; top: 50%; left: 0; width: 7px; height: 7px; margin-top: -3.5px; margin-left: -3.5px; border-radius: 50%; z-index: 1; box-shadow: 0 0 0 2px #fff; }
+#modelSearchKode .uraian-step.d0::after { left: -6px; background: #28a745; }
+#modelSearchKode .uraian-step.d1::after { left: -22px; background: #1976d2; }
+#modelSearchKode .uraian-step.d2::after { left: -38px; background: #ef6c00; }
+#modelSearchKode .uraian-step.d3::after { left: -54px; background: #8e24aa; }
+#modelSearchKode .select2-results__option--highlighted .uraian-step::after { box-shadow: 0 0 0 2px #007bff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-step.d0::after { background: #fff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-step.d1::after { background: #fff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-step.d2::after { background: #fff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-step.d3::after { background: #fff; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-step::after { box-shadow: 0 0 0 2px #fff; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-step.d0::after { background: #ced4da; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-step.d1::after { background: #ced4da; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-step.d2::after { background: #ced4da; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-step.d3::after { background: #ced4da; }
+#modelSearchKode .select2-results__option--highlighted .uraian-steps::before { background: rgba(255,255,255,.75); }
+#modelSearchKode .select2-results__option--highlighted .uraian-step::before { background: rgba(255,255,255,.75); }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-steps::before { background: #e6eaee; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-step::before { background: #e6eaee; }
+#modelSearchKode .uraian-lvl { flex: 0 0 auto; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding: 1px 6px; border-radius: 3px; }
+#modelSearchKode .uraian-step.d0 .uraian-lvl { background: #e8f5e9; color: #1b7a2f; }
+#modelSearchKode .uraian-step.d1 .uraian-lvl { background: #e3f2fd; color: #1565c0; }
+#modelSearchKode .uraian-step.d2 .uraian-lvl { background: #fff3e0; color: #b26a00; }
+#modelSearchKode .uraian-step.d3 .uraian-lvl { background: #f3e5f5; color: #7b1fa2; }
+#modelSearchKode .uraian-stepname { font-size: 12px; line-height: 1.4; color: #3c434a; }
+#modelSearchKode .select2-results__option--highlighted .uraian-lvl { background: rgba(255,255,255,.25); color: #fff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-stepname { color: #eaf3ff; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-lvl { background: #eef1f4; color: #adb5bd; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-stepname { color: #adb5bd; }
+#modelSearchKode .select2-results__option--highlighted .uraian-opt { background: #007bff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-title { color: #fff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-hier { color: #d7e7ff; }
+#modelSearchKode .select2-results__option--highlighted .uraian-no { background: #fff; color: #007bff; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-title { color: #adb5bd; text-decoration: line-through; }
+#modelSearchKode .select2-results__option[aria-disabled="true"] .uraian-no { background: #ced4da; }
+#modelSearchKode .uraian-skel { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-bottom: 1px solid #edf0f3; }
+#modelSearchKode .uraian-skel-badge, #modelSearchKode .uraian-skel-line { background: #e9edf1; border-radius: 4px; position: relative; overflow: hidden; }
+#modelSearchKode .uraian-skel-badge::after, #modelSearchKode .uraian-skel-line::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,.75) 50%, rgba(255,255,255,0) 100%); animation: uraianShimmer 1.2s infinite; }
+#modelSearchKode .uraian-skel-badge { flex: 0 0 26px; height: 26px; }
+#modelSearchKode .uraian-skel-body { flex: 1 1 auto; min-width: 0; }
+#modelSearchKode .uraian-skel-line { height: 10px; margin-bottom: 6px; }
+#modelSearchKode .uraian-skel-line.w70 { width: 70%; }
+#modelSearchKode .uraian-skel-line.w45 { width: 45%; height: 8px; margin-bottom: 0; }
+#modelSearchKode .uraian-skel-line.w90 { width: 90%; height: 8px; }
+#modelSearchKode .uraian-skel-line.w60 { width: 60%; height: 8px; margin-bottom: 0; }
+@keyframes uraianShimmer { 100% { transform: translateX(100%); } }
+</style>
 <div class="modal" id="modelSearchKode" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content rounded-0">
@@ -548,60 +614,18 @@
                 <!-- Modal body -->
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="part">Pilih Bidang <span class="text-danger">*</span></label>
-                        <select name="part" id="part" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-part">
-                            <option value="">Pilih Bidang</option>
-                            <?php
-                            foreach ($list_bidang as $bid) :
-                                $selected = $detail->fid_part === $bid->id ? 'selected' : '';
-                                $disabled = $this->session->userdata('part') !== $bid->id ? 'disabled' : '';
-                                echo '<option value="' . $bid->id . '" ' . $selected . ' ' . $disabled . '>' . $bid->nama . '</option>';
-                            endforeach;
-                            ?>
-                        </select>
-                        <div id="help-block-part"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="program">Pilih Program <span class="text-danger">*</span></label>
-                        <select name="program" id="program" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-program">
-                            <option value="">Pilih Program</option>
-                            <?php
-                            foreach ($list_program as $program) :
-                                $selected = $detail->fid_program == $program->id ? 'selected' : '';
-                                echo '<option value="' . $program->id . '" ' . $selected . '>' . $program->kode . ' - ' . $program->nama . '</option>';
-                            endforeach;
-                            ?>
-                        </select>
-                        <div id="help-block-program"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="kegiatan">Pilih Kegiatan <span class="text-danger">*</span></label>
-                        <select name="kegiatan" id="kegiatan" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-kegiatan">
-                            <option value="">Pilih Kegiatan</option>
-                        </select>
-                        <div id="help-block-kegiatan"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="sub_kegiatan">Pilih Sub Kegiatan <span class="text-danger">*</span></label>
-                        <select name="sub_kegiatan" id="sub_kegiatan" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-sub-kegiatan">
-                            <option value="">Pilih Sub Kegiatan</option>
-                        </select>
-                        <div id="help-block-sub-kegiatan"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="uraian_kegiatan">Pilih Uraian Kegiatan <span class="text-danger">*</span></label>
-                        <select name="uraian_kegiatan" id="uraian_kegiatan" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-uraian-kegiatan">
-                            <option value="">Pilih Uraian Kegiatan</option>
+                        <label for="uraian_kegiatan">Cari Uraian Kegiatan <span class="text-danger">*</span></label>
+                        <select name="uraian_kegiatan" id="uraian_kegiatan" class="form-control" required="required"
+                            data-parsley-errors-container="#help-block-uraian-kegiatan"
+                            data-parsley-required-message="Uraian kegiatan wajib dipilih">
+                            <option value="">Ketik kode atau nama uraian ...</option>
+                            <?php if (!empty($detail->fid_uraian) && !empty($detail->fid_program) && !empty($detail->fid_kegiatan) && !empty($detail->fid_sub_kegiatan)) : ?>
+                                <option value="<?= $detail->fid_uraian ?>" selected><?= (@$detail->fid_part ? $this->spj->getNama('ref_parts', $detail->fid_part) . ' › ' : '') ?><?= $this->spj->getNama('ref_programs', $detail->fid_program) ?> › <?= $this->spj->getNama('ref_kegiatans', $detail->fid_kegiatan) ?> › <?= $this->spj->getNama('ref_sub_kegiatans', $detail->fid_sub_kegiatan) ?> › <?= $this->spj->getNama('ref_uraians', $detail->fid_uraian) ?></option>
+                            <?php endif; ?>
                         </select>
                         <div id="help-block-uraian-kegiatan"></div>
+                        <small class="form-text text-muted">Hierarki: Bidang › Program › Kegiatan › Sub Kegiatan › Uraian</small>
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="uraian">Pilih Uraian <span class="text-danger">*</span></label>
-                        <select name="uraian" id="uraian" class="select2_single form-control" required="required" data-parsley-errors-container="#help-block-uraian">
-                            <option value="">Pilih Uraian</option>
-                        </select>
-                        <div id="help-block-uraian"></div>
-                    </div> -->
                 </div>
 
                 <!-- Modal footer -->

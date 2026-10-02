@@ -91,12 +91,13 @@ class ModelSpj extends CI_Model
 
 	public function getNama($tbl, $id)
 	{
-		return $this->db->get_where($tbl, ['id' => $id])->row()->nama;
+		// null-safe: row boleh tak ada (FK parsial saat edit) jangan fatal
+		return $this->db->get_where($tbl, ['id' => $id])->row()->nama ?? '';
 	}
 
 	public function getKode($tbl, $id)
 	{
-		return $this->db->get_where($tbl, ['id' => $id])->row()->kode;
+		return $this->db->get_where($tbl, ['id' => $id])->row()->kode ?? '';
 	}
 
 	public function getPaguByUraianId($uraian_id, $ta, $is_perubahan)

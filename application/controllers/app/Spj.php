@@ -737,11 +737,9 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
         }
 
         $data = [
-            'title'        => 'Entri Usul - SPJ (Surat Pertanggung Jawaban)',
-            'content'      => 'pages/spj/usul',
-            'list_bidang'  => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
-            'list_program' => $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'))->result(),
-            'detail'       => @$detail,
+            'title'   => 'Entri Usul - SPJ (Surat Pertanggung Jawaban)',
+            'content' => 'pages/spj/usul',
+            'detail'  => @$detail,
             'autoload_js'  => [
                 'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.js',
                 'template/backend/vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js',
@@ -804,22 +802,27 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
 
     public function carikode()
     {
-        $input            = $this->input->post();
-        $kode_kegiatan    = $this->crud->getWhere('ref_kegiatans', ['id' => $input['kegiatan']])->row();
-        $kode_subkegiatan = $this->crud->getWhere('ref_sub_kegiatans', ['id' => $input['sub_kegiatan']])->row();
-        $kode_uraian      = $this->crud->getWhere('ref_uraians', ['id' => $input['uraian_kegiatan']])->row();
+        $input = $this->input->post();
+        // Satu select2 uraian saja: derive seluruh ID hierarki dari uraian
+        $kode_uraian = $this->crud->getWhere('ref_uraians', ['id' => $input['uraian_kegiatan']])->row();
+        if (empty($kode_uraian)) {
+            return $this->output->set_status_header(404)->set_content_type('application/json')
+                ->set_output(json_encode(['code' => 404, 'msg' => 'Uraian tidak ditemukan']));
+        }
+        $kode_kegiatan    = $this->crud->getWhere('ref_kegiatans', ['id' => $kode_uraian->fid_kegiatan])->row();
+        $kode_subkegiatan = $this->crud->getWhere('ref_sub_kegiatans', ['id' => $kode_uraian->fid_sub_kegiatan])->row();
 
         // Pagu Awal
-        $totalPaguAwal      = $this->target->getAlokasiPaguUraian($input['uraian_kegiatan'], $this->session->userdata('is_perubahan'))->row()->total_pagu_awal ?? 0;
-        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($input['uraian_kegiatan'], ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
+        $totalPaguAwal      = $this->target->getAlokasiPaguUraian($kode_uraian->id, $this->session->userdata('is_perubahan'))->row()->total_pagu_awal ?? 0;
+        $totalRealisasiPagu = $this->realisasi->getRealisasiTahunanUraian($kode_uraian->id, ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'SELESAI']);
         $totalSisaPagu      = ($totalPaguAwal - $totalRealisasiPagu);
 
         $data = [
-            'part_id'          => $input['part'],
-            'program_id'       => $input['program'],
-            'kegiatan_id'      => $input['kegiatan'],
-            'subkegiatan_id'   => $input['sub_kegiatan'],
-            'uraian_id'        => $input['uraian_kegiatan'],
+            'part_id'          => $kode_kegiatan->fid_part,
+            'program_id'       => $kode_kegiatan->fid_program,
+            'kegiatan_id'      => $kode_kegiatan->id,
+            'subkegiatan_id'   => $kode_subkegiatan->id,
+            'uraian_id'        => $kode_uraian->id,
             'kode_kegiatan'    => $kode_kegiatan->kode,
             'nama_kegiatan'    => $kode_kegiatan->nama,
             'kode_subkegiatan' => $kode_subkegiatan->kode,
