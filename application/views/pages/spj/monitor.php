@@ -3,7 +3,9 @@
 .x_panel .table thead th { position: sticky; z-index: 5; }
 .x_panel .table thead th:not([class*="bg-"]) { background: #34495E; color: #ECF0F1; }
 </style>
-<?php $filter_tanggal = isset($_GET['filter_tanggal']) ? $_GET['filter_tanggal'] : null?>
+<?php $filter_tanggal = isset($filter_tanggal) ? $filter_tanggal : (isset($_GET['filter_tanggal']) ? $_GET['filter_tanggal'] : null);
+$qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) : '';
+?>
 
 <?php echo form_open(base_url("app/spj/monitor"), ['class' => 'form-horizontal', 'method' => 'GET']); ?>
 <div class="border p-2 mb-3 bg-light rounded-bottom">
@@ -132,6 +134,8 @@
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Bidang</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a href="<?php echo base_url('app/spj/monitor_pdf/bidang' . $qs_filter) ?>" target="_blank" title="Cetak PDF"><i class="fa fa-file-pdf-o text-danger"></i></a></li>
+            <li><a href="<?php echo base_url('app/spj/monitor_excel/bidang' . $qs_filter) ?>" title="Export Excel"><i class="fa fa-file-excel-o text-success"></i></a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
@@ -372,6 +376,8 @@
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Uraian</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a href="<?php echo base_url('app/spj/monitor_pdf/uraian' . $qs_filter) ?>" target="_blank" title="Cetak PDF"><i class="fa fa-file-pdf-o text-danger"></i></a></li>
+            <li><a href="<?php echo base_url('app/spj/monitor_excel/uraian' . $qs_filter) ?>" title="Export Excel"><i class="fa fa-file-excel-o text-success"></i></a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
@@ -440,6 +446,8 @@
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Program</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a href="<?php echo base_url('app/spj/monitor_pdf/program' . $qs_filter) ?>" target="_blank" title="Cetak PDF"><i class="fa fa-file-pdf-o text-danger"></i></a></li>
+            <li><a href="<?php echo base_url('app/spj/monitor_excel/program' . $qs_filter) ?>" title="Export Excel"><i class="fa fa-file-excel-o text-success"></i></a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
@@ -514,6 +522,8 @@
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Kegiatan</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a href="<?php echo base_url('app/spj/monitor_pdf/kegiatan' . $qs_filter) ?>" target="_blank" title="Cetak PDF"><i class="fa fa-file-pdf-o text-danger"></i></a></li>
+            <li><a href="<?php echo base_url('app/spj/monitor_excel/kegiatan' . $qs_filter) ?>" title="Export Excel"><i class="fa fa-file-excel-o text-success"></i></a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>
@@ -593,6 +603,8 @@
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Sub Kegiatan</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a href="<?php echo base_url('app/spj/monitor_pdf/sub_kegiatan' . $qs_filter) ?>" target="_blank" title="Cetak PDF"><i class="fa fa-file-pdf-o text-danger"></i></a></li>
+            <li><a href="<?php echo base_url('app/spj/monitor_excel/sub_kegiatan' . $qs_filter) ?>" title="Export Excel"><i class="fa fa-file-excel-o text-success"></i></a></li>
             <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
         </ul>
         <div class="clearfix"></div>

@@ -1,6 +1,11 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Spj extends CI_Controller
 {
 
@@ -1153,6 +1158,246 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
 
     public function monitor()
     {
+        $this->load->view('layout/app', $this->monitor_data());
+    }
+
+    public function monitor_pdf($tabel = 'bidang')
+    {
+        $tabel = in_array($tabel, ['bidang', 'uraian', 'program', 'kegiatan', 'sub_kegiatan'], true) ? $tabel : 'bidang';
+
+        $data                   = $this->monitor_data();
+        $data['cetak']          = $tabel;
+        $data['cetak_label']    = $this->_monitor_label($tabel);
+        $data['cetak_datetime'] = date('d-m-Y H:i:s', strtotime('+1 hour'));
+
+        $this->load->library('pdf');
+        $this->pdf->setPaper('legal', 'landscape');
+        $this->pdf->filename = 'SIMEV - Monitor SPJ - ' . $data['cetak_label'] . ' - ' . $data['tahun_anggaran'] . '.pdf';
+        $this->pdf->load_view('pages/spj/monitor_cetak', $data);
+    }
+
+    /**
+     * Export Excel satu tabel monitor. Baris & kolom serupa cetak PDF.
+     * $tabel: bidang | uraian | program | kegiatan | sub_kegiatan
+     */
+    public function monitor_excel($tabel = 'bidang')
+    {
+        $tabel = in_array($tabel, ['bidang', 'uraian', 'program', 'kegiatan', 'sub_kegiatan'], true) ? $tabel : 'bidang';
+
+        $data = $this->monitor_data();
+        $t    = $this->_monitor_tabel($tabel, $data);
+
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()->setCreator('SIMEV')->setTitle($t['judul']);
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle(substr($t['judul'], 0, 31));
+
+        // kop laporan
+        $sheet->setCellValue('A1', 'MONITOR SPJ (SURAT PERTANGGUNG JAWABAN)');
+        $sheet->setCellValue('A2', 'Tahun Anggaran: ' . $data['tahun_anggaran']);
+        $sheet->setCellValue('A3', $t['judul']);
+        $sheet->setCellValue('A4', 'Dicetak: ' . date('d-m-Y H:i:s', strtotime('+1 hour')) . ' (Waktu Server)');
+        $sheet->setCellValue('A5', 'Filter Tanggal: ' . ($data['filter_tanggal'] ? $data['filter_tanggal'] : 'Semua Tanggal'));
+        $sheet->setCellValue('A6', 'Periode Anggaran: ' . ($data['is_perubahan'] ? 'Perubahan' : 'Murni'));
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A2:A6')->getFont()->setBold(true);
+
+        // ringkasan
+        $sheet->setCellValue('A8', 'Alokasi Pagu Murni');
+        $sheet->setCellValue('B8', 'Alokasi Pagu Perubahan');
+        $sheet->setCellValue('C8', 'Realisasi Belanja');
+        $sheet->setCellValue('D8', 'Capaian Realisasi');
+        $sheet->getStyle('A8:D8')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF34495E']],
+        ]);
+        $sheet->setCellValue('A9', 'Rp. ' . nominal($t['pagu_murni']));
+        $sheet->setCellValue('B9', 'Rp. ' . nominal($t['pagu_perubahan']));
+        $sheet->setCellValue('C9', 'Rp. ' . nominal($t['realisasi']));
+        $sheet->setCellValue('D9', number_format($t['capaian'], 2) . '%');
+
+        // header tabel
+        $headRow = 11;
+        foreach ($t['headers'] as $i => $h) {
+            $sheet->setCellValue($this->_excel_col($i) . $headRow, $h);
+        }
+        $lastCol = $this->_excel_col(count($t['headers']) - 1);
+        $sheet->getStyle('A' . $headRow . ':' . $lastCol . $headRow)->applyFromArray([
+            'font'      => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+            'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF34495E']],
+            'alignment' => ['horizontal' => 'center', 'vertical' => 'center', 'wrapText' => true],
+        ]);
+
+        // isi baris + total
+        $row = $headRow + 1;
+        foreach ($t['rows'] as $tr) {
+            foreach ($tr as $i => $cell) {
+                $this->_excel_cell($sheet, $this->_excel_col($i) . $row, $cell, $t['types'][$i]);
+            }
+            $row++;
+        }
+        if ($t['total']) {
+            foreach ($t['total'] as $i => $cell) {
+                $this->_excel_cell($sheet, $this->_excel_col($i) . $row, $cell, $t['types'][$i]);
+            }
+            $sheet->getStyle('A' . $row . ':' . $lastCol . $row)->applyFromArray(['font' => ['bold' => true]]);
+            $row++;
+        }
+
+        foreach ($t['headers'] as $i => $h) {
+            $sheet->getColumnDimension($this->_excel_col($i))->setAutoSize(true);
+        }
+
+        $filename = 'SIMEV - ' . preg_replace('/[^a-zA-Z0-9_\-]/', '_', $t['judul']) . ' - ' . $data['tahun_anggaran'] . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        (new Xlsx($spreadsheet))->save('php://output');
+    }
+
+    private function _monitor_label($tabel)
+    {
+        return [
+            'bidang'       => 'Belanja Bidang',
+            'uraian'       => 'Belanja Uraian',
+            'program'      => 'Belanja Program',
+            'kegiatan'     => 'Belanja Kegiatan',
+            'sub_kegiatan' => 'Belanja Sub Kegiatan',
+        ][$tabel];
+    }
+
+    private function _excel_col($i)
+    {
+        return \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
+    }
+
+    private function _excel_cell($sheet, $coord, $cell, $type)
+    {
+        if ($type == 'money') {
+            $sheet->setCellValueExplicit($coord, (float) $cell, DataType::TYPE_NUMERIC);
+            $sheet->getStyle($coord)->getNumberFormat()->setFormatCode('#,##0');
+        } elseif ($type == 'pct') {
+            $sheet->setCellValueExplicit($coord, (float) $cell, DataType::TYPE_NUMERIC);
+            $sheet->getStyle($coord)->getNumberFormat()->setFormatCode('0.00"%"');
+        } else {
+            $sheet->setCellValue($coord, $cell);
+        }
+    }
+
+    /**
+     * Bangun baris tabel monitor (header, data, total, tipe kolom) untuk Excel.
+     */
+    private function _monitor_tabel($tabel, $data)
+    {
+        $tahun_anggaran = $data['tahun_anggaran'];
+        $is_perubahan   = $data['is_perubahan'];
+        $filter_tanggal = $data['filter_tanggal'];
+        $is_admin       = in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN']);
+        $scope          = $is_admin ? null : $data['part'];
+
+        $pagu_murni     = $this->spj->getTotalPaguMurniByPart($scope, $tahun_anggaran);
+        $pagu_perubahan = $this->spj->getTotalPaguPerubahanByPart($scope, $tahun_anggaran);
+        $realisasi      = $this->spj->getTotalRealisasiByPart($scope, $filter_tanggal, $tahun_anggaran);
+        $pagu_aktif     = $is_perubahan ? $pagu_perubahan : $pagu_murni;
+
+        $out = [
+            'judul'          => $this->_monitor_label($tabel),
+            'headers'        => [],
+            'types'          => [],
+            'rows'           => [],
+            'total'          => null,
+            'pagu_murni'     => $pagu_murni,
+            'pagu_perubahan' => $pagu_perubahan,
+            'realisasi'      => $realisasi,
+            'capaian'        => $pagu_aktif > 0 ? ($realisasi / $pagu_aktif) * 100 : 0,
+        ];
+
+        if ($tabel == 'bidang') {
+            $out['headers'] = ['No', 'Bidang/Bagian', 'Usulan Baru', 'Usulan Verifikasi', 'Persetujuan', 'Tolak', 'Perbaikan', 'Pending (Perbaikan)', 'Pending', 'Cair', 'Gagal Cair', 'Capaian'];
+            $out['types']   = ['center', 'text', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'pct'];
+
+            $tot = array_fill(0, 10, 0);
+            $no  = 1;
+            foreach ($data['listpart'] as $row_part) {
+                $pagu_part = $is_perubahan
+                    ? $this->spj->getTotalPaguPerubahanByPart($row_part->id, $tahun_anggaran)
+                    : $this->spj->getTotalPaguMurniByPart($row_part->id, $tahun_anggaran);
+
+                $vals = [
+                    $this->spj->getTotalRealisasiByPartAndStatus($row_part->id, $filter_tanggal, $tahun_anggaran, ['ENTRI']),
+                    $this->spj->getTotalRealisasiByPartAndStatus($row_part->id, $filter_tanggal, $tahun_anggaran, ['VERIFIKASI', 'VERIFIKASI_ADMIN']),
+                    $this->spj->getTotalRealisasiByPartAndStatusAdmin($row_part->id, $filter_tanggal, $tahun_anggaran, ['APPROVE']),
+                    $this->spj->getTotalRealisasiByPartAndStatusAdmin($row_part->id, $filter_tanggal, $tahun_anggaran, ['TMS', 'BTL']),
+                    $this->spj->getTotalRealisasiByPartAndStatusBendahara($row_part->id, $filter_tanggal, $tahun_anggaran, ['PERBAIKAN']),
+                    $this->spj->getTotalRealisasiByPartAndStatusBendahara($row_part->id, $filter_tanggal, $tahun_anggaran, ['PENDING - PERBAIKAN']),
+                    $this->spj->getTotalRealisasiByPartAndStatusBendahara($row_part->id, $filter_tanggal, $tahun_anggaran, ['PENDING']),
+                    $this->spj->getTotalRealisasiByPartAndStatusBendahara($row_part->id, $filter_tanggal, $tahun_anggaran, ['CAIR']),
+                    $this->spj->getTotalRealisasiByPartAndStatusBendahara($row_part->id, $filter_tanggal, $tahun_anggaran, ['TOLAK']),
+                ];
+                foreach ($vals as $i => $v) {
+                    $tot[$i] += (float) $v;
+                }
+                $capaian = $pagu_part > 0 ? ($vals[2] / $pagu_part) * 100 : 0;
+
+                $out['rows'][] = array_merge([$no++, $row_part->nama], $vals, [$capaian]);
+            }
+            $out['total'] = array_merge(['', 'Total'], $tot, [$pagu_aktif > 0 ? ($tot[2] / $pagu_aktif) * 100 : 0]);
+
+            return $out;
+        }
+
+        // uraian | program | kegiatan | sub_kegiatan
+        $label = [
+            'uraian'       => 'Nama Uraian',
+            'program'      => 'Program',
+            'kegiatan'     => 'Kegiatan',
+            'sub_kegiatan' => 'Sub Kegiatan',
+        ][$tabel];
+        $out['headers'] = ['No', $label, 'Total Pagu', 'Total Realisasi', 'Sisa Anggaran', 'Capaian'];
+        $out['types']   = ['center', 'text', 'money', 'money', 'money', 'pct'];
+
+        $tot_pagu = 0;
+        $tot_real = 0;
+        $no       = 1;
+
+        $push = function ($nama, $pagu, $real) use (&$out, &$tot_pagu, &$tot_real, &$no) {
+            $pagu = (float) $pagu;
+            $real = (float) $real;
+            $tot_pagu += $pagu;
+            $tot_real += $real;
+            $out['rows'][] = [$no++, $nama, $pagu, $real, $pagu - $real, $pagu > 0 ? ($real / $pagu) * 100 : 0];
+        };
+
+        if ($tabel == 'uraian') {
+            foreach ($data['uraians'] as $u) {
+                $push($u->kode . ' - ' . $u->nama, $u->pagu, $u->realisasi);
+            }
+        } else {
+            $items = ['program' => $data['programs'], 'kegiatan' => $data['kegiatans'], 'sub_kegiatan' => $data['sub_kegiatans']][$tabel];
+            foreach ($items->result() as $row) {
+                if ($tabel == 'program') {
+                    $pagu = $this->target->getAlokasiPaguProgram($row->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
+                    $real = $this->spj->getRealisasiByPartAndProgram($scope, $filter_tanggal, $row->id, $tahun_anggaran);
+                } elseif ($tabel == 'kegiatan') {
+                    $pagu = $this->target->getAlokasiPaguKegiatan($row->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
+                    $real = $this->spj->getRealisasiByPartAndKegiatan($scope, $filter_tanggal, $row->id, $tahun_anggaran);
+                } else {
+                    $pagu = $this->target->getAlokasiPaguSubKegiatan($row->id, $is_perubahan, $tahun_anggaran)->row()->total_pagu_awal ?? 0;
+                    $real = $this->spj->getRealisasiByPartAndSubKegiatan($scope, $filter_tanggal, $row->id, $tahun_anggaran);
+                }
+                $push($row->nama, $pagu, $real);
+            }
+        }
+
+        $out['total'] = ['', 'Total', $tot_pagu, $tot_real, $tot_pagu - $tot_real, $tot_pagu > 0 ? ($tot_real / $tot_pagu) * 100 : 0];
+
+        return $out;
+    }
+
+    private function monitor_data()
+    {
         $tahun_anggaran = $this->session->userdata('tahun_anggaran');
         $is_perubahan   = $this->session->userdata('is_perubahan');
         $part           = $this->session->userdata('part');
@@ -1213,6 +1458,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
             'tahun_anggaran' => $tahun_anggaran,
             'is_perubahan'   => $is_perubahan,
             'part'           => $part,
+            'filter_tanggal' => $filter_tanggal,
             'listpart'       => $listpart,
             'programs'       => $listprogram,
             'kegiatans'      => $listkegiatan,
@@ -1229,7 +1475,8 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
                 'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.css',
             ],
         ];
-        $this->load->view('layout/app', $data);
+
+        return $data;
     }
 
     public function autocomplete($type)

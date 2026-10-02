@@ -83,58 +83,74 @@
                     <div class="tiles">
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                                $limit          = $chart['limit_triwulan_1'];
-                                $tw_jumlah      = $chart['triwulan_1'];
-                                $percentase     = @($tw_jumlah / $limit) * 100;
-                                $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit     = (float) $chart['limit_triwulan_1'];
+                                $tw_jumlah = (float) $chart['triwulan_1'];
+                                if ($limit <= 0) {
+                                    $pct = 0;
+                                } else {
+                                    $pct = ($tw_jumlah / $limit) * 100;
+                                }
                             ?>
                             <span>TOTAL TRIWULAN I</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
+                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                                $limit          = $chart['limit_triwulan_2'];
-                                $tw_jumlah      = $chart['triwulan_2'];
-                                $percentase     = @($tw_jumlah / $limit) * 100;
-                                $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit     = (float) $chart['limit_triwulan_2'];
+                                $tw_jumlah = (float) $chart['triwulan_2'];
+                                if ($limit <= 0) {
+                                    $pct = 0;
+                                } else {
+                                    $pct = ($tw_jumlah / $limit) * 100;
+                                }
                             ?>
                             <span>TOTAL TRIWULAN II</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
+                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                                $limit          = $chart['limit_triwulan_3'];
-                                $tw_jumlah      = $chart['triwulan_3'];
-                                $percentase     = @($tw_jumlah / $limit) * 100;
-                                $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit     = (float) $chart['limit_triwulan_3'];
+                                $tw_jumlah = (float) $chart['triwulan_3'];
+                                if ($limit <= 0) {
+                                    $pct = 0;
+                                } else {
+                                    $pct = ($tw_jumlah / $limit) * 100;
+                                }
                             ?>
                             <span>TOTAL TRIWULAN III</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
+                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
                             </div>
                         </div>
                         <div class="col-3 col-sm-3 col-md-3 tile">
                             <?php
-                                $limit          = $chart['limit_triwulan_4'];
-                                $tw_jumlah      = $chart['triwulan_4'];
-                                $percentase     = @($tw_jumlah / $limit) * 100;
-                                $percentase_cek = ($percentase != 0) ? $percentase : '';
+                                $limit     = (float) $chart['limit_triwulan_4'];
+                                $tw_jumlah = (float) $chart['triwulan_4'];
+                                if ($limit <= 0) {
+                                    $pct = 0;
+                                } else {
+                                    $pct = ($tw_jumlah / $limit) * 100;
+                                }
                             ?>
                             <span>TOTAL TRIWULAN IV</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></span></h2>
+                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($percentase_cek, 2) ?>"></div>
+                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
                             </div>
                         </div>
                     </div>
