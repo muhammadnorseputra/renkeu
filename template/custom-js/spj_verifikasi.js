@@ -42,6 +42,20 @@ function uiNotify(msg, type) {
 $(function () {
 	$("#tanggal").datetimepicker({
 		format: "DD-MM-YYYY",
+		useCurrent: false,
+		showTodayButton: true,
+		showClear: false, // tombol clear custom (#vrfDateClear)
+		icons: {
+			time: "fa fa-clock-o",
+			date: "fa fa-calendar",
+			up: "fa fa-chevron-up",
+			down: "fa fa-chevron-down",
+			previous: "fa fa-chevron-left",
+			next: "fa fa-chevron-right",
+			today: "fa fa-calendar-check-o",
+			clear: "fa fa-trash",
+			close: "fa fa-times"
+		}
 	});
 	$("form#formVerifikasi").on("submit", function (e) {
 		e.preventDefault();

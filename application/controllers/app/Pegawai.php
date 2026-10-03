@@ -90,7 +90,7 @@ class Pegawai extends CI_Controller
         }
 
         $user = $this->session->userdata('user_name');
-        $now  = date('Y-m-d H:i:s');
+        $now  = DateTimeInput();
 
         $data = [
             'nip'          => $nip,

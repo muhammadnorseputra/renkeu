@@ -249,7 +249,7 @@ class Target extends CI_Controller
             'persentase'      => $post['persentase'][$periode_id] ?? null,
             'eviden_jumlah'   => $post['jumlah_eviden'][$periode_id] ?? null,
             'eviden_jenis'    => $post['keterangan_eviden'][$periode_id] ?? null,
-            'updated_at'      => date('Y-m-d H:i:s')
+            'updated_at'      => DateTimeInput()
         ];
 
 			// Insert

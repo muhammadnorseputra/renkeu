@@ -65,12 +65,13 @@ class ModelSpj extends CI_Model
 
 	public function detail($whr)
 	{
-		$this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, p.nama as periode');
+		$this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian, p.nama as periode');
 		$this->db->from('spj AS s');
 		$this->db->join('ref_parts AS part', 's.fid_part=part.id');
 		$this->db->join('ref_programs AS program', 's.fid_program=program.id');
 		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
 		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
+		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
 		$this->db->join('t_periode as p', 's.fid_periode=p.id');
 		$this->db->where($whr);
 		$q = $this->db->get();

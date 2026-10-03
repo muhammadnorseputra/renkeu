@@ -50,136 +50,6 @@ if ($berkas !== '') {
 }
 ?>
 
-<style>
-  .vrf-kode {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 11px; letter-spacing: .3px; color: #667085;
-  }
-  .vrf-wrap {
-    background: #fff; border: 1px solid #e4e7ec; border-radius: 4px;
-    padding: 16px 10px; box-shadow: 0 1px 2px rgba(16,24,40,.04);
-  }
-  /* --- header halaman --- */
-  .vrf-head {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
-    background: #fff; border: 1px solid #e4e7ec; border-radius: 4px;
-    padding: 10px 14px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(16,24,40,.04);
-  }
-  .vrf-back {
-    color: #1d3a6e; border: 1px solid #1d3a6e; background: #f8fafc;
-    font-size: 12.5px; font-weight: 600; padding: 5px 12px; border-radius: 3px;
-    transition: all .15s;
-  }
-  .vrf-back:hover, .vrf-back:focus { background: #1d3a6e; color: #fff; text-decoration: none; }
-  .vrf-head-title h3 { font-size: 15px; font-weight: 700; color: #101828; margin: 0; line-height: 1.25; }
-  .vrf-head-title h3 .fa { color: #2f5fa8; }
-  .vrf-head-title .vrf-head-sub { font-size: 11.5px; color: #667085; }
-  .vrf-head-meta { margin-left: auto; }
-  /* --- strip ringkas, bukan header besar --- */
-  .vrf-strip {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
-    background: linear-gradient(135deg, #1d3a6e 0%, #2f5fa8 100%);
-    color: #fff; padding: 12px 18px; border-radius: 4px;
-  }
-  .vrf-strip .lbl {
-    font-size: 10px; text-transform: uppercase; letter-spacing: .7px;
-    color: rgba(255,255,255,.7); display: block;
-  }
-  .vrf-strip .val { font-size: 13.5px; font-weight: 600; }
-  .vrf-strip .angka { font-size: 20px; font-weight: 700; letter-spacing: -.3px; line-height: 1.1; }
-  .vrf-strip .sep { width: 1px; height: 30px; background: rgba(255,255,255,.22); }
-  /* rekening: kontras tinggi + tombol copy */
-  .vrf-strip .rek {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 14px; font-weight: 700; letter-spacing: .5px;
-    color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.35);
-  }
-  .vrf-strip .rek-copy {
-    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35);
-    color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 2px;
-    margin-left: 6px; vertical-align: middle; transition: background .15s;
-  }
-  .vrf-strip .rek-copy:hover { background: rgba(255,255,255,.32); }
-
-  /* --- seksi collapse --- */
-  .vrf-acc { border: 1px solid var(--vrf-line, #e4e7ec); border-radius: 3px; margin-bottom: 6px; }
-  .vrf-acc > summary {
-    list-style: none; cursor: pointer; padding: 8px 12px; font-size: 12.5px; font-weight: 600;
-    color: #344054; background: #f8fafc; display: flex; align-items: center; gap: 8px;
-  }
-  .vrf-acc > summary::-webkit-details-marker { display: none; }
-  .vrf-acc > summary .fa-chevron-down { margin-left: auto; font-size: 11px; color: #98a2b3; transition: transform .15s; }
-  .vrf-acc[open] > summary .fa-chevron-down { transform: rotate(180deg); }
-  .vrf-acc[open] > summary { border-bottom: 1px solid var(--vrf-line, #e4e7ec); }
-  .vrf-acc .acc-body { padding: 10px 12px; font-size: 12.5px; line-height: 1.65; }
-  .vrf-acc .rowline { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 1px dashed #e4e7ec; }
-  .vrf-acc .rl-label { flex: 0 0 110px; min-width: 0; }
-  .vrf-acc .rl-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-  .vrf-acc .rl-kode { line-height: 1.3; }
-  .vrf-copy-kode {
-    background: #f2f4f7; border: 1px solid #e4e7ec; color: #667085;
-    font-size: 10px; padding: 1px 5px; border-radius: 2px;
-    vertical-align: middle; transition: all .15s;
-  }
-  .vrf-copy-kode:hover { background: #1d3a6e; border-color: #1d3a6e; color: #fff; }
-  .vrf-acc .rl-val { overflow-wrap: anywhere; word-break: break-word; line-height: 1.4; }
-
-  /* --- dock aksi --- */
-  .vrf-dock {
-    position: sticky; bottom: 0; z-index: 20;
-    background: #fff; border-top: 1px solid #e4e7ec;
-    margin: 16px -16px -16px; padding: 10px 16px; box-shadow: 0 -2px 10px rgba(16,24,40,.06);
-    border-radius: 0 0 4px 4px;
-  }
-  /* --- tombol aksi dock --- */
-  .vrf-acts { gap: 8px; }
-  .vrf-acts .vrf-act {
-    flex: 1 1 0; min-width: 0; padding: 7px 0;
-    font-size: 12.5px; font-weight: 600; border-radius: 3px;
-    transition: all .15s;
-  }
-  .vrf-acts .vrf-act .fa { font-size: 12px; }
-  .vrf-top-acts { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-  .vrf-top-acts .btn { min-width: 120px; font-size: 12.5px; font-weight: 600; border-radius: 3px; padding: 7px 16px; }
-  .vrf-proses { display: block; width: 100%; padding: 8px 0; font-size: 12.5px; font-weight: 600; border-radius: 3px; }
-  /* --- loading --- */
-  .vrf-busy {
-    position: absolute; inset: 0; z-index: 30;
-    display: none; align-items: center; justify-content: center; flex-direction: column; gap: 10px;
-    background: rgba(255,255,255,.82); border-radius: 4px; font-size: 12.5px; color: #344054;
-  }
-  .vrf-busy.on { display: flex; }
-  .vrf-busy .fa { font-size: 26px; color: #1d3a6e; }
-  .vrf-frame-loading {
-    position: absolute; inset: 0; z-index: 5; display: none;
-    align-items: center; justify-content: center; gap: 10px; flex-direction: column;
-    background: #f4f6f9; font-size: 12.5px; color: #667085;
-  }
-  .vrf-frame-loading.on { display: flex; }
-  .vrf-frame-loading .fa { font-size: 24px; color: #2f5fa8; }
-  .btn.is-busy { pointer-events: none; opacity: .7; }
-  /* --- tabs aksi: segmented, konsisten --- */
-  .vrf-tabs { display: flex; background: #f2f4f7; border: 1px solid #e4e7ec; border-radius: 3px; padding: 3px; gap: 3px; margin-bottom: 8px; }
-  .vrf-tabs .nav-item { flex: 1 1 0; min-width: 0; }
-  .vrf-tabs .nav-link {
-    display: block; width: 100%; text-align: center; padding: 7px 4px; font-size: 12.5px; font-weight: 600;
-    color: #667085; border: 0; border-radius: 2px; background: transparent; transition: all .15s;
-  }
-  .vrf-tabs .nav-link:hover { color: #1d3a6e; background: rgba(255,255,255,.6); }
-  .vrf-tabs .nav-link.active { color: #fff; background: #1d3a6e; box-shadow: 0 1px 3px rgba(29,58,110,.3); }
-  .vrf-tabs .nav-link .tab-hint { display: block; font-size: 9.5px; font-weight: 400; opacity: .65; letter-spacing: .4px; }
-
-  .vrf-form .form-control, .vrf-form .input-group-addon { border-radius: 0; font-size: 13px; }
-  .vrf-form label { font-size: 11.5px; color: #475467; margin-bottom: 3px; }
-  .vrf-list { max-height: 130px; overflow-y: auto; }
-  @media (max-width: 991px) { .vrf-dock { position: static; } }
-  @media (max-width: 576px) {
-    .vrf-acc .rowline { flex-wrap: wrap; gap: 4px; }
-    .vrf-acc .rl-label { flex: 0 0 100%; }
-    .vrf-acc .rl-body { flex: 0 0 100%; }
-  }
-</style>
-
 <div class="vrf-head">
   <div class="d-flex align-items-center">
     <a href="<?= base_url('app/spj?tab=%23verifikasi') ?>" class="vrf-back mr-3">
@@ -305,7 +175,7 @@ if ($berkas !== '') {
             </div>
           </details>
 
-          <details class="vrf-acc">
+          <details class="vrf-acc" open>
             <summary>
               <i class="fa fa-users text-muted"></i> Pihak Penerima Manfaat
               <span class="badge badge-secondary ml-1"><?= count($list_penerima) ?></span>
@@ -331,7 +201,7 @@ if ($berkas !== '') {
             </div>
           </details>
 
-          <details class="vrf-acc">
+          <details class="vrf-acc" open>
             <summary><i class="fa fa-history text-muted"></i> Riwayat</summary>
             <div class="acc-body">
               <b>Dientri</b> oleh <?= $userusul->nama ?>
@@ -379,26 +249,44 @@ if ($berkas !== '') {
               ], ['status' => 'MS', 'token' => $detail->token]);
               ?>
               <div class="form-group mb-2">
-                <label for="is_realisasi"><b>Status Realisasi</b></label>
-                <select name="is_realisasi" id="is_realisasi" class="form-control" required <?= $disabled_tms ?>>
-                  <option value="">-- Pilih --</option>
-                  <option value="LS" <?= $detail->is_realisasi === 'LS' ? 'selected' : '' ?>>LS</option>
-                  <option value="UP" <?= $detail->is_realisasi === 'UP' ? 'selected' : '' ?>>UP</option>
-                  <option value="GU" <?= $detail->is_realisasi === 'GU' ? 'selected' : '' ?>>GU</option>
-                  <option value="TU" <?= $detail->is_realisasi === 'TU' ? 'selected' : '' ?>>TU</option>
-                </select>
+                <label class="d-block mb-1"><b>Status Realisasi</b>
+                  <span class="text-danger">*</span>
+                </label>
+                <div class="vrf-radios" role="radiogroup" aria-label="Status Realisasi">
+                  <?php
+                  $realisasi = ['LS' => 'Langsung', 'UP' => 'Uang Persediaan', 'GU' => 'Ganti Uang', 'TU' => 'Tambahan Uang'];
+                  foreach ($realisasi as $opt => $ket) : ?>
+                    <label class="vrf-radio">
+                      <input type="radio" name="is_realisasi" value="<?= $opt ?>" required
+                             <?= $detail->is_realisasi === $opt ? 'checked' : '' ?> <?= $disabled_tms ?>>
+                      <span class="vrf-radio-box">
+                        <i class="fa fa-check vrf-tick" aria-hidden="true"></i>
+                        <span class="kode"><?= $opt ?></span>
+                        <span class="ket"><?= $ket ?></span>
+                      </span>
+                    </label>
+                  <?php endforeach; ?>
+                </div>
               </div>
               <div class="form-group mb-2">
-                <label for="nomor"><b>Nomor Verifikasi</b></label>
-                <input type="text" name="nomor" id="nomor" class="form-control" placeholder="Nomor BKU" value="<?= $detail->nomor_verifikasi ?>" required <?= $disabled_tms ?>>
+                <label for="nomor" class="vrf-field-label"><i class="fa fa-hashtag mr-1 text-muted"></i> Nomor Verifikasi <span class="text-danger">*</span></label>
+                <div class="vrf-inp-wrap" id="vrfNomorWrap">
+                  <i class="fa fa-file-text-o vrf-inp-icon" aria-hidden="true"></i>
+                  <input type="text" name="nomor" id="nomor" class="form-control vrf-inp" placeholder="cth: 900/123/BKPSDM/2026" autocomplete="off"
+                         value="<?= $detail->nomor_verifikasi ?>" required <?= $disabled_tms ?>>
+                  <button type="button" class="vrf-inp-clear" id="vrfNomorClear" tabindex="-1" title="Hapus nomor" aria-label="Hapus nomor"><i class="fa fa-times-circle"></i></button>
+                </div>
+                <small class="vrf-hint">Nomor  Verifikasi</small>
               </div>
               <div class="form-group mb-0">
-                <label for="tanggal"><b>Tanggal Verifikasi</b></label>
-                <div class="input-group">
-                  <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
-                  <input type="text" name="tanggal" id="tanggal" class="form-control date"
+                <label for="tanggal" class="vrf-field-label"><i class="fa fa-calendar mr-1 text-muted"></i> Tanggal Verifikasi <span class="text-danger">*</span></label>
+                <div class="vrf-date-wrap" id="vrfDateWrap">
+                  <i class="fa fa-calendar vrf-date-icon" aria-hidden="true"></i>
+                  <input type="text" name="tanggal" id="tanggal" class="form-control vrf-date-input" placeholder="DD-MM-YYYY" autocomplete="off"
                          value="<?= format_tanggal($detail->tanggal_verifikasi) ?>" required <?= $disabled_tms ?>>
+                  <button type="button" class="vrf-date-clear" id="vrfDateClear" tabindex="-1" title="Hapus tanggal" aria-label="Hapus tanggal"><i class="fa fa-times-circle"></i></button>
                 </div>
+                <small class="vrf-hint">Format: hari-bulan-tahun</small>
               </div>
               <?= form_close() ?>
             </div>
@@ -470,88 +358,6 @@ if ($berkas !== '') {
               <?php endif; ?>
             </div>
           </div>
-          <script>
-            // busy: overlay penuh + teks
-            function vrfBusy(on, text) {
-              $("#vrfBusyText").text(text || "Memproses…");
-              $("#vrfBusy").toggleClass("on", !!on);
-            }
-
-            // dock submit form pada tab yang sedang aktif (id form sama di 3 tab).
-            // validasi Parsley + confirm + efek loading dipegang spj_verifikasi.js,
-            // supaya batal di modal konfirmasi tidak menyisakan overlay loading.
-            $("#vrfProses").on("click", function () {
-              $(".tab-pane.active form").submit();
-            });
-
-            // copy kode rekening
-            $("#vrfCopyRek").on("click", function () {
-              var $btn = $(this), txt = $("#vrfRek").text();
-              var done = function () {
-                $btn.find("i").removeClass("fa-copy").addClass("fa-check");
-                setTimeout(function () { $btn.find("i").removeClass("fa-check").addClass("fa-copy"); }, 1200);
-              };
-              if (navigator.clipboard) {
-                navigator.clipboard.writeText(txt).then(done);
-              } else {
-                var $t = $("<textarea>").val(txt).appendTo("body").select();
-                document.execCommand("copy"); $t.remove(); done();
-              }
-            });
-
-            // show/hide nilai
-            $("#vrfNilaiToggle").on("click", function () {
-              var $btn = $(this), $n = $("#vrfNilai"), $i = $btn.find("i"),
-                  show = !$n.data("show");
-              $n.data("show", show).css("filter", show ? "none" : "blur(2.5px)");
-              $i.attr("class", show ? "fa fa-eye" : "fa fa-eye-slash");
-              $btn.attr("aria-pressed", show ? "true" : "false");
-              $n.attr("title", show ? "Sembunyikan nilai" : "Tampilkan nilai");
-            });
-            $("#vrfNilai").on("click", function () { $("#vrfNilaiToggle").trigger("click"); });
-
-            // copy kode program/kegiatan/sub kegiatan
-            $(document).on("click", ".vrf-copy-kode", function () {
-              var $btn = $(this), txt = $btn.data("kode") + "", done = function () {
-                $btn.find("i").removeClass("fa-copy").addClass("fa-check");
-                setTimeout(function () { $btn.find("i").removeClass("fa-check").addClass("fa-copy"); }, 1200);
-              };
-              if (navigator.clipboard) {
-                navigator.clipboard.writeText(txt).then(done);
-              } else {
-                var $t = $("<textarea>").val(txt).appendTo("body").select();
-                document.execCommand("copy"); $t.remove(); done();
-              }
-            });
-
-            // toggle preview berkas: muat iframe hanya saat dibuka (hemat loading)
-            $("#vrfBerkas").on("click", function () {
-              var $p = $("#vrfPreview"), $f = $p.find("#vrfPreviewFrame");
-              $p.toggleClass("d-none");
-              if ($p.hasClass("d-none")) return;
-              if ($f.length && $f.attr("src") === "about:blank") {
-                $("#vrfFrameLoading").addClass("on");
-                vrfBusy(true, "Memuat berkas…");
-                $f.one("load", function () {
-                  $("#vrfFrameLoading").removeClass("on");
-                  vrfBusy(false);
-                }).attr("src", $f.data("src"));
-                // jaring pengaman: iframe dari GDrive/office kadang tidak fire load
-                setTimeout(function () {
-                  $("#vrfFrameLoading").removeClass("on");
-                  vrfBusy(false);
-                }, 8000);
-              } else {
-                vrfBusy(true, "Memuat berkas…");
-                $f.attr("src", $f.attr("src")); // force reload
-                $("#vrfFrameLoading").addClass("on");
-                setTimeout(function () {
-                  $("#vrfFrameLoading").removeClass("on");
-                  vrfBusy(false);
-                }, 3000);
-              }
-            });
-          </script>
         </div>
       </div>
 </div>

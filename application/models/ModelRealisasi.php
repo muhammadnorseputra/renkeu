@@ -186,6 +186,10 @@ class ModelRealisasi extends CI_Model
     }
     public function getRealisasiTahunanUraian($uraian_id, $status)
     {
+        // ponytail: uraian kosong (usul baru) -> 0, hindari WHERE IS NULL tak disengaja
+        if (empty($uraian_id)) {
+            return 0;
+        }
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
         if (count($status) > 0):
@@ -198,10 +202,14 @@ class ModelRealisasi extends CI_Model
         $this->db->where('fid_uraian', $uraian_id);
         $this->db->where('tahun', $this->session->userdata('tahun_anggaran'));
         $q = $this->db->get();
-        return $q->row()->jumlah;
+        return $q->row()->jumlah ?? 0;
     }
     public function getRealisasiByPeriode($uraian_id, $status, $periode)
     {
+        // ponytail: periode kosong (tak ada baris limit) -> 0, hindari IN() syntax error 1064
+        if (empty($uraian_id) || empty($periode)) {
+            return 0;
+        }
         $this->db->select_sum('s.jumlah');
         $this->db->from('spj AS s');
         if (count($status) > 0):
@@ -215,7 +223,7 @@ class ModelRealisasi extends CI_Model
         $this->db->where('tahun', $this->session->userdata('tahun_anggaran'));
         $this->db->where_in("fid_periode", $periode);
         $q = $this->db->get();
-        return $q->row()->jumlah;
+        return $q->row()->jumlah ?? 0;
     }
     public function getRealisasiByIndikatorId($periode_start = '', $periode_end = '', $indikator_id, $ta)
     {

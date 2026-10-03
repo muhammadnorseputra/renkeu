@@ -208,14 +208,14 @@ class VerifikatorKinerja extends CI_Controller
         ])->row();
 
         if ($exists) {
-            $data['updated_at'] = date('Y-m-d H:i:s');
+            $data['updated_at'] = DateTimeInput();
             $data['updated_by'] = $user;
             $ok = $this->crud->update('t_verify_kinerja', $data, ['id' => $exists->id]);
         } else {
             $data['periode']    = $periode;
             $data['tahun']      = $tahun;
             $data['nip']        = $nip;
-            $data['created_at'] = date('Y-m-d H:i:s');
+            $data['created_at'] = DateTimeInput();
             $data['created_by'] = $user;
             $ok = $this->crud->insert('t_verify_kinerja', $data);
         }
@@ -412,7 +412,7 @@ class VerifikatorKinerja extends CI_Controller
 
         $tahun = $this->session->userdata('tahun_anggaran');
         $user  = $this->session->userdata('user_name') ?: 'system';
-        $now   = date('Y-m-d H:i:s');
+        $now   = DateTimeInput();
         $valid_periode = ['TW1', 'TW2', 'TW3', 'TW4'];
         $fields = ['unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
 
