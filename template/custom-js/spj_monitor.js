@@ -365,3 +365,37 @@ $("#filter_tanggal").on("cancel.daterangepicker", function (ev, picker) {
 	$(window).on("resize", applySticky);
 	$(window).on("scroll", applySticky);
 })();
+
+$(document).on("click", ".copy-code", function () {
+	var kode = $(this).data("copy") + "";
+	var $btn = $(this);
+	var $icon = $btn.find(".fa");
+	var originalClass = $icon.attr("class");
+
+	var done = function () {
+		$icon.removeClass("fa-copy").addClass("fa-check");
+		setTimeout(function () {
+			$icon.attr("class", originalClass);
+		}, 1200);
+	};
+
+	var fallback = function () {
+		var $tmp = $("<textarea>").val(kode).css({
+			position: "fixed",
+			left: "-9999px",
+			top: 0
+		}).appendTo("body");
+		$tmp[0].select();
+		try {
+			document.execCommand("copy");
+		} catch (e) {}
+		$tmp.remove();
+		done();
+	};
+
+	if (navigator.clipboard && navigator.clipboard.writeText) {
+		navigator.clipboard.writeText(kode).then(done).catch(fallback);
+	} else {
+		fallback();
+	}
+});

@@ -220,6 +220,255 @@ class Programs extends CI_Controller
         echo json_encode($data);
     }
 
+    private function onlyAdminBelanja()
+    {
+        $role = $this->session->userdata('role');
+        if ($role !== 'ADMIN' && $role !== 'SUPER_ADMIN') {
+            return show_404();
+        }
+    }
+
+    // tabel referensi belanja (kelompok & jenis) hanya untuk ADMIN/SUPER_ADMIN
+    private function onlyAdminBelanjaTable($type)
+    {
+        if (in_array($type, ['ref_kelompok_belanja', 'ref_jenis_belanja'], true)) {
+            $this->onlyAdminBelanja();
+        }
+    }
+
+    public function jenis()
+    {
+        $this->onlyAdminBelanja();
+        $this->db->select('j.*, k.nama as kelompok_nama, k.kode as kode_kelompok');
+        $this->db->from('ref_jenis_belanja j');
+        $this->db->join('ref_kelompok_belanja k', 'j.fid_kelompok_belanja = k.id', 'left');
+        $this->db->where('j.tahun', $this->session->userdata('tahun_anggaran'));
+        $db = $this->db->get();
+
+        // agregat pagu awal & perubahan dari t_pagu via uraian
+        $paguAwal = [];
+        $dbA      = $this->db->select('u.fid_jenis_belanja, SUM(p.total_pagu_awal) AS total')
+            ->join('ref_uraians u', 'p.fid_uraian=u.id')
+            ->where('p.is_perubahan', '0')
+            ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
+            ->group_by('u.fid_jenis_belanja')
+            ->get('t_pagu p');
+        foreach ($dbA->result() as $row):
+            $paguAwal[$row->fid_jenis_belanja] = $row->total;
+        endforeach;
+
+        $paguPerubahan = [];
+        $dbB           = $this->db->select('u.fid_jenis_belanja, SUM(p.total_pagu_awal) AS total')
+            ->join('ref_uraians u', 'p.fid_uraian=u.id')
+            ->where('p.is_perubahan', '1')
+            ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
+            ->group_by('u.fid_jenis_belanja')
+            ->get('t_pagu p');
+        foreach ($dbB->result() as $row):
+            $paguPerubahan[$row->fid_jenis_belanja] = $row->total;
+        endforeach;
+
+        $btnAdd  = '<div class="float-right">
+        <button data-toggle="modal" data-target=".modal-jenis" class="btn rounded-0 btn-info mt-3"><i class="fa fa-plus mr-2"></i> Tambah Jenis Belanja</button>
+                </div>
+                ';
+        $search = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+                        <input type="text" class="search form-control" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listJenis" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
+                        </div>
+                    </div></div>';
+        $pagging    = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
+        $btnOptions = '<div class="col-md-5">' . $btnAdd . '</div>';
+
+        $total_awal        = 0;
+        $total_perubahan   = 0;
+
+        $html  = '<div id="listJenis"><div class="row">' . $search . $pagging . $btnOptions . "</div>";
+        $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action">';
+        $html .= '<thead><tr><th class="text-center">No</th><th>Kode Kelompok</th><th>Kelompok</th><th>Kode</th><th>Judul</th><th class="text-right">Alokasi Anggaran Awal (Rp)</th><th class="text-right">Alokasi Anggaran Perubahan (Rp)</th><th class="text-right">Selisih (Berkurang / Bertambah)</th><th class="text-center">Uraian</th><th>Hapus</th><th>Edit</th></tr></thead>';
+        $html .= '<tbody class="list">';
+        $no    = 1;
+        foreach ($db->result() as $r):
+            $pAwal      = $paguAwal[$r->id] ?? 0;
+            $pPerubahan = $paguPerubahan[$r->id] ?? 0;
+            $total_awal += $pAwal;
+            $total_perubahan += $pPerubahan;
+
+            $selisih     = $pPerubahan - $pAwal;
+            $tanda       = $selisih > 0 ? '+' : ($selisih < 0 ? '-' : '');
+            $warnaClass  = $selisih > 0 ? 'text-success' : ($selisih < 0 ? 'text-danger' : '');
+            $hasil       = $tanda . nominal(abs($selisih));
+
+            $html .= '<tr>
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td class="kode_kelompok">
+						                    <div class="d-flex align-items-center">
+						                        <span class="mr-2">' . htmlspecialchars($r->kode_kelompok) . '</span>
+						                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 copy-code" data-copy="' . htmlspecialchars($r->kode_kelompok) . '" title="Salin kode kelompok" style="line-height:1"><i class="fa fa-fw fa-copy"></i></button>
+						                    </div>
+						                </td>
+						                <td class="kelompok">
+						                    ' . htmlspecialchars($r->kelompok_nama) . '
+						                </td>
+						                <td class="kode">
+						                    <div class="d-flex align-items-center">
+						                        <span class="mr-2">' . htmlspecialchars($r->kode) . '</span>
+						                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 copy-code" data-copy="' . htmlspecialchars($r->kode) . '" title="Salin kode jenis" style="line-height:1"><i class="fa fa-fw fa-copy"></i></button>
+						                    </div>
+						                </td>
+						                <td class="nama">
+						                    ' . htmlspecialchars($r->nama) . '
+						                </td>
+						                <td class="text-right">Rp. ' . nominal($pAwal) . '</td>
+						                <td class="text-right">Rp. ' . nominal($pPerubahan) . '</td>
+						                <td class="text-right"><b class="' . $warnaClass . '">' . $hasil . '</b></td>
+						                <td width="5%" class="text-center">
+						                    <button data-id="' . $r->id . '" data-nama="' . htmlspecialchars($r->nama, ENT_QUOTES) . '" type="button" class="btn btn-info btn-sm rounded-0 m-0 btn-detail-uraian" title="Lihat uraian terkait"><i class="fa fa-eye"></i></button>
+						                </td>
+						                <td width="5%" class="text-center">
+						                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_jenis_belanja') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+						                </td>
+						                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_jenis_belanja") . '\',\'.modal-jenis-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+						            </tr>';
+            $no++;
+        endforeach;
+        $selisihTotal     = $total_perubahan - $total_awal;
+        $tandaTotal       = $selisihTotal > 0 ? '+' : ($selisihTotal < 0 ? '-' : '');
+        $warnaClassTotal  = $selisihTotal > 0 ? 'text-success' : ($selisihTotal < 0 ? 'text-danger' : '');
+        $hasilTotal       = $tandaTotal . nominal(abs($selisihTotal));
+
+        $html .= '
+            <tr>
+                <td colspan="5" class="text-right align-middle"><b>Total</b></td>
+                <td class="text-right align-middle"><b>Rp. ' . nominal($total_awal) . '</b></td>
+                <td class="text-right align-middle"><b>Rp. ' . nominal($total_perubahan) . '</b></td>
+                <td class="text-right align-middle"><b class="' . $warnaClassTotal . '">' . $hasilTotal . '</b></td>
+                <td colspan="3"></td>
+            </tr>
+        ';
+        $html .= '</tbody>';
+        $html .= '</table></div></div>';
+
+        if ($db->num_rows() > 0):
+            $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
+        else:
+            $data = ['result' => $btnAdd, 'msg' => 'Data <b>Jenis Belanja</b> Tidak Ditemukan', 'code' => 404];
+        endif;
+
+        echo json_encode($data);
+    }
+
+    public function kelompok()
+    {
+        $this->onlyAdminBelanja();
+        $db = $this->crud->getWhere('ref_kelompok_belanja', ['tahun' => $this->session->userdata('tahun_anggaran')]);
+
+        // agregat pagu awal & perubahan dari t_pagu via uraian -> jenis -> kelompok
+        $paguAwal = [];
+        $dbA      = $this->db->select('j.fid_kelompok_belanja, SUM(p.total_pagu_awal) AS total')
+            ->join('ref_uraians u', 'p.fid_uraian=u.id')
+            ->join('ref_jenis_belanja j', 'u.fid_jenis_belanja=j.id')
+            ->where('p.is_perubahan', '0')
+            ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
+            ->group_by('j.fid_kelompok_belanja')
+            ->get('t_pagu p');
+        foreach ($dbA->result() as $row):
+            $paguAwal[$row->fid_kelompok_belanja] = $row->total;
+        endforeach;
+
+        $paguPerubahan = [];
+        $dbB           = $this->db->select('j.fid_kelompok_belanja, SUM(p.total_pagu_awal) AS total')
+            ->join('ref_uraians u', 'p.fid_uraian=u.id')
+            ->join('ref_jenis_belanja j', 'u.fid_jenis_belanja=j.id')
+            ->where('p.is_perubahan', '1')
+            ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
+            ->group_by('j.fid_kelompok_belanja')
+            ->get('t_pagu p');
+        foreach ($dbB->result() as $row):
+            $paguPerubahan[$row->fid_kelompok_belanja] = $row->total;
+        endforeach;
+
+        $btnAdd  = '<div class="float-right">
+        <button data-toggle="modal" data-target=".modal-kelompok" class="btn rounded-0 btn-info mt-3"><i class="fa fa-plus mr-2"></i> Tambah Kelompok Belanja</button>
+                </div>
+                ';
+        $search = '<div class="col-5 col-md-4">Pencarian <div class="input-group">
+                        <input type="text" class="search form-control" />
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-secondary rounded-0 reset-listjs" data-target="listKelompok" title="Reset pencarian &amp; halaman"><i class="fa fa-refresh"></i></button>
+                        </div>
+                    </div></div>';
+        $pagging    = '<div class="col-4 col-md-3">Halaman <ul class="pagination"></ul></div>';
+        $btnOptions = '<div class="col-md-5">' . $btnAdd . '</div>';
+
+        $total_awal      = 0;
+        $total_perubahan = 0;
+
+        $html  = '<div id="listKelompok"><div class="row">' . $search . $pagging . $btnOptions . "</div>";
+        $html .= '<div class="table-responsive"><table class="table jambo_table bulk_action">';
+        $html .= '<thead><tr><th class="text-center">No</th><th>Kode</th><th>Judul</th><th class="text-right">Alokasi Anggaran Awal (Rp)</th><th class="text-right">Alokasi Anggaran Perubahan (Rp)</th><th class="text-right">Selisih (Berkurang / Bertambah)</th><th>Hapus</th><th>Edit</th></tr></thead>';
+        $html .= '<tbody class="list">';
+        $no    = 1;
+        foreach ($db->result() as $r):
+            $pAwal      = $paguAwal[$r->id] ?? 0;
+            $pPerubahan = $paguPerubahan[$r->id] ?? 0;
+            $total_awal += $pAwal;
+            $total_perubahan += $pPerubahan;
+
+            $selisih     = $pPerubahan - $pAwal;
+            $tanda       = $selisih > 0 ? '+' : ($selisih < 0 ? '-' : '');
+            $warnaClass  = $selisih > 0 ? 'text-success' : ($selisih < 0 ? 'text-danger' : '');
+            $hasil       = $tanda . nominal(abs($selisih));
+
+            $html .= '<tr>
+						                <td class="text-center">
+						                    ' . $no . '
+						                </td>
+						                <td class="kode">
+						                    ' . htmlspecialchars($r->kode) . '
+						                </td>
+						                <td class="nama">
+						                    ' . htmlspecialchars($r->nama) . '
+						                </td>
+						                <td class="text-right">Rp. ' . nominal($pAwal) . '</td>
+						                <td class="text-right">Rp. ' . nominal($pPerubahan) . '</td>
+						                <td class="text-right"><b class="' . $warnaClass . '">' . $hasil . '</b></td>
+						                <td width="5%" class="text-center">
+						                    <button onclick="Hapus(' . $r->id . ',\'' . base_url('app/programs/hapus/ref_kelompok_belanja') . '\')" type="button" class="btn btn-danger btn-sm rounded-0 m-0"><i class="fa fa-trash"></i></button>
+						                </td>
+						                <td width="5%" class="text-center"><button onclick="Edit(' . $r->id . ',\'' . base_url("app/programs/detail/ref_kelompok_belanja") . '\',\'.modal-kelompok-edit\')" type="button" class="btn btn-sm btn-light m-0"><i class="fa fa-pencil"></i></button></td>
+						            </tr>';
+            $no++;
+        endforeach;
+        $selisihTotal     = $total_perubahan - $total_awal;
+        $tandaTotal       = $selisihTotal > 0 ? '+' : ($selisihTotal < 0 ? '-' : '');
+        $warnaClassTotal  = $selisihTotal > 0 ? 'text-success' : ($selisihTotal < 0 ? 'text-danger' : '');
+        $hasilTotal       = $tandaTotal . nominal(abs($selisihTotal));
+
+        $html .= '
+            <tr>
+                <td colspan="3" class="text-right align-middle"><b>Total</b></td>
+                <td class="text-right align-middle"><b>Rp. ' . nominal($total_awal) . '</b></td>
+                <td class="text-right align-middle"><b>Rp. ' . nominal($total_perubahan) . '</b></td>
+                <td class="text-right align-middle"><b class="' . $warnaClassTotal . '">' . $hasilTotal . '</b></td>
+                <td colspan="2"></td>
+            </tr>
+        ';
+        $html .= '</tbody>';
+        $html .= '</table></div></div>';
+
+        if ($db->num_rows() > 0):
+            $data = ['result' => $html, 'msg' => $db->num_rows() . ' Data Ditemukan', 'code' => 200];
+        else:
+            $data = ['result' => $btnAdd, 'msg' => 'Data <b>Kelompok Belanja</b> Tidak Ditemukan', 'code' => 404];
+        endif;
+
+        echo json_encode($data);
+    }
+
     public function program()
     {
         $db     = $this->target->program(null, $this->session->userdata('part'), $this->session->userdata('tahun_anggaran'));
@@ -520,17 +769,21 @@ class Programs extends CI_Controller
     public function uraian()
     {
         if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
-            $db = $this->db->select('u.id,u.fid_kegiatan,u.kode,u.nama,u.is_aktif,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
+            $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_jenis_belanja,u.kode,u.nama,u.is_aktif,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan, j.kode AS kode_jenis,j.nama AS nama_jenis, kel.kode AS kode_kelompok,kel.nama AS nama_kelompok')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
+                ->join('ref_jenis_belanja AS j', 'u.fid_jenis_belanja=j.id', 'left')
+                ->join('ref_kelompok_belanja AS kel', 'j.fid_kelompok_belanja=kel.id', 'left')
                 ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get('ref_uraians AS u');
         else:
-            $db = $this->db->select('u.id,u.fid_kegiatan,u.kode,u.nama,u.is_aktif,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
+            $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_jenis_belanja,u.kode,u.nama,u.is_aktif,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan, j.kode AS kode_jenis,j.nama AS nama_jenis, kel.kode AS kode_kelompok,kel.nama AS nama_kelompok')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
+                ->join('ref_jenis_belanja AS j', 'u.fid_jenis_belanja=j.id', 'left')
+                ->join('ref_kelompok_belanja AS kel', 'j.fid_kelompok_belanja=kel.id', 'left')
                 ->where('keg.fid_part', $this->session->userdata('part'))
                 ->where('u.tahun', $this->session->userdata('tahun_anggaran'))
                 ->get('ref_uraians AS u');
@@ -567,6 +820,7 @@ class Programs extends CI_Controller
                         <th class="text-center">No</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
+                        <th>Jenis Belanja</th>
                         <th>Total SPJ</th>
                         ' . $th_status_aktif . '
                         <th class="text-center" colspan="2">Ubah | Hapus</th>
@@ -678,6 +932,9 @@ class Programs extends CI_Controller
 						                    ' . ucwords($r->nama_sub_kegiatan) . ' <br>
 						                    <b class="nama">' . ucwords($r->nama) . '</b>
 						                </td>
+						                <td valign="middle">
+						                    ' . ($r->kode_jenis ? htmlspecialchars($r->kode_jenis) . ' - ' : '') . ($r->nama_jenis ? htmlspecialchars($r->nama_jenis) : '-') . '
+						                </td>
 						                <td class="text-center">' . $jmlSpj . '</td>
 						                ' . $switch_aktif . '
 						                ' . $button_edit . '
@@ -691,7 +948,7 @@ class Programs extends CI_Controller
 						            </tr>';
             $no++;
         endforeach;
-        $colspan_total  = $is_admin ? 7 : 6;
+        $colspan_total  = $is_admin ? 8 : 7;
         $html          .= '
             <tr>
                 <td colspan="' . $colspan_total . '" class="text-right align-middle"><b>Total</b></td>
@@ -880,11 +1137,49 @@ class Programs extends CI_Controller
         echo json_encode($all);
     }
 
-    public function getUnor()
+    public function getKelompok()
+    {
+        $this->onlyAdminBelanja();
+        $q = $this->input->post('q');
+
+        $db  = $this->db->group_start()->like('kode', $q)->or_like('nama', $q)->group_end()
+            ->where('tahun', $this->tahun_anggaran)->get('ref_kelompok_belanja');
+        $all = [];
+        if ($db->num_rows() > 0):
+            foreach ($db->result() as $row):
+                $data['id']   = $row->id;
+                $data['text'] = $row->kode . " - " . $row->nama;
+                $all[]        = $data;
+            endforeach;
+        else:
+            $all[] = ['id' => 0, 'text' => 'Maaf, Kelompok "' . strtoupper($q) . '" tidak ditemukan.'];
+        endif;
+        echo json_encode($all);
+    }
+
+    public function getJenis()
     {
         $q = $this->input->post('q');
 
-        $db  = $this->crud->getLikes('ref_unors', ['nama' => $q]);
+            $db  = $this->db->select('j.id, CONCAT(j.kode, " - ", j.nama) AS text')
+                ->group_start()->like('j.kode', $q)->or_like('j.nama', $q)->group_end()
+                ->where('j.tahun', $this->tahun_anggaran)->get('ref_jenis_belanja j');
+            $all = [];
+            if ($db->num_rows() > 0):
+                foreach ($db->result() as $row):
+                    $all[] = ['id' => $row->id, 'text' => $row->text];
+                endforeach;
+            else:
+                $all[] = ['id' => 0, 'text' => 'Maaf, Jenis Belanja "' . strtoupper($q) . '" tidak ditemukan.'];
+            endif;
+            echo json_encode($all);
+        }
+
+        public function getUnor()
+        {
+            $q = $this->input->post('q');
+
+            $db = $this->crud->getLikes('ref_unors', ['nama' => $q]);
         $all = [];
         if ($db->num_rows() > 0):
             foreach ($db->result() as $row):
@@ -1146,6 +1441,66 @@ class Programs extends CI_Controller
             return false;
         }
 
+        if ($type === 'kelompok') {
+            $this->onlyAdminBelanja();
+            $p    = $this->input->post();
+            $kode = trim($p['kode'] ?? '');
+            $nama = trim($p['kelompok'] ?? '');
+            if ($kode === '' || $nama === '') {
+                echo json_encode(400);
+                return false;
+            }
+            $ada = $this->crud->getWhere('ref_kelompok_belanja', ['kode' => $kode, 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows();
+            if ($ada > 0) {
+                echo json_encode(400);
+                return false;
+            }
+            $data = [
+                'kode'  => $kode,
+                'nama'  => $nama,
+                'tahun' => $this->session->userdata('tahun_anggaran'),
+            ];
+            $db = $this->crud->insert('ref_kelompok_belanja', $data);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+            return false;
+        }
+
+        if ($type === 'jenis') {
+            $this->onlyAdminBelanja();
+            $p                    = $this->input->post();
+            $fid_kelompok_belanja = trim($p['kelompok'] ?? '');
+            $kode                 = trim($p['kode'] ?? '');
+            $nama                 = trim($p['jenis'] ?? '');
+            if ($fid_kelompok_belanja === '' || $kode === '' || $nama === '') {
+                echo json_encode(400);
+                return false;
+            }
+            $ada = $this->crud->getWhere('ref_jenis_belanja', ['kode' => $kode, 'tahun' => $this->session->userdata('tahun_anggaran')])->num_rows();
+            if ($ada > 0) {
+                echo json_encode(400);
+                return false;
+            }
+            $data = [
+                'fid_kelompok_belanja' => $fid_kelompok_belanja,
+                'kode'                 => $kode,
+                'nama'                 => $nama,
+                'tahun'                => $this->session->userdata('tahun_anggaran'),
+            ];
+            $db = $this->crud->insert('ref_jenis_belanja', $data);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+            return false;
+        }
+
         if ($type === 'part') {
             $p    = $this->input->post();
             $data = [
@@ -1224,6 +1579,7 @@ class Programs extends CI_Controller
             $data = [
                 'fid_kegiatan'     => $p['kegiatan'],
                 'fid_sub_kegiatan' => $p['subkegiatan'],
+                'fid_jenis_belanja' => $p['jenis_belanja'],
                 'kode'             => $p['kode_uraian'],
                 'nama'             => $p['nama_uraian'],
                 'is_aktif'         => isset($p['is_aktif']) && $p['is_aktif'] === 'Y' ? 'Y' : 'N',
@@ -1447,14 +1803,106 @@ class Programs extends CI_Controller
 
     public function detail($tbl)
     {
+        $this->onlyAdminBelanjaTable($tbl);
         $uid = $this->input->get('id');
         $db  = $this->crud->getWhere($tbl, ['id' => $uid]);
         $row = $db->row();
         echo json_encode($row);
     }
 
+    public function uraian_by_jenis()
+    {
+        $this->onlyAdminBelanja();
+        $id = $this->input->get('id');
+        if (!$id) {
+            echo json_encode(['code' => 404, 'msg' => 'ID tidak valid', 'result' => '']);
+            return;
+        }
+
+        $db = $this->db->select('u.id,u.kode,u.nama,keg.nama AS nama_kegiatan,sub.nama AS nama_sub_kegiatan')
+            ->order_by('u.kode', 'asc')
+            ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'left')
+            ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'left')
+            ->where('u.fid_jenis_belanja', $id)
+            ->get('ref_uraians AS u');
+
+        $paguAwal      = [];
+        $paguPerubahan = [];
+        $total_awal    = 0;
+        $total_perubahan = 0;
+        if ($db->num_rows() > 0):
+            $ids = [];
+            foreach ($db->result() as $row):
+                $ids[] = $row->id;
+            endforeach;
+            $dbA = $this->db->select('p.fid_uraian, SUM(p.total_pagu_awal) AS total')
+                ->where('p.is_perubahan', '0')
+                ->where_in('p.fid_uraian', $ids)
+                ->group_by('p.fid_uraian')
+                ->get('t_pagu AS p');
+            foreach ($dbA->result() as $row):
+                $paguAwal[$row->fid_uraian] = $row->total;
+            endforeach;
+            $dbB = $this->db->select('p.fid_uraian, SUM(p.total_pagu_awal) AS total')
+                ->where('p.is_perubahan', '1')
+                ->where_in('p.fid_uraian', $ids)
+                ->group_by('p.fid_uraian')
+                ->get('t_pagu AS p');
+            foreach ($dbB->result() as $row):
+                $paguPerubahan[$row->fid_uraian] = $row->total;
+            endforeach;
+        endif;
+
+        $html = '<div class="table-responsive"><table class="table table-striped jambo_table"><thead><tr><th>#</th><th>Kode</th><th>Uraian</th><th>Kegiatan</th><th>Sub Kegiatan</th><th class="text-right">Alokasi Anggaran Awal (Rp)</th><th class="text-right">Alokasi Anggaran Perubahan (Rp)</th><th class="text-right">Selisih (Berkurang / Bertambah)</th></tr></thead><tbody>';
+        $no   = 1;
+        if ($db->num_rows() > 0):
+            foreach ($db->result() as $r):
+                $pAwal      = $paguAwal[$r->id] ?? 0;
+                $pPerubahan = $paguPerubahan[$r->id] ?? 0;
+                $total_awal += $pAwal;
+                $total_perubahan += $pPerubahan;
+
+                $selisih    = $pPerubahan - $pAwal;
+                $tanda      = $selisih > 0 ? '+' : ($selisih < 0 ? '-' : '');
+                $warnaClass = $selisih > 0 ? 'text-success' : ($selisih < 0 ? 'text-danger' : '');
+                $hasil      = $tanda . nominal(abs($selisih));
+
+                $html .= '<tr>
+                    <td>' . $no . '</td>
+                    <td>' . htmlspecialchars($r->kode) . '</td>
+                    <td>' . htmlspecialchars($r->nama) . '</td>
+                    <td>' . htmlspecialchars($r->nama_kegiatan) . '</td>
+                    <td>' . htmlspecialchars($r->nama_sub_kegiatan) . '</td>
+                    <td class="text-right">Rp. ' . nominal($pAwal) . '</td>
+                    <td class="text-right">Rp. ' . nominal($pPerubahan) . '</td>
+                    <td class="text-right"><b class="' . $warnaClass . '">' . $hasil . '</b></td>
+                </tr>';
+                $no++;
+            endforeach;
+
+            $selisihTotal     = $total_perubahan - $total_awal;
+            $tandaTotal       = $selisihTotal > 0 ? '+' : ($selisihTotal < 0 ? '-' : '');
+            $warnaClassTotal  = $selisihTotal > 0 ? 'text-success' : ($selisihTotal < 0 ? 'text-danger' : '');
+            $hasilTotal       = $tandaTotal . nominal(abs($selisihTotal));
+
+            $html .= '
+            <tr>
+                <td colspan="5" class="text-right align-middle"><b>Total</b></td>
+                <td class="text-right align-middle"><b>Rp. ' . nominal($total_awal) . '</b></td>
+                <td class="text-right align-middle"><b>Rp. ' . nominal($total_perubahan) . '</b></td>
+                <td class="text-right align-middle"><b class="' . $warnaClassTotal . '">' . $hasilTotal . '</b></td>
+            </tr>';
+        else:
+            $html .= '<tr><td colspan="8" class="text-center text-muted">Tidak ada uraian terkait jenis belanja ini.</td></tr>';
+        endif;
+        $html .= '</tbody></table></div>';
+
+        echo json_encode(['code' => 200, 'msg' => 'OK', 'result' => $html]);
+    }
+
     public function detailv2($tbl, $id)
     {
+        $this->onlyAdminBelanjaTable($tbl);
         $db  = $this->crud->getWhere($tbl, ['id' => $id]);
         $row = $db->row();
         return $row;
@@ -1550,6 +1998,76 @@ class Programs extends CI_Controller
                 $msg = 400;
             }
             echo json_encode($msg);
+        }
+
+        if ($tbl === 'ref_kelompok_belanja') {
+            $this->onlyAdminBelanja();
+            $input = $this->input->post();
+            $kode  = trim($input['kode'] ?? '');
+            $nama  = trim($input['kelompok'] ?? '');
+            if ($kode === '' || $nama === '') {
+                echo json_encode(400);
+                return false;
+            }
+            $duplikat = $this->db->where('kode', $kode)
+                ->where('tahun', $this->session->userdata('tahun_anggaran'))
+                ->where('id !=', $input['id'])
+                ->get('ref_kelompok_belanja')->num_rows();
+            if ($duplikat > 0) {
+                echo json_encode(400);
+                return false;
+            }
+            $data = [
+                'kode' => $kode,
+                'nama' => $nama,
+            ];
+            $whr = [
+                'id' => $input['id'],
+            ];
+            $db = $this->crud->update($tbl, $data, $whr);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+            return false;
+        }
+
+        if ($tbl === 'ref_jenis_belanja') {
+                    $this->onlyAdminBelanja();
+                    $input = $this->input->post();
+            $fid_kelompok_belanja = trim($input['kelompok'] ?? '');
+            $kode                 = trim($input['kode'] ?? '');
+            $nama                 = trim($input['jenis'] ?? '');
+            if ($fid_kelompok_belanja === '' || $kode === '' || $nama === '') {
+                echo json_encode(400);
+                return false;
+            }
+            $duplikat = $this->db->where('kode', $kode)
+                ->where('tahun', $this->session->userdata('tahun_anggaran'))
+                ->where('id !=', $input['id'])
+                ->get('ref_jenis_belanja')->num_rows();
+            if ($duplikat > 0) {
+                echo json_encode(400);
+                return false;
+            }
+            $data = [
+                'fid_kelompok_belanja' => $fid_kelompok_belanja,
+                'kode'                 => $kode,
+                'nama'                 => $nama,
+            ];
+            $whr = [
+                'id' => $input['id'],
+            ];
+            $db = $this->crud->update($tbl, $data, $whr);
+            if ($db) {
+                $msg = 200;
+            } else {
+                $msg = 400;
+            }
+            echo json_encode($msg);
+            return false;
         }
 
         // if ($tbl === 'ref_programs') {
@@ -1660,11 +2178,17 @@ class Programs extends CI_Controller
                     'kode'             => $input['kode_uraian'],
                     'nama'             => $input['nama_uraian'],
                 ];
+                if (!empty($input['jenis_belanja'])) {
+                    $data['fid_jenis_belanja'] = $input['jenis_belanja'];
+                }
             } else {
                 $data = [
                     'kode' => $input['kode_uraian'],
                     'nama' => $input['nama_uraian'],
                 ];
+                if (!empty($input['jenis_belanja'])) {
+                    $data['fid_jenis_belanja'] = $input['jenis_belanja'];
+                }
             }
             $whr = [
                 'id' => $input['uid'],
@@ -1764,6 +2288,7 @@ class Programs extends CI_Controller
 
     public function hapus($type)
     {
+        $this->onlyAdminBelanjaTable($type);
         if (isset($type)) {
             $p  = $this->input->post();
             $id = $p['id'];

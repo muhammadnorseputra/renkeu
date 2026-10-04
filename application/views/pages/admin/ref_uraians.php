@@ -12,6 +12,11 @@
                     <select name="subkegiatan" id="subkegiatan" class="form-control" style="width:100%" data-parsley-errors-container="#help-block-subkegiatan"></select>
                     <div id="subkegiatan" class="mt-1 text-secondary text-right">*) apabila tidak di ganti, biarkan kosong bagian ini.</div>
                 </div>
+                <div class="form-group">
+                    <label for="jenis_belanja">Pilih Jenis Belanja</label>
+                    <select name="jenis_belanja" id="jenis_belanja" class="form-control" style="width:100%"></select>
+                    <div id="jenis_belanja" class="mt-1 text-secondary text-right">*) apabila tidak di ganti, biarkan kosong bagian ini.</div>
+                </div>
                 <div class="divider-dashed"></div>
                 <div class="form-group">
                     <label for="kode_uraian">Kode Uraian <span class="text-danger">*</span></label>
@@ -67,6 +72,42 @@
                 // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
             }
         });
+
+        // select jenis belanja
+        let $jenis = $('select[name="jenis_belanja"]').select2({
+            placeholder: 'Pilih Jenis Belanja',
+            allowClear: true,
+            width: "100%",
+            ajax: {
+                delay: 350,
+                method: 'post',
+                url: '<?= base_url("app/programs/getJenis") ?>',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: params.term,
+                    };
+                },
+                cache: true,
+                processResults: function(data) {
+                    return {
+                        results: data
+                    };
+                }
+            }
+        });
+
+        // tampilkan label jenis belanja yang tersimpan (select2 ajax tidak punya cache awal)
+        let fidJenis = <?= (int) ($data->fid_jenis_belanja ?? 0) ?>;
+        if (fidJenis > 0) {
+            $.post('<?= base_url("app/programs/getJenis") ?>', { q: '' }, function(rows) {
+                let match = (rows || []).find(r => r.id == fidJenis);
+                if (match) {
+                    $jenis.append(new Option(match.text, fidJenis, true, true));
+                }
+                $jenis.val(fidJenis).trigger('change.select2');
+            }, 'json');
+        }
 
         $('select[name="kegiatan"]').on("change", function() {
             let id = $(this).val();

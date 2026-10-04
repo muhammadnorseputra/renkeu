@@ -1,5 +1,7 @@
     <!-- Bootstrap -->
     <script src="<?php echo base_url('template/backend/vendors/bootstrap/dist/js/bootstrap.bundle.min.js') ?>"></script>
+    <!-- CountUp.js -->
+    <script src="https://cdn.jsdelivr.net/npm/countup.js@2.10.1/dist/countUp.umd.min.js"></script>
     <!-- FastClick -->
     <script src="<?php echo base_url('template/backend/vendors/fastclick/lib/fastclick.js') ?>"></script>
     <!-- NProgress -->

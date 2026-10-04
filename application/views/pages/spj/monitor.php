@@ -108,18 +108,16 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
             <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
         </ul>
+        <div id="chartStatusToggle" class="navbar-right" style="margin-right: 10px; margin-top: 2px; float: right;">
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-primary active" data-status="cair"><i class="fa fa-check-circle mr-1"></i> CAIR</button>
+                <button type="button" class="btn btn-outline-primary" data-status="pending"><i class="fa fa-hourglass-half mr-1"></i> PENDING</button>
+                <button type="button" class="btn btn-outline-primary" data-status="usulan"><i class="fa fa-file-text-o mr-1"></i> USUL</button>
+            </div>
+        </div>
         <div class="clearfix"></div>
     </div>
     <div class="x_content">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-            <div id="chartStatusToggle">
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-primary active" data-status="cair"><i class="fa fa-check-circle mr-1"></i> CAIR</button>
-                    <button type="button" class="btn btn-outline-primary" data-status="pending"><i class="fa fa-hourglass-half mr-1"></i> PENDING</button>
-                    <button type="button" class="btn btn-outline-primary" data-status="usulan"><i class="fa fa-file-text-o mr-1"></i> USUL</button>
-                </div>
-            </div>
-        </div>
         <canvas id="chartBelanjaHarian" height="130" data-chart='<?php echo htmlspecialchars(json_encode($chartData ?? ['usulan' => [], 'pending' => [], 'cair' => []]), ENT_QUOTES) ?>'></canvas>
         <div id="chartSummary" class="row mt-3 text-center" style="display:none;">
             <div class="col-md-12">
@@ -374,6 +372,148 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
 
 <div class="x_panel">
     <div class="x_title">
+        <h2><i class="fa fa-line-chart mr-2"></i> Belanja Kelompok</h2>
+        <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <table class="table jambo_table bulk_action table-bordered">
+            <thead>
+                <tr>
+                    <th class="align-middle text-center">No</th>
+                    <th class="align-middle text-center">Nama Kelompok Belanja</th>
+                    <th class="align-middle text-center">Total Pagu</th>
+                    <th class="align-middle text-center">Total Realisasi</th>
+                    <th class="align-middle text-center">Sisa Anggaran</th>
+                    <th class="align-middle text-center">Capaian</th>
+                </tr>
+                <tr>
+                    <th class="align-middle text-center">1</th>
+                    <th class="align-middle text-center">2</th>
+                    <th class="align-middle text-center">3</th>
+                    <th class="align-middle text-center">4</th>
+                    <th class="align-middle text-center">5</th>
+                    <th class="align-middle text-center">6 (4/3) * 100%</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    $kelompok_ids = array_unique(array_merge(array_keys($paguKelompok ?? []), array_keys($realKelompok ?? [])));
+                    if (!empty($kelompok_ids)):
+                        $no = 1;
+                        $totalPaguKelompok = 0;
+                        $totalRealisasiKelompok = 0;
+                        foreach ($kelompok_ids as $kid):
+                            $namaKelompok = $paguKelompok[$kid]['nama'] ?? ($realKelompok[$kid]['nama'] ?? '-');
+                            $kodeKelompok = $paguKelompok[$kid]['kode'] ?? ($realKelompok[$kid]['kode'] ?? '');
+                            $paguKel = (float) ($paguKelompok[$kid]['total_pagu'] ?? 0);
+                            $realKel = (float) ($realKelompok[$kid]['total_realisasi'] ?? 0);
+                            $sisaKel = $paguKel - $realKel;
+                            $capaianKel = $paguKel > 0 ? ($realKel / $paguKel) * 100 : 0;
+                            $totalPaguKelompok += $paguKel;
+                            $totalRealisasiKelompok += $realKel;
+                ?>
+                        <tr>
+                            <td class="text-center"><?php echo $no++ ?></td>
+                            <td><small class="text-muted"><?php echo $kodeKelompok ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $kodeKelompok ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button><br><?php echo $namaKelompok ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($paguKel) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($realKel) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($sisaKel) ?></td>
+                            <td class="text-right"><?php echo number_format($capaianKel, 2) ?>%</td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($totalPaguKelompok) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($totalRealisasiKelompok) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($totalPaguKelompok - $totalRealisasiKelompok) ?></td>
+                        <td class="text-right font-weight-bold"><?php echo $totalPaguKelompok > 0 ? number_format(($totalRealisasiKelompok / $totalPaguKelompok) * 100, 2) : 0 ?>%</td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td class="text-center" colspan="6">Data tidak tersedia</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="x_panel">
+    <div class="x_title">
+        <h2><i class="fa fa-line-chart mr-2"></i> Belanja Jenis</h2>
+        <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <table class="table jambo_table bulk_action table-bordered">
+            <thead>
+                <tr>
+                    <th class="align-middle text-center">No</th>
+                    <th class="align-middle text-center">Nama Jenis Belanja</th>
+                    <th class="align-middle text-center">Total Pagu</th>
+                    <th class="align-middle text-center">Total Realisasi</th>
+                    <th class="align-middle text-center">Sisa Anggaran</th>
+                    <th class="align-middle text-center">Capaian</th>
+                </tr>
+                <tr>
+                    <th class="align-middle text-center">1</th>
+                    <th class="align-middle text-center">2</th>
+                    <th class="align-middle text-center">3</th>
+                    <th class="align-middle text-center">4</th>
+                    <th class="align-middle text-center">5</th>
+                    <th class="align-middle text-center">6 (4/3) * 100%</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                    $jenis_ids = array_unique(array_merge(array_keys($paguJenis ?? []), array_keys($realJenis ?? [])));
+                    if (!empty($jenis_ids)):
+                        $no = 1;
+                        $totalPaguJenis = 0;
+                        $totalRealisasiJenis = 0;
+                        foreach ($jenis_ids as $jid):
+                            $namaJenis = $paguJenis[$jid]['nama'] ?? ($realJenis[$jid]['nama'] ?? '-');
+                            $kodeJenis = $paguJenis[$jid]['kode'] ?? ($realJenis[$jid]['kode'] ?? '');
+                            $paguJen = (float) ($paguJenis[$jid]['total_pagu'] ?? 0);
+                            $realJen = (float) ($realJenis[$jid]['total_realisasi'] ?? 0);
+                            $sisaJen = $paguJen - $realJen;
+                            $capaianJen = $paguJen > 0 ? ($realJen / $paguJen) * 100 : 0;
+                            $totalPaguJenis += $paguJen;
+                            $totalRealisasiJenis += $realJen;
+                ?>
+                        <tr>
+                            <td class="text-center"><?php echo $no++ ?></td>
+                            <td><small class="text-muted"><?php echo $kodeJenis ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $kodeJenis ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button><br><?php echo $namaJenis ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($paguJen) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($realJen) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($sisaJen) ?></td>
+                            <td class="text-right"><?php echo number_format($capaianJen, 2) ?>%</td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($totalPaguJenis) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($totalRealisasiJenis) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($totalPaguJenis - $totalRealisasiJenis) ?></td>
+                        <td class="text-right font-weight-bold"><?php echo $totalPaguJenis > 0 ? number_format(($totalRealisasiJenis / $totalPaguJenis) * 100, 2) : 0 ?>%</td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td class="text-center" colspan="6">Data tidak tersedia</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="x_panel">
+    <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Uraian</h2>
         <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
             <li><a href="<?php echo base_url('app/spj/monitor_pdf/uraian' . $qs_filter) ?>" target="_blank" title="Cetak PDF"><i class="fa fa-file-pdf-o text-danger"></i></a></li>
@@ -418,7 +558,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                     ?>
                         <tr>
                             <td class="text-center"><?php echo $no++ ?></td>
-                            <td><small class="text-muted"><?php echo $uraian->kode ?></small><br><?php echo $uraian->nama ?></td>
+                            <td><small class="text-muted"><?php echo $uraian->kode ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $uraian->kode ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button><br><?php echo $uraian->nama ?></td>
                             <td class="text-right">Rp. <?php echo nominal($paguUraian) ?></td>
                             <td class="text-right">Rp. <?php echo nominal($realisasiUraian) ?></td>
                             <td class="text-right">Rp. <?php echo nominal($sisaUraian) ?></td>
@@ -494,7 +634,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                     ?>
                         <tr>
                             <td class="text-center"><?php echo $no++ ?></td>
-                            <td><?php echo $program->nama ?></td>
+                            <td><small class="text-muted"><?php echo $program->kode ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $program->kode ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button><br><?php echo $program->nama ?></td>
                             <td>Rp. <?php echo nominal($paguProgram) ?></td>
                             <td class="text-right">Rp. <?php echo nominal($realisasiProgram) ?></td>
                             <td class="text-right">Rp. <?php echo nominal($sisaAnggaran) ?></td>
@@ -572,7 +712,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                     ?>
                         <tr>
                             <td class="text-center"><?php echo $no++ ?></td>
-                            <td><?php echo $kegiatan->nama ?></td>
+                            <td><small class="text-muted"><?php echo $kegiatan->kode ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $kegiatan->kode ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button><br><?php echo $kegiatan->nama ?></td>
                             <td class="text-right">Rp. <?php echo nominal($paguKegiatan) ?></td>
                             <td class="text-right">
                                 Rp. <?php echo nominal($realisasiKegiatan) ?>
@@ -650,7 +790,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                     ?>
                         <tr>
                             <td class="text-center"><?php echo $no++ ?></td>
-                            <td><?php echo $sub_kegiatan->nama ?></td>
+                            <td><small class="text-muted"><?php echo $sub_kegiatan->kode ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $sub_kegiatan->kode ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button><br><?php echo $sub_kegiatan->nama ?></td>
                             <td class="text-right">
                                 Rp. <?php echo nominal($paguSubKegiatan) ?>
                             </td>
@@ -668,7 +808,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                                 ?>
                             </td>
                         </tr>
-                    <?php endforeach; ?>`
+                    <?php endforeach; ?>
                     <tr>
                         <td colspan="2" class="text-center font-weight-bold">Total</td>
                         <td class="text-right font-weight-bold">Rp. <?php echo nominal($totalPaguSubKegiatan) ?></td>

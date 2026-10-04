@@ -85,30 +85,84 @@ class Dashboard extends CI_Controller
             $spj_count_cair[] = (int) $this->spj->getJumlahSpjByStatusCair($part->id, 'CAIR', $this->ta) ?? 0;
         endforeach;
 
-        $limit_anggaran = $this->spj->LimitTransaksiTriwulan($this->ta);
+        // --- Agregat Kelompok & Jenis Belanja ---
+        $is_perubahan = $this->session->userdata('is_perubahan');
+        $ta           = $this->ta;
 
-        // Horizontal Bar Top/Bottom 5 Program
-        $program_capaian = [];
-        foreach ($db_program->result() as $r):
-            $pagu_awal         = $this->target->getAlokasiPaguProgram($r->id, $this->session->userdata('is_perubahan'), $this->session->userdata('tahun_anggaran'))->row()->total_pagu_awal ?? 0;
-            $realisasi         = $this->realisasi->getRealisasiTahunProgram($r->kode, $this->ta) ?? 0;
-            $persen            = $pagu_awal > 0 ? round(($realisasi / $pagu_awal) * 100, 2) : 0;
-            $program_capaian[] = [
-                'kode'      => $r->kode,
-                'nama'      => $r->nama,
-                'pagu'      => $pagu_awal,
-                'realisasi' => $realisasi,
-                'persen'    => $persen,
-            ];
+        // PAGU per Kelompok (murni / perubahan mengikuti sesi login)
+        $pagu_kelompok = [];
+        $db_pagu_kel = $this->db->select('k.id, k.kode, k.nama, SUM(p.total_pagu_awal) as total')
+            ->from('ref_kelompok_belanja k')
+            ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($ta) . ' AND p.is_perubahan = ' . $this->db->escape($is_perubahan), 'left')
+            ->where('k.tahun', $ta)
+            ->group_by('k.id')
+            ->get();
+        foreach ($db_pagu_kel->result() as $row):
+            $pagu_kelompok[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_pagu' => (int) $row->total];
         endforeach;
-        // Sort by persen descending
-        usort($program_capaian, function ($a, $b) {
-            return $b['persen'] <=> $a['persen'];
-        });
-        $top5    = array_slice($program_capaian, 0, 5);
-        $bottom5 = array_slice(array_reverse($program_capaian), 0, 5);
-        $top5    = array_reverse($top5); // reverse for chart display (highest at top)
-        $bottom5 = array_reverse($bottom5);
+
+        // PAGU per Jenis (murni / perubahan mengikuti sesi login)
+        $pagu_jenis = [];
+        $db_pagu_j = $this->db->select('j.id, j.kode, j.nama, SUM(p.total_pagu_awal) as total')
+            ->from('ref_jenis_belanja j')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($ta) . ' AND p.is_perubahan = ' . $this->db->escape($is_perubahan), 'left')
+            ->where('j.tahun', $ta)
+            ->group_by('j.id')
+            ->get();
+        foreach ($db_pagu_j->result() as $row):
+            $pagu_jenis[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_pagu' => (int) $row->total];
+        endforeach;
+
+        // REALISASI per Kelompok (via spj_riwayat.kode_uraian -> ref_uraians.kode -> jenis -> kelompok)
+        $real_kelompok = [];
+        $db_rk = $this->db->select('k.id, k.nama, SUM(s.jumlah) as total')
+            ->from('ref_kelompok_belanja k')
+            ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('spj_riwayat s', "s.kode_uraian = u.kode AND s.is_status = 'APPROVE' AND s.tahun = " . $this->db->escape($ta))
+            ->where('k.tahun', $ta)
+            ->group_by('k.id')
+            ->get();
+        foreach ($db_rk->result() as $row):
+            $real_kelompok[$row->id] = ['nama' => $row->nama, 'total_realisasi' => $row->total ?? 0];
+        endforeach;
+
+        // REALISASI per Jenis
+        $real_jenis = [];
+        $db_rj = $this->db->select('j.id, j.nama, SUM(s.jumlah) as total')
+            ->from('ref_jenis_belanja j')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('spj_riwayat s', "s.kode_uraian = u.kode AND s.is_status = 'APPROVE' AND s.tahun = " . $this->db->escape($ta))
+            ->where('j.tahun', $ta)
+            ->group_by('j.id')
+            ->get();
+        foreach ($db_rj->result() as $row):
+            $real_jenis[$row->id] = ['nama' => $row->nama, 'total_realisasi' => $row->total ?? 0];
+        endforeach;
+
+        // Gabung pagu + realisasi jadi array siap chart
+        $kelompok_ids = array_unique(array_merge(array_keys($pagu_kelompok), array_keys($real_kelompok)));
+        $kelompok_chart = ['labels' => [], 'pagu' => [], 'realisasi' => []];
+        foreach ($kelompok_ids as $id):
+            $nama = $pagu_kelompok[$id]['nama'] ?? ($real_kelompok[$id]['nama'] ?? '-');
+            $kelompok_chart['labels'][]    = $nama;
+            $kelompok_chart['pagu'][]      = (int) ($pagu_kelompok[$id]['total_pagu'] ?? 0);
+            $kelompok_chart['realisasi'][] = (int) ($real_kelompok[$id]['total_realisasi'] ?? 0);
+        endforeach;
+
+        $jenis_ids = array_unique(array_merge(array_keys($pagu_jenis), array_keys($real_jenis)));
+        $jenis_chart = ['labels' => [], 'pagu' => [], 'realisasi' => []];
+        foreach ($jenis_ids as $id):
+            $nama = $pagu_jenis[$id]['nama'] ?? ($real_jenis[$id]['nama'] ?? '-');
+            $jenis_chart['labels'][]    = $nama;
+            $jenis_chart['pagu'][]      = (int) ($pagu_jenis[$id]['total_pagu'] ?? 0);
+            $jenis_chart['realisasi'][] = (int) ($real_jenis[$id]['total_realisasi'] ?? 0);
+        endforeach;
+
+        $limit_anggaran = $this->spj->LimitTransaksiTriwulan($this->ta);
 
         $data = [
             'title'        => 'Dashboard',
@@ -139,8 +193,8 @@ class Dashboard extends CI_Controller
                 'spj_count_tms'    => json_encode($spj_count_tms),
                 'spj_count_baru'   => json_encode($spj_count_baru),
                 'spj_count_cair'   => json_encode($spj_count_cair),
-                'top5_program'     => json_encode($top5),
-                'bottom5_program'  => json_encode($bottom5),
+                'kelompok_chart'   => json_encode($kelompok_chart),
+                'jenis_chart'      => json_encode($jenis_chart),
             ],
             'autoload_css' => [
                 'template/backend/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css',

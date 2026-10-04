@@ -1458,6 +1458,80 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
         $uraianPart = in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN']) ? null : $part;
         $uraians    = $this->spj->getUraianRekap($uraianPart, $filter_tanggal, $is_perubahan, $tahun_anggaran);
 
+        // Agregat Kelompok Belanja (pagu + realisasi), scope & filter sama spt tabel Uraian
+        $isAdminSpj   = in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN']);
+        $paguKelompok = [];
+        $db_pagu_kel = $this->db->select('k.id, k.kode, k.nama, SUM(p.total_pagu_awal) as total')
+            ->from('ref_kelompok_belanja k')
+            ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($tahun_anggaran) . ' AND p.is_perubahan = ' . $this->db->escape($is_perubahan), 'left')
+            ->where('k.tahun', $tahun_anggaran);
+        if (!$isAdminSpj) {
+            $db_pagu_kel->where('p.fid_part', $part);
+        }
+        $db_pagu_kel->group_by('k.id');
+        foreach ($db_pagu_kel->get()->result() as $row):
+            $paguKelompok[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_pagu' => (int) $row->total];
+        endforeach;
+
+        $db_rk = $this->db->select('k.id, k.kode, k.nama, SUM(s.jumlah) as total')
+            ->from('ref_kelompok_belanja k')
+            ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('spj s', 's.fid_uraian = u.id')
+            ->where('s.is_status', 'SELESAI')
+            ->where('s.tahun', $tahun_anggaran)
+            ->where('k.tahun', $tahun_anggaran);
+        if (!$isAdminSpj) {
+            $db_rk->where('s.fid_part', $part);
+        }
+        if ($filter_tanggal !== null) {
+            $tgl    = explode(' - ', $filter_tanggal);
+            $tglAwal = DateTime::createFromFormat('d/m/Y', $tgl[0])->format('Y-m-d');
+            $tglAkhir = DateTime::createFromFormat('d/m/Y', $tgl[1])->format('Y-m-d');
+            $db_rk->where('DATE(s.approve_at) >=', $tglAwal);
+            $db_rk->where('DATE(s.approve_at) <=', $tglAkhir);
+        }
+        $realKelompok = [];
+        foreach ($db_rk->group_by('k.id')->get()->result() as $row):
+            $realKelompok[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_realisasi' => (float) ($row->total ?? 0)];
+        endforeach;
+
+        // Agregat Jenis Belanja (pagu + realisasi)
+        $db_pagu_jen = $this->db->select('j.id, j.kode, j.nama, SUM(p.total_pagu_awal) as total')
+            ->from('ref_jenis_belanja j')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($tahun_anggaran) . ' AND p.is_perubahan = ' . $this->db->escape($is_perubahan), 'left')
+            ->where('j.tahun', $tahun_anggaran);
+        if (!$isAdminSpj) {
+            $db_pagu_jen->where('p.fid_part', $part);
+        }
+        $db_pagu_jen->group_by('j.id');
+        $paguJenis = [];
+        foreach ($db_pagu_jen->get()->result() as $row):
+            $paguJenis[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_pagu' => (int) $row->total];
+        endforeach;
+
+        $db_rj = $this->db->select('j.id, j.kode, j.nama, SUM(s.jumlah) as total')
+            ->from('ref_jenis_belanja j')
+            ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
+            ->join('spj s', 's.fid_uraian = u.id')
+            ->where('s.is_status', 'SELESAI')
+            ->where('s.tahun', $tahun_anggaran)
+            ->where('j.tahun', $tahun_anggaran);
+        if (!$isAdminSpj) {
+            $db_rj->where('s.fid_part', $part);
+        }
+        if ($filter_tanggal !== null) {
+            $db_rj->where('DATE(s.approve_at) >=', $tglAwal);
+            $db_rj->where('DATE(s.approve_at) <=', $tglAkhir);
+        }
+        $realJenis = [];
+        foreach ($db_rj->group_by('j.id')->get()->result() as $row):
+            $realJenis[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_realisasi' => (float) ($row->total ?? 0)];
+        endforeach;
+
         $data = [
             'title'          => 'Monitor SPJ (Surat Pertanggung Jawaban)',
             'content'        => 'pages/spj/monitor',
@@ -1470,6 +1544,10 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
             'kegiatans'      => $listkegiatan,
             'sub_kegiatans'  => $listsubkegiatan,
             'uraians'        => $uraians,
+            'paguKelompok'   => $paguKelompok,
+            'realKelompok'   => $realKelompok,
+            'paguJenis'      => $paguJenis,
+            'realJenis'      => $realJenis,
             'chartData'      => $chartData,
             'autoload_js'    => [
                 'template/backend/vendors/moment/min/moment.min.js',

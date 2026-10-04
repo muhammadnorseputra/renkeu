@@ -2,5 +2,13 @@
 	"editor.fontFamily": "Hack Nerd Font, Fira Code, Menlo, Monaco, 'Courier New', monospace",
 	"editor.inlayHints.fontFamily": "Hack Nerd Font, Fira Code",
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"editor.wordWrap": "on"
+	"editor.wordWrap": "on",
+	"chat.mcp.serverSampling": {
+		"emonev/.vscode/mcp.json: io.github.bytebase/dbhub": {
+			"allowedModels": [
+				"copilotcli/auto",
+				"copilot/auto"
+			]
+		}
+	}
 }

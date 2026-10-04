@@ -12,7 +12,7 @@
             <h3>Target </h3>
             <p>Target Pagu Anggaran.</p>
             <hr>
-            <div class="count">Rp. <?php echo nominal($panel['program_total_pagu']) ?></div>
+            <div class="count">Rp. <span class="countup" data-value="<?php echo (float) $panel['program_total_pagu'] ?>">0</span></div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -21,7 +21,7 @@
             <h3>Realisasi </h3>
             <p>Realisasi Pagu Anggaran.</p>
             <hr>
-            <div class="count">Rp. <?php echo nominal($panel['program_total_realisasi']) ?></div>
+            <div class="count">Rp. <span class="countup" data-value="<?php echo (float) $panel['program_total_realisasi'] ?>">0</span></div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -30,7 +30,7 @@
             <h3>Pegawai </h3>
             <p>Jumlah Pegawai Mapping.</p>
             <hr>
-            <div class="count"><?php echo $panel['jumlah_pegawai'] ?> pegawai</div>
+            <div class="count"><span class="countup" data-value="<?php echo (float) $panel['jumlah_pegawai'] ?>">0</span> pegawai</div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -69,10 +69,15 @@
                 </div>
             </div>
             <div class="x_title">
-                <h2>Trend Realisasi </h2>
-                <!-- <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                </ul> -->
+                <h2 class="d-inline-block mb-0">Trend Realisasi </h2>
+                <div id="chartStatusToggle" class="d-inline-block ml-3">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-warning" data-status="baru"><i class="fa fa-file-text-o mr-1"></i> BARU</button>
+                        <button type="button" class="btn btn-outline-primary" data-status="ms"><i class="fa fa-check-circle mr-1"></i> MS</button>
+                        <button type="button" class="btn btn-outline-danger" data-status="tms"><i class="fa fa-close mr-1"></i> TMS</button>
+                        <button type="button" class="btn btn-outline-success active" data-status="cair"><i class="fa fa-money mr-1"></i> CAIR</button>
+                    </div>
+                </div>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
@@ -92,7 +97,7 @@
                                 }
                             ?>
                             <span>TOTAL TRIWULAN I</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
                             <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
@@ -110,7 +115,7 @@
                                 }
                             ?>
                             <span>TOTAL TRIWULAN II</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
                             <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
@@ -128,7 +133,7 @@
                                 }
                             ?>
                             <span>TOTAL TRIWULAN III</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
                             <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
@@ -146,7 +151,7 @@
                                 }
                             ?>
                             <span>TOTAL TRIWULAN IV</span>
-                            <h2>Rp. <?php echo @nominal($tw_jumlah); ?></h2>
+                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
                             <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
@@ -211,12 +216,12 @@
     </div>
 </div>
 
-<!-- Top/Bottom 5 Program Capaian -->
-<div class="row" id="tour_chart_program_capaian">
+<!-- Kelompok & Jenis Belanja -->
+<div class="row" id="tour_chart_belanja">
     <div class="col-md-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Top/Bottom 5 Program Capaian Anggaran</h2>
+                <h2>Kelompok Belanja & Jenis Belanja</h2>
                 <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                 </ul>
@@ -225,12 +230,12 @@
             <div class="x_content">
                 <div class="row">
                     <div class="col-md-6">
-                        <h5 class="text-success">Top 5 Tertinggi</h5>
-                        <canvas id="chartTop5Program" height="250"></canvas>
+                        <h5 class="text-center">Jenis Belanja (Pagu vs Realisasi)</h5>
+                        <canvas id="chartJenisBelanja" height="250"></canvas>
                     </div>
                     <div class="col-md-6">
-                        <h5 class="text-danger">Bottom 5 Terendah</h5>
-                        <canvas id="chartBottom5Program" height="250"></canvas>
+                        <h5 class="text-center">Kelompok Belanja (Pagu vs Realisasi)</h5>
+                        <canvas id="chartKelompokBelanja" height="250"></canvas>
                     </div>
                 </div>
             </div>
@@ -284,6 +289,26 @@
 </div>
 <script>
 $(function() {
+    // CountUp animation for numeric values (rupiah, pegawai, %)
+    document.querySelectorAll('.countup').forEach(function(el) {
+        var target = parseFloat(el.getAttribute('data-value')) || 0;
+        var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+        var fmt = new Intl.NumberFormat('id-ID', {
+            minimumFractionDigits: decimals,
+            maximumFractionDigits: decimals
+        });
+        var CountUpCls = (window.countUp && window.countUp.CountUp) || window.CountUp;
+        if (!CountUpCls) return;
+        var anim = new CountUpCls(el, target, {
+            duration: 4.5,
+            decimals: decimals,
+            separator: '.',
+            decimal: ',',
+            formattingFn: function(n) { return fmt.format(n); }
+        });
+        if (!anim.error) anim.start();
+    });
+
     let SPJMS = {
         label: "Realisasi SPJ MS",
         data: <?php echo $chart['spj_ms'] ?>,
@@ -442,7 +467,34 @@ $(function() {
         shadowSize: 0
     };
 
-    $.plot($("#chart_transaksi"), [SPJBARU, SPJMS, SPJTMS, SPJCAIR], options);
+    // Status toggle for SPJ chart
+    var statusMeta = {
+        baru: { label: "Realisasi SPJ Baru", color: "#f59e0b", fill: "rgba(245, 158, 11, 0.10)", data: SPJBARU.data },
+        ms:   { label: "Realisasi SPJ MS",   color: "#1e40af", fill: "rgba(30, 64, 175, 0.10)", data: SPJMS.data },
+        tms:  { label: "Realisasi SPJ TMS",  color: "#ef4444", fill: "rgba(239, 68, 68, 0.10)", data: SPJTMS.data },
+        cair: { label: "Realisasi SPJ Cair", color: "#22c55e", fill: "rgba(34, 197, 94, 0.10)", data: SPJCAIR.data }
+    };
+
+    function buildSeries(status) {
+        var m = statusMeta[status];
+        return {
+            label: m.label,
+            data: m.data,
+            color: m.color,
+            lines: { fillColor: m.fill, lineWidth: 3 },
+            points: { fillColor: "#fff", lineWidth: 2, radius: 4 }
+        };
+    }
+
+    $.plot($("#chart_transaksi"), [buildSeries("cair")], options);
+
+    var toggleBtns = $("#chartStatusToggle button[data-status]");
+    toggleBtns.click(function() {
+        var status = $(this).data("status");
+        toggleBtns.removeClass("active");
+        $(this).addClass("active");
+        $.plot($("#chart_transaksi"), [buildSeries(status)], options);
+    });
 
     // Pie Charts
     var DataPieParts = {
@@ -590,102 +642,116 @@ $(function() {
 
     new Chart($(".barChart"), config);
 
-    // Top 5 Program Capaian
-    const top5Data = {
-        labels: <?php echo $chart['top5_program'] ? json_encode(array_column(json_decode($chart['top5_program'], true), 'nama')) : json_encode([]) ?>,
-        datasets: [{
-            label: 'Capaian (%)',
-            data: <?php echo $chart['top5_program'] ? json_encode(array_column(json_decode($chart['top5_program'], true), 'persen')) : json_encode([]) ?>,
-            backgroundColor: 'rgba(40, 167, 69, 0.8)',
-            borderColor: 'rgb(40, 167, 69)',
-            borderWidth: 1
-        }]
-    };
-    new Chart(document.getElementById('chartTop5Program'), {
-        type: 'horizontalBar',
-        data: top5Data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y',
-            scales: {
-                xAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        max: 100,
-                        callback: function(value) {
-                            return value + '%';
-                        }
-                    }
-                }]
+    // ---- Kelompok Belanja (Pie) & Jenis Belanja (Bar) ----
+    const kelompok = <?php echo $chart['kelompok_chart'] ?>;
+    const jenis = <?php echo $chart['jenis_chart'] ?>;
+    const rp = v => "Rp. " + Number(v || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    const persen = (p, r) => p > 0 ? ((r / p) * 100).toFixed(1) + "%" : "0%";
+
+    // Tooltip: nama + pagu + realisasi + persentase capaian (Chart.js v2.1 API: mode "single")
+    const tooltip = (labels, pagu, realisasi) => ({
+        mode: "single",
+        callbacks: {
+            title: items => {
+                if (!items || items.length === 0) return '';
+                const i = items[0].index;
+                return i >= 0 && i < (labels ? labels.length : 0) ? labels[i] : '';
             },
-            legend: {
-                display: false
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const idx = context.dataIndex;
-                            const prog =
-                                <?php echo $chart['top5_program'] ? json_encode(json_decode($chart['top5_program'], true)) : json_encode([]) ?>;
-                            if (!prog[idx]) return '';
-                            return prog[idx].nama + ': ' + prog[idx].persen + '% (Rp ' + prog[idx]
-                                .realisasi.toLocaleString() + ' / ' + prog[idx].pagu
-                                .toLocaleString() + ')';
-                        }
-                    }
-                }
+            label: (item, data) => {
+                if (!data || !data.datasets) return '';
+                const i = item.index;
+                const p = i >= 0 && i < (pagu ? pagu.length : 0) ? (Number(pagu[i]) || 0) : 0;
+                const r = i >= 0 && i < (realisasi ? realisasi.length : 0) ? (Number(realisasi[i]) || 0) : 0;
+                return [
+                    "Total Pagu: " + rp(p),
+                    "Total Realisasi: " + rp(r),
+                    "Persentase Capaian: " + persen(p, r)
+                ];
             }
         }
     });
 
-    // Bottom 5 Program Capaian
-    const bottom5Data = {
-        labels: <?php echo $chart['bottom5_program'] ? json_encode(array_column(json_decode($chart['bottom5_program'], true), 'nama')) : json_encode([]) ?>,
-        datasets: [{
-            label: 'Capaian (%)',
-            data: <?php echo $chart['bottom5_program'] ? json_encode(array_column(json_decode($chart['bottom5_program'], true), 'persen')) : json_encode([]) ?>,
-            backgroundColor: 'rgba(220, 53, 69, 0.8)',
-            borderColor: 'rgb(220, 53, 69)',
-            borderWidth: 1
-        }]
-    };
-    new Chart(document.getElementById('chartBottom5Program'), {
-        type: 'horizontalBar',
-        data: bottom5Data,
+    // Warna per kelompok: hue dari hash nama (stabil tiap reload, otomatis beda untuk kelompok baru)
+    const hashHue = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h % 360; };
+    const pieColors = { pagu: [], real: [] };
+    for (let i = 0; i < kelompok.labels.length; i++) {
+        const h = hashHue((kelompok.labels[i] || "").trim() + i);
+        pieColors.pagu.push(`hsl(${h}, 55%, 42%)`);
+        pieColors.real.push(`hsl(${h}, 55%, 66%)`);
+    }
+
+    // Pie chart untuk pagu vs realisasi per kelompok belanja
+    const pieKelompok = new Chart(document.getElementById("chartKelompokBelanja"), {
+        type: "pie",
+        data: {
+            labels: kelompok.labels,
+            datasets: [
+                {
+                    label: "Pagu",
+                    data: kelompok.pagu,
+                    backgroundColor: pieColors.pagu,
+                    borderColor: "#fff",
+                    borderWidth: 1
+                },
+                {
+                    label: "Realisasi",
+                    data: kelompok.realisasi,
+                    backgroundColor: pieColors.real,
+                    borderColor: "#fff",
+                    borderWidth: 1
+                }
+            ]
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            indexAxis: 'y',
+            tooltips: tooltip(kelompok.labels, kelompok.pagu, kelompok.realisasi),
+            legend: {
+                display: true,
+                position: "top",
+                labels: { padding: 15, fontColor: "#666" }
+            }
+        }
+    });
+
+    // Bar chart untuk pagu vs realisasi per jenis belanja
+    const barJenis = new Chart(document.getElementById("chartJenisBelanja"), {
+        type: "bar",
+        data: {
+            labels: jenis.labels,
+            datasets: [
+                {
+                    label: "Pagu",
+                    data: jenis.pagu,
+                    backgroundColor: "rgba(69, 92, 115, 0.7)",
+                    borderColor: "#455C73",
+                    borderWidth: 1
+                },
+                {
+                    label: "Realisasi",
+                    data: jenis.realisasi,
+                    backgroundColor: "rgba(38, 185, 154, 0.7)",
+                    borderColor: "#26B99A",
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
-                xAxes: [{
+                yAxes: [{
                     ticks: {
                         beginAtZero: true,
-                        max: 100,
-                        callback: function(value) {
-                            return value + '%';
-                        }
+                        callback: value => rp(value)
                     }
                 }]
             },
+            tooltips: tooltip(jenis.labels, jenis.pagu, jenis.realisasi),
             legend: {
-                display: false
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const idx = context.dataIndex;
-                            const prog =
-                                <?php echo $chart['bottom5_program'] ? json_encode(json_decode($chart['bottom5_program'], true)) : json_encode([]) ?>;
-                            if (!prog[idx]) return '';
-                            return prog[idx].nama + ': ' + prog[idx].persen + '% (Rp ' + prog[idx]
-                                .realisasi.toLocaleString() + ' / ' + prog[idx].pagu
-                                .toLocaleString() + ')';
-                        }
-                    }
-                }
+                display: true,
+                position: "top",
+                labels: { padding: 15, fontColor: "#666" }
             }
         }
     });

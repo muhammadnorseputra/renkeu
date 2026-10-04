@@ -1,6 +1,37 @@
 <div class="container body">
 
   <div class="header sticky-top">
+    <div id="app-update-banner" class="alert alert-warning border-0 mb-0 rounded-0" role="alert" style="display:none;">
+      <i class="fa fa-refresh"></i> Ada perubahan baru di <strong>middle-dev</strong>. <span id="app-update-sha" class="badge badge-dark"></span>
+      <button id="btn-app-update" type="button" class="btn btn-sm btn-primary ml-2">Update Sekarang</button>
+    </div>
+    <script>
+    (function () {
+      var REPO = 'muhammadnorseputra/renkeu', BRANCH = 'middle-dev', KEY = 'emonev_deploy_sha_' + BRANCH, latest = null;
+      var banner = document.getElementById('app-update-banner'), btn = document.getElementById('btn-app-update'), shaEl = document.getElementById('app-update-sha');
+      function check() {
+        fetch('https://api.github.com/repos/' + REPO + '/commits/' + BRANCH + '?per_page=1', { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+          .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+          .then(function (d) {
+            latest = d.sha || d.commit && d.commit.sha;
+            if (!latest) return;
+            var saved = localStorage.getItem(KEY);
+            if (!saved) { localStorage.setItem(KEY, latest); return; }
+            if (saved !== latest) { shaEl.textContent = latest.slice(0, 7); banner.style.display = 'block'; }
+          })
+          .catch(function () {});
+      }
+      btn.addEventListener('click', function () {
+        btn.disabled = true; btn.textContent = 'Memperbarui...';
+        var done = function () { try { localStorage.setItem(KEY, latest || ''); } catch (e) {} location.reload(); };
+        if ('caches' in window) { caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); }).then(done, done); }
+        else { done(); }
+      });
+      check();
+      setInterval(check, 5 * 60 * 1000);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); });
+    })();
+    </script>
     <?php $this->load->view('notify/notif_global'); ?>
   </div>
 

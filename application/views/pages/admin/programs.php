@@ -203,6 +203,26 @@
                 $tujuan_sasaran           = '';
             }
 
+            if (urldecode($tab) === '#kelompok') {
+                $kelompok           = 'active';
+                $is_active_kelompok = true;
+                $is_show_kelompok   = "show";
+            } else {
+                $is_show_kelompok   = "";
+                $is_active_kelompok = false;
+                $kelompok           = '';
+            }
+
+            if (urldecode($tab) === '#jenis') {
+                $jenis           = 'active';
+                $is_active_jenis = true;
+                $is_show_jenis   = "show";
+            } else {
+                $is_show_jenis   = "";
+                $is_active_jenis = false;
+                $jenis           = '';
+            }
+
             if (urldecode($tab) === '#part') {
                 $part           = 'active';
                 $is_active_part = true;
@@ -279,7 +299,6 @@
                     aria-controls="tujuan_sasaran" aria-selected="<?php echo $is_active_tujuan_sasaran ?>"><span
                         class="fa fa-book mr-2"></span> Tujuan & Sasaran</a>
             </li>
-
             <?php endif; ?>
             <li class="nav-item mr-2">
                 <a class="nav-link pb-4 font-weight-bold <?php echo $program ?>" title="Program & Kegiatan"
@@ -299,6 +318,20 @@
                     aria-controls="subkegiatan" aria-selected="<?php echo $is_active_subkegiatan ?>"><span
                         class="fa fa-file-o mr-2 text-success"></span> Sub Kegiatan</a>
             </li>
+            <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'): ?>
+            <li class="nav-item mr-2">
+                <a class="nav-link pb-4 font-weight-bold <?php echo $kelompok ?>" title="Kelompok"
+                    style="font-size:16px;" id="kelompok-tab" data-toggle="tab" href="#kelompok" role="tab"
+                    aria-controls="kelompok" aria-selected="<?php echo $is_active_kelompok ?>"><span
+                        class="fa fa-folder-open mr-2"></span> Kelompok</a>
+            </li>
+            <li class="nav-item mr-2">
+                <a class="nav-link pb-4 font-weight-bold <?php echo $jenis ?>" title="Jenis"
+                    style="font-size:16px;" id="jenis-tab" data-toggle="tab" href="#jenis" role="tab"
+                    aria-controls="jenis" aria-selected="<?php echo $is_active_jenis ?>"><span
+                        class="fa fa-tags mr-2"></span> Jenis</a>
+            </li>
+            <?php endif; ?>
             <?php if (getSetting('ENTRI_URAIAN')): ?>
             <li class="nav-item mr-2">
                 <a class="nav-link pb-4 font-weight-bold <?php echo $uraian ?>" title="Uraian Kegiatan"
@@ -342,6 +375,16 @@
                         role="tabpanel" aria-labelledby="kegiatan-tab"></div>
                     <div class="tab-pane <?php echo $subkegiatan ?> <?php echo $is_show_subkegiatan ?>" id="subkegiatan"
                         role="tabpanel" aria-labelledby="subkegiatan-tab"></div>
+                    <?php if ($this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'): ?>
+                    <div class="tab-pane <?php echo $kelompok ?> <?php echo $is_show_kelompok ?>" id="kelompok"
+                        role="tabpanel" aria-labelledby="kelompok-tab">
+                        <div class="listKelompok"></div>
+                    </div>
+                    <div class="tab-pane <?php echo $jenis ?> <?php echo $is_show_jenis ?>" id="jenis"
+                        role="tabpanel" aria-labelledby="jenis-tab">
+                        <div class="listJenis"></div>
+                    </div>
+                    <?php endif; ?>
                     <div class="tab-pane <?php echo $uraian ?> <?php echo $is_show_uraian ?>" id="uraian"
                         role="tabpanel" aria-labelledby="uraian-tab"></div>
                     <div class="tab-pane <?php echo $limit ?> <?php echo $is_show_limit ?>" id="limit" role="tabpanel"
@@ -585,6 +628,134 @@
     </div>
 </div>
 
+<!-- Modal Tambah Kelompok -->
+<div class="modal fade modal-kelompok" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?php echo form_open(base_url('/app/programs/tambah/kelompok'), ['id' => 'formKelompok']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-info text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Tambah Kelompok Belanja</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="kelompok-kode">Kode Kelompok <span class="text-danger">*</span></label>
+                    <input type="text" name="kode" id="kelompok-kode" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="kelompok-nama">Isi Kelompok Belanja <span class="text-danger">*</span></label>
+                    <input type="text" name="kelompok" id="kelompok-nama" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?php echo form_close(); ?>
+    </div>
+</div>
+
+<!-- Modal Edit Kelompok -->
+<div class="modal fade modal-kelompok-edit" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?php echo form_open(base_url('/app/programs/update/ref_kelompok_belanja'), ['id' => 'formKelompokEdit', 'data-parsley-validate' => ''], ['id' => '']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Edit Kelompok Belanja</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="kelompok-kode-edit">Kode Kelompok <span class="text-danger">*</span></label>
+                    <input type="text" name="kode" id="kelompok-kode-edit" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="kelompok-nama-edit">Isi Kelompok Belanja <span class="text-danger">*</span></label>
+                    <input type="text" name="kelompok" id="kelompok-nama-edit" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?php echo form_close(); ?>
+    </div>
+</div>
+
+<!-- Modal Tambah Jenis -->
+<div class="modal fade modal-jenis" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?php echo form_open(base_url('/app/programs/tambah/jenis'), ['id' => 'formJenis']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-info text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Tambah Jenis Belanja</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="jenis-kelompok">Pilih Kelompok <span class="text-danger">*</span></label>
+                    <select name="kelompok" id="jenis-kelompok" required
+                        data-parsley-errors-container="#help-block-jenis-kelompok"></select>
+                    <div id="help-block-jenis-kelompok" class="help-block"></div>
+                </div>
+                <div class="form-group">
+                    <label for="jenis-kode">Kode Jenis <span class="text-danger">*</span></label>
+                    <input type="text" name="kode" id="jenis-kode" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="jenis-nama">Isi Jenis Belanja <span class="text-danger">*</span></label>
+                    <input type="text" name="jenis" id="jenis-nama" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?php echo form_close(); ?>
+    </div>
+</div>
+
+<!-- Modal Edit Jenis -->
+<div class="modal fade modal-jenis-edit" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <?php echo form_open(base_url('/app/programs/update/ref_jenis_belanja'), ['id' => 'formJenisEdit', 'data-parsley-validate' => ''], ['id' => '']); ?>
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-success text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabel">Edit Jenis Belanja</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="jenis-kelompok-edit">Pilih Kelompok <span class="text-danger">*</span></label>
+                    <select name="kelompok" id="jenis-kelompok-edit" required
+                        data-parsley-errors-container="#help-block-jenis-kelompok-edit"></select>
+                    <div id="help-block-jenis-kelompok-edit" class="help-block"></div>
+                </div>
+                <div class="form-group">
+                    <label for="jenis-kode-edit">Kode Jenis <span class="text-danger">*</span></label>
+                    <input type="text" name="kode" id="jenis-kode-edit" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="jenis-nama-edit">Isi Jenis Belanja <span class="text-danger">*</span></label>
+                    <input type="text" name="jenis" id="jenis-nama-edit" class="form-control" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success rounded-0"><i class="fa fa-save mr-2"></i>Simpan</button>
+            </div>
+
+        </div>
+        <?php echo form_close(); ?>
+    </div>
+</div>
+
 <!-- Modal Tambah Program -->
 <div class="modal fade modal-program" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -755,6 +926,12 @@
                     <select name="subkegiatan" id="subkegiatan" style="width:100%" required
                         data-parsley-errors-container="#help-block-subkegiatan"></select>
                     <div id="help-block-subkegiatan" class="help-block"></div>
+                </div>
+                <div class="form-group">
+                    <label for="jenis_belanja">Pilih Jenis Belanja <span class="text-danger">*</span></label>
+                    <select name="jenis_belanja" id="jenis_belanja" style="width:100%" required
+                        data-parsley-errors-container="#help-block-jenis-belanja"></select>
+                    <div id="help-block-jenis-belanja" class="help-block"></div>
                 </div>
                 <div class="divider-dashed"></div>
                 <div class="form-group">
@@ -1021,7 +1198,88 @@
         <?php echo form_close(); ?>
     </div>
 </div>
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal fade modal-hapus" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content border-0 shadow-lg rounded-lg">
+            <div class="modal-body p-5 text-center position-relative">
+                <button type="button" class="close position-absolute" style="top:15px;right:20px;" data-dismiss="modal" aria-label="Tutup">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle bg-danger" style="width:90px;height:90px;box-shadow:0 8px 20px rgba(220,53,69,.4);">
+                    <i class="fa fa-trash fa-2x text-white"></i>
+                </div>
+                <h4 class="font-weight-bold text-dark mb-2">Hapus Data?</h4>
+                <p class="text-muted mb-1" id="hapus-message">Apakah anda yakin akan menghapus data tersebut ?</p>
+                <small class="text-danger"><i class="fa fa-info-circle mr-1"></i>Data yang dihapus tidak dapat dikembalikan</small>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4 pt-0 d-flex">
+                <button type="button" class="btn btn-light border flex-fill py-2 font-weight-bold" data-dismiss="modal">
+                    <i class="fa fa-close mr-2"></i>Batal
+                </button>
+                <button type="button" class="btn btn-danger flex-fill py-2 font-weight-bold" id="btn-confirm-hapus" style="box-shadow:0 4px 12px rgba(220,53,69,.4);">
+                    <i class="fa fa-trash mr-2"></i>Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detail Uraian Jenis Belanja -->
+<div class="modal fade modal-uraian-jenis" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-0">
+            <div class="modal-header bg-info text-white rounded-0">
+                <h4 class="modal-title" id="myModalLabelDetailUraian">Detail Uraian Jenis Belanja</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="detail-uraian-jenis-loading" class="text-center py-5">
+                    <i class="fa fa-spinner fa-pulse fa-3x text-primary"></i>
+                </div>
+                <div id="detail-uraian-jenis-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+$(function() {
+    async function loadUraianJenis(id, namaJenis) {
+        $('#detail-uraian-jenis-loading').show();
+        $('#detail-uraian-jenis-content').empty().hide();
+        $('#myModalLabelDetailUraian').text(`Detail Uraian - ${namaJenis}`);
+        try {
+            const req = await fetch(`${_uri}/app/programs/uraian_by_jenis?id=${id}`);
+            const res = await req.json();
+            $('#detail-uraian-jenis-loading').hide();
+            if (res.code === 200) {
+                $('#detail-uraian-jenis-content').html(res.result).show();
+            } else {
+                $('#detail-uraian-jenis-content').html(`<div class="alert alert-danger mb-0">${res.msg}</div>`).show();
+            }
+        } catch (e) {
+            $('#detail-uraian-jenis-loading').hide();
+            $('#detail-uraian-jenis-content').html(`<div class="alert alert-danger mb-0">Gagal memuat data uraian</div>`).show();
+        }
+    }
+
+    window.DetailUraian = function(id, namaJenis) {
+        loadUraianJenis(id, namaJenis);
+        $('.modal-uraian-jenis').modal('show');
+    };
+
+    $(document).on('click', '.btn-detail-uraian', function() {
+        const id = $(this).data('id');
+        const nama = $(this).data('nama');
+        DetailUraian(id, nama);
+    });
+});
+
 $(function() {
     async function getListTujuan() {
         const req = await fetch(`${_uri}/app/programs/tujuan`);
@@ -1031,6 +1289,18 @@ $(function() {
 
     async function getListSasaran() {
         const req = await fetch(`${_uri}/app/programs/sasaran`);
+        const res = await req.json();
+        return res;
+    }
+
+    async function getListKelompok() {
+        const req = await fetch(`${_uri}/app/programs/kelompok`);
+        const res = await req.json();
+        return res;
+    }
+
+    async function getListJenis() {
+        const req = await fetch(`${_uri}/app/programs/jenis`);
         const res = await req.json();
         return res;
     }
@@ -1077,7 +1347,7 @@ $(function() {
         return res;
     }
     // Initial load
-    $('.listTujuan,.listSasaran,.listPart,#kegiatan,#subkegiatan,#uraian,#program,#limit').html(
+    $('.listTujuan,.listSasaran,.listKelompok,.listJenis,.listPart,#kegiatan,#subkegiatan,#uraian,#program,#limit').html(
         `<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`
     );
     // Get Tab Active
@@ -1194,6 +1464,36 @@ $(function() {
             $('#listSasaran').data('listjs', sasaranList);
         });
 
+    } else if (tab_active === '#kelompok') {
+        getListKelompok().then((data) => {
+            if (data.code === 404) {
+                $('.listKelompok').html(
+                    `<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`
+                );
+                NProgress.done()
+                return false;
+            }
+            $('.listKelompok').html(data.result);
+            NProgress.done()
+            var kelompokList = new List('listKelompok', option);
+            $('#listKelompok').data('listjs', kelompokList);
+        });
+
+    } else if (tab_active === '#jenis') {
+        getListJenis().then((data) => {
+            if (data.code === 404) {
+                $('.listJenis').html(
+                    `<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`
+                );
+                NProgress.done()
+                return false;
+            }
+            $('.listJenis').html(data.result);
+            NProgress.done()
+            var jenisList = new List('listJenis', option);
+            $('#listJenis').data('listjs', jenisList);
+        });
+
     } else {
         getListProgram().then((data) => {
             if (data.code === 404) {
@@ -1244,6 +1544,52 @@ $(function() {
             NProgress.done()
             var sasaranList = new List('listSasaran', option);
             $('#listSasaran').data('listjs', sasaranList);
+        });
+    })
+
+    $(document).on("click", "#myTab a[href='#kelompok']", function(e) {
+        let _ = $(this),
+            href = _.attr('href');
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', href);
+        history.pushState({}, "", url);
+        NProgress.start();
+        document.title = _.attr('title');
+        getListKelompok().then((data) => {
+            if (data.code === 404) {
+                $('.listKelompok').html(
+                    `<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`
+                );
+                NProgress.done()
+                return false;
+            }
+            $('.listKelompok').html(data.result);
+            NProgress.done()
+            var kelompokList = new List('listKelompok', option);
+            $('#listKelompok').data('listjs', kelompokList);
+        });
+    })
+
+    $(document).on("click", "#myTab a[href='#jenis']", function(e) {
+        let _ = $(this),
+            href = _.attr('href');
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', href);
+        history.pushState({}, "", url);
+        document.title = _.attr('title');
+        NProgress.start();
+        getListJenis().then((data) => {
+            if (data.code === 404) {
+                $('.listJenis').html(
+                    `<div class="text-center my-5"><span class="fa fa-folder-open mb-4" style="font-size: 64px"></span> <br> ${data.result} <div class="clearfix"></div><br> "${data.msg}"</div>`
+                );
+                NProgress.done()
+                return false;
+            }
+            $('.listJenis').html(data.result);
+            NProgress.done()
+            var jenisList = new List('listJenis', option);
+            $('#listJenis').data('listjs', jenisList);
         });
     })
 
@@ -1473,6 +1819,18 @@ $(function() {
     var MODAL_SASARAN_EDIT = $(".modal-sasaran-edit"),
         FORM_SASARAN_EDIT = MODAL_SASARAN_EDIT.find("form#formSasaranEdit");
 
+    var MODAL_KELOMPOK = $(".modal-kelompok"),
+        FORM_KELOMPOK = MODAL_KELOMPOK.find("form#formKelompok");
+
+    var MODAL_KELOMPOK_EDIT = $(".modal-kelompok-edit"),
+        FORM_KELOMPOK_EDIT = MODAL_KELOMPOK_EDIT.find("form#formKelompokEdit");
+
+    var MODAL_JENIS = $(".modal-jenis"),
+        FORM_JENIS = MODAL_JENIS.find("form#formJenis");
+
+    var MODAL_JENIS_EDIT = $(".modal-jenis-edit"),
+        FORM_JENIS_EDIT = MODAL_JENIS_EDIT.find("form#formJenisEdit");
+
     var MODAL_PART = $(".modal-part"),
         FORM_PART = MODAL_PART.find("form#formPart");
 
@@ -1561,6 +1919,56 @@ $(function() {
                 };
             }
             // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+        }
+    });
+
+    // select Kelompok Belanja (modal Jenis Tambah)
+    $('#jenis-kelompok').select2({
+        placeholder: 'Pilih Kelompok',
+        allowClear: true,
+        width: "100%",
+        dropdownParent: MODAL_JENIS,
+        ajax: {
+            delay: 250,
+            method: 'post',
+            url: '<?php echo base_url("app/programs/getKelompok") ?>',
+            dataType: 'json',
+            data: function(params) {
+                return {
+                    q: params.term, // search term
+                };
+            },
+            cache: true,
+            processResults: function(data) {
+                return {
+                    results: data
+                };
+            }
+        }
+    });
+
+    // select Kelompok Belanja (modal Jenis Edit)
+    $('#jenis-kelompok-edit').select2({
+        placeholder: 'Pilih Kelompok',
+        allowClear: true,
+        width: "100%",
+        dropdownParent: MODAL_JENIS_EDIT,
+        ajax: {
+            delay: 250,
+            method: 'post',
+            url: '<?php echo base_url("app/programs/getKelompok") ?>',
+            dataType: 'json',
+            data: function(params) {
+                return {
+                    q: params.term, // search term
+                };
+            },
+            cache: true,
+            processResults: function(data) {
+                return {
+                    results: data
+                };
+            }
         }
     });
 
@@ -1750,6 +2158,31 @@ $(function() {
         });
     });
 
+    // select jenis belanja (modal Uraian)
+    $('select[name="jenis_belanja"]').select2({
+        placeholder: 'Pilih Jenis Belanja',
+        allowClear: true,
+        width: "100%",
+        dropdownParent: MODAL_URAIAN,
+        ajax: {
+            delay: 350,
+            method: 'post',
+            url: '<?php echo base_url("app/programs/getJenis") ?>',
+            dataType: 'json',
+            data: function(params) {
+                return {
+                    q: params.term, // search term
+                };
+            },
+            cache: true,
+            processResults: function(data) {
+                return {
+                    results: data
+                };
+            }
+        }
+    });
+
     // select uraian
     $('select[name="uraian"]').select2({
         placeholder: 'Cari Uraian',
@@ -1838,7 +2271,11 @@ $(function() {
 
             },
             error: function(err) {
-                return alert(err.responseText)
+                $.notify(err.responseText, {
+                    timer: 2000,
+                    delay: 100,
+                    type: "danger"
+                });
             }
         })
         // reset form after change uraian
@@ -1935,6 +2372,26 @@ $(function() {
         FORM_SASARAN.parsley().reset();
     })
 
+    MODAL_KELOMPOK.on('hidden.bs.modal', function(e) {
+        FORM_KELOMPOK[0].reset();
+        FORM_KELOMPOK.parsley().reset();
+    })
+
+    MODAL_KELOMPOK_EDIT.on('hidden.bs.modal', function(e) {
+        FORM_KELOMPOK_EDIT[0].reset();
+        FORM_KELOMPOK_EDIT.parsley().reset();
+    })
+
+    MODAL_JENIS.on('hidden.bs.modal', function(e) {
+        FORM_JENIS[0].reset();
+        FORM_JENIS.parsley().reset();
+    })
+
+    MODAL_JENIS_EDIT.on('hidden.bs.modal', function(e) {
+        FORM_JENIS_EDIT[0].reset();
+        FORM_JENIS_EDIT.parsley().reset();
+    })
+
     MODAL_PART.on('hidden.bs.modal', function(e) {
         FORM_PART[0].reset();
         FORM_PART.parsley().reset();
@@ -1966,6 +2423,7 @@ $(function() {
         // Scope ke modal uraian: id "kegiatan"/"subkegiatan" dipakai juga modal lain
         MODAL_URAIAN.find('select[name="kegiatan"]').val('').trigger('change');
         MODAL_URAIAN.find('select[name="subkegiatan"]').val('').trigger('change');
+        MODAL_URAIAN.find('select[name="jenis_belanja"]').val('').trigger('change');
     })
 
     MODAL_LIMIT.on('hidden.bs.modal', function(e) {
@@ -2016,7 +2474,8 @@ $(function() {
             }, 'json');
         } catch (err) {
             $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-            return alert(err);
+            $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
         }
         return false;
     });
@@ -2036,7 +2495,8 @@ $(function() {
             }, 'json');
         } catch (err) {
             $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-            return alert(err);
+            $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
         }
         return false;
     });
@@ -2056,7 +2516,8 @@ $(function() {
             }, 'json');
         } catch (err) {
             $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-            return alert(err);
+            $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
         }
         return false;
     });
@@ -2074,11 +2535,13 @@ $(function() {
                     return window.location.reload();
                 }
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(response.message);
+                $.notify(response.message, {timer: 2000, delay: 100, type: "danger"});
+                return;
             }, 'json');
         } catch (err) {
             $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-            return alert(err);
+            $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
         }
         return false;
     });
@@ -2096,11 +2559,13 @@ $(function() {
                     return window.location.reload();
                 }
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(response.message);
+                $.notify(response.message, {timer: 2000, delay: 100, type: "danger"});
+                return;
             }, 'json');
         } catch (err) {
             $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-            return alert(err);
+            $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
         }
         return false;
     });
@@ -2241,22 +2706,22 @@ $(function() {
                 dataType: "json",
                 success: function(response) {
                     if (response.status) {
-                        alert(response.message);
+                        $.notify(response.message, {timer: 2000, delay: 100, type: "danger"});
                         return window.location.reload();
                     }
                     $button.prop("disabled", false).html(
                         '<i class="fa fa-save mr-2"></i>Submit Rekonsiliasi');
-                    alert(response.message);
+                    $.notify(response.message, {timer: 2000, delay: 100, type: "danger"});
                 },
                 error: function(xhr, status, error) {
                     $button.prop("disabled", false).html(
                         '<i class="fa fa-save mr-2"></i>Submit Rekonsiliasi');
-                    alert("Terjadi kesalahan: " + error);
+                    $.notify("Terjadi kesalahan: " + error, {timer: 2000, delay: 100, type: "danger"});
                 }
             });
         } catch (err) {
             $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Submit Rekonsiliasi');
-            alert("Error: " + err);
+            $.notify("Error: " + err, {timer: 2000, delay: 100, type: "danger"});
         }
 
         return false;
@@ -2279,7 +2744,8 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2301,7 +2767,112 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
+            }
+        }
+        return false;
+    });
+
+    FORM_KELOMPOK.parsley();
+    FORM_KELOMPOK.on("submit", function(e) {
+        e.preventDefault();
+        $url = $(this).attr('action');
+        $data = FORM_KELOMPOK.serialize();
+        $button = $(this).find('button[type="submit"]');
+        if (FORM_KELOMPOK.parsley().isValid()) {
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    } else {
+                        $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                        $.notify('Gagal menyimpan. Kode kelompok mungkin sudah digunakan.', {timer: 2000, delay: 100, type: "danger"});
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
+            }
+        }
+        return false;
+    });
+
+    FORM_KELOMPOK_EDIT.parsley();
+    FORM_KELOMPOK_EDIT.on("submit", function(e) {
+        e.preventDefault();
+        $url = $(this).attr('action');
+        $data = FORM_KELOMPOK_EDIT.serialize();
+        $button = $(this).find('button[type="submit"]');
+        if (FORM_KELOMPOK_EDIT.parsley().isValid()) {
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    } else {
+                        $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                        $.notify('Gagal menyimpan. Kode kelompok mungkin sudah digunakan.', {timer: 2000, delay: 100, type: "danger"});
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
+            }
+        }
+        return false;
+    });
+
+    FORM_JENIS.parsley();
+    FORM_JENIS.on("submit", function(e) {
+        e.preventDefault();
+        $url = $(this).attr('action');
+        $data = FORM_JENIS.serialize();
+        $button = $(this).find('button[type="submit"]');
+        if (FORM_JENIS.parsley().isValid()) {
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    } else {
+                        $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                        $.notify('Gagal menyimpan. Kode jenis mungkin sudah digunakan.', {timer: 2000, delay: 100, type: "danger"});
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
+            }
+        }
+        return false;
+    });
+
+    FORM_JENIS_EDIT.parsley();
+    FORM_JENIS_EDIT.on("submit", function(e) {
+        e.preventDefault();
+        $url = $(this).attr('action');
+        $data = FORM_JENIS_EDIT.serialize();
+        $button = $(this).find('button[type="submit"]');
+        if (FORM_JENIS_EDIT.parsley().isValid()) {
+            $button.html("processing ...").prop("disabled", true);
+            try {
+                $.post($url, $data, (response) => {
+                    if (response === 200) {
+                        window.location.reload();
+                    } else {
+                        $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                        $.notify('Gagal menyimpan. Kode jenis mungkin sudah digunakan.', {timer: 2000, delay: 100, type: "danger"});
+                    }
+                }, 'json');
+            } catch (err) {
+                $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2323,7 +2894,8 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2347,7 +2919,8 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2368,7 +2941,8 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2389,7 +2963,8 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2411,7 +2986,8 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2432,7 +3008,8 @@ $(function() {
                 }, 'json');
             } catch (err) {
                 $button.prop("disabled", false).html('<i class="fa fa-save mr-2"></i>Simpan');
-                return alert(err);
+                $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
             }
         }
         return false;
@@ -2526,7 +3103,8 @@ function InputPagu(id, url, paguAwal, is_perubahan, paguMurni) {
                     }, 'json');
                 } catch (err) {
                     $button.html('<i class="fa fa-save mr-2"></i>Simpan').prop("disabled", false);
-                    return alert(err);
+                    $.notify(err, {timer: 2000, delay: 100, type: "danger"});
+            return;
                 }
             }
         })
@@ -2598,19 +3176,75 @@ function Edit(id, url, target) {
         return false;
     }
 
+    if (target === '.modal-kelompok-edit') {
+        let _ = $(target);
+        _.modal('show');
+        $.getJSON(url, {
+            id: id
+        }, (res) => {
+            _.find('input[name="kode"]').val(res.kode);
+            _.find('input[name="kelompok"]').val(res.nama);
+            _.find('input[name="id"]').val(res.id);
+        });
+        return false;
+    }
+
+    if (target === '.modal-jenis-edit') {
+        let _ = $(target);
+        let $kelompok = _.find('#jenis-kelompok-edit');
+        _.modal('show');
+        $.getJSON(url, {
+            id: id
+        }, (res) => {
+            // select2 ajax tidak punya opsi terpilih -> label kelompok diambil dari daftar kelompok (q kosong)
+            $.post('<?php echo base_url("app/programs/getKelompok") ?>', { q: '' }, (rows) => {
+                $kelompok.empty().append('<option value=""></option>');
+                const match = (rows || []).find(r => r.id == res.fid_kelompok_belanja);
+                if (match) {
+                    $kelompok.append(new Option(match.text, res.fid_kelompok_belanja, true, true));
+                }
+                $kelompok.val(res.fid_kelompok_belanja).trigger('change.select2');
+            }, 'json');
+            _.find('input[name="kode"]').val(res.kode);
+            _.find('input[name="jenis"]').val(res.nama);
+            _.find('input[name="id"]').val(res.id);
+        });
+        return false;
+    }
+
     // console.log(input)
 }
 
 function Hapus(id, url, label = 'DATA') {
-    let text = `Apakah anda yakin akan menghapus ${label} tersebut ?`;
-    if (confirm(text)) {
+    $('#hapus-message').text(`Apakah anda yakin akan menghapus ${label} tersebut ?`);
+    const $modal = $('.modal-hapus').modal('show');
+    $modal.off('click.hapus').on('click.hapus', '#btn-confirm-hapus', function() {
+        $modal.off('click.hapus').modal('hide');
         $.post(url, {
             id: id
         }, (res) => {
             window.location.reload();
         }, 'json')
-    }
+    });
 }
+
+// salin kode ke clipboard + feedback ikon check
+$(document).on('click', '.copy-code', function() {
+    const btn = $(this),
+        txt = btn.data('copy') + '';
+    const done = function() {
+        btn.find('i').removeClass('fa-copy').addClass('fa-check');
+        setTimeout(() => btn.find('i').removeClass('fa-check').addClass('fa-copy'), 1200);
+    };
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(txt).then(done);
+    } else {
+        const $t = $('<textarea>').val(txt).appendTo('body').select();
+        document.execCommand('copy');
+        $t.remove();
+        done();
+    }
+});
 
 $(document).on('change', '.toggle-is-aktif', async function() {
     const $checkbox = $(this);
@@ -2648,13 +3282,13 @@ $(document).on('change', '.toggle-is-aktif', async function() {
         if (res && res.status) {
             $label.attr('title', is_aktif === 'Y' ? 'Aktif' : 'Tidak Aktif');
         } else {
-            alert(res && res.message ? res.message : 'Gagal mengubah status');
+            $.notify(res && res.message ? res.message : 'Gagal mengubah status', {timer: 2000, delay: 100, type: "danger"});
             $checkbox.prop('checked', is_aktif !== 'Y');
         }
     } catch (error) {
         console.error('Error toggling is_aktif:', error);
         $checkbox.prop('checked', is_aktif !== 'Y');
-        alert('Terjadi kesalahan koneksi saat memperbarui status.');
+        $.notify('Terjadi kesalahan koneksi saat memperbarui status.', {timer: 2000, delay: 100, type: "danger"});
     } finally {
         // Hentikan efek loading & aktifkan kembali input
         $checkbox.prop('disabled', false);

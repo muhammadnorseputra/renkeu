@@ -306,19 +306,21 @@ class Export extends CI_Controller
     public function uraian()
     {
         if ($this->session->userdata('role') === 'VERIFICATOR' || $this->session->userdata('role') === 'ADMIN' || $this->session->userdata('role') === 'SUPER_ADMIN'):
-            $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_sub_kegiatan,u.kode,u.nama,u.tahun,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, keg.fid_part, part.nama AS nama_part, u.is_aktif, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
+            $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_sub_kegiatan,u.fid_jenis_belanja,u.kode,u.nama,u.tahun,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, keg.fid_part, part.nama AS nama_part, u.is_aktif, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan, j.nama AS nama_jenis')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
                 ->join('ref_parts AS part', 'keg.fid_part=part.id', 'inner')
+                ->join('ref_jenis_belanja AS j', 'u.fid_jenis_belanja=j.id', 'left')
                 ->where('u.tahun', $this->tahun_anggaran)
                 ->get('ref_uraians AS u');
         else:
-            $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_sub_kegiatan,u.kode,u.nama,u.tahun,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, keg.fid_part, part.nama AS nama_part, u.is_aktif, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan')
+            $db = $this->db->select('u.id,u.fid_kegiatan,u.fid_sub_kegiatan,u.fid_jenis_belanja,u.kode,u.nama,u.tahun,keg.kode AS kode_kegiatan,keg.nama AS nama_kegiatan, keg.fid_part, part.nama AS nama_part, u.is_aktif, sub.kode AS kode_sub_kegiatan,sub.nama AS nama_sub_kegiatan, j.nama AS nama_jenis')
                 ->order_by('u.kode', 'asc')
                 ->join('ref_kegiatans AS keg', 'u.fid_kegiatan=keg.id', 'inner')
                 ->join('ref_sub_kegiatans AS sub', 'u.fid_sub_kegiatan=sub.id', 'inner')
                 ->join('ref_parts AS part', 'keg.fid_part=part.id', 'inner')
+                ->join('ref_jenis_belanja AS j', 'u.fid_jenis_belanja=j.id', 'left')
                 ->where('keg.fid_part', $this->part)
                 ->where('u.tahun', $this->tahun_anggaran)
                 ->get('ref_uraians AS u');
@@ -335,14 +337,16 @@ class Export extends CI_Controller
         $sheet->setCellValue('H1', 'NAMA_SUB_KEGIATAN');
         $sheet->setCellValue('I1', 'KODE');
         $sheet->setCellValue('J1', 'NAMA');
-        $sheet->setCellValue('K1', 'TOTAL_PAGU_AWAL');
-        $sheet->setCellValue('L1', 'TOTAL_PAGU_PERUBAHAN');
-        $sheet->setCellValue('M1', 'SELISIH');
-        $sheet->setCellValue('N1', 'TAHUN');
+        $sheet->setCellValue('K1', 'FID_JENIS_BELANJA');
+        $sheet->setCellValue('L1', 'NAMA_JENIS');
+        $sheet->setCellValue('M1', 'TOTAL_PAGU_AWAL');
+        $sheet->setCellValue('N1', 'TOTAL_PAGU_PERUBAHAN');
+        $sheet->setCellValue('O1', 'SELISIH');
+        $sheet->setCellValue('P1', 'TAHUN');
 
         // options
         $sheet->getDefaultColumnDimension()->setAutoSize(true);
-        $sheet->getStyle('A1:N1')->applyFromArray([
+        $sheet->getStyle('A1:P1')->applyFromArray([
             'font' => [
                 'bold'  => true,
                 'color' => ['argb' => 'FFFFFFFF'],
@@ -353,8 +357,8 @@ class Export extends CI_Controller
             ],
         ]);
         // header kontras khusus pagu
-        $sheet->getStyle('K1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF2E75B6']]]);
-        $sheet->getStyle('L1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFED7D31']]]);
+        $sheet->getStyle('M1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF2E75B6']]]);
+        $sheet->getStyle('N1')->applyFromArray(['fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFED7D31']]]);
 
         $protection = $sheet->getProtection();
         $allowed    = $protection->verify(date('d-m-Y'));
@@ -388,11 +392,13 @@ class Export extends CI_Controller
             $sheet->setCellValue('H' . $col, $row->nama_sub_kegiatan);
             $sheet->setCellValueExplicit('I' . $col, $row->kode, DataType::TYPE_STRING);
             $sheet->setCellValue('J' . $col, $row->nama);
-            $sheet->setCellValueExplicit('K' . $col, nominal($totalPaguAwal), DataType::TYPE_STRING2);
-            $sheet->setCellValueExplicit('L' . $col, nominal($totalPaguPerubahan), DataType::TYPE_STRING2);
-            $sheet->setCellValueExplicit('M' . $col, ($selisih > 0 ? '+' : '') . nominal($selisih), DataType::TYPE_STRING2);
+            $sheet->setCellValue('K' . $col, $row->fid_jenis_belanja);
+            $sheet->setCellValue('L' . $col, $row->nama_jenis);
+            $sheet->setCellValueExplicit('M' . $col, nominal($totalPaguAwal), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('N' . $col, nominal($totalPaguPerubahan), DataType::TYPE_STRING2);
+            $sheet->setCellValueExplicit('O' . $col, ($selisih > 0 ? '+' : '') . nominal($selisih), DataType::TYPE_STRING2);
             if ($selisih != 0): // 0 netral, tanpa warna
-                $sheet->getStyle('M' . $col)->applyFromArray([
+                $sheet->getStyle('O' . $col)->applyFromArray([
                     'font' => [
                         'bold'  => true,
                         'color' => ['argb' => $selisih > 0 ? 'FF006100' : 'FF9C0006'],
@@ -403,18 +409,18 @@ class Export extends CI_Controller
                     ],
                 ]);
             endif;
-            $sheet->setCellValue('N' . $col, $row->tahun);
+            $sheet->setCellValue('P' . $col, $row->tahun);
             $col++;
         endforeach;
 
         // warna kontras untuk kolom pagu
-        $sheet->getStyle('K2:K' . ($col - 1))->applyFromArray([
+        $sheet->getStyle('M2:M' . ($col - 1))->applyFromArray([
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
                 'startColor' => ['argb' => 'FFDDEBF7'], // biru muda
             ],
         ]);
-        $sheet->getStyle('L2:L' . ($col - 1))->applyFromArray([
+        $sheet->getStyle('N2:N' . ($col - 1))->applyFromArray([
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
                 'startColor' => ['argb' => 'FFFCE4D6'], // oranye muda
