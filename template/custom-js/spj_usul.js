@@ -389,9 +389,9 @@ $("select#uraian_kegiatan").on("change", async function (e) {
 		if (seq !== uslReqSeq) return; // ada pilih lebih baru → abaikan
 
 		$formStep.find("#loadKegiatan").removeClass("usl-hier--empty").html(`
-						<div class="usl-hier-item"><span class="usl-hier-dot d0"></span><i class="fa fa-file-code-o" aria-hidden="true"></i><span>${res.nama_kegiatan}</span></div>
-						<div class="usl-hier-item"><span class="usl-hier-dot d1"></span><i class="fa fa-file-code-o" aria-hidden="true"></i><span>${res.nama_subkegiatan}</span></div>
-						<div class="usl-hier-item usl-hier-item--uraian"><span class="usl-hier-dot d2"></span><i class="fa fa-check-circle" aria-hidden="true"></i><span>${res.nama_uraian}</span></div>
+						<div class="usl-hier-item"><i class="fa fa-file-code-o" aria-hidden="true"></i><span><b>${res.kode_kegiatan}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_kegiatan}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_kegiatan} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_kegiatan}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
+						<div class="usl-hier-item"><i class="fa fa-file-code-o" aria-hidden="true"></i><span><b>${res.kode_subkegiatan}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_subkegiatan}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_subkegiatan} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_subkegiatan}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
+						<div class="usl-hier-item usl-hier-item--uraian"><i class="fa fa-check-circle" aria-hidden="true"></i><span><b>${res.kode_uraian}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_uraian}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_uraian} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_uraian}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
 						`);
 		$formStep.find('input[name="koderek"]').val(res.kode);
 		$formStep.find('input[name="ref_part"]').val(res.part_id);
@@ -441,6 +441,27 @@ $("select#uraian_kegiatan").on("change", async function (e) {
 		alert("Terjadi kesalahan: " + err.message);
 	} finally {
 		if (seq === uslReqSeq) _.prop("disabled", false);
+	}
+});
+
+// copy kode + nama hierarki ke clipboard (delegated: tombol dirender dinamis maupun PHP)
+$(document).on("click", ".copy-text", function (e) {
+	e.preventDefault();
+	const txt = this.getAttribute("data-copy") || "";
+	const done = () => {
+		const $i = $(this).find("i");
+		$i.addClass("fa-check text-success");
+		setTimeout(() => $i.removeClass("fa-check text-success").addClass("fa-copy"), 1200);
+	};
+	if (navigator.clipboard && navigator.clipboard.writeText) {
+		navigator.clipboard.writeText(txt).then(done).catch(() => {});
+	} else {
+		const ta = document.createElement("textarea");
+		ta.value = txt;
+		document.body.appendChild(ta);
+		ta.select();
+		try { document.execCommand("copy"); done(); } catch (err) {}
+		document.body.removeChild(ta);
 	}
 });
 

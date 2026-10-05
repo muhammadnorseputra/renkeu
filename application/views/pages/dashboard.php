@@ -424,7 +424,9 @@ $(function() {
             cssClass: "flotTip",
             show: true,
 
-            content: function(label, x, y) {
+            content: function(label, x, y, item) {
+                const ticks = item.series.xaxis.ticks;
+                const namaBulan = (ticks && ticks[item.dataIndex] && ticks[item.dataIndex].label) || x;
                 return `
                 <div style="
                     font-size: 12px;
@@ -432,6 +434,14 @@ $(function() {
                     margin-bottom: 4px;
                 ">
                     ${label}
+                </div>
+
+                <div style="
+                    font-size: 12px;
+                    font-weight: 500;
+                    margin-bottom: 4px;
+                ">
+                    ${namaBulan}
                 </div>
 
                 <div style="
