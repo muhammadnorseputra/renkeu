@@ -74,7 +74,7 @@
                                 $realisasi_ls = @$this->bukujaga->getRealisasiSPJByUraian($row->id, [
                                     'fid_uraian' => $row->fid_uraian,
                                     'tahun' => $ta,
-                                    'is_perubahan' => $is_perubahan,
+                                    // 'is_perubahan' => $is_perubahan,
                                     'is_realisasi' => 'LS',
                                     'is_status' => 'SELESAI'
                                 ]);
@@ -90,7 +90,7 @@
                                 $realisasi_not_ls = @$this->bukujaga->getRealisasiSPJByUraian($row->id, [
                                     'fid_uraian' => $row->fid_uraian,
                                     'tahun' => $ta,
-                                    'is_perubahan' => $is_perubahan,
+                                    // 'is_perubahan' => $is_perubahan,
                                     'is_realisasi !=' => 'LS',
                                     'is_status' => 'SELESAI'
                                 ]);
