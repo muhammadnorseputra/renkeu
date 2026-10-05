@@ -818,9 +818,9 @@ class Programs extends CI_Controller
         $html .= '<thead>
                     <tr>
                         <th class="text-center">No</th>
+                        <th>Jenis Belanja</th>
                         <th>Kode Rekening</th>
                         <th>Nama Kegiatan/Sub Kegiatan/Uraian</th>
-                        <th>Jenis Belanja</th>
                         <th>Total SPJ</th>
                         ' . $th_status_aktif . '
                         <th class="text-center" colspan="2">Ubah | Hapus</th>
@@ -922,18 +922,19 @@ class Programs extends CI_Controller
 						                <td class="text-center">
 						                    ' . $no . '
 						                </td>
+						                <td valign="middle">
+						                    ' . ($r->kode_jenis ? htmlspecialchars($r->kode_jenis) . ' - ' : '') . ($r->nama_jenis ? htmlspecialchars($r->nama_jenis) : '-') . '
+						                </td>
 						                <td>
 						                    ' . $r->kode_kegiatan . ' <br>
 						                    ' . $r->kode_sub_kegiatan . ' <br>
 						                    <b class="kode">' . $r->kode . '</b>
+						                    <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="' . htmlspecialchars($r->kode, ENT_QUOTES) . '" title="Salin kode rekening" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button>
 						                </td>
 						                <td valign="middle">
 						                    ' . ucwords($r->nama_kegiatan) . ' <br>
 						                    ' . ucwords($r->nama_sub_kegiatan) . ' <br>
 						                    <b class="nama">' . ucwords($r->nama) . '</b>
-						                </td>
-						                <td valign="middle">
-						                    ' . ($r->kode_jenis ? htmlspecialchars($r->kode_jenis) . ' - ' : '') . ($r->nama_jenis ? htmlspecialchars($r->nama_jenis) : '-') . '
 						                </td>
 						                <td class="text-center">' . $jmlSpj . '</td>
 						                ' . $switch_aktif . '

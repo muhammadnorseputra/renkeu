@@ -1,8 +1,8 @@
 <div class="container body">
 
   <div class="header sticky-top">
-    <div id="app-update-banner" class="alert alert-warning border-0 mb-0 rounded-0" role="alert" style="display:none;">
-      <i class="fa fa-refresh"></i> Ada perubahan baru di <strong>middle-dev</strong>. <span id="app-update-sha" class="badge badge-dark"></span>
+    <div id="app-update-banner" class="alert alert-info border-0 mb-0 rounded-0" role="alert" style="display:none;">
+      <i class="fa fa-refresh"></i> Terdapat pembaruan baru tersedia. Silahkan update aplikasi <span id="app-update-sha" class="badge badge-dark"></span>
       <button id="btn-app-update" type="button" class="btn btn-sm btn-primary ml-2">Update Sekarang</button>
     </div>
     <script>
