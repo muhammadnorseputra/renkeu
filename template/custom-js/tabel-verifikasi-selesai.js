@@ -94,8 +94,15 @@ var tableVerifikasiSpjSelesai = $("#table-spj-selesai").DataTable({
 	},
 });
 
-function Rollback(token) {
-	if (confirm("Yakin ingin rollback data SPJ ini?")) {
+async function Rollback(token) {
+	if (
+		await uiConfirm({
+			title: "Rollback SPJ?",
+			text: "Yakin ingin rollback data SPJ ini?",
+			variant: "danger",
+			ok: "Ya, Rollback",
+		})
+	) {
 		$.ajax({
 			url: `${_uri}/app/spj/rollback`,
 			type: "POST",

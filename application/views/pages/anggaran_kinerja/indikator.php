@@ -21,7 +21,7 @@
                                         <select name="periode" id="periode" class="form-control">
                                             <option value="">-- Pilih Periode --</option>
                                             <?php foreach (bulanIndo() as $key => $val): ?>
-                                                <option value="<?= $key; ?>"><?= $val; ?></option>
+                                                <option value="<?php echo $key; ?>"><?php echo $val; ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -31,7 +31,7 @@
                                         <label for="type">Filter Jenis</label>
                                         <select name="type" id="type" class="form-control">
                                             <option value="">-- Pilih Referensi --</option>
-                                            <?php if(in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])): ?>
+                                            <?php if (in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])): ?>
                                             <option value="Tujuan">- Tujuan</option>
                                             <option value="Sasaran">- Sasaran</option>
                                             <?php endif; ?>
@@ -213,7 +213,12 @@
             e.preventDefault();
             let $id = $(this).data('id');
             // ✅ Tambahkan konfirmasi sebelum submit
-            const isConfirmed = confirm("Apakah Anda yakin ingin menghapus indikator tersebut ?");
+            const isConfirmed = await uiConfirm({
+                title: "Hapus Indikator?",
+                text: "Apakah Anda yakin ingin menghapus indikator tersebut ?",
+                variant: "danger",
+                ok: "Ya, Hapus",
+            });
             if (!isConfirmed) return;
 
             // send

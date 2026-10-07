@@ -60,7 +60,7 @@ function uslAlert(msg, type) {
 			`<span class="usl-alert-txt">${msg}</span>` +
 			`<button type="button" class="usl-alert-x" aria-label="Tutup"><i class="fa fa-times"></i></button>` +
 			`<span class="usl-alert-bar"></span>` +
-		`</div>`
+			`</div>`,
 	);
 	$("body").append($el);
 	requestAnimationFrame(() => $el.addClass("usl-alert--in"));
@@ -82,7 +82,10 @@ function uslNextStep2(path) {
 		total = tablePenerimaManfaat.page.info().recordsTotal;
 	}
 	if (total < 1) {
-		uslAlert("Relasi Publik minimal 1 (satu) penerima manfaat. Silakan tambah data terlebih dahulu.", "warn");
+		uslAlert(
+			"Relasi Publik minimal 1 (satu) penerima manfaat. Silakan tambah data terlebih dahulu.",
+			"warn",
+		);
 		return false;
 	}
 	return nextStep(path);
@@ -97,7 +100,9 @@ $("form#form-step-1").on("submit", async function (e) {
 		$button = _.find('button[type="submit"]');
 
 	if (_.parsley().isValid()) {
-		$button.html('<i class="fa fa-circle-o-notch fa-spin mr-2"></i>processing ...').prop("disabled", true);
+		$button
+			.html('<i class="fa fa-circle-o-notch fa-spin mr-2"></i>processing ...')
+			.prop("disabled", true);
 
 		// tampilkan loader
 		$.blockUI({
@@ -160,7 +165,9 @@ $("form#form-step-3").on("submit", async function (e) {
 		$button = _.find('button[type="submit"]');
 
 	if (_.parsley().isValid()) {
-		$button.html('<i class="fa fa-circle-o-notch fa-spin mr-2"></i>processing ...').prop("disabled", true);
+		$button
+			.html('<i class="fa fa-circle-o-notch fa-spin mr-2"></i>processing ...')
+			.prop("disabled", true);
 
 		// tampilkan blockUI loader
 		$.blockUI({
@@ -215,21 +222,36 @@ $("form#form-step-3").on("submit", async function (e) {
 	}
 });
 
-
 function uslConfirm(o) {
 	return new Promise(function (resolve) {
 		var html =
 			'<div class="usl-confirm">' +
-			'<div class="usl-confirm__ico"><i class="fa ' + (o.icon || "fa-question-circle") + '"></i></div>' +
-			'<div class="usl-confirm__t">' + (o.title || "Konfirmasi") + "</div>" +
-			'<div class="usl-confirm__x">' + (o.text || "") + "</div>" +
+			'<div class="usl-confirm__ico"><i class="fa ' +
+			(o.icon || "fa-question-circle") +
+			'"></i></div>' +
+			'<div class="usl-confirm__t">' +
+			(o.title || "Konfirmasi") +
+			"</div>" +
+			'<div class="usl-confirm__x">' +
+			(o.text || "") +
+			"</div>" +
 			'<div class="usl-confirm__b">' +
-			'<button type="button" class="btn btn-light" data-c="0">' + (o.no || "Kembali") + "</button>" +
-			'<button type="button" class="btn btn-success" data-c="1">' + (o.ok || "Lanjutkan") + "</button>" +
+			'<button type="button" class="btn btn-light" data-c="0">' +
+			(o.no || "Kembali") +
+			"</button>" +
+			'<button type="button" class="btn btn-success" data-c="1">' +
+			(o.ok || "Lanjutkan") +
+			"</button>" +
 			"</div></div>";
 		$.blockUI({
 			message: html,
-			css: { border: "none", padding: "0", background: "transparent", cursor: "default", width: "auto" },
+			css: {
+				border: "none",
+				padding: "0",
+				background: "transparent",
+				cursor: "default",
+				width: "auto",
+			},
 			overlayCSS: { backgroundColor: "rgba(15,23,42,.72)", cursor: "pointer" },
 			onBlock: function () {
 				var $c = $(".usl-confirm");
@@ -247,9 +269,9 @@ function uslConfirm(o) {
 	});
 }
 
-$("form#form-step-4").on("submit", async function (e) { 
+$("form#form-step-4").on("submit", async function (e) {
 	e.preventDefault();
-	
+
 	let _ = $(this),
 		action = _.attr("action"),
 		data = _.serialize(),
@@ -264,7 +286,9 @@ $("form#form-step-4").on("submit", async function (e) {
 	});
 	if (!_ok) return false;
 
-	$button.html('<i class="fa fa-circle-o-notch fa-spin mr-2"></i>processing ...').prop("disabled", true);
+	$button
+		.html('<i class="fa fa-circle-o-notch fa-spin mr-2"></i>processing ...')
+		.prop("disabled", true);
 	// tampilkan blockUI loader
 	$.blockUI({
 		message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
@@ -358,7 +382,9 @@ $("select#uraian_kegiatan").on("change", async function (e) {
 	const $stat = $formStep.find("#jumlah_max, #sisa_max");
 
 	$("input[name='jumlah']").val("");
-	$formStep.find('select[name="periode"],select[name="tahun"]').prop("disabled", true);
+	$formStep
+		.find('select[name="periode"],select[name="tahun"]')
+		.prop("disabled", true);
 	_.prop("disabled", true);
 
 	// shimmer selama memuat hierarki + pagu
@@ -389,9 +415,9 @@ $("select#uraian_kegiatan").on("change", async function (e) {
 		if (seq !== uslReqSeq) return; // ada pilih lebih baru → abaikan
 
 		$formStep.find("#loadKegiatan").removeClass("usl-hier--empty").html(`
-						<div class="usl-hier-item"><i class="fa fa-file-code-o" aria-hidden="true"></i><span><b>${res.kode_kegiatan}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_kegiatan}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_kegiatan} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_kegiatan}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
-						<div class="usl-hier-item"><i class="fa fa-file-code-o" aria-hidden="true"></i><span><b>${res.kode_subkegiatan}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_subkegiatan}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_subkegiatan} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_subkegiatan}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
-						<div class="usl-hier-item usl-hier-item--uraian"><i class="fa fa-check-circle" aria-hidden="true"></i><span><b>${res.kode_uraian}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_uraian}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_uraian} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_uraian}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
+						<div class="usl-hier-item"><i class="fa fa-check-circle" aria-hidden="true"></i><span><b>${res.kode_kegiatan}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_kegiatan}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_kegiatan} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_kegiatan}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
+						<div class="usl-hier-item"><i class="fa fa-check-circle" aria-hidden="true"></i><span><b>${res.kode_subkegiatan}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_subkegiatan}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_subkegiatan} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_subkegiatan}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
+						<div class="usl-hier-item usl-hier-item"><i class="fa fa-check-circle" aria-hidden="true"></i><span><b>${res.kode_uraian}</b> <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.kode_uraian}" title="Copy kode"><i class="fa fa-copy"></i></button> &middot; ${res.nama_uraian} <button type="button" class="btn btn-xs btn-link p-0 ml-1 copy-text" data-copy="${res.nama_uraian}" title="Copy nama"><i class="fa fa-copy"></i></button></span></div>
 						`);
 		$formStep.find('input[name="koderek"]').val(res.kode);
 		$formStep.find('input[name="ref_part"]').val(res.part_id);
@@ -416,7 +442,9 @@ $("select#uraian_kegiatan").on("change", async function (e) {
 					res.pagu.total_sisa_pa,
 				)} <i class="text-danger fa fa-level-down"></i>`,
 			);
-		$formStep.find("#angkas").html("Rp. 0 <i class=\"text-danger fa fa-level-down\"></i>");
+		$formStep
+			.find("#angkas")
+			.html('Rp. 0 <i class="text-danger fa fa-level-down"></i>');
 		$("input[name='jumlah']").attr({
 			"data-start": res.pagu.total_sisa_pa,
 			"data-start-limit": 0,
@@ -451,16 +479,25 @@ $(document).on("click", ".copy-text", function (e) {
 	const done = () => {
 		const $i = $(this).find("i");
 		$i.addClass("fa-check text-success");
-		setTimeout(() => $i.removeClass("fa-check text-success").addClass("fa-copy"), 1200);
+		setTimeout(
+			() => $i.removeClass("fa-check text-success").addClass("fa-copy"),
+			1200,
+		);
 	};
 	if (navigator.clipboard && navigator.clipboard.writeText) {
-		navigator.clipboard.writeText(txt).then(done).catch(() => {});
+		navigator.clipboard
+			.writeText(txt)
+			.then(done)
+			.catch(() => {});
 	} else {
 		const ta = document.createElement("textarea");
 		ta.value = txt;
 		document.body.appendChild(ta);
 		ta.select();
-		try { document.execCommand("copy"); done(); } catch (err) {}
+		try {
+			document.execCommand("copy");
+			done();
+		} catch (err) {}
 		document.body.removeChild(ta);
 	}
 });
@@ -547,17 +584,21 @@ $(function () {
 	const $uraian = $("select[name='uraian_kegiatan']");
 
 	// backdrop blur di belakang kartu Kode Uraian Kegiatan
-	$uraian.on("select2:open", function () {
-		if (!$("#usl-select2-mask").length) {
-			$("<div>", { id: "usl-select2-mask" })
-				.appendTo("body")
-				.on("click", function () { $uraian.select2("close"); });
-		}
-		$uraian.closest(".usl-card").addClass("usl-card--focus");
-	}).on("select2:close", function () {
-		$("#usl-select2-mask").remove();
-		$uraian.closest(".usl-card").removeClass("usl-card--focus");
-	});
+	$uraian
+		.on("select2:open", function () {
+			if (!$("#usl-select2-mask").length) {
+				$("<div>", { id: "usl-select2-mask" })
+					.appendTo("body")
+					.on("click", function () {
+						$uraian.select2("close");
+					});
+			}
+			$uraian.closest(".usl-card").addClass("usl-card--focus");
+		})
+		.on("select2:close", function () {
+			$("#usl-select2-mask").remove();
+			$uraian.closest(".usl-card").removeClass("usl-card--focus");
+		});
 
 	$uraian.select2({
 		width: "100%",
@@ -601,9 +642,7 @@ $(function () {
 				}
 				$drop.find(".select2-results__options").append($skel);
 				const clear = () =>
-					$drop
-						.find(".select2-results__options .uraian-skel")
-						.remove();
+					$drop.find(".select2-results__options .uraian-skel").remove();
 				$.ajax(params)
 					.done(function (data) {
 						clear();
@@ -618,13 +657,9 @@ $(function () {
 		templateResult: function (res) {
 			if (!res.id) return res.text;
 			let $box = $("<div>", { class: "uraian-opt" });
-			$box.append(
-				$("<span>", { class: "uraian-no" }).text(res.no || ""),
-			);
+			$box.append($("<span>", { class: "uraian-no" }).text(res.no || ""));
 			let $body = $("<div>", { class: "uraian-body" });
-			$body.append(
-				$("<div>", { class: "uraian-title" }).text(res.text),
-			);
+			$body.append($("<div>", { class: "uraian-title" }).text(res.text));
 			let $steps = $("<div>", { class: "uraian-steps" });
 			$.each(res.levels || [], function (i, lv) {
 				$steps.append(
@@ -662,31 +697,31 @@ $(function () {
 
 	const MODAL_RELASI_PUBLIK = $("#tambah-data-users");
 
-// preview link eviden (step-3): tampil otomatis saat link http(s) valid
-const $link = $("textarea#link"),
-	$btnClear = $("#btnClearLink");
-function uslSyncPreview() {
-	const url = ($link.val() || "").trim();
-	const ok = /^https?:\/\/.+/i.test(url);
-	$btnClear.prop("disabled", !($link.val() || "").length);
-	if (ok) {
-		$("#uslPreviewOpenFoot").attr("href", url);
-		$("#uslPreviewUrl").text(url);
-		$("#uslPreviewBox").show();
-	} else {
-		$("#uslPreviewBox").hide();
+	// preview link eviden (step-3): tampil otomatis saat link http(s) valid
+	const $link = $("textarea#link"),
+		$btnClear = $("#btnClearLink");
+	function uslSyncPreview() {
+		const url = ($link.val() || "").trim();
+		const ok = /^https?:\/\/.+/i.test(url);
+		$btnClear.prop("disabled", !($link.val() || "").length);
+		if (ok) {
+			$("#uslPreviewOpenFoot").attr("href", url);
+			$("#uslPreviewUrl").text(url);
+			$("#uslPreviewBox").show();
+		} else {
+			$("#uslPreviewBox").hide();
+		}
 	}
-}
-$link.on("input", uslSyncPreview);
-uslSyncPreview();
-// Clear link
-$btnClear.on("click", function () {
-	$link.val("");
-	if ($link.parsley) $link.parsley().reset();
-	$("#uslPreviewBox").hide();
+	$link.on("input", uslSyncPreview);
 	uslSyncPreview();
-	$link.focus();
-});
+	// Clear link
+	$btnClear.on("click", function () {
+		$link.val("");
+		if ($link.parsley) $link.parsley().reset();
+		$("#uslPreviewBox").hide();
+		uslSyncPreview();
+		$link.focus();
+	});
 	const FORM_RELASI_PUBLIK = $("#formRelasiPublik");
 	MODAL_RELASI_PUBLIK.on("hidden.bs.modal", function (e) {
 		FORM_RELASI_PUBLIK[0].reset();

@@ -1,39 +1,6 @@
-/* ---------- UI helpers: modal Bootstrap + bootstrap-notify (library yang sudah ada) ---------- */
-function uiConfirm(msg, onYes, opts) {
-	opts = opts || {};
-	var id = "uiConfirmModal";
-	var $m = $("#" + id);
-	if (!$m.length) {
-		$m = $(
-			'<div class="modal fade" id="' + id + '" tabindex="-1" role="dialog" data-backdrop="static">' +
-				'<div class="modal-dialog modal-dialog-centered" role="document">' +
-					'<div class="modal-content">' +
-						'<div class="modal-header py-2">' +
-							'<h6 class="modal-title"><i class="fa fa-question-circle text-primary mr-1"></i><span class="ui-c-title"></span></h6>' +
-							'<button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>' +
-						'</div>' +
-						'<div class="modal-body py-3"><p class="mb-0 ui-c-msg"></p></div>' +
-						'<div class="modal-footer py-2">' +
-							'<button type="button" class="btn btn-light border btn-sm" data-dismiss="modal">Batal</button>' +
-							'<button type="button" class="btn btn-primary btn-sm ui-c-yes"></button>' +
-						'</div>' +
-					'</div>' +
-				'</div>' +
-			'</div>'
-		).appendTo("body");
-	}
-	$m.find(".ui-c-title").text(opts.title || "Konfirmasi");
-	$m.find(".ui-c-msg").text(msg);
-	$m.find(".ui-c-yes")
-		.removeClass("btn-primary btn-success")
-		.addClass(opts.yesClass || "btn-primary")
-		.text(opts.yes || "Ya, Proses");
-	$m.off("click.uiConfirm").on("click.uiConfirm", ".ui-c-yes", function () {
-		$m.modal("hide");
-		if (typeof onYes === "function") onYes();
-	});
-	$m.modal("show");
-}
+/* ---------- UI helpers ---------- */
+/* uiConfirm kini global: template/custom-js/ui-confirm.js (modal menarik).
+   Dipakai tetap callback: uiConfirm(msg, onYes, { title, yes, yesClass }). */
 
 function uiNotify(msg, type) {
 	$.notify(msg, { type: type || "info", timer: 3000 });
@@ -54,13 +21,13 @@ $(function () {
 			next: "fa fa-chevron-right",
 			today: "fa fa-calendar-check-o",
 			clear: "fa fa-trash",
-			close: "fa fa-times"
-		}
+			close: "fa fa-times",
+		},
 	});
 	$("form#formVerifikasi").on("submit", function (e) {
 		e.preventDefault();
 		let _button = $(this).find("button[type=submit]");
-		if (! _button.length) _button = $(".vrf-dock #vrfProses"); // tombol dock, tanpa submit bawaan
+		if (!_button.length) _button = $(".vrf-dock #vrfProses"); // tombol dock, tanpa submit bawaan
 		let _ = $(this),
 			action = _.attr("action"),
 			data = _.serialize(),
@@ -92,7 +59,7 @@ $(function () {
 								_button.html(_button.data("prev")).prop("disabled", false);
 							}
 						},
-						"json"
+						"json",
 					).fail(function () {
 						$.unblockUI();
 						_button.html(_button.data("prev")).prop("disabled", false);
@@ -104,7 +71,7 @@ $(function () {
 					uiNotify(String(error), "danger");
 				}
 			},
-			{ title: "Konfirmasi Verifikasi", yes: "Ya, Proses" }
+			{ title: "Konfirmasi Verifikasi", yes: "Ya, Proses" },
 		);
 		return false;
 	});
@@ -131,7 +98,7 @@ function Selesai(token) {
 							$.unblockUI();
 						}
 					},
-					"json"
+					"json",
 				).fail(function () {
 					$.unblockUI();
 					uiNotify("Koneksi gagal, silakan coba lagi.", "danger");
@@ -141,7 +108,11 @@ function Selesai(token) {
 				uiNotify(String(error), "danger");
 			}
 		},
-		{ title: "Selesaikan Usulan", yes: "Ya, Selesaikan", yesClass: "btn-success" }
+		{
+			title: "Selesaikan Usulan",
+			yes: "Ya, Selesaikan",
+			yesClass: "btn-success",
+		},
 	);
 	return false;
 }

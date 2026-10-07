@@ -118,7 +118,12 @@ async function ProsesApprover(btn) {
 
 async function BatalProsesApprover(btn) {
 	// ✅ Tambahkan konfirmasi sebelum submit
-	const isConfirmed = confirm("Apakah Anda yakin ingin membatalkan proses ?");
+	const isConfirmed = await uiConfirm({
+		title: "Batalkan Proses?",
+		text: "Apakah Anda yakin ingin membatalkan proses ?",
+		variant: "danger",
+		ok: "Ya, Batalkan",
+	});
 	if (!isConfirmed) return;
 
 	// Ambil data JSON dari atribut tombol
@@ -194,7 +199,12 @@ $("form#formApprover").on("submit", async function (e) {
 	if (!form.parsley().isValid()) return;
 
 	// ✅ Tambahkan konfirmasi sebelum submit
-	const isConfirmed = confirm("Apakah Anda yakin ingin menyimpan data ini?");
+	const isConfirmed = await uiConfirm({
+		title: "Simpan Data?",
+		text: "Apakah Anda yakin ingin menyimpan data ini?",
+		variant: "primary",
+		ok: "Ya, Simpan",
+	});
 	if (!isConfirmed) return;
 
 	try {
@@ -310,34 +320,31 @@ $("#filter_tanggal").daterangepicker({
 	},
 });
 
-$('#filter_tanggal').on(
-	"apply.daterangepicker",
-	function (ev, picker) {
-		$(this).val(
-			picker.startDate.format("DD/MM/YYYY") +
-				" - " +
-				picker.endDate.format("DD/MM/YYYY"),
-		);
-	},
-);
+$("#filter_tanggal").on("apply.daterangepicker", function (ev, picker) {
+	$(this).val(
+		picker.startDate.format("DD/MM/YYYY") +
+			" - " +
+			picker.endDate.format("DD/MM/YYYY"),
+	);
+});
 
-$('#filter_tanggal').on(
-	"cancel.daterangepicker",
-	function (ev, picker) {
-		$(this).val("");
-	},
-);
+$("#filter_tanggal").on("cancel.daterangepicker", function (ev, picker) {
+	$(this).val("");
+});
 
 function UnduhData() {
-	const filterStatus = FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || "";
-	const filterBidang = FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || "";
-	const filterTanggal = FILTER_FORM_PAYMENT.find("input[name='filter_tanggal']").val() || "";
+	const filterStatus =
+		FILTER_FORM_PAYMENT.find("select[name='filter_status']").val() || "";
+	const filterBidang =
+		FILTER_FORM_PAYMENT.find("select[name='filter_bidang']").val() || "";
+	const filterTanggal =
+		FILTER_FORM_PAYMENT.find("input[name='filter_tanggal']").val() || "";
 
 	const params = new URLSearchParams({
 		filter_status: filterStatus,
 		filter_bidang: filterBidang,
 		filter_tanggal: filterTanggal,
 	});
-	
+
 	window.open(`${_uri}/app/payment/export?${params.toString()}`, "_blank");
 }

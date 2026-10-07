@@ -1,1015 +1,1032 @@
-<?php if (! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (! defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 class ModelSpj extends CI_Model
 {
 
-	public function getPeriode()
-	{
-		$this->db->select('*');
-		$this->db->from('t_periode');
-		$q = $this->db->get();
-		return $q;
-	}
-	public function getPeriodeAktif()
-	{
-		$this->db->select('*');
-		$this->db->from('t_periode');
-		$this->db->where('is_open', 'Y');
-		$q = $this->db->get();
-		return $q;
-	}
-	public function getLastPeriode()
-	{
-		$this->db->select('*');
-		$this->db->from('t_periode');
-		$this->db->limit(1);
-		$this->db->order_by('id', 'asc');
-		$this->db->where('is_open', 'Y');
-		$q = $this->db->get();
-		return $q;
-	}
-	public function getIndikator()
-	{
-		return $this->db->select('id,nama')->from('ref_indikators')->order_by('id', 'asc')->get();
-	}
-	public function getIndikatorByToken($token)
-	{
-		$this->db->select('r.*');
-		$this->db->from('t_realisasi AS r');
-		$this->db->join('ref_indikators AS i', 'r.fid_indikator=i.id');
-		$this->db->join('spj', 'r.fid_token=spj.token');
-		$this->db->where('spj.token', $token);
-		$q = $this->db->get();
-		return $q;
-	}
-	public function inbox()
-	{
-		$this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan,uraian.nama AS nama_uraian, uraian.kode AS kode_uraian, p.id as periode_id');
-		$this->db->from('spj AS s');
-		$this->db->join('t_periode AS p', 's.fid_periode=p.id');
-		$this->db->join('ref_parts AS part', 's.fid_part=part.id');
-		$this->db->join('ref_programs AS program', 's.fid_program=program.id');
-		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
-		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
-		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
-		$this->db->where('s.entri_by_part', $this->session->userdata('part'));
-		$this->db->where('s.entri_by', $this->session->userdata('user_name'));
-		$this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
-		$this->db->where('s.is_status !=', 'SELESAI');
-		$this->db->where('s.is_status !=', 'SELESAI_TMS');
-		$this->db->where('s.is_status !=', 'SELESAI_BTL');
-		$this->db->order_by('s.id', 'desc');
-		$q = $this->db->get();
-		return $q;
-	}
+    public function getPeriode()
+    {
+        $this->db->select('*');
+        $this->db->from('t_periode');
+        $q = $this->db->get();
+        return $q;
+    }
+    public function getPeriodeAktif()
+    {
+        $this->db->select('*');
+        $this->db->from('t_periode');
+        $this->db->where('is_open', 'Y');
+        $q = $this->db->get();
+        return $q;
+    }
+    public function getLastPeriode()
+    {
+        $this->db->select('*');
+        $this->db->from('t_periode');
+        $this->db->limit(1);
+        $this->db->order_by('id', 'asc');
+        $this->db->where('is_open', 'Y');
+        $q = $this->db->get();
+        return $q;
+    }
+    public function getIndikator()
+    {
+        return $this->db->select('id,nama')->from('ref_indikators')->order_by('id', 'asc')->get();
+    }
+    public function getIndikatorByToken($token)
+    {
+        $this->db->select('r.*');
+        $this->db->from('t_realisasi AS r');
+        $this->db->join('ref_indikators AS i', 'r.fid_indikator=i.id');
+        $this->db->join('spj', 'r.fid_token=spj.token');
+        $this->db->where('spj.token', $token);
+        $q = $this->db->get();
+        return $q;
+    }
+    public function inbox()
+    {
+        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan,uraian.nama AS nama_uraian, uraian.kode AS kode_uraian, p.id as periode_id');
+        $this->db->from('spj AS s');
+        $this->db->join('t_periode AS p', 's.fid_periode=p.id');
+        $this->db->join('ref_parts AS part', 's.fid_part=part.id');
+        $this->db->join('ref_programs AS program', 's.fid_program=program.id');
+        $this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
+        $this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
+        $this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
+        $this->db->where('s.entri_by_part', $this->session->userdata('part'));
+        $this->db->where('s.entri_by', $this->session->userdata('user_name'));
+        $this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
+        $this->db->where('s.is_status !=', 'SELESAI');
+        $this->db->where('s.is_status !=', 'SELESAI_TMS');
+        $this->db->where('s.is_status !=', 'SELESAI_BTL');
+        $this->db->order_by('s.id', 'desc');
+        $q = $this->db->get();
+        return $q;
+    }
 
-	public function detail($whr)
-	{
-		$this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian, p.nama as periode');
-		$this->db->from('spj AS s');
-		$this->db->join('ref_parts AS part', 's.fid_part=part.id');
-		$this->db->join('ref_programs AS program', 's.fid_program=program.id');
-		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
-		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
-		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
-		$this->db->join('t_periode as p', 's.fid_periode=p.id');
-		$this->db->where($whr);
-		$q = $this->db->get();
-		return $q;
-	}
+    public function detail($whr)
+    {
+        $this->db->select('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian, p.nama as periode');
+        $this->db->from('spj AS s');
+        $this->db->join('ref_parts AS part', 's.fid_part=part.id');
+        $this->db->join('ref_programs AS program', 's.fid_program=program.id');
+        $this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
+        $this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
+        $this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
+        $this->db->join('t_periode as p', 's.fid_periode=p.id');
+        $this->db->where($whr);
+        $q = $this->db->get();
+        return $q;
+    }
 
-	public function riwayat($whr)
-	{
-		$q = $this->db->get_where('spj_riwayat', $whr);
-		return $q;
-	}
+    public function riwayat($whr)
+    {
+        $q = $this->db->get_where('spj_riwayat', $whr);
+        return $q;
+    }
 
-	public function riwayat_payment($whr)
-	{
-		$q = $this->db->get_where('spj_payment', $whr);
-		return $q;
-	}
+    public function riwayat_payment($whr)
+    {
+        $q = $this->db->get_where('spj_payment', $whr);
+        return $q;
+    }
 
-	public function getNama($tbl, $id)
-	{
-		// null-safe: row boleh tak ada (FK parsial saat edit) jangan fatal
-		return $this->db->get_where($tbl, ['id' => $id])->row()->nama ?? '';
-	}
+    public function getNama($tbl, $id)
+    {
+        // null-safe: row boleh tak ada (FK parsial saat edit) jangan fatal
+        return $this->db->get_where($tbl, ['id' => $id])->row()->nama ?? '';
+    }
 
-	public function getKode($tbl, $id)
-	{
-		return $this->db->get_where($tbl, ['id' => $id])->row()->kode ?? '';
-	}
+    public function getKode($tbl, $id)
+    {
+        return $this->db->get_where($tbl, ['id' => $id])->row()->kode ?? '';
+    }
 
-	public function getPaguByUraianId($uraian_id, $ta, $is_perubahan)
-	{
-		$this->db->select('total_pagu_awal');
-		$this->db->from('t_pagu');
-		$this->db->where('fid_uraian', $uraian_id);
-		$this->db->where('tahun', $ta);
-		$this->db->where('is_perubahan', $is_perubahan);
-		$q = $this->db->get();
-		return $q->row()->total_pagu_awal;
-	}
+    public function getPaguByUraianId($uraian_id, $ta, $is_perubahan)
+    {
+        $this->db->select('total_pagu_awal');
+        $this->db->from('t_pagu');
+        $this->db->where('fid_uraian', $uraian_id);
+        $this->db->where('tahun', $ta);
+        $this->db->where('is_perubahan', $is_perubahan);
+        $q = $this->db->get();
+        return $q->row()->total_pagu_awal;
+    }
 
-	public function TopTransaksiSPJ($limit)
-	{
-		$this->db->select('r.jumlah,r.entri_by,r.entri_at,r.is_status,p.singkatan');
-		$this->db->from('spj_riwayat AS r');
-		$this->db->join('ref_parts AS p', 'r.entri_by_part=p.id');
-		$this->db->where('tahun', $this->session->userdata('tahun_anggaran'));
-		$this->db->limit($limit);
-		$this->db->order_by('r.id', 'desc');
-		$q = $this->db->get();
-		return $q;
-	}
+    public function TopTransaksiSPJ($limit)
+    {
+        $this->db->select('r.jumlah,r.entri_by,r.entri_at,r.is_status,p.singkatan');
+        $this->db->from('spj_riwayat AS r');
+        $this->db->join('ref_parts AS p', 'r.entri_by_part=p.id');
+        $this->db->where('tahun', $this->session->userdata('tahun_anggaran'));
+        $this->db->limit($limit);
+        $this->db->order_by('r.id', 'desc');
+        $q = $this->db->get();
+        return $q;
+    }
 
-	public function TransaksiSpjBulanan($bulan, $ta)
-	{
-		$this->db->select_sum('r.jumlah');
-		$this->db->from('spj_riwayat AS r');
-		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
-		$this->db->where('p.id', $bulan);
-		$this->db->where('r.tahun', $ta);
-		$this->db->where('r.is_status', 'APPROVE');
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+    public function TransaksiSpjBulanan($bulan, $ta)
+    {
+        $this->db->select_sum('r.jumlah');
+        $this->db->from('spj_riwayat AS r');
+        $this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+        $this->db->where('p.id', $bulan);
+        $this->db->where('r.tahun', $ta);
+        $this->db->where('r.is_status', 'APPROVE');
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function TransaksiSpjBulananNonMs($bulan, $status, $ta)
-	{
-		$this->db->select_sum('r.jumlah');
-		$this->db->from('spj_riwayat AS r');
-		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
-		$this->db->where('p.id', $bulan);
-		$this->db->where('r.is_status', $status);
-		$this->db->where('r.tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+    public function TransaksiSpjBulananNonMs($bulan, $status, $ta)
+    {
+        $this->db->select_sum('r.jumlah');
+        $this->db->from('spj_riwayat AS r');
+        $this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+        $this->db->where('p.id', $bulan);
+        $this->db->where('r.is_status', $status);
+        $this->db->where('r.tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	// Jumlah transaksi SPJ Baru (Status Entri)
-	public function TransaksiSpjBaru($bulan, $ta)
-	{
-		$this->db->select_sum('r.jumlah');
-		$this->db->from('spj AS r');
-		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
-		$this->db->where('r.is_status', 'ENTRI');
-		$this->db->where('p.id', $bulan);
-		$this->db->where('r.tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+    // Jumlah transaksi SPJ Baru (Status Entri)
+    public function TransaksiSpjBaru($bulan, $ta)
+    {
+        $this->db->select_sum('r.jumlah');
+        $this->db->from('spj AS r');
+        $this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+        $this->db->where_in('r.is_status', ['ENTRI', 'VERIFIKASI']);
+        $this->db->where('p.id', $bulan);
+        $this->db->where('r.tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	// Jumlah transaksi SPJ sudah CAIR
-	public function TransaksiSpjCair($bulan, $ta)
-	{
-		$this->db->select_sum('s.jumlah');
-		$this->db->from('spj_payment AS r');
-		$this->db->join('spj_riwayat as s', 'r.token=s.token');
-		$this->db->join('t_periode AS p', 's.fid_periode=p.id');
-		$this->db->where('r.status', 'CAIR');
-		$this->db->where('p.id', $bulan);
-		$this->db->where('r.tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+    // Jumlah transaksi SPJ sudah CAIR
+    public function TransaksiSpjCair($bulan, $ta)
+    {
+        $this->db->select_sum('s.jumlah');
+        $this->db->from('spj_payment AS r');
+        $this->db->join('spj_riwayat as s', 'r.token=s.token');
+        $this->db->join('t_periode AS p', 's.fid_periode=p.id');
+        $this->db->where('r.status', 'CAIR');
+        $this->db->where('p.id', $bulan);
+        $this->db->where('r.tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function LimitTransaksiTriwulan($tahun)
-	{
-		$query = $this->db->query("
-				SELECT 
-					SUM(CASE 
-						WHEN FIND_IN_SET('1', periode) 
-						OR FIND_IN_SET('2', periode) 
-						OR FIND_IN_SET('3', periode) 
+    public function LimitTransaksiTriwulan($tahun)
+    {
+        $query = $this->db->query("
+				SELECT
+					SUM(CASE
+						WHEN FIND_IN_SET('1', periode)
+						OR FIND_IN_SET('2', periode)
+						OR FIND_IN_SET('3', periode)
 						THEN total ELSE 0 END) AS triwulan_1,
-					SUM(CASE 
-						WHEN FIND_IN_SET('4', periode) 
-						OR FIND_IN_SET('5', periode) 
-						OR FIND_IN_SET('6', periode) 
+					SUM(CASE
+						WHEN FIND_IN_SET('4', periode)
+						OR FIND_IN_SET('5', periode)
+						OR FIND_IN_SET('6', periode)
 						THEN total ELSE 0 END) AS triwulan_2,
-					SUM(CASE 
-						WHEN FIND_IN_SET('7', periode) 
-						OR FIND_IN_SET('8', periode) 
-						OR FIND_IN_SET('9', periode) 
+					SUM(CASE
+						WHEN FIND_IN_SET('7', periode)
+						OR FIND_IN_SET('8', periode)
+						OR FIND_IN_SET('9', periode)
 						THEN total ELSE 0 END) AS triwulan_3,
-					SUM(CASE 
-						WHEN FIND_IN_SET('10', periode) 
-						OR FIND_IN_SET('11', periode) 
-						OR FIND_IN_SET('12', periode) 
+					SUM(CASE
+						WHEN FIND_IN_SET('10', periode)
+						OR FIND_IN_SET('11', periode)
+						OR FIND_IN_SET('12', periode)
 						THEN total ELSE 0 END) AS triwulan_4
-				FROM t_pagu_limit WHERE tahun = '".$tahun."'
+				FROM t_pagu_limit WHERE tahun = '" . $tahun . "'
 			");
-		return $query->row();
-	}
+        return $query->row();
+    }
 
-	public function TransaksiTriwulan($triwulan, $ta)
-	{
-		$this->db->select_sum('r.jumlah');
-		$this->db->from('spj_riwayat as r');
-		$this->db->join('t_periode AS p', 'r.fid_periode=p.id');
-		$this->db->where_in('p.id', $triwulan);
-		$this->db->where('r.is_status', 'APPROVE');
-		$this->db->where('r.tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+    public function TransaksiTriwulan($triwulan, $ta)
+    {
+        $this->db->select_sum('r.jumlah');
+        $this->db->from('spj_riwayat as r');
+        $this->db->join('t_periode AS p', 'r.fid_periode=p.id');
+        $this->db->where_in('p.id', $triwulan);
+        $this->db->where('r.is_status', 'APPROVE');
+        $this->db->where('r.tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function getRealisasiSpjByPart($part, $ta)
-	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj_riwayat');
-		$this->db->where('entri_by_part', $part);
-		$this->db->where('is_status', 'APPROVE');
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+    public function getRealisasiSpjByPart($part, $ta)
+    {
+        $this->db->select_sum('jumlah');
+        $this->db->from('spj_riwayat');
+        $this->db->where('entri_by_part', $part);
+        $this->db->where('is_status', 'APPROVE');
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function getJumlahSpjByPart($part, $status, $ta)
-	{
-		$this->db->select('id');
-		$this->db->from('spj_riwayat');
-		$this->db->where('entri_by_part', $part);
-		$this->db->where('is_status', $status);
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->num_rows();
-	}
+    public function getJumlahSpjByPart($part, $status, $ta)
+    {
+        $this->db->select('id');
+        $this->db->from('spj_riwayat');
+        $this->db->where('entri_by_part', $part);
+        $this->db->where('is_status', $status);
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->num_rows();
+    }
 
-	public function getJumlahSpjByPartBaru($part, $ta)
-	{
-		$this->db->select('id');
-		$this->db->from('spj');
-		$this->db->where('entri_by_part', $part);
-		$this->db->where('is_status', 'ENTRI');
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->num_rows();
-	}
+    public function getJumlahSpjByPartBaru($part, $ta)
+    {
+        $this->db->select('id');
+        $this->db->from('spj');
+        $this->db->where('entri_by_part', $part);
+        $this->db->where('is_status', 'ENTRI');
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->num_rows();
+    }
 
-	public function getJumlahSpjByStatusCair($part, $status, $ta)
-	{
-		$this->db->select('sp.id');
-		$this->db->from('spj_payment as sp');
-		$this->db->join('spj_riwayat as sr', 'sp.token=sr.token');
-		$this->db->where('sr.entri_by_part', $part);
-		$this->db->where('sp.status', $status);
-		$this->db->where('sp.tahun', $ta);
-		$q = $this->db->get();
-		return $q->num_rows();
-	}
+    public function getJumlahSpjByStatusCair($part, $status, $ta)
+    {
+        $this->db->select('sp.id');
+        $this->db->from('spj_payment as sp');
+        $this->db->join('spj_riwayat as sr', 'sp.token=sr.token');
+        $this->db->where('sr.entri_by_part', $part);
+        $this->db->where('sp.status', $status);
+        $this->db->where('sp.tahun', $ta);
+        $q = $this->db->get();
+        return $q->num_rows();
+    }
 
-	public function getLimitPagu($uraian_id, $periode_id)
-	{
-		$this->db->select('total, periode');
-		$this->db->from('t_pagu_limit');
-		$this->db->where('fid_uraian', $uraian_id);
-		$this->db->where("FIND_IN_SET('{$periode_id}', periode) >", 0);
-		$q = $this->db->get();
-		return $q;
-	}
+    public function getLimitPagu($uraian_id, $periode_id)
+    {
+        $this->db->select('total, periode');
+        $this->db->from('t_pagu_limit');
+        $this->db->where('fid_uraian', $uraian_id);
+        $this->db->where("FIND_IN_SET('{$periode_id}', periode) >", 0);
+        $q = $this->db->get();
+        return $q;
+    }
 
+    // -------------------------------- datatable-verifikasi --------------------------//
+    // set table
+    protected $table = 'spj AS s';
+    //set column field database for datatable orderable
+    protected $column_order = [null, 'uraian.kode', null, 's.fid_periode', null, 's.entri_at'];
+    // default order
+    protected $order = ['s.entri_perbaikan_at' => 'desc', 's.entri_at' => 'desc'];
+    // default select
+    protected $select_table = ['s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian'];
 
-	// -------------------------------- datatable-verifikasi --------------------------//
-	// set table
-	protected $table = 'spj AS s';
-	//set column field database for datatable orderable
-	protected $column_order = array(null, 'uraian.kode', null, 's.fid_periode', null, 's.entri_at');
-	// default order 
-	protected $order = array('s.entri_perbaikan_at' => 'desc', 's.entri_at' => 'desc');
-	// default select 
-	protected $select_table = array('s.*, part.nama AS nama_part, program.nama AS nama_program, program.kode AS kode_program, kegiatan.nama AS nama_kegiatan, kegiatan.kode AS kode_kegiatan, sub_kegiatan.nama AS nama_sub_kegiatan, sub_kegiatan.kode AS kode_sub_kegiatan, uraian.nama AS nama_uraian, uraian.kode AS kode_uraian');
+    private function _datatables()
+    {
 
-	private function _datatables()
-	{
+        $this->db->select($this->select_table, false);
+        $this->db->from($this->table);
+        $this->db->join('ref_parts AS part', 's.fid_part=part.id');
+        $this->db->join('ref_programs AS program', 's.fid_program=program.id');
+        $this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
+        $this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
+        $this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
+        $this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
+        if ($this->session->userdata('role') === 'VERIFICATOR'):
+            $this->db->where_in('is_status', ['VERIFIKASI', 'VERIFIKASI_ADMIN', 'APPROVE', 'TMS', 'BTL']);
+        endif;
 
-		$this->db->select($this->select_table, false);
-		$this->db->from($this->table);
-		$this->db->join('ref_parts AS part', 's.fid_part=part.id');
-		$this->db->join('ref_programs AS program', 's.fid_program=program.id');
-		$this->db->join('ref_kegiatans AS kegiatan', 's.fid_kegiatan=kegiatan.id');
-		$this->db->join('ref_sub_kegiatans AS sub_kegiatan', 's.fid_sub_kegiatan=sub_kegiatan.id');
-		$this->db->join('ref_uraians AS uraian', 's.fid_uraian=uraian.id');
-		$this->db->where('s.tahun', $this->session->userdata('tahun_anggaran'));
-		if ($this->session->userdata('role') === 'VERIFICATOR'):
-			$this->db->where_in('is_status', ['VERIFIKASI','VERIFIKASI_ADMIN', 'APPROVE', 'TMS', 'BTL']);
-		endif;
+        // Pencarian global
+        if (! empty($_POST['search']['value'])) {
+            $search = strtolower($_POST['search']['value']);
+            $this->db->group_start()
+                ->like('LOWER(uraian.kode)', $search)
+                ->or_like('LOWER(uraian.nama)', $search)
+                ->or_like('LOWER(part.nama)', $search)
+                ->group_end();
+        }
 
-		// Pencarian global
-		if (!empty($_POST['search']['value'])) {
-			$search = strtolower($_POST['search']['value']);
-			$this->db->group_start()
-				->like('LOWER(uraian.kode)', $search)
-				->or_like('LOWER(uraian.nama)', $search)
-				->or_like('LOWER(part.nama)', $search)
-				->group_end();
-		}
+        // Pencarian per kolom
+        foreach ($_POST['columns'] as $index => $col) {
+            if (! empty($col['search']['value'])) {
+                $search_term = strtolower($col['search']['value']);
+                switch ($index) {
+                    case 1:
+                        $this->db->like('LOWER(uraian.kode)', $search_term);
+                        break;
+                    case 2:
+                        $this->db->like('LOWER(uraian.nama)', $search_term);
+                        break;
+                    case 4:
+                        $this->db->like('LOWER(part.nama)', $search_term);
+                        break;
+                }
+            }
+        }
 
-		// Pencarian per kolom
-		foreach ($_POST['columns'] as $index => $col) {
-			if (!empty($col['search']['value'])) {
-				$search_term = strtolower($col['search']['value']);
-				switch ($index) {
-					case 1:
-						$this->db->like('LOWER(uraian.kode)', $search_term);
-						break;
-					case 2:
-						$this->db->like('LOWER(uraian.nama)', $search_term);
-						break;
-					case 4:
-						$this->db->like('LOWER(part.nama)', $search_term);
-						break;
-				}
-			}
-		}
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order)) {
+            $order = $this->order;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
 
-		if (isset($_POST['order'])) // here order processing
-		{
-			$this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-		} else if (isset($this->order)) {
-			$order = $this->order;
-			$this->db->order_by(key($order), $order[key($order)]);
-		}
-	}
+    public function make_datatables()
+    {
+        $this->_datatables();
+        if (@$_POST['length'] != -1) {
+            $this->db->limit(@$_POST['length'], @$_POST['start']);
+        }
 
-	function make_datatables()
-	{
-		$this->_datatables();
-		if (@$_POST['length'] != -1)
-			$this->db->limit(@$_POST['length'], @$_POST['start']);
-		$query = $this->db->get();
-		return $query->result();
-	}
+        $query = $this->db->get();
+        return $query->result();
+    }
 
-	function make_count_filtered()
-	{
-		$this->_datatables();
-		$query = $this->db->get();
-		return $query->num_rows();
-	}
+    public function make_count_filtered()
+    {
+        $this->_datatables();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
 
-	public function make_count_all()
-	{
-		$this->_datatables();
-		return $this->db->count_all_results();
-	}
-	// -------------------------------- end-datatable --------------------------//
+    public function make_count_all()
+    {
+        $this->_datatables();
+        return $this->db->count_all_results();
+    }
+    // -------------------------------- end-datatable --------------------------//
 
-	// ----------------- datatable-verifikasi-selesai --------------------------//
+    // ----------------- datatable-verifikasi-selesai --------------------------//
 
-	//set column field database for datatable orderable
-	protected $column_order_verifikasi_selesai = array('spj_riwayat.id', 'spj_riwayat.nomor_pembukuan', 'spj_riwayat.kode_uraian', 'spj_riwayat.nama_uraian', 'spj_riwayat.nama_bidang', 'spj_riwayat.fid_periode', 'spj_riwayat.entri_at', 'spj_riwayat.approve_at', 'spj_riwayat.is_status', 'spj_riwayat.jumlah');
+    //set column field database for datatable orderable
+    protected $column_order_verifikasi_selesai = ['spj_riwayat.id', 'spj_riwayat.nomor_pembukuan', 'spj_riwayat.kode_uraian', 'spj_riwayat.nama_uraian', 'spj_riwayat.nama_bidang', 'spj_riwayat.fid_periode', 'spj_riwayat.entri_at', 'spj_riwayat.approve_at', 'spj_riwayat.is_status', 'spj_riwayat.jumlah'];
 
-	// default order 
-	protected $order_verifikasi_selesai = array('spj_riwayat.approve_at' => 'desc');
+    // default order
+    protected $order_verifikasi_selesai = ['spj_riwayat.approve_at' => 'desc'];
 
-	private function _datatables_verifikasi_selesai($filter)
-	{
+    private function _datatables_verifikasi_selesai($filter)
+    {
 
-		$this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id,spj_payment.status');
-		$this->db->from('spj_riwayat');
-		$this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
-		$this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token', 'left');
-		$this->db->where('spj_riwayat.tahun', $this->session->userdata('tahun_anggaran'));
+        $this->db->select('spj_riwayat.*,t_periode.nama, t_periode.id as periode_id,spj_payment.status');
+        $this->db->from('spj_riwayat');
+        $this->db->join('t_periode', 'spj_riwayat.fid_periode=t_periode.id');
+        $this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token', 'left');
+        $this->db->where('spj_riwayat.tahun', $this->session->userdata('tahun_anggaran'));
 
-		// filter bedasarkan role
-		if ($this->session->userdata('role') === 'USER') {
-			$this->db->where('spj_riwayat.entri_by_part', $this->session->userdata('part'));
-		}
+        // filter bedasarkan role
+        if ($this->session->userdata('role') === 'USER') {
+            $this->db->where('spj_riwayat.entri_by_part', $this->session->userdata('part'));
+        }
 
-		// filter berdasarkan bidang
-		if (!empty($filter['filter_bidang'])) {
-			$this->db->where('spj_riwayat.entri_by_part', $filter['filter_bidang']);
-		}
+        // filter berdasarkan bidang
+        if (! empty($filter['filter_bidang'])) {
+            $this->db->where('spj_riwayat.entri_by_part', $filter['filter_bidang']);
+        }
 
-		// Pencarian global
-		if (!empty($_POST['search']['value'])) {
-			$search = strtolower($_POST['search']['value']);
-			$this->db->group_start()
-				->like('LOWER(spj_riwayat.nomor_pembukuan)', $search)
-				->or_like('LOWER(spj_riwayat.kode_uraian)', $search)
-				->or_like('LOWER(spj_riwayat.nama_uraian)', $search)
-				->or_like('LOWER(spj_riwayat.nama_part)', $search)
-				->group_end();
-		}
+        // Pencarian global
+        if (! empty($_POST['search']['value'])) {
+            $search = strtolower($_POST['search']['value']);
+            $this->db->group_start()
+                ->like('LOWER(spj_riwayat.nomor_pembukuan)', $search)
+                ->or_like('LOWER(spj_riwayat.kode_uraian)', $search)
+                ->or_like('LOWER(spj_riwayat.nama_uraian)', $search)
+                ->or_like('LOWER(spj_riwayat.nama_part)', $search)
+                ->group_end();
+        }
 
-		// Pencarian per kolom
-		foreach ($_POST['columns'] as $index => $col) {
-			if (!empty($col['search']['value'])) {
-				$search_term = strtolower($col['search']['value']);
-				switch ($index) {
-					case 1:
-						$this->db->where('LOWER(spj_riwayat.nomor_verifikasi)', $search_term);
-					break;
-					case 2:
-						$this->db->like('LOWER(spj_riwayat.nomor_pembukuan)', $search_term);
-					break;
-					case 3:
-						$this->db->like('LOWER(spj_riwayat.kode_uraian)', $search_term);
-					break;
-					case 4: // kolom status
-						$this->db->like('LOWER(spj_riwayat.nama_uraian)', $search_term);
-						break;
-				}
-			}
-		}
+        // Pencarian per kolom
+        foreach ($_POST['columns'] as $index => $col) {
+            if (! empty($col['search']['value'])) {
+                $search_term = strtolower($col['search']['value']);
+                switch ($index) {
+                    case 1:
+                        $this->db->where('LOWER(spj_riwayat.nomor_verifikasi)', $search_term);
+                        break;
+                    case 2:
+                        $this->db->like('LOWER(spj_riwayat.nomor_pembukuan)', $search_term);
+                        break;
+                    case 3:
+                        $this->db->like('LOWER(spj_riwayat.kode_uraian)', $search_term);
+                        break;
+                    case 4: // kolom status
+                        $this->db->like('LOWER(spj_riwayat.nama_uraian)', $search_term);
+                        break;
+                }
+            }
+        }
 
-		if (isset($_POST['order'])) // here order processing
-		{
-			$this->db->order_by($this->column_order_verifikasi_selesai[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-		} else if (isset($this->order_verifikasi_selesai)) {
-			$order = $this->order_verifikasi_selesai;
-			$this->db->order_by(key($order), $order[key($order)]);
-		}
-	}
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order_verifikasi_selesai[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order_verifikasi_selesai)) {
+            $order = $this->order_verifikasi_selesai;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
 
-	function make_datatables_verifikasi_selesai($filter)
-	{
-		$this->_datatables_verifikasi_selesai($filter);
-		if (@$_POST['length'] != -1)
-			$this->db->limit(@$_POST['length'], @$_POST['start']);
-		$query = $this->db->get();
-		return $query->result();
-	}
+    public function make_datatables_verifikasi_selesai($filter)
+    {
+        $this->_datatables_verifikasi_selesai($filter);
+        if (@$_POST['length'] != -1) {
+            $this->db->limit(@$_POST['length'], @$_POST['start']);
+        }
 
-	function make_count_filtered_verifikasi_selesai($filter)
-	{
-		$this->_datatables_verifikasi_selesai($filter);
-		$query = $this->db->get();
-		return $query->num_rows();
-	}
+        $query = $this->db->get();
+        return $query->result();
+    }
 
-	public function make_count_all_verifikasi_selesai($filter)
-	{
-		$this->_datatables_verifikasi_selesai($filter);
-		return $this->db->count_all_results();
-	}
-	// -------------------------------- end-datatable --------------------------//
+    public function make_count_filtered_verifikasi_selesai($filter)
+    {
+        $this->_datatables_verifikasi_selesai($filter);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
 
+    public function make_count_all_verifikasi_selesai($filter)
+    {
+        $this->_datatables_verifikasi_selesai($filter);
+        return $this->db->count_all_results();
+    }
+    // -------------------------------- end-datatable --------------------------//
 
-	// ----------------- datatable-penerima-manfaat --------------------------//
+    // ----------------- datatable-penerima-manfaat --------------------------//
 
-	//set column field database for datatable orderable
-	protected $column_order_penerima_manfaat = array('rp.id', 'rp.organisasi', 'rp.perorangan');
-	// default order 
-	protected $order_penerima_manfaat = array('rp.id' => 'desc');
+    //set column field database for datatable orderable
+    protected $column_order_penerima_manfaat = ['rp.id', 'rp.organisasi', 'rp.perorangan'];
+    // default order
+    protected $order_penerima_manfaat = ['rp.id' => 'desc'];
 
-	private function _datatables_penerima_manfaat($token)
-	{
+    private function _datatables_penerima_manfaat($token)
+    {
 
-		$this->db->select('rp.id, rp.organisasi, rp.perorangan, s.is_status');
-		$this->db->from('spj_relasi_publik AS rp');
-		$this->db->join('spj as s', 'rp.token=s.token');
-		$this->db->where('rp.token', $token);
+        $this->db->select('rp.id, rp.organisasi, rp.perorangan, s.is_status');
+        $this->db->from('spj_relasi_publik AS rp');
+        $this->db->join('spj as s', 'rp.token=s.token');
+        $this->db->where('rp.token', $token);
 
-		// Pencarian global
-		if (!empty($_POST['search']['value'])) {
-			$search = strtolower($_POST['search']['value']);
-			$this->db->group_start()
-				->like('LOWER(rp.organisasi)', $search)
-				->or_like('LOWER(rp.perorangan)', $search)
-				->group_end();
-		}
+        // Pencarian global
+        if (! empty($_POST['search']['value'])) {
+            $search = strtolower($_POST['search']['value']);
+            $this->db->group_start()
+                ->like('LOWER(rp.organisasi)', $search)
+                ->or_like('LOWER(rp.perorangan)', $search)
+                ->group_end();
+        }
 
-		if (isset($_POST['order'])) // here order processing
-		{
-			$this->db->order_by($this->column_order_penerima_manfaat[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-		} else if (isset($this->order_penerima_manfaat)) {
-			$order = $this->order_penerima_manfaat;
-			$this->db->order_by(key($order), $order[key($order)]);
-		}
-	}
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order_penerima_manfaat[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order_penerima_manfaat)) {
+            $order = $this->order_penerima_manfaat;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
 
-	function make_datatables_penerima_manfaat($token)
-	{
-		$this->_datatables_penerima_manfaat($token);
-		if (@$_POST['length'] != -1)
-			$this->db->limit(@$_POST['length'], @$_POST['start']);
-		$query = $this->db->get();
-		return $query->result();
-	}
+    public function make_datatables_penerima_manfaat($token)
+    {
+        $this->_datatables_penerima_manfaat($token);
+        if (@$_POST['length'] != -1) {
+            $this->db->limit(@$_POST['length'], @$_POST['start']);
+        }
 
-	function make_count_filtered_penerima_manfaat($token)
-	{
-		$this->_datatables_penerima_manfaat($token);
-		$query = $this->db->get();
-		return $query->num_rows();
-	}
+        $query = $this->db->get();
+        return $query->result();
+    }
 
-	public function make_count_all_penerima_manfaat($token)
-	{
-		$this->_datatables_penerima_manfaat($token);
-		return $this->db->count_all_results();
-	}
-	// -------------------------------- end-datatable --------------------------//
+    public function make_count_filtered_penerima_manfaat($token)
+    {
+        $this->_datatables_penerima_manfaat($token);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
 
-	// Monitoring SPJ
-	public function getAllParts()
-	{
-		return $this->db->select('id,nama')->from('ref_parts')->order_by('id', 'asc')->get();
-	}
+    public function make_count_all_penerima_manfaat($token)
+    {
+        $this->_datatables_penerima_manfaat($token);
+        return $this->db->count_all_results();
+    }
+    // -------------------------------- end-datatable --------------------------//
 
-	// get total pagu murni berdasarkan part
-	public function getTotalPaguMurniByPart($part = null, $ta)
-	{
-		$this->db->select_sum('total_pagu_awal');
-		$this->db->from('t_pagu');
-		if($part !== null)
-		{
-			$this->db->where('fid_part', $part);
-		}
-		$this->db->where('tahun', $ta);
-		$this->db->where('is_perubahan', '0');
-		$q = $this->db->get();
-		return $q->row()->total_pagu_awal;
-	}
+    // Monitoring SPJ
+    public function getAllParts()
+    {
+        return $this->db->select('id,nama')->from('ref_parts')->order_by('id', 'asc')->get();
+    }
 
-	public function getTotalPaguPerubahanByPart($part = null, $ta, $is_perubahan = '1')
-	{
-		$this->db->select_sum('total_pagu_awal');
-		$this->db->from('t_pagu');
-		if($part !== null)
-		{
-			$this->db->where('fid_part', $part);
-		}
-		$this->db->where('tahun', $ta);
-		$this->db->where('is_perubahan', $is_perubahan);
-		$q = $this->db->get();
-		return $q->row()->total_pagu_awal;
-	}
+    // get total pagu murni berdasarkan part
+    public function getTotalPaguMurniByPart($part = null, $ta)
+    {
+        $this->db->select_sum('total_pagu_awal');
+        $this->db->from('t_pagu');
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
+        $this->db->where('tahun', $ta);
+        $this->db->where('is_perubahan', '0');
+        $q = $this->db->get();
+        return $q->row()->total_pagu_awal;
+    }
 
-	// get total realisasi berdasarkan part
-	public function getTotalRealisasiByPart($part = null, $filter_tanggal = null, $ta)
-	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj_riwayat');
-		if($part !== null)
-		{
-			$this->db->where('entri_by_part', $part);
-		}
+    public function getTotalPaguPerubahanByPart($part = null, $ta, $is_perubahan = '1')
+    {
+        $this->db->select_sum('total_pagu_awal');
+        $this->db->from('t_pagu');
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
+        $this->db->where('tahun', $ta);
+        $this->db->where('is_perubahan', $is_perubahan);
+        $q = $this->db->get();
+        return $q->row()->total_pagu_awal;
+    }
 
-		if($filter_tanggal !== null)
-		{
-			$tanggal = explode(' - ', $filter_tanggal);
+    // get total realisasi berdasarkan part
+    public function getTotalRealisasiByPart($part = null, $filter_tanggal = null, $ta)
+    {
+        $this->db->select_sum('jumlah');
+        $this->db->from('spj_riwayat');
+        if ($part !== null) {
+            $this->db->where('entri_by_part', $part);
+        }
+
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
 
-			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) >=', $start_date);
             $this->db->where('DATE(approve_at) <=', $end_date);
-		}
+        }
 
-		$this->db->where('is_status', 'APPROVE');
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+        $this->db->where('is_status', 'APPROVE');
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	// get total realiasi berdasarkan part dana status SPJ (BARU, VERIFIKASI, PENDING, CAIR, TMS)
-	public function getTotalRealisasiByPartAndStatus($part, $filter_tanggal = null, $ta, $status)
-	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj');
-		if($filter_tanggal !== null)
-		{
-			$tanggal = explode(' - ', $filter_tanggal);
+    // get total realiasi berdasarkan part dana status SPJ (BARU, VERIFIKASI, PENDING, CAIR, TMS)
+    public function getTotalRealisasiByPartAndStatus($part, $filter_tanggal = null, $ta, $status)
+    {
+        $this->db->select_sum('jumlah');
+        $this->db->from('spj');
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
 
-			if($status === 'ENTRI') {
-				$this->db->where('DATE(entri_at) >=', $start_date);
-				$this->db->where('DATE(entri_at) <=', $end_date);
-			}
+            if ($status === 'ENTRI') {
+                $this->db->where('DATE(entri_at) >=', $start_date);
+                $this->db->where('DATE(entri_at) <=', $end_date);
+            }
 
-			if(in_array($status, ['VERIFIKASI', 'VERIFIKASI_ADMIN'])) {
-				$this->db->where('DATE(verify_at) >=', $start_date);
-				$this->db->where('DATE(verify_at) <=', $end_date);
-			}
-			
-		}
-		$this->db->where('fid_part', $part);
-		$this->db->where_in('is_status', $status);
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+            if (in_array($status, ['VERIFIKASI', 'VERIFIKASI_ADMIN'])) {
+                $this->db->where('DATE(verify_at) >=', $start_date);
+                $this->db->where('DATE(verify_at) <=', $end_date);
+            }
 
-	public function getTotalRealisasiByPartAndStatusAdmin($part, $filter_tanggal = null, $ta, $is_status)
-	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj_riwayat');
-		if($filter_tanggal !== null)
-		{
-			$tanggal = explode(' - ', $filter_tanggal);
+        }
+        $this->db->where('fid_part', $part);
+        $this->db->where_in('is_status', $status);
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
+
+    public function getTotalRealisasiByPartAndStatusAdmin($part, $filter_tanggal = null, $ta, $is_status)
+    {
+        $this->db->select_sum('jumlah');
+        $this->db->from('spj_riwayat');
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
 
-
-			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) >=', $start_date);
             $this->db->where('DATE(approve_at) <=', $end_date);
-		}
-		$this->db->where('entri_by_part', $part);
-		$this->db->where_in('is_status', $is_status);
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+        }
+        $this->db->where('entri_by_part', $part);
+        $this->db->where_in('is_status', $is_status);
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function getTotalRealisasiByPartAndStatusBendahara($part, $filter_tanggal = null, $ta, $is_status)
-	{
-		$this->db->select_sum('spj_riwayat.jumlah');
-		$this->db->from('spj_riwayat');
-		$this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token');
-		if($filter_tanggal !== null)
-		{
-			$tanggal = explode(' - ', $filter_tanggal);
+    public function getTotalRealisasiByPartAndStatusBendahara($part, $filter_tanggal = null, $ta, $is_status)
+    {
+        $this->db->select_sum('spj_riwayat.jumlah');
+        $this->db->from('spj_riwayat');
+        $this->db->join('spj_payment', 'spj_riwayat.token=spj_payment.token');
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
 
-			$this->db->where('DATE(spj_riwayat.approve_at) >=', $start_date);
+            $this->db->where('DATE(spj_riwayat.approve_at) >=', $start_date);
             $this->db->where('DATE(spj_riwayat.approve_at) <=', $end_date);
-		}
-		$this->db->where('spj_riwayat.entri_by_part', $part);
-		$this->db->where_in('spj_payment.status', $is_status);
-		$this->db->where('spj_riwayat.tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+        }
+        $this->db->where('spj_riwayat.entri_by_part', $part);
+        $this->db->where_in('spj_payment.status', $is_status);
+        $this->db->where('spj_riwayat.tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function getRealisasiByPartAndProgram($part = null, $filter_tanggal = null, $program_id, $ta)
-	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj');
-		if($part !== null)
-		{
-			$this->db->where('fid_part', $part);
-		}
+    public function getRealisasiByPartAndProgram($part = null, $filter_tanggal = null, $program_id, $ta)
+    {
+        $this->db->select_sum('jumlah');
+        $this->db->from('spj');
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
 
-		if($filter_tanggal !== null)
-		{
-			$tanggal = explode(' - ', $filter_tanggal);
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
 
-			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) >=', $start_date);
             $this->db->where('DATE(approve_at) <=', $end_date);
-		}
+        }
 
-		$this->db->where('fid_program', $program_id);
-		$this->db->where('is_status', 'SELESAI');
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+        $this->db->where('fid_program', $program_id);
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function getRealisasiByPartAndKegiatan($part = null, $filter_tanggal = null,  $kegiatan_id, $ta)
-	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj');
-		if($part !== null)
-		{
-			$this->db->where('fid_part', $part);
-		}
-		
-		if($filter_tanggal !== null)
-		{
-			$tanggal = explode(' - ', $filter_tanggal);
+    public function getRealisasiByPartAndKegiatan($part = null, $filter_tanggal = null, $kegiatan_id, $ta)
+    {
+        $this->db->select_sum('jumlah');
+        $this->db->from('spj');
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
+
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
 
-			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) >=', $start_date);
             $this->db->where('DATE(approve_at) <=', $end_date);
-		}
+        }
 
-		$this->db->where('fid_kegiatan', $kegiatan_id);
-		$this->db->where('is_status', 'SELESAI');
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+        $this->db->where('fid_kegiatan', $kegiatan_id);
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	public function getRealisasiByPartAndSubKegiatan($part = null, $filter_tanggal = null, $sub_kegiatan_id, $ta)
-	{
-		$this->db->select_sum('jumlah');
-		$this->db->from('spj');
-		if($part !== null)
-		{
-			$this->db->where('fid_part', $part);
-		}
+    public function getRealisasiByPartAndSubKegiatan($part = null, $filter_tanggal = null, $sub_kegiatan_id, $ta)
+    {
+        $this->db->select_sum('jumlah');
+        $this->db->from('spj');
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
 
-		if($filter_tanggal !== null)
-		{
-			$tanggal = explode(' - ', $filter_tanggal);
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
             $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-            $end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
 
-			$this->db->where('DATE(approve_at) >=', $start_date);
+            $this->db->where('DATE(approve_at) >=', $start_date);
             $this->db->where('DATE(approve_at) <=', $end_date);
-		}
+        }
 
-		$this->db->where('fid_sub_kegiatan', $sub_kegiatan_id);
-		$this->db->where('is_status', 'SELESAI');
-		$this->db->where('tahun', $ta);
-		$q = $this->db->get();
-		return $q->row()->jumlah;
-	}
+        $this->db->where('fid_sub_kegiatan', $sub_kegiatan_id);
+        $this->db->where('is_status', 'SELESAI');
+        $this->db->where('tahun', $ta);
+        $q = $this->db->get();
+        return $q->row()->jumlah;
+    }
 
-	// Rekap uraian lintas bidang (group by kode uraian, 3 query)
-	public function getUraianRekap($part = null, $filter_tanggal = null, $is_perubahan = "0", $ta)
-	{
-		// 1. List kode uraian unik
-		$this->db->select('u.kode, MAX(u.nama) as nama');
-		$this->db->from('ref_uraians as u');
-		$this->db->where('u.tahun', $ta);
-		if ($part !== null) {
-			$this->db->join('ref_kegiatans as k', 'u.fid_kegiatan = k.id');
-			$this->db->where('k.fid_part', $part);
-		}
-		$this->db->group_by('u.kode');
-		$this->db->order_by('u.kode', 'asc');
-		$uraians = $this->db->get()->result();
-		if (empty($uraians)) return [];
+    // Rekap uraian lintas bidang (group by kode uraian, 3 query)
+    public function getUraianRekap($part = null, $filter_tanggal = null, $is_perubahan = "0", $ta)
+    {
+        // 1. List kode uraian unik
+        $this->db->select('u.kode, MAX(u.nama) as nama');
+        $this->db->from('ref_uraians as u');
+        $this->db->where('u.tahun', $ta);
+        if ($part !== null) {
+            $this->db->join('ref_kegiatans as k', 'u.fid_kegiatan = k.id');
+            $this->db->where('k.fid_part', $part);
+        }
+        $this->db->group_by('u.kode');
+        $this->db->order_by('u.kode', 'asc');
+        $uraians = $this->db->get()->result();
+        if (empty($uraians)) {
+            return [];
+        }
 
-		// 1b. Hitung jml bidang per kode (dari pagu, global tanpa filter part)
-		$this->db->select('u.kode, COUNT(DISTINCT p.fid_part) as jml');
-		$this->db->from('t_pagu as p');
-		$this->db->join('ref_uraians as u', 'p.fid_uraian = u.id');
-		$this->db->where('p.tahun', $ta);
-		$this->db->where('p.is_perubahan', $is_perubahan);
-		$this->db->group_by('u.kode');
-		$this->db->having('jml >', 1);
-		$allowMap = [];
-		foreach ($this->db->get()->result() as $row) {
-			$allowMap[$row->kode] = true;
-		}
-		if (empty($allowMap)) return [];
+        // 1b. Hitung jml bidang per kode (dari pagu, global tanpa filter part)
+        $this->db->select('u.kode, COUNT(DISTINCT p.fid_part) as jml');
+        $this->db->from('t_pagu as p');
+        $this->db->join('ref_uraians as u', 'p.fid_uraian = u.id');
+        $this->db->where('p.tahun', $ta);
+        $this->db->where('p.is_perubahan', $is_perubahan);
+        $this->db->group_by('u.kode');
+        $this->db->having('jml >', 1);
+        $allowMap = [];
+        foreach ($this->db->get()->result() as $row) {
+            $allowMap[$row->kode] = true;
+        }
+        if (empty($allowMap)) {
+            return [];
+        }
 
-		// 2. Pagu per kode (sekali query)
-		$this->db->select('u.kode, SUM(p.total_pagu_awal) as total');
-		$this->db->from('t_pagu as p');
-		$this->db->join('ref_uraians as u', 'p.fid_uraian = u.id');
-		$this->db->where('p.tahun', $ta);
-		$this->db->where('p.is_perubahan', $is_perubahan);
-		if ($part !== null) $this->db->where('p.fid_part', $part);
-		$this->db->group_by('u.kode');
-		$paguMap = [];
-		foreach ($this->db->get()->result() as $row) {
-			$paguMap[$row->kode] = (float)$row->total;
-		}
+        // 2. Pagu per kode (sekali query)
+        $this->db->select('u.kode, SUM(p.total_pagu_awal) as total');
+        $this->db->from('t_pagu as p');
+        $this->db->join('ref_uraians as u', 'p.fid_uraian = u.id');
+        $this->db->where('p.tahun', $ta);
+        $this->db->where('p.is_perubahan', $is_perubahan);
+        if ($part !== null) {
+            $this->db->where('p.fid_part', $part);
+        }
 
-		// 3. Realisasi per kode (sekali query)
-		$this->db->select('u.kode, SUM(s.jumlah) as total');
-		$this->db->from('spj as s');
-		$this->db->join('ref_uraians as u', 's.fid_uraian = u.id');
-		$this->db->where('s.is_status', 'SELESAI');
-		$this->db->where('s.tahun', $ta);
-		if ($part !== null) $this->db->where('s.fid_part', $part);
-		if ($filter_tanggal !== null) {
-			$tanggal = explode(' - ', $filter_tanggal);
-			$start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
-			$end_date = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
-			$this->db->where('DATE(s.approve_at) >=', $start_date);
-			$this->db->where('DATE(s.approve_at) <=', $end_date);
-		}
-		$this->db->group_by('u.kode');
-		$realMap = [];
-		foreach ($this->db->get()->result() as $row) {
-			$realMap[$row->kode] = (float)$row->total;
-		}
+        $this->db->group_by('u.kode');
+        $paguMap = [];
+        foreach ($this->db->get()->result() as $row) {
+            $paguMap[$row->kode] = (float) $row->total;
+        }
 
-		foreach ($uraians as $u) {
-			$u->pagu = isset($paguMap[$u->kode]) ? $paguMap[$u->kode] : 0;
-			$u->realisasi = isset($realMap[$u->kode]) ? $realMap[$u->kode] : 0;
-		}
+        // 3. Realisasi per kode (sekali query)
+        $this->db->select('u.kode, SUM(s.jumlah) as total');
+        $this->db->from('spj as s');
+        $this->db->join('ref_uraians as u', 's.fid_uraian = u.id');
+        $this->db->where('s.is_status', 'SELESAI');
+        $this->db->where('s.tahun', $ta);
+        if ($part !== null) {
+            $this->db->where('s.fid_part', $part);
+        }
 
-		// buang kode tanpa pagu & tanpa realisasi, dan hanya kode yg dipakai >3 bidang
-		return array_values(array_filter($uraians, function ($u) use ($allowMap) {
-			return isset($allowMap[$u->kode]) && ($u->pagu > 0 || $u->realisasi > 0);
-		}));
-	}
+        if ($filter_tanggal !== null) {
+            $tanggal    = explode(' - ', $filter_tanggal);
+            $start_date = DateTime::createFromFormat('d/m/Y', $tanggal[0])->format('Y-m-d');
+            $end_date   = DateTime::createFromFormat('d/m/Y', $tanggal[1])->format('Y-m-d');
+            $this->db->where('DATE(s.approve_at) >=', $start_date);
+            $this->db->where('DATE(s.approve_at) <=', $end_date);
+        }
+        $this->db->group_by('u.kode');
+        $realMap = [];
+        foreach ($this->db->get()->result() as $row) {
+            $realMap[$row->kode] = (float) $row->total;
+        }
 
-	// Belanja Harian chart data
-	public function getBelanjaHarian($part = null, $filter_tanggal = null, $ta)
-	{
-		$result = ['usulan' => [], 'verifikasi' => [], 'pending' => [], 'cair' => [], 'range' => null];
+        foreach ($uraians as $u) {
+            $u->pagu      = isset($paguMap[$u->kode]) ? $paguMap[$u->kode] : 0;
+            $u->realisasi = isset($realMap[$u->kode]) ? $realMap[$u->kode] : 0;
+        }
 
-		if(empty($filter_tanggal)) {
-			// default: bulan sekarang
-			$start_date = date('Y-m-01');
-			$end_date = date('Y-m-t');
-		} else {
-			$tanggal = explode(' - ', $filter_tanggal);
-			if(count($tanggal) < 2) return $result;
+        // buang kode tanpa pagu & tanpa realisasi, dan hanya kode yg dipakai >3 bidang
+        return array_values(array_filter($uraians, function ($u) use ($allowMap) {
+            return isset($allowMap[$u->kode]) && ($u->pagu > 0 || $u->realisasi > 0);
+        }));
+    }
 
-			$start_obj = DateTime::createFromFormat('d/m/Y', $tanggal[0]);
-			$end_obj = DateTime::createFromFormat('d/m/Y', $tanggal[1]);
-			if(!$start_obj || !$end_obj) return $result;
+    // Belanja Harian chart data
+    public function getBelanjaHarian($part = null, $filter_tanggal = null, $ta)
+    {
+        $result = ['usulan' => [], 'verifikasi' => [], 'pending' => [], 'cair' => [], 'range' => null];
 
-			$start_date = $start_obj->format('Y-m-d');
-			$end_date = $end_obj->format('Y-m-d');
-		}
+        if (empty($filter_tanggal)) {
+            // default: bulan sekarang
+            $start_date = date('Y-m-01');
+            $end_date   = date('Y-m-t');
+        } else {
+            $tanggal = explode(' - ', $filter_tanggal);
+            if (count($tanggal) < 2) {
+                return $result;
+            }
 
-		$result['range'] = ['start' => $start_date, 'end' => $end_date];
+            $start_obj = DateTime::createFromFormat('d/m/Y', $tanggal[0]);
+            $end_obj   = DateTime::createFromFormat('d/m/Y', $tanggal[1]);
+            if (! $start_obj || ! $end_obj) {
+                return $result;
+            }
 
-		// Usulan (ENTRI)
-		$this->db->select('DATE(entri_at) as tanggal, SUM(jumlah) as total');
-		$this->db->from('spj');
-		$this->db->where('is_status', 'ENTRI');
-		$this->db->where('DATE(entri_at) >=', $start_date);
-		$this->db->where('DATE(entri_at) <=', $end_date);
-		if($part !== null) $this->db->where('fid_part', $part);
-		$this->db->group_by('DATE(entri_at)');
-		$this->db->order_by('DATE(entri_at)', 'asc');
-		foreach($this->db->get()->result() as $row) {
-			$result['usulan'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
-		}
+            $start_date = $start_obj->format('Y-m-d');
+            $end_date   = $end_obj->format('Y-m-d');
+        }
 
-		// Verifikasi (VERIFIKASI + VERIFIKASI_ADMIN)
-		$this->db->select('DATE(verify_at) as tanggal, SUM(jumlah) as total');
-		$this->db->from('spj');
-		$this->db->where_in('is_status', ['VERIFIKASI', 'VERIFIKASI_ADMIN']);
-		$this->db->where('DATE(verify_at) >=', $start_date);
-		$this->db->where('DATE(verify_at) <=', $end_date);
-		if($part !== null) $this->db->where('fid_part', $part);
-		$this->db->group_by('DATE(verify_at)');
-		$this->db->order_by('DATE(verify_at)', 'asc');
-		foreach($this->db->get()->result() as $row) {
-			$result['verifikasi'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
-		}
+        $result['range'] = ['start' => $start_date, 'end' => $end_date];
 
-		// Pending (spj_payment.status = PENDING / PENDING - PERBAIKAN)
-		$this->db->select('DATE(sr.approve_at) as tanggal, SUM(sr.jumlah) as total');
-		$this->db->from('spj_riwayat as sr');
-		$this->db->join('spj_payment as sp', 'sr.token = sp.token');
-		$this->db->where_in('sp.status', ['PENDING', 'PENDING - PERBAIKAN']);
-		$this->db->where('DATE(sr.approve_at) >=', $start_date);
-		$this->db->where('DATE(sr.approve_at) <=', $end_date);
-		if($part !== null) $this->db->where('sr.entri_by_part', $part);
-		$this->db->group_by('DATE(sr.approve_at)');
-		$this->db->order_by('DATE(sr.approve_at)', 'asc');
-		foreach($this->db->get()->result() as $row) {
-			$result['pending'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
-		}
+        // Usulan (ENTRI)
+        $this->db->select('DATE(entri_at) as tanggal, SUM(jumlah) as total');
+        $this->db->from('spj');
+        $this->db->where_in('is_status', ['ENTRI', 'VERIFIKASI']);
+        $this->db->where('DATE(entri_at) >=', $start_date);
+        $this->db->where('DATE(entri_at) <=', $end_date);
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
 
-		// Cair (spj_payment.status = CAIR)
-		$this->db->select('DATE(sr.approve_at) as tanggal, SUM(sr.jumlah) as total');
-		$this->db->from('spj_riwayat as sr');
-		$this->db->join('spj_payment as sp', 'sr.token = sp.token');
-		$this->db->where('sp.status', 'CAIR');
-		$this->db->where('DATE(sr.approve_at) >=', $start_date);
-		$this->db->where('DATE(sr.approve_at) <=', $end_date);
-		if($part !== null) $this->db->where('sr.entri_by_part', $part);
-		$this->db->group_by('DATE(sr.approve_at)');
-		$this->db->order_by('DATE(sr.approve_at)', 'asc');
-		foreach($this->db->get()->result() as $row) {
-			$result['cair'][] = ['tanggal' => $row->tanggal, 'total' => (float)$row->total];
-		}
+        $this->db->group_by('DATE(entri_at)');
+        $this->db->order_by('DATE(entri_at)', 'asc');
+        foreach ($this->db->get()->result() as $row) {
+            $result['usulan'][] = ['tanggal' => $row->tanggal, 'total' => (float) $row->total];
+        }
 
-		return $result;
-	}
+        // Verifikasi (VERIFIKASI + VERIFIKASI_ADMIN)
+        $this->db->select('DATE(verify_at) as tanggal, SUM(jumlah) as total');
+        $this->db->from('spj');
+        $this->db->where_in('is_status', ['VERIFIKASI', 'VERIFIKASI_ADMIN']);
+        $this->db->where('DATE(verify_at) >=', $start_date);
+        $this->db->where('DATE(verify_at) <=', $end_date);
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
 
-	public function getListPenerimaManfaat($token)
-	{
-		$this->db->select('*');
-		$this->db->from('spj_relasi_publik');
-		$this->db->where('token', $token);
-		$q = $this->db->get();
-		return $q;
-	}
+        $this->db->group_by('DATE(verify_at)');
+        $this->db->order_by('DATE(verify_at)', 'asc');
+        foreach ($this->db->get()->result() as $row) {
+            $result['verifikasi'][] = ['tanggal' => $row->tanggal, 'total' => (float) $row->total];
+        }
 
-	// ----------------- datatable-rekap-perjadin --------------------------//
+        // Pending (spj_payment.status = PENDING / PENDING - PERBAIKAN)
+        $this->db->select('DATE(sr.approve_at) as tanggal, SUM(sr.jumlah) as total');
+        $this->db->from('spj_riwayat as sr');
+        $this->db->join('spj_payment as sp', 'sr.token = sp.token');
+        $this->db->where_in('sp.status', ['PENDING', 'PENDING - PERBAIKAN']);
+        $this->db->where('DATE(sr.approve_at) >=', $start_date);
+        $this->db->where('DATE(sr.approve_at) <=', $end_date);
+        if ($part !== null) {
+            $this->db->where('sr.entri_by_part', $part);
+        }
 
-	//set column field database for datatable orderable
-	protected $column_order_rekap_perjadin = array('t.id', 't.nama_dokumen', 't.bulan', 't.tahun');
-	// default order 
-	protected $order_rekap_perjadin = array('t.id' => 'desc');
+        $this->db->group_by('DATE(sr.approve_at)');
+        $this->db->order_by('DATE(sr.approve_at)', 'asc');
+        foreach ($this->db->get()->result() as $row) {
+            $result['pending'][] = ['tanggal' => $row->tanggal, 'total' => (float) $row->total];
+        }
 
-	private function _datatables_rekap_perjadin($filter)
-	{
+        // Cair (spj_payment.status = CAIR)
+        $this->db->select('DATE(sr.approve_at) as tanggal, SUM(sr.jumlah) as total');
+        $this->db->from('spj_riwayat as sr');
+        $this->db->join('spj_payment as sp', 'sr.token = sp.token');
+        $this->db->where('sp.status', 'CAIR');
+        $this->db->where('DATE(sr.approve_at) >=', $start_date);
+        $this->db->where('DATE(sr.approve_at) <=', $end_date);
+        if ($part !== null) {
+            $this->db->where('sr.entri_by_part', $part);
+        }
 
-		$this->db->select('t.id, t.nama_dokumen, t.file_path, t.bulan, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan, t.created_by, t.created_at');
-		$this->db->from('t_dokumen_perjadin AS t');
-		$this->db->join('ref_parts as r', 't.fid_part=r.id');
-		if($this->session->userdata('role') === 'USER') {
-			$this->db->where('t.tahun', $this->session->userdata('tahun_anggaran'));
-			$this->db->where('t.fid_part', $this->session->userdata('part'));
-		}
+        $this->db->group_by('DATE(sr.approve_at)');
+        $this->db->order_by('DATE(sr.approve_at)', 'asc');
+        foreach ($this->db->get()->result() as $row) {
+            $result['cair'][] = ['tanggal' => $row->tanggal, 'total' => (float) $row->total];
+        }
 
-		if(!empty($filter['filter_bulan'])) {
-			$this->db->where('t.bulan', $filter['filter_bulan']);
-		}
+        return $result;
+    }
 
-		if(!empty($filter['filter_bidang'])) {
-			$this->db->where('t.fid_part', $filter['filter_bidang']);
-		}
+    public function getListPenerimaManfaat($token)
+    {
+        $this->db->select('*');
+        $this->db->from('spj_relasi_publik');
+        $this->db->where('token', $token);
+        $q = $this->db->get();
+        return $q;
+    }
 
-		// Pencarian global
-		if (!empty($_POST['search']['value'])) {
-			$search = strtolower($_POST['search']['value']);
-			$this->db->group_start()
-				->like('LOWER(t.nama_dokumen)', $search)
-				->or_like('LOWER(t.bulan)', $search)
-				->group_end();
-		}
+    // ----------------- datatable-rekap-perjadin --------------------------//
 
-		if (isset($_POST['order'])) // here order processing
-		{
-			$this->db->order_by($this->column_order_rekap_perjadin[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-		} else if (isset($this->order_rekap_perjadin)) {
-			$order = $this->order_rekap_perjadin;
-			$this->db->order_by(key($order), $order[key($order)]);
-		}
-	}
+    //set column field database for datatable orderable
+    protected $column_order_rekap_perjadin = ['t.id', 't.nama_dokumen', 't.bulan', 't.tahun'];
+    // default order
+    protected $order_rekap_perjadin = ['t.id' => 'desc'];
 
-	function make_datatables_rekap_perjadin($filter)
-	{
-		$this->_datatables_rekap_perjadin($filter);
-		if (@$_POST['length'] != -1)
-			$this->db->limit(@$_POST['length'], @$_POST['start']);
-		$query = $this->db->get();
-		return $query->result();
-	}
+    private function _datatables_rekap_perjadin($filter)
+    {
 
-	function make_count_filtered_rekap_perjadin($filter)
-	{
-		$this->_datatables_rekap_perjadin($filter);
-		$query = $this->db->get();
-		return $query->num_rows();
-	}
+        $this->db->select('t.id, t.nama_dokumen, t.file_path, t.bulan, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan, t.created_by, t.created_at');
+        $this->db->from('t_dokumen_perjadin AS t');
+        $this->db->join('ref_parts as r', 't.fid_part=r.id');
+        if ($this->session->userdata('role') === 'USER') {
+            $this->db->where('t.tahun', $this->session->userdata('tahun_anggaran'));
+            $this->db->where('t.fid_part', $this->session->userdata('part'));
+        }
 
-	public function make_count_all_rekap_perjadin($filter)
-	{
-		$this->_datatables_rekap_perjadin($filter);
-		return $this->db->count_all_results();
-	}
-	// -------------------------------- end-datatable --------------------------//
-	
-	// ----------------- datatable-rekap-pajak --------------------------//
+        if (! empty($filter['filter_bulan'])) {
+            $this->db->where('t.bulan', $filter['filter_bulan']);
+        }
 
-	//set column field database for datatable orderable
-	protected $column_order_rekap_pajak = array('t.id', 'r.nama', 't.periode', 't.jenis_dokumen', 't.tahun');
-	// default order 
-	protected $order_rekap_pajak = array('t.id' => 'desc');
+        if (! empty($filter['filter_bidang'])) {
+            $this->db->where('t.fid_part', $filter['filter_bidang']);
+        }
 
-	private function _datatables_rekap_pajak()
-	{
+        // Pencarian global
+        if (! empty($_POST['search']['value'])) {
+            $search = strtolower($_POST['search']['value']);
+            $this->db->group_start()
+                ->like('LOWER(t.nama_dokumen)', $search)
+                ->or_like('LOWER(t.bulan)', $search)
+                ->group_end();
+        }
 
-		$this->db->select('t.id, t.nama_dokumen, t.jenis_dokumen, t.file_path, t.periode, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan, t.created_by');
-		$this->db->from('t_dokumen_pajak AS t');
-		$this->db->join('ref_parts as r', 't.fid_part=r.id');
-		if($this->session->userdata('role') === 'USER') {
-			$this->db->where('t.tahun', $this->session->userdata('tahun_anggaran'));
-			$this->db->where('t.fid_part', $this->session->userdata('part'));
-		}
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order_rekap_perjadin[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order_rekap_perjadin)) {
+            $order = $this->order_rekap_perjadin;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
 
-		if(!empty($_POST['filter_bidang'])) {
-			$this->db->where('t.fid_part', $_POST['filter_bidang']);
-		}
+    public function make_datatables_rekap_perjadin($filter)
+    {
+        $this->_datatables_rekap_perjadin($filter);
+        if (@$_POST['length'] != -1) {
+            $this->db->limit(@$_POST['length'], @$_POST['start']);
+        }
 
-		if(!empty($_POST['filter_periode'])) {
-			$this->db->where('t.periode', $_POST['filter_periode']);
-		}
+        $query = $this->db->get();
+        return $query->result();
+    }
 
-		// Pencarian global
-		if (!empty($_POST['search']['value'])) {
-			$search = strtolower($_POST['search']['value']);
-			$this->db->group_start()
-				->like('LOWER(t.nama_dokumen)', $search)
-				->or_like('LOWER(t.periode)', $search)
-				->group_end();
-		}
+    public function make_count_filtered_rekap_perjadin($filter)
+    {
+        $this->_datatables_rekap_perjadin($filter);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
 
-		if (isset($_POST['order'])) // here order processing
-		{
-			$this->db->order_by($this->column_order_rekap_pajak[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-		} else if (isset($this->order_rekap_pajak)) {
-			$order = $this->order_rekap_pajak;
-			$this->db->order_by(key($order), $order[key($order)]);
-		}
-	}
+    public function make_count_all_rekap_perjadin($filter)
+    {
+        $this->_datatables_rekap_perjadin($filter);
+        return $this->db->count_all_results();
+    }
+    // -------------------------------- end-datatable --------------------------//
 
-	function make_datatables_rekap_pajak()
-	{
-		$this->_datatables_rekap_pajak();
-		if (@$_POST['length'] != -1)
-			$this->db->limit(@$_POST['length'], @$_POST['start']);
-		$query = $this->db->get();
-		return $query->result();
-	}
+    // ----------------- datatable-rekap-pajak --------------------------//
 
-	function make_count_filtered_rekap_pajak()
-	{
-		$this->_datatables_rekap_pajak();
-		$query = $this->db->get();
-		return $query->num_rows();
-	}
+    //set column field database for datatable orderable
+    protected $column_order_rekap_pajak = ['t.id', 'r.nama', 't.periode', 't.jenis_dokumen', 't.tahun'];
+    // default order
+    protected $order_rekap_pajak = ['t.id' => 'desc'];
 
-	public function make_count_all_rekap_pajak()
-	{
-		$this->_datatables_rekap_pajak();
-		return $this->db->count_all_results();
-	}
-	// -------------------------------- end-datatable --------------------------//
+    private function _datatables_rekap_pajak()
+    {
+
+        $this->db->select('t.id, t.nama_dokumen, t.jenis_dokumen, t.file_path, t.periode, t.tahun, r.nama AS nama_part, t.is_kunci, t.catatan, t.created_by');
+        $this->db->from('t_dokumen_pajak AS t');
+        $this->db->join('ref_parts as r', 't.fid_part=r.id');
+        if ($this->session->userdata('role') === 'USER') {
+            $this->db->where('t.tahun', $this->session->userdata('tahun_anggaran'));
+            $this->db->where('t.fid_part', $this->session->userdata('part'));
+        }
+
+        if (! empty($_POST['filter_bidang'])) {
+            $this->db->where('t.fid_part', $_POST['filter_bidang']);
+        }
+
+        if (! empty($_POST['filter_periode'])) {
+            $this->db->where('t.periode', $_POST['filter_periode']);
+        }
+
+        // Pencarian global
+        if (! empty($_POST['search']['value'])) {
+            $search = strtolower($_POST['search']['value']);
+            $this->db->group_start()
+                ->like('LOWER(t.nama_dokumen)', $search)
+                ->or_like('LOWER(t.periode)', $search)
+                ->group_end();
+        }
+
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order_rekap_pajak[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order_rekap_pajak)) {
+            $order = $this->order_rekap_pajak;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
+
+    public function make_datatables_rekap_pajak()
+    {
+        $this->_datatables_rekap_pajak();
+        if (@$_POST['length'] != -1) {
+            $this->db->limit(@$_POST['length'], @$_POST['start']);
+        }
+
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    public function make_count_filtered_rekap_pajak()
+    {
+        $this->_datatables_rekap_pajak();
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function make_count_all_rekap_pajak()
+    {
+        $this->_datatables_rekap_pajak();
+        return $this->db->count_all_results();
+    }
+    // -------------------------------- end-datatable --------------------------//
 
 }

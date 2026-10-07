@@ -298,7 +298,7 @@
 			// console.log(form.serialize())
 		});
 
-		$(document).on("click", "button#btnHapus", function(e) {
+		$(document).on("click", "button#btnHapus", async function(e) {
 			e.preventDefault();
 			let _ = this,
 				id = _.dataset.uid,
@@ -309,7 +309,7 @@
 				id: id
 			};
 
-			if (confirm(warm)) {
+			if (await uiConfirm({ title: "Hapus Pesan?", text: warm, variant: "danger", ok: "Ya, Hapus" })) {
 				$.post(url, whr, (res) => tableMessage.ajax.reload(), 'json');
 				return false;
 			}

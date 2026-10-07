@@ -3,8 +3,6 @@ function PilihPeriode(id) {
 }
 
 $(function () {
-	
-
 	let $modal = $(".modal-indikator"),
 		$form = $("form#formIndikator");
 
@@ -68,7 +66,7 @@ $(function () {
 		}
 	});
 
-	$("button#HapusIndikator").bind("click", function (e) {
+	$("button#HapusIndikator").bind("click", async function (e) {
 		e.preventDefault();
 		let _ = $(this),
 			id = _.data("id"),
@@ -78,7 +76,14 @@ $(function () {
 		};
 		let msg = `Apakah anda yakin akan menghapus target ${label}`;
 
-		if (confirm(msg)) {
+		if (
+			await uiConfirm({
+				title: "Hapus Target?",
+				text: msg,
+				variant: "danger",
+				ok: "Ya, Hapus",
+			})
+		) {
 			$.post(
 				`${_uri}/app/target/hapus`,
 				$data,
@@ -87,7 +92,7 @@ $(function () {
 						window.location.reload();
 					}
 				},
-				"json"
+				"json",
 			);
 			return false;
 		}

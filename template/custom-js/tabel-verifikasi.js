@@ -53,7 +53,7 @@ var tableVerifikasiSpj = $("#table-spj").DataTable({
 				.attr("type", "search")
 				.addClass("form-control form-control-sm")
 				.appendTo(
-					$(".filterhead:eq(" + indexColumn + ")", table).empty() // hanya cari di tabel ini
+					$(".filterhead:eq(" + indexColumn + ")", table).empty(), // hanya cari di tabel ini
 				)
 				.on("change", function () {
 					column.search($(this).val(), false, false, true).draw();
@@ -106,7 +106,7 @@ function addStatusFilterSPJ(table, columnIndex) {
 				var text = $("<div>").html(d).text().trim();
 				if ($("#statusFilterSPJ option[value='" + text + "']").length === 0) {
 					$("#statusFilterSPJ").append(
-						`<option value="${text}">${text}</option>`
+						`<option value="${text}">${text}</option>`,
 					);
 				}
 			}
@@ -117,33 +117,42 @@ function addStatusFilterSPJ(table, columnIndex) {
 		var val = $(this).val();
 		if (val) {
 			// exact match (regex ^...$)
-			api
-				.column(columnIndex)
-				.search(val, true, false)
-				.draw();
+			api.column(columnIndex).search(val, true, false).draw();
 		} else {
 			api.column(columnIndex).search("").draw();
 		}
 	});
 }
 
-function Selesai(token) {
-	let msg = 'Apakah anda yakin akan menyelesaikan usulan tersebut ?';
-	if (confirm(msg)) {
+async function Selesai(token) {
+	let msg = "Apakah anda yakin akan menyelesaikan usulan tersebut ?";
+	if (
+		await uiConfirm({
+			title: "Selesaikan Usulan?",
+			text: msg,
+			variant: "success",
+			ok: "Ya, Selesaikan",
+		})
+	) {
 		$.blockUI({
 			message: `<img src="${_uri}/template/assets/loader/motion-blur.svg" width="120">`,
 			css: { backgroundColor: "transparent", borderColor: "transparent" },
 		});
 		try {
-			$.post(`${_uri}/app/spj/verifikasi_proses_selesai`, {token: token}, function(res) {
-				if(res.code === 200) {
-					tableVerifikasiSpj.ajax.reload();
+			$.post(
+				`${_uri}/app/spj/verifikasi_proses_selesai`,
+				{ token: token },
+				function (res) {
+					if (res.code === 200) {
+						tableVerifikasiSpj.ajax.reload();
+						$.unblockUI();
+						return;
+					}
+					alert(res.pesan);
 					$.unblockUI();
-					return;
-				}
-				alert(res.pesan);
-				$.unblockUI();
-			}, 'json');
+				},
+				"json",
+			);
 		} catch (error) {
 			alert(error);
 			$.unblockUI();

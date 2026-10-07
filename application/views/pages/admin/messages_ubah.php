@@ -2,7 +2,7 @@
 	<div class="col-md-7">
 		<div class="x_panel">
 			<div class="x_title">
-				<h2>To : <?= $to ?></h2>
+				<h2>To : <?php echo $to ?></h2>
 				<ul class="nav navbar-right panel_toolbox">
 					<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
 					</li>
@@ -11,32 +11,32 @@
 			</div>
 			<div class="x_content">
 				<!-- CONTENT -->
-				<?= form_open(base_url('app/messages/update'), ['id' => 'formMessage', 'class' => 'form-horizontal form-label-left', 'data-parsley-validate' => ''], ['uid' => encrypt_url($row->id), 'to' => encrypt_url($row->to)]); ?>
+				<?php echo form_open(base_url('app/messages/update'), ['id' => 'formMessage', 'class' => 'form-horizontal form-label-left', 'data-parsley-validate' => ''], ['uid' => encrypt_url($row->id), 'to' => encrypt_url($row->to)]); ?>
 				<div class="form-group row">
 					<div class="col-md-6">
 						<label class="control-label">Pilih Type <span class="text-danger">*</span></label>
 						<select name="type" class="form-control" required>
 							<option value="">Choose option</option>
-							<option value="SUCCESS" <?= $row->type === 'SUCCESS' ? 'selected' : ''; ?>>Success</option>
-							<option value="WARNING" <?= $row->type === 'WARNING' ? 'selected' : ''; ?>>Penting</option>
-							<option value="INFO" <?= $row->type === 'INFO' ? 'selected' : ''; ?>>Info</option>
-							<option value="DANGER" <?= $row->type === 'DANGER' ? 'selected' : ''; ?>>Sangat Penting</option>
+							<option value="SUCCESS" <?php echo $row->type === 'SUCCESS' ? 'selected' : ''; ?>>Success</option>
+							<option value="WARNING" <?php echo $row->type === 'WARNING' ? 'selected' : ''; ?>>Penting</option>
+							<option value="INFO" <?php echo $row->type === 'INFO' ? 'selected' : ''; ?>>Info</option>
+							<option value="DANGER" <?php echo $row->type === 'DANGER' ? 'selected' : ''; ?>>Sangat Penting</option>
 						</select>
 					</div>
 					<div class="col-md-6">
 						<label class="control-label">Pilih Mode <span class="text-danger">*</span></label>
 						<select name="mode" class="form-control" required>
 							<option value="">Choose option</option>
-							<option value="GLOBAL" <?= $row->mode === 'GLOBAL' ? 'selected' : ''; ?>>Global</option>
-							<option value="PRIVATE_ALL" <?= $row->mode === 'PRIVATE_ALL' ? 'selected' : ''; ?>>Private All</option>
-							<option value="PRIVATE" <?= $row->mode === 'PRIVATE' ? 'selected' : ''; ?>>Private</option>
+							<option value="GLOBAL" <?php echo $row->mode === 'GLOBAL' ? 'selected' : ''; ?>>Global</option>
+							<option value="PRIVATE_ALL" <?php echo $row->mode === 'PRIVATE_ALL' ? 'selected' : ''; ?>>Private All</option>
+							<option value="PRIVATE" <?php echo $row->mode === 'PRIVATE' ? 'selected' : ''; ?>>Private</option>
 						</select>
 					</div>
 				</div>
 				<div class="form-group row">
 					<div class="d-none" id="select_user">
 						<label for="user">To</label>
-						: <?= $to ?>
+						: <?php echo $to ?>
 						<button type="button" role="button" class="btn btn-sm btn-info rounded-pill d-block pull-right" id="gantiUser"><i class="fa fa-user mr-1"></i> Ganti</button>
 						<button type="button" role="button" class="btn btn-sm btn-danger rounded-pill d-none pull-right" id="gantiUserBatal"><i class="fa fa-close mr-1"></i> Batal</button>
 						<p class="help-block">*) Silahkan pilih user jika tujuan diganti, jika tidak biarkan kosong !</p>
@@ -45,7 +45,7 @@
 				</div>
 				<div class="divider-dashed"></div>
 				<div class="form-group row">
-					<textarea required data-parsley-trigger="keyup" name="message" id="message" class="resizable_textarea bg-light form-control border-0" cols="30" rows="10" placeholder="Ketik pesan anda disini ..."><?= $row->message ?></textarea>
+					<textarea required data-parsley-trigger="keyup" name="message" id="message" class="resizable_textarea bg-light form-control border-0" cols="30" rows="10" placeholder="Ketik pesan anda disini ..."><?php echo $row->message ?></textarea>
 				</div>
 				<div class="divider-dashed"></div>
 
@@ -54,17 +54,17 @@
 						<label for="aktif">Status Aktif</label>
 						<div class="clearfix"></div>
 						<?php
-						$is_checked = $row->is_aktif === 'Y' ? 'checked' : '';
-						?>
-						<input type="checkbox" name="aktif" value="Y" class="js-switch" id="aktif" <?= $is_checked ?> />
+                            $is_checked = $row->is_aktif === 'Y' ? 'checked' : '';
+                        ?>
+						<input type="checkbox" name="aktif" value="Y" class="js-switch" id="aktif" <?php echo $is_checked ?> />
 					</div>
 				</div>
 				<div class="divider-dashed"></div>
 				<button class="btn btn-success rounded-0" type="submit"><i class="fa fa-send"></i> Simpan</button>
 				<button class="btn btn-danger rounded-0" type="button" onclick="window.history.back(-1)"><i class="fa fa-close"></i> Batal</button>
-				<button class="btn btn-info pull-right rounded-0" id="btnHapus" data-uid="<?= $row->id ?>" data-url="<?= base_url("app/messages/delete") ?>" type="button"><i class="fa fa-trash"></i> Hapus Permanent</button>
+				<button class="btn btn-info pull-right rounded-0" id="btnHapus" data-uid="<?php echo $row->id ?>" data-url="<?php echo base_url("app/messages/delete") ?>" type="button"><i class="fa fa-trash"></i> Hapus Permanent</button>
 
-				<?= form_close() ?>
+				<?php echo form_close() ?>
 				<!-- /CONTENT -->
 			</div>
 		</div>
@@ -83,7 +83,7 @@
 				$.post($url, $data, function(result) {
 					if (result.status === 200) {
 						alert(result.pesan);
-						window.location.href = '<?= base_url("app/messages") ?>';
+						window.location.href = '<?php echo base_url("app/messages") ?>';
 					}
 				}, 'json');
 			}
@@ -99,7 +99,7 @@
 			templateResult: formatUserSelect2,
 			ajax: {
 				method: 'post',
-				url: '<?= base_url("app/users/getAll") ?>',
+				url: '<?php echo base_url("app/users/getAll") ?>',
 				dataType: 'json',
 				data: function(params) {
 					return {
@@ -158,7 +158,7 @@
 			return $state;
 		};
 
-		$(document).on("click", "button#btnHapus", function(e) {
+		$(document).on("click", "button#btnHapus", async function(e) {
 			e.preventDefault();
 			let _ = this,
 				id = _.dataset.uid,
@@ -169,8 +169,8 @@
 				id: id
 			};
 
-			if (confirm(warm)) {
-				$.post(url, whr, (res) => window.location.href = '<?= base_url("app/messages") ?>', 'json');
+			if (await uiConfirm({ title: "Hapus Pesan?", text: warm, variant: "danger", ok: "Ya, Hapus" })) {
+				$.post(url, whr, (res) => window.location.href = '<?php echo base_url("app/messages") ?>', 'json');
 				return false;
 			}
 		})

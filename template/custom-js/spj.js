@@ -9,8 +9,10 @@ $(function () {
 	let tab_active = urlParams.get("tab");
 
 	// Initial load
-	$('#inbox').html(`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`);
-	
+	$("#inbox").html(
+		`<div class="d-flex justify-content-center align-items-center align-self-center py-4"><img src="${_uri}/template/assets/loader/motion-blur.svg" alt="Loading" class="mr-3" width="40"><h4>Loading data, mohon tunggu.</h4></div>`,
+	);
+
 	// jika tab inbox aktif
 	getInbox().then((data) => {
 		if (data.code === 404) {
@@ -18,7 +20,7 @@ $(function () {
 				`<div class="text-center my-5"><i class="fa fa-folder-open mb-4" style="font-size: 64px"></i> <br> <div class="clearfix"></div><br> "${data.msg}" Silahkan klik tombol buat usul spj</div>
 				<div class="row d-flex justify-content-center">
 					${data.result}
-				</div>`
+				</div>`,
 			);
 			NProgress.done();
 			return false;
@@ -46,18 +48,18 @@ $(function () {
 					<div class="row d-flex justify-content-center">
 						${data.result}
 					</div>
-					`
+					`,
 				);
 				NProgress.done();
 				return false;
 			}
 			$("#inbox").html(data.result);
 			NProgress.done();
-            var spjList = new List("spjList", option);
+			var spjList = new List("spjList", option);
 		});
 	});
 
-    $(document).on("click", "#myTab a[href='#verifikasi']", async function (e) {
+	$(document).on("click", "#myTab a[href='#verifikasi']", async function (e) {
 		let _ = $(this),
 			href = _.attr("href");
 		// console.log(_.attr('href'))
@@ -102,7 +104,7 @@ $(function () {
 async function LogHistoris(token) {
 	// tampilkan loading di modal-body
 	$("#modalLogHistoris .modal-body").html(
-		"<div class='text-center p-3'>Loading...</div>"
+		"<div class='text-center p-3'>Loading...</div>",
 	);
 	// buka modal lebih awal agar user lihat proses loading
 	$("#modalLogHistoris").modal("show");
@@ -116,13 +118,20 @@ async function LogHistoris(token) {
 	} catch (error) {
 		// tampilkan pesan error jika gagal
 		$("#modalLogHistoris .modal-body").html(
-			`<div class='text-danger p-3'>Terjadi kesalahan saat memuat data. (${error.message})</div>`
+			`<div class='text-danger p-3'>Terjadi kesalahan saat memuat data. (${error.message})</div>`,
 		);
 	}
 }
 
 async function HapusUsulan(url) {
-	if (confirm("Apakah anda yakin akan menghapus usulan tersebut ?")) {
+	if (
+		await uiConfirm({
+			title: "Hapus Usulan?",
+			text: "Apakah anda yakin akan menghapus usulan tersebut ?",
+			variant: "danger",
+			ok: "Ya, Hapus",
+		})
+	) {
 		try {
 			const req = await fetch(url, {
 				method: "POST",
@@ -134,14 +143,12 @@ async function HapusUsulan(url) {
 
 			const res = await req.json();
 
-			if (res !== 200)
-			{
+			if (res !== 200) {
 				alert(res.msg || "Hapus GAGAL");
 				return false;
 			}
 
 			window.location.reload();
-			
 		} catch (err) {
 			alert("Terjadi kesalahan: " + err.message);
 		}

@@ -60,8 +60,15 @@ var tablePenerimaManfaat = $("#table-penerima-manfaat").DataTable({
 	},
 });
 
-function HapusPenerimaManfaat(id) {
-	if (confirm("Yakin akan menghapus data tersebut?")) {
+async function HapusPenerimaManfaat(id) {
+	if (
+		await uiConfirm({
+			title: "Hapus Data?",
+			text: "Yakin akan menghapus data tersebut?",
+			variant: "danger",
+			ok: "Ya, Hapus",
+		})
+	) {
 		$.ajax({
 			url: `${_uri}/app/spj/hapus_penerima_manfaat`,
 			type: "POST",
