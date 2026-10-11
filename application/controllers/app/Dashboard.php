@@ -91,7 +91,7 @@ class Dashboard extends CI_Controller
 
         // PAGU per Kelompok (murni / perubahan mengikuti sesi login)
         $pagu_kelompok = [];
-        $db_pagu_kel = $this->db->select('k.id, k.kode, k.nama, SUM(p.total_pagu_awal) as total')
+        $db_pagu_kel   = $this->db->select('k.id, k.kode, k.nama, SUM(p.total_pagu_awal) as total')
             ->from('ref_kelompok_belanja k')
             ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
@@ -105,7 +105,7 @@ class Dashboard extends CI_Controller
 
         // PAGU per Jenis (murni / perubahan mengikuti sesi login)
         $pagu_jenis = [];
-        $db_pagu_j = $this->db->select('j.id, j.kode, j.nama, SUM(p.total_pagu_awal) as total')
+        $db_pagu_j  = $this->db->select('j.id, j.kode, j.nama, SUM(p.total_pagu_awal) as total')
             ->from('ref_jenis_belanja j')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
             ->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($ta) . ' AND p.is_perubahan = ' . $this->db->escape($is_perubahan), 'left')
@@ -118,7 +118,7 @@ class Dashboard extends CI_Controller
 
         // REALISASI per Kelompok (via spj_riwayat.kode_uraian -> ref_uraians.kode -> jenis -> kelompok)
         $real_kelompok = [];
-        $db_rk = $this->db->select('k.id, k.nama, SUM(s.jumlah) as total')
+        $db_rk         = $this->db->select('k.id, k.nama, SUM(s.jumlah) as total')
             ->from('ref_kelompok_belanja k')
             ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
@@ -132,7 +132,7 @@ class Dashboard extends CI_Controller
 
         // REALISASI per Jenis
         $real_jenis = [];
-        $db_rj = $this->db->select('j.id, j.nama, SUM(s.jumlah) as total')
+        $db_rj      = $this->db->select('j.id, j.nama, SUM(s.jumlah) as total')
             ->from('ref_jenis_belanja j')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
             ->join('spj_riwayat s', "s.kode_uraian = u.kode AND s.is_status = 'APPROVE' AND s.tahun = " . $this->db->escape($ta))
@@ -144,19 +144,19 @@ class Dashboard extends CI_Controller
         endforeach;
 
         // Gabung pagu + realisasi jadi array siap chart
-        $kelompok_ids = array_unique(array_merge(array_keys($pagu_kelompok), array_keys($real_kelompok)));
+        $kelompok_ids   = array_unique(array_merge(array_keys($pagu_kelompok), array_keys($real_kelompok)));
         $kelompok_chart = ['labels' => [], 'pagu' => [], 'realisasi' => []];
         foreach ($kelompok_ids as $id):
-            $nama = $pagu_kelompok[$id]['nama'] ?? ($real_kelompok[$id]['nama'] ?? '-');
+            $nama                          = $pagu_kelompok[$id]['nama'] ?? ($real_kelompok[$id]['nama'] ?? '-');
             $kelompok_chart['labels'][]    = $nama;
             $kelompok_chart['pagu'][]      = (int) ($pagu_kelompok[$id]['total_pagu'] ?? 0);
             $kelompok_chart['realisasi'][] = (int) ($real_kelompok[$id]['total_realisasi'] ?? 0);
         endforeach;
 
-        $jenis_ids = array_unique(array_merge(array_keys($pagu_jenis), array_keys($real_jenis)));
+        $jenis_ids   = array_unique(array_merge(array_keys($pagu_jenis), array_keys($real_jenis)));
         $jenis_chart = ['labels' => [], 'pagu' => [], 'realisasi' => []];
         foreach ($jenis_ids as $id):
-            $nama = $pagu_jenis[$id]['nama'] ?? ($real_jenis[$id]['nama'] ?? '-');
+            $nama                       = $pagu_jenis[$id]['nama'] ?? ($real_jenis[$id]['nama'] ?? '-');
             $jenis_chart['labels'][]    = $nama;
             $jenis_chart['pagu'][]      = (int) ($pagu_jenis[$id]['total_pagu'] ?? 0);
             $jenis_chart['realisasi'][] = (int) ($real_jenis[$id]['total_realisasi'] ?? 0);
@@ -198,6 +198,7 @@ class Dashboard extends CI_Controller
             ],
             'autoload_css' => [
                 'template/backend/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css',
+                'template/custom-css/chart-export.css',
             ],
             'autoload_js'  => [
                 'template/backend/vendors/Chart.js/dist/Chart.bundle.min.js',

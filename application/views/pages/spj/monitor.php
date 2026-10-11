@@ -1,34 +1,7 @@
-
-<style>
-.x_panel .table thead th { position: sticky; z-index: 5; }
-.x_panel .table thead th:not([class*="bg-"]) { background: #34495E; color: #ECF0F1; }
-</style>
 <?php $filter_tanggal = isset($filter_tanggal) ? $filter_tanggal : (isset($_GET['filter_tanggal']) ? $_GET['filter_tanggal'] : null);
 $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) : '';
 ?>
 
-<?php echo form_open(base_url("app/spj/monitor"), ['class' => 'form-horizontal', 'method' => 'GET']); ?>
-<div class="border p-2 mb-3 bg-light rounded-bottom">
-    <div class="row">
-        <div class="col-md-3">
-            <fieldset>
-                <div class="control-group ">
-                <label for="filter_tanggal">Filter Tanggal</label>
-                    <div class="controls">
-                        <div class="input-prepend input-group">
-                            <input type="text" autocomplete="off" name="filter_tanggal" id="filter_tanggal" class="form-control" value="<?php echo $filter_tanggal ?>" />
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" id="btn_filter" class="btn btn-primary mt-4"><i class="fa fa-filter"></i> Terapkan</button>
-            <button type="button" class="btn btn-secondary mt-4" onclick="window.location.href = '<?php echo base_url('app/spj/monitor') ?>'"><i class="fa fa-repeat"></i> Reset</button>
-        </div>
-    </div>
-</div>
-<?php echo form_close(); ?>
 <div class="row"
     style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 0px; padding-bottom: 10px;">
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6"
@@ -41,8 +14,8 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                     $alokasiPagu = $this->spj->getTotalPaguMurniByPart($part, $tahun_anggaran);
                 }
             ?>
-            <div class="count">Alokasi Pagu Murni</div>
-            <h3><?php echo nominal($alokasiPagu); ?></h3>
+            <div class="count">Pagu Murni</div>
+            <h3 data-countup="<?php echo (float) $alokasiPagu; ?>"><?php echo nominal($alokasiPagu); ?></h3>
             <p>Pagu Anggaran Murni</p>
         </div>
     </div>
@@ -57,8 +30,8 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                 }
             ?>
             <div class="icon"><i class="fa fa-money"></i></div>
-            <div class="count">Alokasi Pagu Perubahan</div>
-            <h3><?php echo nominal($alokasiPaguPerubahan); ?></h3>
+            <div class="count">Pagu Perubahan</div>
+            <h3 data-countup="<?php echo (float) $alokasiPaguPerubahan; ?>"><?php echo nominal($alokasiPaguPerubahan); ?></h3>
             <p>Pagu Anggaran Perubahan</p>
         </div>
     </div>
@@ -74,7 +47,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
             ?>
             <div class="icon"><i class="fa fa-list-alt"></i></div>
             <div class="count">Realisasi Belanja</div>
-            <h3><?php echo nominal($totalRealisasi); ?></h3>
+            <h3 data-countup="<?php echo (float) $totalRealisasi; ?>"><?php echo nominal($totalRealisasi); ?></h3>
             <p>Realisasi Anggaran</p>
         </div>
     </div>
@@ -102,6 +75,24 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         </div>
     </div>
 </div>
+
+<?php echo form_open(base_url("app/spj/monitor"), ['method' => 'GET']); ?>
+<div class="row align-items-center">
+    <div class="col-md-4 col-sm-6">
+        <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            <input type="text" autocomplete="off" name="filter_tanggal" id="filter_tanggal"
+                class="form-control" placeholder="Semua tanggal"
+                value="<?php echo $filter_tanggal ?>" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" id="btn_reset_filter" title="Reset filter"
+                    <?php echo $filter_tanggal ? '' : 'style="display:none"' ?>><i class="fa fa-times"></i></button>
+            </span>
+        </div>
+        <small class="text-muted">Pilih tanggal di kalender &mdash; data langsung terupdate.</small>
+    </div>
+</div>
+<?php echo form_close(); ?>
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Harian</h2>
@@ -128,6 +119,17 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
     </div>
 </div>
 
+<ul class="nav nav-tabs monitor-tabs">
+    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab-bidang"><i class="fa fa-sitemap mr-1"></i> Bidang</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-kelompok"><i class="fa fa-folder-open-o mr-1"></i> Kelompok</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-jenis"><i class="fa fa-tags mr-1"></i> Jenis</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-uraian"><i class="fa fa-file-text-o mr-1"></i> Uraian</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-program"><i class="fa fa-book mr-1"></i> Program</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-kegiatan"><i class="fa fa-calendar mr-1"></i> Kegiatan</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-sub-kegiatan"><i class="fa fa-tasks mr-1"></i> Sub Kegiatan</a></li>
+</ul>
+<div class="tab-content">
+<div class="tab-pane active" id="tab-bidang">
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Bidang</h2>
@@ -369,7 +371,9 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         </table>
     </div>
 </div>
+</div>
 
+<div class="tab-pane" id="tab-kelompok">
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Kelompok</h2>
@@ -440,7 +444,9 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         </table>
     </div>
 </div>
+</div>
 
+<div class="tab-pane" id="tab-jenis">
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Jenis</h2>
@@ -511,7 +517,9 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         </table>
     </div>
 </div>
+</div>
 
+<div class="tab-pane" id="tab-uraian">
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Uraian</h2>
@@ -581,7 +589,9 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         </table>
     </div>
 </div>
+</div>
 
+<div class="tab-pane" id="tab-program">
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Program</h2>
@@ -657,7 +667,9 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         </table>
     </div>
 </div>
+</div>
 
+<div class="tab-pane" id="tab-kegiatan">
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Kegiatan</h2>
@@ -737,8 +749,9 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
         </table>
     </div>
 </div>
+</div>
 
-
+<div class="tab-pane" id="tab-sub-kegiatan">
 <div class="x_panel">
     <div class="x_title">
         <h2><i class="fa fa-line-chart mr-2"></i> Belanja Sub Kegiatan</h2>
@@ -824,4 +837,5 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
             </tbody>
         </table>
     </div>
+</div></div>
 </div>

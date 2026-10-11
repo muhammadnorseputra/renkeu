@@ -18,6 +18,7 @@
     <!-- Custom Theme Scripts -->
     <script src="<?php echo asset_url('template/backend/build/js/custom.js') ?>"></script>
     <script src="<?php echo asset_url('template/custom-js/ui-confirm.js') ?>"></script>
+    <script src="<?php echo asset_url('template/custom-js/chart-export.js') ?>"></script>
     <script src="<?php echo asset_url('template/custom-js/admin.js') ?>"></script>
 
     <?php

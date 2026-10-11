@@ -12,7 +12,8 @@
             <h3>Target </h3>
             <p>Target Pagu Anggaran.</p>
             <hr>
-            <div class="count">Rp. <span class="countup" data-value="<?php echo (float) $panel['program_total_pagu'] ?>">0</span></div>
+            <div class="count">Rp. <span class="countup"
+                    data-value="<?php echo (float) $panel['program_total_pagu'] ?>">0</span></div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -21,7 +22,8 @@
             <h3>Realisasi </h3>
             <p>Realisasi Pagu Anggaran.</p>
             <hr>
-            <div class="count">Rp. <span class="countup" data-value="<?php echo (float) $panel['program_total_realisasi'] ?>">0</span></div>
+            <div class="count">Rp. <span class="countup"
+                    data-value="<?php echo (float) $panel['program_total_realisasi'] ?>">0</span></div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -30,7 +32,8 @@
             <h3>Pegawai </h3>
             <p>Jumlah Pegawai Mapping.</p>
             <hr>
-            <div class="count"><span class="countup" data-value="<?php echo (float) $panel['jumlah_pegawai'] ?>">0</span> pegawai</div>
+            <div class="count"><span class="countup"
+                    data-value="<?php echo (float) $panel['jumlah_pegawai'] ?>">0</span> pegawai</div>
         </div>
     </div>
     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6  ">
@@ -72,13 +75,31 @@
                 <h2 class="d-inline-block mb-0">Trend Realisasi </h2>
                 <div id="chartStatusToggle" class="d-inline-block ml-3">
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-warning" data-status="baru"><i class="fa fa-file-text-o mr-1"></i> BARU</button>
-                        <button type="button" class="btn btn-outline-primary" data-status="ms"><i class="fa fa-check-circle mr-1"></i> MS</button>
-                        <button type="button" class="btn btn-outline-danger" data-status="tms"><i class="fa fa-close mr-1"></i> TMS</button>
-                        <button type="button" class="btn btn-outline-success active" data-status="cair"><i class="fa fa-money mr-1"></i> CAIR</button>
+                        <button type="button" class="btn btn-outline-warning" data-status="baru"><i
+                                class="fa fa-file-text-o mr-1"></i> BARU</button>
+                        <button type="button" class="btn btn-outline-primary" data-status="ms"><i
+                                class="fa fa-check-circle mr-1"></i> MS</button>
+                        <button type="button" class="btn btn-outline-danger" data-status="tms"><i
+                                class="fa fa-close mr-1"></i> TMS</button>
+                        <button type="button" class="btn btn-outline-success active" data-status="cair"><i
+                                class="fa fa-money mr-1"></i> CAIR</button>
                     </div>
                 </div>
                 <div class="clearfix"></div>
+                <ul class="nav navbar-right panel_toolbox chart-export">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" title="Export chart" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false"><i class="fa fa-download"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li class="dropdown-header">Export sebagai</li>
+                            <li><a class="export-chart" data-target="tour_chart_transaksi" data-format="png"><i
+                                        class="fa fa-file-image-o"></i> PNG</a></li>
+                            <li><a class="export-chart" data-target="tour_chart_transaksi" data-format="jpg"><i
+                                        class="fa fa-file-image-o"></i> JPG</a></li>
+                        </ul>
+                    </li>
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                </ul>
             </div>
             <div class="x_content">
                 <div class="col-12 ">
@@ -98,7 +119,9 @@
                             ?>
                             <span>TOTAL TRIWULAN I</span>
                             <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
+                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
+                            </div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
                                     data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
@@ -116,7 +139,9 @@
                             ?>
                             <span>TOTAL TRIWULAN II</span>
                             <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
+                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
+                            </div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
                                     data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
@@ -134,7 +159,9 @@
                             ?>
                             <span>TOTAL TRIWULAN III</span>
                             <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
+                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
+                            </div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
                                     data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
@@ -152,7 +179,9 @@
                             ?>
                             <span>TOTAL TRIWULAN IV</span>
                             <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;"><strong><?php echo @round($pct, 2) ?>%</strong> capaian</div>
+                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
+                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
+                            </div>
                             <div class="progress progress_sm m-0" style="width: 100%;">
                                 <div class="progress-bar" role="progressbar"
                                     data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
@@ -222,7 +251,18 @@
         <div class="x_panel">
             <div class="x_title">
                 <h2>Kelompok Belanja & Jenis Belanja</h2>
-                <ul class="nav navbar-right panel_toolbox">
+                <ul class="nav navbar-right panel_toolbox chart-export">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" title="Export chart" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false"><i class="fa fa-download"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li class="dropdown-header">Export sebagai</li>
+                            <li><a class="export-chart" data-target="tour_chart_belanja" data-format="png"><i
+                                        class="fa fa-file-image-o"></i> PNG</a></li>
+                            <li><a class="export-chart" data-target="tour_chart_belanja" data-format="jpg"><i
+                                        class="fa fa-file-image-o"></i> JPG</a></li>
+                        </ul>
+                    </li>
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                 </ul>
                 <div class="clearfix"></div>
@@ -249,7 +289,18 @@
         <div class="x_panel">
             <div class="x_title">
                 <h2>Realisasi of parts </h2>
-                <ul class="nav navbar-right panel_toolbox">
+                <ul class="nav navbar-right panel_toolbox chart-export">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" title="Export chart" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false"><i class="fa fa-download"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li class="dropdown-header">Export sebagai</li>
+                            <li><a class="export-chart" data-target="tour_chart_part" data-format="png"><i
+                                        class="fa fa-file-image-o"></i> PNG</a></li>
+                            <li><a class="export-chart" data-target="tour_chart_part" data-format="jpg"><i
+                                        class="fa fa-file-image-o"></i> JPG</a></li>
+                        </ul>
+                    </li>
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                 </ul>
                 <div class="clearfix"></div>
@@ -304,7 +355,9 @@ $(function() {
             decimals: decimals,
             separator: '.',
             decimal: ',',
-            formattingFn: function(n) { return fmt.format(n); }
+            formattingFn: function(n) {
+                return fmt.format(n);
+            }
         });
         if (!anim.error) anim.start();
     });
@@ -479,10 +532,30 @@ $(function() {
 
     // Status toggle for SPJ chart
     var statusMeta = {
-        baru: { label: "Realisasi SPJ Baru", color: "#f59e0b", fill: "rgba(245, 158, 11, 0.10)", data: SPJBARU.data },
-        ms:   { label: "Realisasi SPJ MS",   color: "#1e40af", fill: "rgba(30, 64, 175, 0.10)", data: SPJMS.data },
-        tms:  { label: "Realisasi SPJ TMS",  color: "#ef4444", fill: "rgba(239, 68, 68, 0.10)", data: SPJTMS.data },
-        cair: { label: "Realisasi SPJ Cair", color: "#22c55e", fill: "rgba(34, 197, 94, 0.10)", data: SPJCAIR.data }
+        baru: {
+            label: "Realisasi SPJ Baru",
+            color: "#f59e0b",
+            fill: "rgba(245, 158, 11, 0.10)",
+            data: SPJBARU.data
+        },
+        ms: {
+            label: "Realisasi SPJ MS",
+            color: "#1e40af",
+            fill: "rgba(30, 64, 175, 0.10)",
+            data: SPJMS.data
+        },
+        tms: {
+            label: "Realisasi SPJ TMS",
+            color: "#ef4444",
+            fill: "rgba(239, 68, 68, 0.10)",
+            data: SPJTMS.data
+        },
+        cair: {
+            label: "Realisasi SPJ Cair",
+            color: "#22c55e",
+            fill: "rgba(34, 197, 94, 0.10)",
+            data: SPJCAIR.data
+        }
     };
 
     function buildSeries(status) {
@@ -491,8 +564,15 @@ $(function() {
             label: m.label,
             data: m.data,
             color: m.color,
-            lines: { fillColor: m.fill, lineWidth: 3 },
-            points: { fillColor: "#fff", lineWidth: 2, radius: 4 }
+            lines: {
+                fillColor: m.fill,
+                lineWidth: 3
+            },
+            points: {
+                fillColor: "#fff",
+                lineWidth: 2,
+                radius: 4
+            }
         };
     }
 
@@ -671,7 +751,8 @@ $(function() {
                 if (!data || !data.datasets) return '';
                 const i = item.index;
                 const p = i >= 0 && i < (pagu ? pagu.length : 0) ? (Number(pagu[i]) || 0) : 0;
-                const r = i >= 0 && i < (realisasi ? realisasi.length : 0) ? (Number(realisasi[i]) || 0) : 0;
+                const r = i >= 0 && i < (realisasi ? realisasi.length : 0) ? (Number(realisasi[
+                    i]) || 0) : 0;
                 return [
                     "Total Pagu: " + rp(p),
                     "Total Realisasi: " + rp(r),
@@ -682,8 +763,15 @@ $(function() {
     });
 
     // Warna per kelompok: hue dari hash nama (stabil tiap reload, otomatis beda untuk kelompok baru)
-    const hashHue = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h % 360; };
-    const pieColors = { pagu: [], real: [] };
+    const hashHue = s => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+        return h % 360;
+    };
+    const pieColors = {
+        pagu: [],
+        real: []
+    };
     for (let i = 0; i < kelompok.labels.length; i++) {
         const h = hashHue((kelompok.labels[i] || "").trim() + i);
         pieColors.pagu.push(`hsl(${h}, 55%, 42%)`);
@@ -695,8 +783,7 @@ $(function() {
         type: "pie",
         data: {
             labels: kelompok.labels,
-            datasets: [
-                {
+            datasets: [{
                     label: "Pagu",
                     data: kelompok.pagu,
                     backgroundColor: pieColors.pagu,
@@ -719,7 +806,10 @@ $(function() {
             legend: {
                 display: true,
                 position: "top",
-                labels: { padding: 15, fontColor: "#666" }
+                labels: {
+                    padding: 15,
+                    fontColor: "#666"
+                }
             }
         }
     });
@@ -729,8 +819,7 @@ $(function() {
         type: "bar",
         data: {
             labels: jenis.labels,
-            datasets: [
-                {
+            datasets: [{
                     label: "Pagu",
                     data: jenis.pagu,
                     backgroundColor: "rgba(69, 92, 115, 0.7)",
@@ -761,7 +850,10 @@ $(function() {
             legend: {
                 display: true,
                 position: "top",
-                labels: { padding: 15, fontColor: "#666" }
+                labels: {
+                    padding: 15,
+                    fontColor: "#666"
+                }
             }
         }
     });

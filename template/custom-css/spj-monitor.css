@@ -1,0 +1,17 @@
+/* Sticky header + dark header untuk tabel monitor */
+.x_panel .table thead th {
+    position: sticky;
+    z-index: 5;
+}
+
+.x_panel .table thead th:not([class*="bg-"]) {
+    background: #34495E;
+    color: #ECF0F1;
+}
+
+/* Tab monitor: scroll horizontal, tidak wrap */
+.monitor-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+}

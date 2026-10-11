@@ -36,6 +36,11 @@ $("#filter_tanggal").on("cancel.daterangepicker", function (ev, picker) {
 	$(this).val("");
 });
 
+// Reset button handler: redirect tanpa query agar filter_tanggal = null
+$("#btn_reset_filter").on("click", function () {
+	window.location.href = $(this).closest("form").attr("action");
+});
+
 // Chart Belanja Harian (line smooth, toggle status CAIR / USUL)
 (function () {
 	var canvas = document.getElementById("chartBelanjaHarian");

@@ -1448,6 +1448,16 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
 
         // Belanja Harian chart data
         $filter_tanggal = $this->input->get('filter_tanggal');
+        // normalisasi: string kosong / format invalid -> null (filter mati)
+        if ($filter_tanggal !== null) {
+            $parts_tgl = explode(' - ', $filter_tanggal);
+            $valid_tgl = count($parts_tgl) === 2
+                && DateTime::createFromFormat('d/m/Y', $parts_tgl[0]) !== false
+                && DateTime::createFromFormat('d/m/Y', $parts_tgl[1]) !== false;
+            if (!$valid_tgl) {
+                $filter_tanggal = null;
+            }
+        }
         $chartPart      = null;
         if (! in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
             $chartPart = $part;
@@ -1524,6 +1534,9 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
             $db_rj->where('s.fid_part', $part);
         }
         if ($filter_tanggal !== null) {
+            $tgl    = explode(' - ', $filter_tanggal);
+            $tglAwal = DateTime::createFromFormat('d/m/Y', $tgl[0])->format('Y-m-d');
+            $tglAkhir = DateTime::createFromFormat('d/m/Y', $tgl[1])->format('Y-m-d');
             $db_rj->where('DATE(s.approve_at) >=', $tglAwal);
             $db_rj->where('DATE(s.approve_at) <=', $tglAkhir);
         }
@@ -1554,9 +1567,11 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
                 'template/backend/vendors/Chart.js/dist/Chart.min.js',
                 'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.js',
                 'template/custom-js/spj_monitor.js',
+                'template/custom-js/spj-monitor-tabs.js',
             ],
             'autoload_css'   => [
                 'template/backend/vendors/bootstrap-daterangepicker/daterangepicker.css',
+                'template/custom-css/spj-monitor.css',
             ],
         ];
 

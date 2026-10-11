@@ -32,8 +32,8 @@
 
             <h3>NAVIGASI</h3>
             <ul class="nav side-menu">
-                <li><a href="<?php echo base_url('app/dashboard') ?>" title="Dashboard"><i
-                            class="fa fa-home"></i> Dashboard</a></li>
+                <li><a href="<?php echo base_url('app/dashboard') ?>" title="Dashboard"><i class="fa fa-home"></i>
+                        Dashboard</a></li>
                 <?php if (privilages('priv_programs')): ?>
                 <li><a href="<?php echo $this->session->userdata('is_valid_profile') ? base_url('app/programs') : '#' ?>"
                         title="Program & Kegiatan"
@@ -100,16 +100,14 @@
 
                         <li><a href="<?php echo base_url('app/verifikator-kinerja') ?>"
                                 title="Verifikasi Hasil Kinerja">Verifikasi Hasil Kinerja</a></li>
-                        <li><a href="<?php echo base_url('app/pegawai') ?>"
-                                title="Mapping Pegawai">Mapping Pegawai</a></li>
-                        <li><a href="<?php echo base_url('app/dokuments/pengelolaan_resiko') ?>"
-                                title="Target">Dokumen Pengelolaan Resiko</a></li>
+                        <li><a href="<?php echo base_url('app/pegawai') ?>" title="Mapping Pegawai">Mapping Pegawai</a>
+                        </li>
+                        <li><a href="<?php echo base_url('app/dokuments/pengelolaan_resiko') ?>" title="Target">Dokumen
+                                Pengelolaan Resiko</a></li>
                         <li><a href="#" title="Target"
                                 style="cursor: not-allowed; pointer-events: none; opacity: 0.3;">Dokumen Kinerja Non
                                 PK <i class="fa fa-lock"></i></a></li>
-                        <li><a href="#" title="Indikator"
-                                style="cursor: not-allowed; pointer-events: none; opacity: 0.3;">Indikator <i
-                                    class="fa fa-lock"></i></a></li>
+                        <li><a href="<?php echo base_url('app/indikator'); ?>" title="Indikator">Indikator</a></li>
 
                         <li><a href="#" title="Target"
                                 style="cursor: not-allowed; pointer-events: none; opacity: 0.3;">Target <i
