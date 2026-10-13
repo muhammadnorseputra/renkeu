@@ -22,12 +22,13 @@ $(document).ready(function () {
                 columnDefs: [
                     // No: expand/collapse toggle + selalu tampil
                     { targets: 0, orderable: false, className: 'text-center control', width: '30px', responsivePriority: 1 },
-                    // Kolom yang selalu tampil: NIP, Nama, TW I-IV, Total, Status
+                    // Kolom yang selalu tampil: NIP, Nama, Indikator, TW I-IV, Total, Status
                     { targets: 1, orderable: true, className: 'text-left', responsivePriority: 2 },
                     { targets: 2, orderable: true, className: 'text-left', responsivePriority: 2 },
-                    { targets: [8, 9, 10, 11], orderable: false, className: 'text-center', responsivePriority: 3 },
-                    { targets: 12, orderable: false, className: 'text-center', responsivePriority: 3 },
+                    { targets: 8, orderable: false, className: 'text-center', responsivePriority: 3 },
+                    { targets: [9, 10, 11, 12], orderable: false, className: 'text-center', responsivePriority: 3 },
                     { targets: 13, orderable: false, className: 'text-center', responsivePriority: 3 },
+                    { targets: 14, orderable: false, className: 'text-center', responsivePriority: 3 },
                     // Kolom yang collapse ke child row saat layar sempit: Jabatan, Pangkat, Jenis, Bidang
                     { targets: [3, 4, 5, 6], orderable: true, className: 'text-left', visible: false, responsivePriority: 10 },
                     { targets: 7, orderable: true, className: 'text-left', responsivePriority: 10 }
@@ -84,17 +85,48 @@ $(document).ready(function () {
                 $('#btnSimpanVerifikasi').show();
             }
 
-            // Auto-select periode yang sudah terisi di DB (jika ada)
+            // Muat daftar indikator pegawai, lalu pilih yang pertama
+            var $indikator = $('#v_indikator');
+            $indikator.html('<option value="">Memuat indikator...</option>').prop('disabled', true);
+            $('#indikatorWrap').removeClass('d-none');
+            $('#indikatorEmpty').addClass('d-none');
+
+            $.ajax({
+                url: _uri + '/app/verifikatorKinerja/get_indikator_pegawai',
+                type: 'post',
+                data: { nip: nip },
+                dataType: 'json'
+            }).done(function (res) {
+                if (!res.status || !res.data || !res.data.length) {
+                    $indikator.html('<option value="">- Tidak ada indikator -</option>');
+                    $('#indikatorEmpty').removeClass('d-none');
+                    return;
+                }
+                var opts = res.data.map(function (r) {
+                    var badge = (r.bulan_terisi && r.bulan_terisi.length) ? ' (' + r.bulan_terisi.length + ' bln)' : '';
+                    return '<option value="' + r.fid_pegawai_indikator + '">[' + r.jenis_nama + '] ' +
+                        $('<div>').text(r.indikator_nama).html() + badge + '</option>';
+                });
+                $indikator.html(opts).prop('disabled', false);
+                loadPeriodeTerisi(nip, $indikator.val());
+            }).fail(function () {
+                $indikator.html('<option value="">Gagal memuat indikator</option>');
+            });
+        });
+
+        // Ganti indikator -> muat status periode indikator terpilih
+        $('#v_indikator').on('change', function () {
+            if ($(this).val()) loadPeriodeTerisi($('#v_nip').text(), $(this).val());
+        });
+
+        function loadPeriodeTerisi(nip, fidInd) {
             $.ajax({
                 url: _uri + '/app/verifikatorKinerja/get_periode_terisi',
                 type: 'post',
-                data: { nip: nip, tahun: tahun },
+                data: { nip: nip, fid_pegawai_indikator: fidInd, tahun: tahun },
                 dataType: 'json',
                 success: function (res) {
-                    var periode = 'TW1';
-                    if (res.status && res.periode && res.periode.length) {
-                        periode = res.periode[0];
-                    }
+                    var periode = (res.status && res.first) ? res.first : '01';
                     // Icon status per periode: hijau jika ada ceklist, kuning jika kosong
                     if (res.status_periode) {
                         $.each(res.status_periode, function (p, st) {
@@ -109,18 +141,18 @@ $(document).ready(function () {
                     $('.periode-btn[data-periode="' + periode + '"]').addClass('active');
                     $('.periode-btn[data-periode="' + periode + '"] input').prop('checked', true);
 
-                    // Load data verifikasi per NIP + periode
-                    loadVerifikasi(nip, periode);
+                    // Load data verifikasi per NIP + indikator + periode
+                    loadVerifikasi(nip, periode, fidInd);
                 },
                 error: function () {
-                    loadVerifikasi(nip, 'TW1');
+                    loadVerifikasi(nip, '01', fidInd);
                 }
             });
-        });
+        }
 
         // Ganti periode: load ulang checklist
         $('.periode-btn').on('click', function () {
-            loadVerifikasi($('#v_nip').text(), $(this).data('periode'));
+            loadVerifikasi($('#v_nip').text(), $(this).data('periode'), $('#v_indikator').val());
         });
 
         // Klik tombol Rekap: tampilkan modal rekapitulasi
@@ -135,10 +167,44 @@ $(document).ready(function () {
             $('#rekapEmpty').addClass('d-none');
             $('#rekapLoading').removeClass('d-none');
 
+            var $rindikator = $('#r_indikator');
+            $rindikator.html('<option value="">Memuat...</option>').prop('disabled', true);
+            $.ajax({
+                url: _uri + '/app/verifikatorKinerja/get_indikator_pegawai',
+                type: 'post',
+                data: { nip: nip },
+                dataType: 'json'
+            }).done(function (r) {
+                if (!r.status || !r.data || !r.data.length) {
+                    $rindikator.html('<option value="">- Tidak ada indikator -</option>');
+                    return;
+                }
+                $rindikator.html(r.data.map(function (x) {
+                    return '<option value="' + x.fid_pegawai_indikator + '">[' + x.jenis_nama + '] ' +
+                        $('<div>').text(x.indikator_nama).html() + '</option>';
+                })).prop('disabled', false);
+                muatRekap(nip, $rindikator.val());
+            }).fail(function () {
+                $rindikator.html('<option value="">Gagal memuat indikator</option>');
+                $('#rekapLoading').addClass('d-none');
+            });
+        });
+
+        // Ganti indikator pada modal rekap
+        $('#r_indikator').on('change', function () {
+            if ($(this).val()) muatRekap($('#r_nip').text(), $(this).val());
+        });
+
+        function muatRekap(nip, fidInd) {
+            $('#rekapTable tbody').empty();
+            $('#rekapTableWrap').addClass('d-none');
+            $('#rekapEmpty').addClass('d-none');
+            $('#rekapLoading').removeClass('d-none');
+
             $.ajax({
                 url: _uri + '/app/verifikatorKinerja/get_rekap',
                 type: 'post',
-                data: { nip: nip, tahun: tahun },
+                data: { nip: nip, fid_pegawai_indikator: fidInd, tahun: tahun },
                 dataType: 'json',
                 success: function (res) {
                     $('#rekapLoading').addClass('d-none');
@@ -164,11 +230,11 @@ $(document).ready(function () {
                     });
                 }
             });
-        });
+        }
 
         function renderRekap(matrix) {
             var $tbody = $('#rekapTable tbody');
-            var periodeKeys = ['TW1', 'TW2', 'TW3', 'TW4'];
+            var periodeKeys = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
             var checklist = [
                 ['unggah_kinerja_harian', 'Unggah Kinerja Harian', 'fa-cloud-upload'],
                 ['target_realisasi', 'Penginputan Target dan Realisasi', 'fa-bullseye'],
@@ -196,14 +262,15 @@ $(document).ready(function () {
                     '<td class="align-middle">' + no++ + '</td>' +
                     '<td class="text-left align-middle"><i class="fa ' + item[2] + ' text-primary mr-2"></i>' + item[1] + '</td>' +
                     $cells +
-                    '<td class="align-middle"><span class="badge ' + (total === 4 ? 'badge-success' : total > 0 ? 'badge-warning' : 'badge-secondary') + ' badge-pill px-3 py-2">' + total + '/4</span></td>' +
+                    '<td class="align-middle"><span class="badge ' + (total === 12 ? 'badge-success' : total > 0 ? 'badge-warning' : 'badge-secondary') + ' badge-pill px-3 py-2">' + total + '/12</span></td>' +
                     '</tr>'
                 );
             });
         }
 
-        async function loadVerifikasi(nip, periode) {
-            periode = periode || $('.periode-btn input:checked').val() || 'TW1';
+        async function loadVerifikasi(nip, periode, fidInd) {
+            periode = periode || $('.periode-btn input:checked').val() || '01';
+            fidInd = fidInd || $('#v_indikator').val();
             $('.chk-verifikasi').prop('checked', false);
             $('.chk-status').removeClass('badge-success badge-secondary').addClass('badge-secondary').text('Tidak');
 
@@ -218,7 +285,7 @@ $(document).ready(function () {
                 const res = await $.ajax({
                     url: _uri + '/app/verifikatorKinerja/get_verifikasi',
                     type: 'post',
-                    data: { nip: nip, periode: periode, tahun: tahun },
+                    data: { nip: nip, periode: periode, fid_pegawai_indikator: fidInd, tahun: tahun },
                     dataType: 'json'
                 });
 
@@ -386,10 +453,19 @@ $(document).ready(function () {
             $icon.removeClass('fa-save').addClass('fa-spinner fa-spin');
             $label.text('Menyimpan...');
 
+            var fidInd = $('#v_indikator').val();
+            if (!fidInd) {
+                $btn.prop('disabled', false);
+                $icon.removeClass('fa-spinner fa-spin').addClass('fa-save');
+                $label.text('Simpan');
+                $.notify('Indikator wajib dipilih.', {timer: 800, delay: 100, type: 'warn'});
+                return;
+            }
             var data = {
                 nip: $('#v_nip').text(),
-                periode: $('.periode-btn input:checked').val() || 'TW1',
-                tahun: tahun
+                periode: $('.periode-btn input:checked').val() || '01',
+                tahun: tahun,
+                fid_pegawai_indikator: fidInd
             };
             $('.chk-verifikasi').each(function () {
                 data[$(this).attr('name')] = $(this).is(':checked') ? 'Y' : 'N';

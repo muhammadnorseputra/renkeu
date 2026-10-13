@@ -72,69 +72,117 @@ class VerifikatorKinerja extends CI_Controller
     }
 
     /**
-     * Ambil daftar periode yang sudah terisi untuk NIP + tahun
+     * Ambil daftar indikator yang sudah dipilih pegawai dari pegawai_indikators.
      */
-    public function get_periode_terisi()
+    public function get_indikator_pegawai()
     {
         $nip   = $this->input->post('nip');
         $tahun = $this->session->userdata('tahun_anggaran');
 
-        $rows = $this->crud->getWhere('t_verify_kinerja', [
-            'nip'   => $nip,
-            'tahun' => $tahun,
-        ])->result();
+        $rows = $this->db
+            ->select('pi.id AS fid_pegawai_indikator, i.nama AS indikator_nama, ji.nama AS jenis_nama')
+            ->from('pegawai_indikators pi')
+            ->join('ref_indikators i', 'i.id = pi.fid_indikator', 'inner')
+            ->join('ref_jenis_indikators ji', 'ji.id = i.fid_jenis_indikator', 'inner')
+            ->where('pi.nip', $nip)
+            ->order_by('ji.id', 'ASC')
+            ->order_by('i.id', 'ASC')
+            ->get()
+            ->result();
 
-        $periode = [];
         foreach ($rows as $r) {
-            $periode[] = $r->periode;
-        }
-
-        // Status per periode: 'Y' jika minimal 1 checklist terisi
-        $status = [];
-        foreach ($rows as $r) {
-            $checked = false;
-            foreach (['unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'] as $f) {
-                if ($r->{$f} === 'Y') {
-                    $checked = true;
-                    break;
-                }
+            if ($nip) {
+                $periode = $this->db->select('periode')
+                    ->where('nip', $nip)
+                    ->where('tahun', $tahun)
+                    ->where('fid_pegawai_indikator', (int) $r->fid_pegawai_indikator)
+                    ->get('t_verify_kinerja')->result();
+                $r->bulan_terisi = array_values(array_unique(array_column($periode, 'periode')));
+            } else {
+                $r->bulan_terisi = [];
             }
-            $status[$r->periode] = $checked ? 'Y' : 'N';
         }
 
-        echo json_encode(['status' => true, 'periode' => $periode, 'status_periode' => $status]);
+        echo json_encode(['status' => true, 'data' => $rows]);
     }
 
     /**
-     * Ambil data verifikasi per NIP + periode + tahun
+     * Ambil daftar periode yang sudah terisi untuk NIP + tahun + fid_pegawai_indikator
+     */
+    public function get_periode_terisi()
+    {
+        $nip         = $this->input->post('nip');
+        $ip          = $this->input->post('fid_pegawai_indikator');
+        $tahun       = $this->session->userdata('tahun_anggaran');
+
+        $rows = $this->db
+            ->where('nip', $nip)
+            ->where('tahun', $tahun)
+            ->where('fid_pegawai_indikator', (int) $ip)
+            ->get('t_verify_kinerja')
+            ->result();
+
+        $periode = array_unique(array_column($rows, 'periode'));
+
+        $bulan_list = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        $status_periode = [];
+        foreach ($bulan_list as $b) {
+            $st = 'N';
+            foreach ($rows as $r) {
+                if ($r->periode === $b) {
+                    foreach (['unggah_kinerja_harian','target_realisasi','masalah_tindak_lanjut','diskusi_kinerja','data_dukung','simpulan_capaian'] as $f) {
+                        if ($r->{$f} === 'Y') { $st = 'Y'; break; }
+                    }
+                }
+                if ($st === 'Y') break;
+            }
+            $status_periode[$b] = $st;
+        }
+
+        $first = '01';
+        foreach ($bulan_list as $b) {
+            if (!in_array($b, $periode, true)) { $first = $b; break; }
+        }
+
+        echo json_encode(['status' => true, 'periode' => $periode, 'status_periode' => $status_periode, 'first' => $first]);
+    }
+
+    /**
+     * Ambil data verifikasi per NIP + periode + fid_pegawai_indikator + tahun
      */
     public function get_verifikasi()
     {
-        $nip     = $this->input->post('nip');
-        $periode = $this->input->post('periode');
-        $tahun   = $this->session->userdata('tahun_anggaran');
+        $nip         = $this->input->post('nip');
+        $periode     = $this->input->post('periode');
+        $fid_ind     = $this->input->post('fid_pegawai_indikator');
+        $tahun       = $this->session->userdata('tahun_anggaran');
 
-        $row = $this->crud->getWhere('t_verify_kinerja', [
-            'nip'     => $nip,
-            'periode' => $periode,
-            'tahun'   => $tahun,
-        ])->row();
+        $row = $this->db
+            ->where('nip', $nip)
+            ->where('periode', $periode)
+            ->where('tahun', $tahun)
+            ->where('fid_pegawai_indikator', (int) $fid_ind)
+            ->get('t_verify_kinerja')
+            ->row();
 
         echo json_encode(['status' => true, 'data' => $row ?: null]);
     }
 
     /**
-     * Rekap verifikasi per NIP + tahun (semua periode)
+     * Rekap verifikasi per NIP + tahun (semua periode) — per indikator
      */
     public function get_rekap()
     {
-        $nip   = $this->input->post('nip');
-        $tahun = $this->session->userdata('tahun_anggaran');
+        $nip     = $this->input->post('nip');
+        $fid_ind = $this->input->post('fid_pegawai_indikator');
+        $tahun   = $this->session->userdata('tahun_anggaran');
 
-        $rows = $this->crud->getWhere('t_verify_kinerja', [
-            'nip'   => $nip,
-            'tahun' => $tahun,
-        ])->result();
+        $where = ['nip' => $nip, 'tahun' => $tahun];
+        if ($fid_ind !== null && $fid_ind !== '') {
+            $where['fid_pegawai_indikator'] = (int) $fid_ind;
+        }
+
+        $rows = $this->crud->getWhere('t_verify_kinerja', $where)->result();
 
         $fields = [
             'unggah_kinerja_harian',
@@ -172,16 +220,22 @@ class VerifikatorKinerja extends CI_Controller
     }
 
     /**
-     * Simpan verifikasi per NIP + periode + tahun (upsert)
+     * Simpan verifikasi per NIP + periode + fid_pegawai_indikator + tahun (upsert)
      */
     public function save_verifikasi()
     {
         $nip     = $this->input->post('nip');
         $periode = $this->input->post('periode');
+        $fid_ind = $this->input->post('fid_pegawai_indikator');
         $tahun   = $this->session->userdata('tahun_anggaran');
 
         if (empty($nip) || empty($periode) || empty($tahun)) {
             echo json_encode(['status' => false, 'pesan' => 'Data NIP, periode, dan tahun wajib diisi.']);
+            return;
+        }
+
+        if (empty($fid_ind) || !is_numeric($fid_ind)) {
+            echo json_encode(['status' => false, 'pesan' => 'Indikator wajib dipilih.']);
             return;
         }
 
@@ -202,9 +256,10 @@ class VerifikatorKinerja extends CI_Controller
         $user = $this->session->userdata('user_name') ?: 'system';
 
         $exists = $this->crud->getWhere('t_verify_kinerja', [
-            'nip'     => $nip,
-            'periode' => $periode,
-            'tahun'   => $tahun,
+            'nip'                   => $nip,
+            'periode'               => $periode,
+            'tahun'                 => $tahun,
+            'fid_pegawai_indikator' => (int) $fid_ind,
         ])->row();
 
         if ($exists) {
@@ -212,11 +267,12 @@ class VerifikatorKinerja extends CI_Controller
             $data['updated_by'] = $user;
             $ok = $this->crud->update('t_verify_kinerja', $data, ['id' => $exists->id]);
         } else {
-            $data['periode']    = $periode;
-            $data['tahun']      = $tahun;
-            $data['nip']        = $nip;
-            $data['created_at'] = DateTimeInput();
-            $data['created_by'] = $user;
+            $data['periode']               = $periode;
+            $data['tahun']                 = $tahun;
+            $data['nip']                   = $nip;
+            $data['fid_pegawai_indikator'] = (int) $fid_ind;
+            $data['created_at']            = DateTimeInput();
+            $data['created_by']            = $user;
             $ok = $this->crud->insert('t_verify_kinerja', $data);
         }
 
@@ -246,15 +302,17 @@ class VerifikatorKinerja extends CI_Controller
             $row[] = $r->jenis;
             $row[] = $r->bidang_nama;
             $row[] = $r->bidang_singkatan;
-            $tw_full = '<span class="text-success font-weight-bold"><i class="fa fa-check-circle"></i> 6/6</span>';
-            $tw_cell = function ($c) use ($tw_full) {
-                return $c >= 6 ? $tw_full : '<span class="text-muted">' . $c . '/6</span>';
+            $jml_ind = max(1, (int) ($r->jml_indikator ?? 0));
+            $tw_full = '<span class="text-success font-weight-bold"><i class="fa fa-check-circle"></i> ' . (18 * $jml_ind) . '/' . (18 * $jml_ind) . '</span>';
+            $tw_cell = function ($c) use ($tw_full, $jml_ind) {
+                return $c >= 18 * $jml_ind ? $tw_full : '<span class="text-muted">' . $c . '/' . (18 * $jml_ind) . '</span>';
             };
+            $row[] = '<span class="badge badge-info">' . (int) ($r->jml_indikator ?? 0) . '</span>';
             $row[] = $tw_cell($r->tw1_count);
             $row[] = $tw_cell($r->tw2_count);
             $row[] = $tw_cell($r->tw3_count);
             $row[] = $tw_cell($r->tw4_count);
-            $row[] = $r->total_count . '/24';
+            $row[] = $r->total_count . '/' . (72 * $jml_ind);
             $row[] = $r->status_label === 'Lengkap'
                 ? '<span class="badge badge-success">Lengkap</span>'
                 : '<span class="badge badge-warning">Belum Lengkap</span>';
@@ -283,7 +341,7 @@ class VerifikatorKinerja extends CI_Controller
         $sheet       = $spreadsheet->getActiveSheet();
 
         $headers = [
-            'NIP', 'NAMA', 'BIDANG', 'periode', 'unggah_kinerja_harian', 'target_realisasi',
+            'NIP', 'NAMA', 'BIDANG', 'INDIKATOR', 'INDIKATOR_NAMA', 'periode', 'unggah_kinerja_harian', 'target_realisasi',
             'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian',
         ];
         foreach ($headers as $i => $h) {
@@ -291,7 +349,7 @@ class VerifikatorKinerja extends CI_Controller
         }
 
         // Header style
-        $sheet->getStyle('A1:J1')->applyFromArray([
+        $sheet->getStyle('A1:L1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF4F81BD']],
         ]);
@@ -304,41 +362,56 @@ class VerifikatorKinerja extends CI_Controller
             ->order_by('r.id, p.nama_lengkap', 'ASC')
             ->get()->result();
 
-        // Status verifikasi existing per NIP+periode
-        $existing = [];
-        foreach ($this->crud->getWhere('t_verify_kinerja', ['tahun' => $this->session->userdata('tahun_anggaran')])->result() as $v) {
-            $existing[$v->nip . '|' . $v->periode] = $v;
+        // Indikator per pegawai: id pegawai_indikators + nama indikator
+        $map_ind = [];
+        foreach ($this->db->select('pi.id, pi.nip, i.nama AS indikator_nama')
+            ->from('pegawai_indikators pi')
+            ->join('ref_indikators i', 'i.id = pi.fid_indikator', 'inner')
+            ->get()->result() as $m) {
+            $map_ind[$m->nip][] = $m;
         }
 
+        // Status verifikasi existing per NIP+fid_indikator+periode
+        $existing = [];
+        foreach ($this->crud->getWhere('t_verify_kinerja', ['tahun' => $this->session->userdata('tahun_anggaran')])->result() as $v) {
+            $existing[$v->nip . '|' . $v->fid_pegawai_indikator . '|' . $v->periode] = $v;
+        }
+
+        $bulan_list = ['01','02','03','04','05','06','07','08','09','10','11','12'];
         $indikator = ['unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
         $row = 2;
         foreach ($pegawai as $p) {
-            foreach (['TW1', 'TW2', 'TW3', 'TW4'] as $periode) {
-                $v = $existing[$p->nip . '|' . $periode] ?? null;
-                $sheet->setCellValueExplicit('A' . $row, (string) $p->nip, DataType::TYPE_STRING);
-                $sheet->setCellValue('B' . $row, $p->nama_lengkap);
-                $sheet->setCellValue('C' . $row, $p->bidang_nama);
-                $sheet->setCellValue('D' . $row, $periode);
-                foreach ($indikator as $k => $f) {
-                    // Kolom E..J (5..10)
-                    $sheet->setCellValue(chr(69 + $k) . $row, $v ? $v->{$f} : '');
+            if (empty($map_ind[$p->nip])) continue;
+            foreach ($map_ind[$p->nip] as $mi) {
+                foreach ($bulan_list as $periode) {
+                    $v = $existing[$p->nip . '|' . $mi->id . '|' . $periode] ?? null;
+                    $sheet->setCellValueExplicit('A' . $row, (string) $p->nip, DataType::TYPE_STRING);
+                    $sheet->setCellValue('B' . $row, $p->nama_lengkap);
+                    $sheet->setCellValue('C' . $row, $p->bidang_nama);
+                    $sheet->setCellValue('D' . $row, (int) $mi->id);
+                    $sheet->setCellValue('E' . $row, $mi->indikator_nama);
+                    $sheet->setCellValueExplicit('F' . $row, $periode, DataType::TYPE_STRING);
+                    foreach ($indikator as $k => $f) {
+                        // Kolom G..L (7..12)
+                        $sheet->setCellValue(chr(71 + $k) . $row, $v ? $v->{$f} : '');
+                    }
+                    $row++;
                 }
-                $row++;
             }
         }
         $lastRow = $row - 1;
 
-        // Select box periode: TW1-TW4
+        // Select box periode: 01-12
         $dvPeriode = new DataValidation();
         $dvPeriode->setType(DataValidation::TYPE_LIST)
-            ->setFormula1('"TW1,TW2,TW3,TW4"')
+            ->setFormula1('"01,02,03,04,05,06,07,08,09,10,11,12"')
             ->setAllowBlank(true)
             ->setShowErrorMessage(true)
             ->setErrorTitle('Periode tidak valid')
-            ->setError('Pilih TW1, TW2, TW3, atau TW4.');
-        $sheet->setDataValidation('D2:D' . $lastRow, $dvPeriode);
+            ->setError('Pilih 01 sampai 12.');
+        $sheet->setDataValidation('F2:F' . $lastRow, $dvPeriode);
 
-        // Select box 6 indikator: Y / N
+        // Select box 6 checklist: Y / N
         $dvYN = new DataValidation();
         $dvYN->setType(DataValidation::TYPE_LIST)
             ->setFormula1('"Y,N"')
@@ -346,7 +419,7 @@ class VerifikatorKinerja extends CI_Controller
             ->setShowErrorMessage(true)
             ->setErrorTitle('Nilai tidak valid')
             ->setError('Hanya boleh diisi Y atau N.');
-        $sheet->setDataValidation('E2:J' . $lastRow, $dvYN);
+        $sheet->setDataValidation('G2:L' . $lastRow, $dvYN);
 
         // NIP sebagai teks agar digit tidak berubah desimal
         $sheet->getStyle('A2:A' . $lastRow)->getNumberFormat()->setFormatCode('@');
@@ -402,7 +475,7 @@ class VerifikatorKinerja extends CI_Controller
             return strtolower(trim(str_replace([' ', '-'], '_', (string) $h)));
         }, $rows[0]);
 
-        $required = ['nip', 'periode', 'unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
+        $required = ['nip', 'indikator', 'periode', 'unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
         foreach ($required as $col) {
             if (!in_array($col, $headers, true)) {
                 echo json_encode(['status' => false, 'pesan' => 'Kolom "' . $col . '" tidak ditemukan pada file.']);
@@ -413,13 +486,19 @@ class VerifikatorKinerja extends CI_Controller
         $tahun = $this->session->userdata('tahun_anggaran');
         $user  = $this->session->userdata('user_name') ?: 'system';
         $now   = DateTimeInput();
-        $valid_periode = ['TW1', 'TW2', 'TW3', 'TW4'];
+        $valid_periode = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         $fields = ['unggah_kinerja_harian', 'target_realisasi', 'masalah_tindak_lanjut', 'diskusi_kinerja', 'data_dukung', 'simpulan_capaian'];
 
         // Daftar NIP yang terdaftar di tabel pegawai (untuk validasi)
         $valid_nip = [];
         foreach ($this->db->select('nip')->get('pegawai')->result() as $r) {
             $valid_nip[trim((string) $r->nip)] = true;
+        }
+
+        // id pegawai_indikators yang valid (untuk validasi kolom INDIKATOR)
+        $valid_ind = [];
+        foreach ($this->db->select('id')->get('pegawai_indikators')->result() as $r) {
+            $valid_ind[(int) $r->id] = true;
         }
 
         $proses = 0;
@@ -438,15 +517,21 @@ class VerifikatorKinerja extends CI_Controller
             };
 
             $nip     = $get('nip');
-            $periode = strtoupper($get('periode'));
+            $fid_ind = (int) $get('indikator');
+            $periode = $get('periode');
 
             if ($nip === '' || !in_array($periode, $valid_periode, true)) {
-                $gagal[] = 'Baris ' . ($i + 1) . ': NIP kosong atau periode tidak valid.';
+                $gagal[] = 'Baris ' . ($i + 1) . ': NIP kosong atau periode tidak valid (01-12).';
                 continue;
             }
 
             if (!isset($valid_nip[$nip])) {
                 $gagal[] = 'Baris ' . ($i + 1) . ': NIP ' . $nip . ' tidak terdaftar.';
+                continue;
+            }
+
+            if ($fid_ind <= 0 || !isset($valid_ind[$fid_ind])) {
+                $gagal[] = 'Baris ' . ($i + 1) . ': INDIKATOR kosong atau tidak valid.';
                 continue;
             }
 
@@ -464,15 +549,21 @@ class VerifikatorKinerja extends CI_Controller
                 continue;
             }
 
-            $data = ['periode' => $periode, 'tahun' => $tahun, 'nip' => $nip];
+            $data = [
+                'nip'                   => $nip,
+                'periode'               => $periode,
+                'tahun'                 => $tahun,
+                'fid_pegawai_indikator' => $fid_ind,
+            ];
             foreach ($fields as $f) {
                 $data[$f] = strtoupper($raw[$f]) === 'Y' ? 'Y' : 'N';
             }
 
             $exists = $this->crud->getWhere('t_verify_kinerja', [
-                'nip'     => $nip,
-                'periode' => $periode,
-                'tahun'   => $tahun,
+                'nip'                   => $nip,
+                'periode'               => $periode,
+                'tahun'                 => $tahun,
+                'fid_pegawai_indikator' => $fid_ind,
             ])->row();
 
             if ($exists) {

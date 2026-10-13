@@ -788,6 +788,139 @@ class ModelSpj extends CI_Model
         }));
     }
 
+    // Rekap bertingkat Bidang -> Kegiatan -> Uraian (3 query, tanpa N+1)
+    public function getUraianPerBidang($part = null, $filter_tanggal = null, $is_perubahan = "0", $ta)
+    {
+        // 1. Master nama bidang
+        $partNames = [];
+        foreach ($this->db->get('ref_parts')->result() as $r) {
+            $partNames[(int) $r->id] = $r->nama;
+        }
+
+        // 1b. Master uraian + kegiatannya (untuk merge realisasi tanpa pagu)
+        $this->db->select('u.id, u.kode, MAX(u.nama) as nama, k.id as kegiatan_id, k.kode as kegiatan_kode, MAX(k.nama) as kegiatan_nama');
+        $this->db->from('ref_uraians as u');
+        $this->db->join('ref_kegiatans as k', 'k.id = u.fid_kegiatan');
+        $this->db->where('u.tahun', $ta);
+        if ($part !== null) {
+            $this->db->where('k.fid_part', $part);
+        }
+        $this->db->group_by('u.id');
+        $urMaster = [];
+        foreach ($this->db->get()->result() as $r) {
+            $urMaster[(int) $r->id] = [
+                'uraian_kode'   => $r->kode,
+                'uraian_nama'   => $r->nama,
+                'kegiatan_id'   => (int) $r->kegiatan_id,
+                'kegiatan_kode' => $r->kegiatan_kode,
+                'kegiatan_nama' => $r->kegiatan_nama,
+            ];
+        }
+        if (empty($urMaster)) {
+            return [];
+        }
+
+        // 2. Pagu per bidang + kegiatan + uraian
+        $this->db->select('p.fid_part, p.fid_uraian, SUM(p.total_pagu_awal) as total_pagu');
+        $this->db->from('t_pagu as p');
+        $this->db->join('ref_uraians as u', 'u.id = p.fid_uraian');
+        $this->db->join('ref_kegiatans as k', 'k.id = u.fid_kegiatan');
+        $this->db->where('p.tahun', $ta);
+        $this->db->where('p.is_perubahan', $is_perubahan);
+        if ($part !== null) {
+            $this->db->where('p.fid_part', $part);
+        }
+        $this->db->group_by(['p.fid_part', 'p.fid_uraian']);
+        $rows = [];
+        foreach ($this->db->get()->result() as $r) {
+            $uid = (int) $r->fid_uraian;
+            if (!isset($urMaster[$uid])) {
+                continue;
+            }
+            $m = $urMaster[$uid];
+            $rows[(int) $r->fid_part][$m['kegiatan_id']][$m['uraian_kode']] = [
+                'kegiatan_kode' => $m['kegiatan_kode'],
+                'kegiatan_nama' => $m['kegiatan_nama'],
+                'uraian_kode'   => $m['uraian_kode'],
+                'uraian_nama'   => $m['uraian_nama'],
+                'pagu'          => (float) $r->total_pagu,
+                'real'          => 0,
+            ];
+        }
+
+        // 3. Realisasi per bidang + kegiatan + uraian (1 query)
+        $this->db->select('s.fid_part, s.fid_uraian, COALESCE(SUM(s.jumlah), 0) as total_real');
+        $this->db->from('spj as s');
+        $this->db->join('ref_uraians as u', 'u.id = s.fid_uraian', 'left');
+        $this->db->where('s.is_status', 'SELESAI');
+        $this->db->where('s.tahun', $ta);
+        if ($filter_tanggal !== null) {
+            $tgl       = explode(' - ', $filter_tanggal);
+            $startDate = DateTime::createFromFormat('d/m/Y', $tgl[0])->format('Y-m-d');
+            $endDate   = DateTime::createFromFormat('d/m/Y', $tgl[1])->format('Y-m-d');
+            $this->db->where('DATE(s.approve_at) >=', $startDate);
+            $this->db->where('DATE(s.approve_at) <=', $endDate);
+        }
+        if ($part !== null) {
+            $this->db->where('s.fid_part', $part);
+        }
+        $this->db->group_by(['s.fid_part', 's.fid_uraian']);
+        foreach ($this->db->get()->result() as $r) {
+            $uid = (int) $r->fid_uraian;
+            if (!isset($urMaster[$uid])) {
+                continue;
+            }
+            $m   = $urMaster[$uid];
+            $pid = (int) $r->fid_part;
+            if (!isset($rows[$pid][$m['kegiatan_id']][$m['uraian_kode']])) {
+                $rows[$pid][$m['kegiatan_id']][$m['uraian_kode']] = [
+                    'kegiatan_kode' => $m['kegiatan_kode'],
+                    'kegiatan_nama' => $m['kegiatan_nama'],
+                    'uraian_kode'   => $m['uraian_kode'],
+                    'uraian_nama'   => $m['uraian_nama'],
+                    'pagu'          => 0,
+                    'real'          => 0,
+                ];
+            }
+            $rows[$pid][$m['kegiatan_id']][$m['uraian_kode']]['real'] = (float) $r->total_real;
+        }
+
+        // 4. Bentuk baris bertingkat + buang yang kosong
+        $out = [];
+        foreach ($rows as $pid => $kegs) {
+            $children = [];
+            $sumPagu  = 0;
+            $sumReal  = 0;
+            foreach ($kegs as $klist) {
+                $urRows = [];
+                $kPagu  = 0;
+                $kReal  = 0;
+                foreach ($klist as $u) {
+                    if ($u['pagu'] <= 0 && $u['real'] <= 0) {
+                        continue;
+                    }
+                    $urRows[] = ['kode' => $u['uraian_kode'], 'nama' => $u['uraian_nama'], 'pagu' => $u['pagu'], 'realisasi' => $u['real']];
+                    $kPagu   += $u['pagu'];
+                    $kReal   += $u['real'];
+                }
+                if (!$urRows) {
+                    continue;
+                }
+                $children[] = ['kode' => $klist[array_key_first($klist)]['kegiatan_kode'], 'nama' => $klist[array_key_first($klist)]['kegiatan_nama'], 'rows' => $urRows, 'pagu' => $kPagu, 'real' => $kReal];
+                $sumPagu   += $kPagu;
+                $sumReal   += $kReal;
+            }
+            if ($children) {
+                $out[] = ['part_id' => $pid, 'nama' => $partNames[$pid] ?? ('Bidang #' . $pid), 'rows' => $children, 'pagu' => $sumPagu, 'real' => $sumReal];
+            }
+        }
+        usort($out, function ($a, $b) {
+            return strcmp($a['nama'], $b['nama']);
+        });
+
+        return $out;
+    }
+
     // Belanja Harian chart data
     public function getBelanjaHarian($part = null, $filter_tanggal = null, $ta)
     {

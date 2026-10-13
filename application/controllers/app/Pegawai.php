@@ -50,7 +50,7 @@ class Pegawai extends CI_Controller
             'belum_sync'     => $belum_sync,
             'synced_pns'     => $synced_pns,
             'synced_pppk'    => $synced_pppk,
-            'list_bidang'    => $this->crud->getWhere('ref_parts', ['singkatan !=' => 'KABAN'])->result(),
+            'list_bidang'    => $this->crud->get('ref_parts')->result(),
             'mapped_nips'    => $mapped_nips,
             'mapped_bidang'  => $mapped_bidang,
             'mapped_pegawai' => $mapped_pegawai,
@@ -151,5 +151,106 @@ class Pegawai extends CI_Controller
     public function get_pegawai_by_unor($unor_id = '1120')
     {
         return silka_get_pegawai_by_unor($unor_id);
+    }
+
+    /**
+     * Ambil list indikator berdasarkan bidang (fid_part) untuk modal mapping.
+     */
+    public function get_indikator_by_bidang()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_error('No direct script access allowed', 403);
+            return;
+        }
+
+        $fid_part = $this->input->post('fid_part');
+        $nip      = trim($this->input->post('nip'));
+
+        if (empty($fid_part) || !is_numeric($fid_part)) {
+            echo json_encode(['status' => false, 'pesan' => 'Bidang wajib dipilih.']);
+            return;
+        }
+
+        $indikators = $this->db
+            ->select('i.id, i.nama, ji.nama as nama_jenis_indikator, ji.color, pi.id as pegawai_indikator_id', false)
+            ->from('ref_indikators i')
+            ->join('ref_jenis_indikators ji', 'i.fid_jenis_indikator = ji.id', 'inner')
+            ->join('pegawai_indikators pi', "pi.fid_indikator = i.id AND pi.nip = '" . $this->db->escape_str($nip) . "'", 'left')
+            ->where('i.fid_part', (int) $fid_part)
+            ->where('i.tahun', $this->session->userdata('tahun_anggaran'))
+            ->where('ji.is_aktif', 'Y')
+            ->order_by('i.nama', 'asc')
+            ->get()
+            ->result();
+
+        echo json_encode(['status' => true, 'data' => $indikators]);
+    }
+
+    /**
+     * Simpan pilihan indikator pegawai ke pegawai_indikators.
+     * fid_indikator = ref_indikators.id (indikator spesifik)
+     */
+    public function simpan_indikator_pegawai()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_error('No direct script access allowed', 403);
+            return;
+        }
+
+        $nip           = trim($this->input->post('nip'));
+        $fid_indikator = $this->input->post('fid_indikator');
+
+        if ($nip === '' || empty($fid_indikator) || !is_numeric($fid_indikator)) {
+            echo json_encode(['status' => false, 'pesan' => 'NIP dan indikator wajib diisi.']);
+            return;
+        }
+
+        // Sudah ada -> kembalikan status agar button didisable di UI
+        $sudah_ada = $this->crud
+            ->getWhere('pegawai_indikators', [
+                'nip'           => $nip,
+                'fid_indikator' => (int) $fid_indikator,
+            ])
+            ->num_rows() > 0;
+
+        if ($sudah_ada) {
+            echo json_encode(['status' => true, 'pesan' => 'Indikator sudah dipilih.']);
+            return;
+        }
+
+        $ok = $this->crud->insert('pegawai_indikators', [
+            'nip'           => $nip,
+            'fid_indikator' => (int) $fid_indikator,
+            'created_at'    => DateTimeInput(),
+        ]);
+
+        echo json_encode(['status' => $ok, 'pesan' => $ok ? 'Indikator berhasil dipilih.' : 'Gagal menyimpan indikator.']);
+    }
+
+    /**
+     * Hapus (uncheck) pilihan indikator pegawai dari pegawai_indikators.
+     * Hapus berdasarkan NIP + FID_INDIKATOR (ref_indikators.id)
+     */
+    public function hapus_indikator_pegawai()
+    {
+        if (!$this->input->is_ajax_request()) {
+            show_error('No direct script access allowed', 403);
+            return;
+        }
+
+        $nip           = trim($this->input->post('nip'));
+        $fid_indikator = $this->input->post('fid_indikator');
+
+        if ($nip === '' || empty($fid_indikator) || !is_numeric($fid_indikator)) {
+            echo json_encode(['status' => false, 'pesan' => 'NIP dan indikator wajib diisi.']);
+            return;
+        }
+
+        $ok = $this->crud->deleteWhere('pegawai_indikators', [
+            'nip'           => $nip,
+            'fid_indikator' => (int) $fid_indikator,
+        ]);
+
+        echo json_encode(['status' => $ok, 'pesan' => $ok ? 'Pilihan indikator dibatalkan.' : 'Gagal membatalkan pilihan.']);
     }
 }

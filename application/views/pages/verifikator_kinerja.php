@@ -136,7 +136,7 @@
                                                 <i class="fa fa-info-circle fa-lg text-primary mr-3 mt-1"></i>
                                                 <div>
                                                     <strong>Format File:</strong> .xlsx atau .xls (maksimal 5MB)
-                                                    <br><small class="text-muted">Kolom: <code>NIP</code>, <code>NAMA</code>, <code>BIDANG</code>, <code>periode</code> (TW1–TW4), serta 6 kolom checklist (<code>unggah_kinerja_harian</code>, <code>target_realisasi</code>, <code>masalah_tindak_lanjut</code>, <code>diskusi_kinerja</code>, <code>data_dukung</code>, <code>simpulan_capaian</code>) dengan nilai <code>Y</code>/<code>N</code>. Template sudah terisi pegawai yang sudah di-mapping (4 baris per pegawai) beserta status verifikasi yang sudah ada.</small>
+                                                    <br><small class="text-muted">Kolom: <code>NIP</code>, <code>NAMA</code>, <code>BIDANG</code>, <code>INDIKATOR</code>, <code>periode</code> (01–12), serta 6 kolom checklist (<code>unggah_kinerja_harian</code>, <code>target_realisasi</code>, <code>masalah_tindak_lanjut</code>, <code>diskusi_kinerja</code>, <code>data_dukung</code>, <code>simpulan_capaian</code>) dengan nilai <code>Y</code>/<code>N</code>. Template sudah terisi pegawai yang sudah di-mapping (12 baris per indikator) beserta status verifikasi yang sudah ada.</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -221,10 +221,11 @@
                                     <th>Jenis</th>
                                     <th>Bidang</th>
                                     <th>Singkatan</th>
-                                    <th>TW I</th>
-                                    <th>TW II</th>
-                                    <th>TW III</th>
-                                    <th>TW IV</th>
+                                    <th class="text-center">Indikator</th>
+                                    <th>Jan-Mar</th>
+                                    <th>Apr-Jun</th>
+                                    <th>Jul-Sep</th>
+                                    <th>Okt-Des</th>
                                     <th>Total</th>
                                     <th>Status</th>
                                 </tr>
@@ -267,23 +268,29 @@ var vkTahun = <?= json_encode($this->session->userdata('tahun_anggaran')) ?>;
                         </div>
                     </div>
 
-                    <!-- Pilih Periode Triwulan -->
+                    <!-- Pilih Indikator -->
+                    <div class="form-group mb-3" id="indikatorWrap">
+                        <label class="font-weight-bold"><i class="fa fa-tag text-primary mr-1"></i> Indikator</label>
+                        <select class="form-control" id="v_indikator"></select>
+                        <small class="text-muted d-none" id="indikatorEmpty">Pegawai belum memiliki indikator. Tambahkan di menu Pegawai.</small>
+                    </div>
+
+                    <!-- Pilih Periode Bulanan -->
                     <div class="form-group mb-4">
-                        <label class="font-weight-bold"><i class="fa fa-calendar text-primary mr-1"></i> Periode Triwulan</label>
-                        <div class="btn-group btn-group-toggle w-100" data-toggle="buttons" id="periodeGroup">
+                        <label class="font-weight-bold"><i class="fa fa-calendar text-primary mr-1"></i> Periode Bulan</label>
+                        <div class="btn-group btn-group-toggle w-100 flex-wrap" data-toggle="buttons" id="periodeGroup" style="gap:4px;">
                             <?php
-                            $periode_list = [
-                                'TW1' => ['Triwulan I', 'Jan - Mar'],
-                                'TW2' => ['Triwulan II', 'Apr - Jun'],
-                                'TW3' => ['Triwulan III', 'Jul - Sep'],
-                                'TW4' => ['Triwulan IV', 'Okt - Des'],
+                            $bulan_list = [
+                                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+                                '04' => 'April',   '05' => 'Mei',      '06' => 'Juni',
+                                '07' => 'Juli',    '08' => 'Agustus',  '09' => 'September',
+                                '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
                             ];
-                            foreach ($periode_list as $k => $v): ?>
-                                <label class="btn btn-outline-primary periode-btn" data-periode="<?= $k ?>">
+                            foreach ($bulan_list as $k => $v): ?>
+                                <label class="btn btn-outline-primary periode-btn" data-periode="<?= $k ?>" style="flex:1 0 23%; min-width:80px; margin-bottom:4px;">
                                     <input type="radio" name="periode" value="<?= $k ?>" autocomplete="off">
                                     <span class="periode-icon d-block mb-1"><i class="fa fa-circle-o text-warning"></i></span>
-                                    <span class="d-block font-weight-bold"><?= $v[0] ?></span>
-                                    <small class="d-block text-muted"><?= $v[1] ?></small>
+                                    <span class="d-block font-weight-bold" style="font-size:.8rem;"><?= $v ?></span>
                                 </label>
                             <?php endforeach; ?>
                         </div>
@@ -365,6 +372,10 @@ var vkTahun = <?= json_encode($this->session->userdata('tahun_anggaran')) ?>;
                             <div class="font-weight-bold" id="r_nama">-</div>
                         </div>
                     </div>
+                    <div class="mt-2">
+                        <label class="font-weight-bold small"><i class="fa fa-tag text-primary mr-1"></i> Indikator</label>
+                        <select class="form-control form-control-sm" id="r_indikator"></select>
+                    </div>
                 </div>
 
                 <!-- Loading -->
@@ -380,14 +391,13 @@ var vkTahun = <?= json_encode($this->session->userdata('tahun_anggaran')) ?>;
                             <tr>
                                 <th class="align-middle" rowspan="2">No</th>
                                 <th class="align-middle" rowspan="2">Checklist</th>
-                                <th colspan="4">Triwulan</th>
+                                <th colspan="12">Bulan</th>
                                 <th class="align-middle" rowspan="2">Total</th>
                             </tr>
                             <tr>
-                                <th>I <small class="d-block text-muted">Jan-Mar</small></th>
-                                <th>II <small class="d-block text-muted">Apr-Jun</small></th>
-                                <th>III <small class="d-block text-muted">Jul-Sep</small></th>
-                                <th>IV <small class="d-block text-muted">Okt-Des</small></th>
+                                <?php foreach (['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'] as $bln): ?>
+                                    <th><?= $bln ?></th>
+                                <?php endforeach; ?>
                             </tr>
                         </thead>
                         <tbody></tbody>

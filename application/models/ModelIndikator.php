@@ -113,6 +113,94 @@ class ModelIndikator extends CI_Model
     }
     // -------------------------------- end-datatable --------------------------//
 
+    // === Datatable Indikator 2026 ===
+    protected $column_order_2026 = array('id', 'nama', 'nama_bidang', 'nama_jenis_indikator', 'tahun');
+    protected $column_search_2026 = array('i.nama', 'p.nama', 'ji.nama');
+    protected $order_2026 = array('i.id' => 'desc');
+    protected $select_table_2026 = array(
+        'i.*',
+        'p.nama as nama_bidang',
+        'ji.nama as nama_jenis_indikator'
+    );
+
+    private function _datatables_2026($fid_part = null, $fid_jenis_indikator = null)
+    {
+        $this->db->select($this->select_table_2026);
+        $this->db->from($this->table);
+        $this->db->join('ref_parts as p', 'i.fid_part=p.id', 'left');
+        $this->db->join('ref_jenis_indikators as ji', 'i.fid_jenis_indikator=ji.id', 'inner');
+        $this->db->where('i.tahun', $this->session->userdata('tahun_anggaran'));
+        // Hanya jenis indikator aktif yang ditampilkan
+        $this->db->where('ji.is_aktif', 'Y');
+
+        // SUPER_ADMIN: tanpa filter fid_part; role lain: filter sesuai session part
+        if ($this->session->userdata('role') !== 'SUPER_ADMIN') {
+            $this->db->where('i.fid_part', $this->session->userdata('part'));
+        }
+
+        // Filter bidang dari request (opsional)
+        if (!empty($fid_part)) {
+            $this->db->where('i.fid_part', $fid_part);
+        }
+
+        // Filter jenis indikator dari request (opsional)
+        if (!empty($fid_jenis_indikator)) {
+            $this->db->where('i.fid_jenis_indikator', $fid_jenis_indikator);
+        }
+
+        $i = 0;
+        foreach ($this->column_search_2026 as $item) {
+            if (@$_POST['search']['value']) {
+                if ($i === 0) {
+                    $this->db->group_start();
+                    $this->db->like($item, $_POST['search']['value']);
+                } else {
+                    $this->db->or_like($item, $_POST['search']['value']);
+                }
+                if (count($this->column_search_2026) - 1 == $i)
+                    $this->db->group_end();
+            }
+            $i++;
+        }
+
+        if (isset($_POST['order'])) {
+            $this->db->order_by($this->column_order_2026[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } else if (isset($this->order_2026)) {
+            $order = $this->order_2026;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
+
+    function make_datatables_2026($fid_part = null, $fid_jenis_indikator = null)
+    {
+        $this->_datatables_2026($fid_part, $fid_jenis_indikator);
+        if (@$_POST['length'] != -1)
+            $this->db->limit(@$_POST['length'], @$_POST['start']);
+        $query = $this->db->get();
+        return $query->result();
+    }
+
+    function make_count_filtered_2026($fid_part = null, $fid_jenis_indikator = null)
+    {
+        $this->_datatables_2026($fid_part, $fid_jenis_indikator);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
+
+    public function make_count_all_2026()
+    {
+        $this->db->select('i.id')
+            ->from($this->table)
+            ->join('ref_jenis_indikators as ji', 'i.fid_jenis_indikator=ji.id', 'inner')
+            ->where('i.tahun', $this->session->userdata('tahun_anggaran'))
+            ->where('ji.is_aktif', 'Y');
+        if ($this->session->userdata('role') !== 'SUPER_ADMIN') {
+            $this->db->where('i.fid_part', $this->session->userdata('part'));
+        }
+        return $this->db->count_all_results();
+    }
+    // -------------------------------- end-datatable-2026 --------------------------//
+
     protected $model = 'ref_indikators'; // ganti sesuai nama tabel kamu
 
     public function delete($id)

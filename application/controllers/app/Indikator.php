@@ -37,6 +37,10 @@ class Indikator extends CI_Controller
         $data = [
             'title' => 'Indikator Kinerja',
             'content' => 'pages/anggaran_kinerja/indikator',
+            'fid_parts' => $this->list_bidang(),
+            'jenis_indikators' => $this->list_jenis_indikator(),
+            'is_super_admin' => $this->session->userdata('role') === 'SUPER_ADMIN',
+            'session_part' => $this->session->userdata('part'),
             'autoload_js' => [
                 'https://cdn.datatables.net/v/bs4/dt-2.3.7/af-2.7.1/b-3.2.6/b-colvis-3.2.6/b-html5-3.2.6/b-print-3.2.6/cr-2.1.2/cc-1.2.1/date-1.6.3/fc-5.0.5/fh-4.0.6/kt-2.12.2/r-3.0.8/rg-1.6.0/rr-1.5.1/sc-2.4.3/sb-1.8.4/sp-2.3.5/sl-3.1.3/sr-1.4.3/datatables.min.js',
                 'template/backend/vendors/select2/dist/js/select2.full.min.js',
@@ -229,6 +233,135 @@ class Indikator extends CI_Controller
         $this->session->unset_userdata('indikator_referensi');
     }
 
+    public function simpan_2026()
+    {
+        // Validasi AJAX
+        if (!$this->input->is_ajax_request()) {
+            show_error('No direct script access allowed', 403);
+            die();
+        }
+
+        $nama = trim($this->input->post('nama'));
+        $fid_part = $this->input->post('fid_part');
+        $fid_jenis_indikator = $this->input->post('fid_jenis_indikator');
+
+        if ($nama === '') {
+            echo json_encode(['success' => false, 'message' => 'Nama indikator wajib diisi.']);
+            return;
+        }
+
+        if (empty($fid_jenis_indikator) || !is_numeric($fid_jenis_indikator)) {
+            echo json_encode(['success' => false, 'message' => 'Jenis Indikator wajib dipilih.']);
+            return;
+        }
+
+        $jenis_aktif = $this->db->get_where('ref_jenis_indikators', ['id' => $fid_jenis_indikator, 'is_aktif' => 'Y'])->row();
+        if (!$jenis_aktif) {
+            echo json_encode(['success' => false, 'message' => 'Jenis Indikator tidak aktif.']);
+            return;
+        }
+
+        // Non SUPER_ADMIN tidak boleh memilih bidang lain
+        if ($this->session->userdata('role') !== 'SUPER_ADMIN') {
+            $fid_part = $this->session->userdata('part');
+        }
+
+        if (empty($fid_part) || !is_numeric($fid_part)) {
+            echo json_encode(['success' => false, 'message' => 'Bidang / Bagian wajib dipilih.']);
+            return;
+        }
+
+        $data = [
+            'nama' => $nama,
+            'fid_part' => $fid_part,
+            'fid_jenis_indikator' => $fid_jenis_indikator,
+            'tahun' => $this->session->userdata('tahun_anggaran'),
+        ];
+
+        $this->db->trans_start();
+        $this->db->insert('ref_indikators', $data);
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            echo json_encode(['success' => false, 'message' => 'Gagal menyimpan data indikator.']);
+            return;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Data indikator berhasil disimpan.',
+        ]);
+    }
+
+    public function update_2026()
+    {
+        // Validasi AJAX
+        if (!$this->input->is_ajax_request()) {
+            show_error('No direct script access allowed', 403);
+            die();
+        }
+
+        $id = $this->input->post('id');
+        $nama = trim($this->input->post('nama'));
+        $fid_part = $this->input->post('fid_part');
+        $fid_jenis_indikator = $this->input->post('fid_jenis_indikator');
+
+        if (empty($id) || !is_numeric($id)) {
+            echo json_encode(['success' => false, 'message' => 'ID indikator tidak valid.']);
+            return;
+        }
+
+        if ($nama === '') {
+            echo json_encode(['success' => false, 'message' => 'Nama indikator wajib diisi.']);
+            return;
+        }
+
+        if (empty($fid_jenis_indikator) || !is_numeric($fid_jenis_indikator)) {
+            echo json_encode(['success' => false, 'message' => 'Jenis Indikator wajib dipilih.']);
+            return;
+        }
+
+        $jenis_aktif = $this->db->get_where('ref_jenis_indikators', ['id' => $fid_jenis_indikator, 'is_aktif' => 'Y'])->row();
+        if (!$jenis_aktif) {
+            echo json_encode(['success' => false, 'message' => 'Jenis Indikator tidak aktif.']);
+            return;
+        }
+
+        // Non SUPER_ADMIN tidak boleh mengubah indikator milik bidang lain
+        if ($this->session->userdata('role') !== 'SUPER_ADMIN') {
+            $fid_part = $this->session->userdata('part');
+        }
+
+        if (empty($fid_part) || !is_numeric($fid_part)) {
+            echo json_encode(['success' => false, 'message' => 'Bidang / Bagian wajib dipilih.']);
+            return;
+        }
+
+        $data = [
+            'nama' => $nama,
+            'fid_part' => $fid_part,
+            'fid_jenis_indikator' => $fid_jenis_indikator,
+        ];
+
+        $this->db->trans_start();
+        $this->db->where('id', $id);
+        if ($this->session->userdata('role') !== 'SUPER_ADMIN') {
+            $this->db->where('fid_part', $this->session->userdata('part'));
+        }
+        $this->db->update('ref_indikators', $data);
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            echo json_encode(['success' => false, 'message' => 'Gagal memperbarui data indikator.']);
+            return;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Data indikator berhasil diperbarui.',
+        ]);
+    }
+
     public function update()
     {
         // Implementasi fungsi update indikator di sini
@@ -330,6 +463,62 @@ class Indikator extends CI_Controller
         );
         //output to json format
         echo json_encode($output);
+    }
+
+    public function datatable_2026()
+    {
+        $fid_part = $this->input->post('fid_part');
+        $fid_jenis_indikator = $this->input->post('fid_jenis_indikator');
+        $db = $this->indikator->make_datatables_2026($fid_part, $fid_jenis_indikator);
+        $data = array();
+        $no = @$_POST['start'];
+        foreach ($db as $r) {
+            $no++;
+            $row = array();
+            $row['no'] = $no;
+            $row['nama'] = htmlspecialchars($r->nama);
+            $row['nama_bidang'] = htmlspecialchars(@$r->nama_bidang);
+            $row['nama_jenis_indikator'] = htmlspecialchars(@$r->nama_jenis_indikator);
+            $row['tahun'] = $r->tahun;
+            $row['action'] = '
+            <div class="btn-group btn-group-sm" role="group">
+                <a data-id="' . $r->id . '" data-nama="' . htmlspecialchars($r->nama) . '" data-fid_part="' . $r->fid_part . '" data-fid_jenis_indikator="' . @$r->fid_jenis_indikator . '" href="#" class="btn btn-edit-2026 btn-success" type="button"><i class="fa fa-pencil"></i> Edit</a>
+                <a data-id="' . $r->id . '" href="#" class="btn btn-delete-2026 btn-danger" type="button"><i class="fa fa-trash"></i> Hapus</a>
+            </div>
+            ';
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => @$_POST['draw'],
+            "recordsTotal" => $this->indikator->make_count_all_2026(),
+            "recordsFiltered" => $this->indikator->make_count_filtered_2026($fid_part, $fid_jenis_indikator),
+            "data" => $data,
+        );
+        echo json_encode($output);
+    }
+
+    public function list_bidang()
+    {
+        $bidangs = $this->db->select('id, nama')
+            ->order_by('nama', 'asc')
+            ->get('ref_parts')
+            ->result();
+
+        $bidang = [];
+        foreach ($bidangs as $b) {
+            $bidang[$b->id] = $b->nama;
+        }
+
+        return $bidang;
+    }
+
+    public function list_jenis_indikator()
+    {
+        return $this->db->select('id, nama, is_aktif')
+            ->order_by('nama', 'asc')
+            ->get('ref_jenis_indikators')
+            ->result();
     }
 
     private function referensi_indikator($r)

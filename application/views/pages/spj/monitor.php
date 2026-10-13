@@ -121,6 +121,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
 
 <ul class="nav nav-tabs monitor-tabs">
     <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab-bidang"><i class="fa fa-sitemap mr-1"></i> Bidang</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-bidang-uraian"><i class="fa fa-folder-open mr-1"></i> Bidang / Uraian</a></li>
     <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-kelompok"><i class="fa fa-folder-open-o mr-1"></i> Kelompok</a></li>
     <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-jenis"><i class="fa fa-tags mr-1"></i> Jenis</a></li>
     <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-uraian"><i class="fa fa-file-text-o mr-1"></i> Uraian</a></li>
@@ -146,6 +147,7 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                 <tr>
                     <th rowspan="3" class="align-middle text-center">No</th>
                     <th rowspan="3" class="align-middle text-center">Bidang/Bagian</th>
+                    <th rowspan="3" class="align-middle text-center">Pagu</th>
                     <th colspan="10" class="align-middle text-center">SPJ Berdasarkan Status</th>
                 </tr>
                 <tr>
@@ -177,7 +179,8 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                     <th class="align-middle text-center">9</th>
                     <th class="align-middle text-center">10</th>
                     <th class="align-middle text-center">11</th>
-                    <th class="align-middle text-center">12 (5/Pagu) * 100%</th>
+                    <th class="align-middle text-center">12</th>
+                    <th class="align-middle text-center">13 (6/Pagu) * 100%</th>
                 </tr>
             </thead>
             <tbody>
@@ -194,11 +197,14 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                         $totalPending          = 0;
                         $totalCair             = 0;
                         $totalTolakBendahara   = 0;
+                        $totalPagu             = 0;
 
                         foreach ($listpart as $part):
                             // Pagu Murni atau Perubahan
                             $totalPaguPerubahan = $this->spj->getTotalPaguPerubahanByPart($part->id, $tahun_anggaran);
                             $totalPaguMurni     = $this->spj->getTotalPaguMurniByPart($part->id, $tahun_anggaran);
+                            $paguPart            = $is_perubahan ? $totalPaguPerubahan : $totalPaguMurni;
+                            $totalPagu         += $paguPart;
 
                             // Usulan Baru/Verifikasi
                             $usulanBaru             = $this->spj->getTotalRealisasiByPartAndStatus($part->id, $filter_tanggal, $tahun_anggaran, ['ENTRI']);
@@ -224,18 +230,21 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                             $totalCair             += $cair;
                             $totalTolakBendahara   += $tolakBendahara;
 
-                            // Capaian
-                            if ($is_perubahan ? $totalPaguPerubahan : $totalPaguMurni > 0) {
-                                $capaian = (($persetujuan) / ($is_perubahan ? $totalPaguPerubahan : $totalPaguMurni)) * 100;
-                            } else {
-                                $capaian = 0;
-                            }
+                            // Capaian = Approval (col 6) / Pagu (col 3) * 100
+                            $capaian = $paguPart > 0 ? ($persetujuan / $paguPart) * 100 : 0;
                     ?>
                         <tr>
                             <!-- No -->
                             <td class="text-center"><?php echo $no++ ?></td>
                             <!-- Bidang/Bagian -->
                             <td><?php echo $part->nama ?></td>
+                            <!-- Pagu -->
+                            <td class="text-right">
+                                <div class="d-flex justify-content-between">
+                                    <span>Rp.</span>
+                                    <span><?php echo nominal($paguPart); ?></span>
+                                </div>
+                            </td>
                             <!-- Usulan Baru -->
                             <td class="text-right">
                                 <div class="d-flex justify-content-between">
@@ -272,9 +281,9 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                             <td class="text-right">
                                 <div class="d-flex justify-content-between">
                                     <span>Rp.</span>
-                                    <span><?php echo nominal($usulanBaru); ?></span>
+                                    <span><?php echo nominal($pendingPerbaikan); ?></span>
                                 </div>
-                            <?php echo nominal($pendingPerbaikan); ?></td>
+                            </td>
                             <td class="text-right">
                                 <div class="d-flex justify-content-between">
                                     <span>Rp.</span>
@@ -301,6 +310,12 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                     <?php endforeach; ?>
                     <tr>
                         <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">
+                        <div class="d-flex justify-content-between">
+                            <span>Rp.</span>
+                            <span><?php echo nominal($totalPagu); ?></span>
+                        </div>
+                        </td>
                         <td class="text-right font-weight-bold">
                         <div class="d-flex justify-content-between">
                             <span>Rp.</span>
@@ -357,14 +372,14 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
                         </td>
                         <td class="text-right font-weight-bold">
                             <?php
-                                $totalCapaian = @($totalPersetujuan / ($is_perubahan ? $alokasiPaguPerubahan : $alokasiPagu)) * 100;
+                                $totalCapaian = $totalPagu > 0 ? ($totalPersetujuan / $totalPagu) * 100 : 0;
                             ?>
                             <?php echo number_format($totalCapaian, 2) . '%'; ?>
                         </td>
                     </tr>
                 <?php else: ?>
                     <tr>
-                        <td class="text-center" colspan="9">Data tidak tersedia</td>
+                        <td class="text-center" colspan="10">Data tidak tersedia</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -372,6 +387,105 @@ $qs_filter = $filter_tanggal ? '?filter_tanggal=' . urlencode($filter_tanggal) :
     </div>
 </div>
 </div>
+
+<div class="tab-pane" id="tab-bidang-uraian">
+<div class="x_panel">
+    <div class="x_title">
+        <h2><i class="fa fa-line-chart mr-2"></i> Belanja Bidang / Uraian</h2>
+        <ul class="nav navbar-right panel_toolbox d-flex justify-content-center align-items-center space-x-3">
+            <li><a href="<?php echo base_url('app/spj/monitor_pdf/bidang-uraian' . $qs_filter) ?>" target="_blank" title="Cetak PDF"><i class="fa fa-file-pdf-o text-danger"></i></a></li>
+            <li><a href="<?php echo base_url('app/spj/monitor_excel/bidang-uraian' . $qs_filter) ?>" title="Export Excel"><i class="fa fa-file-excel-o text-success"></i></a></li>
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <div class="tbl-bidang-uraian-wrap">
+        <table class="table jambo_table bulk_action table-bordered tbl-bidang-uraian">
+            <thead>
+                <tr>
+                    <th class="align-middle text-center">No</th>
+                    <th class="align-middle text-center">Kode</th>
+                    <th class="align-middle text-center">Bidang / Kegiatan / Uraian</th>
+                    <th class="align-middle text-center">Total Pagu</th>
+                    <th class="align-middle text-center">Total Realisasi</th>
+                    <th class="align-middle text-center">Sisa Anggaran</th>
+                    <th class="align-middle text-center">Capaian</th>
+                </tr>
+                <tr>
+                    <th class="align-middle text-center">1</th>
+                    <th class="align-middle text-center">2</th>
+                    <th class="align-middle text-center">3</th>
+                    <th class="align-middle text-center">4</th>
+                    <th class="align-middle text-center">5</th>
+                    <th class="align-middle text-center">6</th>
+                    <th class="align-middle text-center">7 (5/4) * 100%</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($uraianPerBidang)): ?>
+                    <?php
+                        $no = 1;
+                        $grandPagu = 0;
+                        $grandReal = 0;
+                        foreach ($uraianPerBidang as $g):
+                            $capaianG = $g['pagu'] > 0 ? ($g['real'] / $g['pagu']) * 100 : 0;
+                            $grandPagu += $g['pagu'];
+                            $grandReal += $g['real'];
+                    ?>
+                        <tr style="background:#f7f7f7;font-weight:600;">
+                            <td class="text-center"><?php echo $no++ ?></td>
+                            <td><small class="text-muted">Bidang/Bagian</small></td>
+                            <td><?php echo $g['nama'] ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($g['pagu']) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($g['real']) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($g['pagu'] - $g['real']) ?></td>
+                            <td class="text-right"><?php echo number_format($capaianG, 2) ?>%</td>
+                        </tr>
+                        <?php foreach ($g['rows'] as $k):
+                            $capaianK = $k['pagu'] > 0 ? ($k['real'] / $k['pagu']) * 100 : 0;
+                        ?>
+                            <tr>
+                                <td></td>
+                                <td><small class="text-muted"><?php echo $k['kode'] ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $k['kode'] ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button></td>
+                                <td style="padding-left:2.2em;"><span class="text-muted" style="margin-right:.35em;">└─</span><?php echo $k['nama'] ?></td>
+                                <td class="text-right">Rp. <?php echo nominal($k['pagu']) ?></td>
+                                <td class="text-right">Rp. <?php echo nominal($k['real']) ?></td>
+                                <td class="text-right">Rp. <?php echo nominal($k['pagu'] - $k['real']) ?></td>
+                                <td class="text-right"><?php echo number_format($capaianK, 2) ?>%</td>
+                            </tr>
+                            <?php foreach ($k['rows'] as $u):
+                                $capaianU = $u['pagu'] > 0 ? ($u['realisasi'] / $u['pagu']) * 100 : 0;
+                            ?>
+                                <tr>
+                                    <td></td>
+                                    <td><small class="text-muted"><?php echo $u['kode'] ?></small> <button type="button" class="btn btn-sm py-0 px-1 copy-code" data-copy="<?php echo $u['kode'] ?>" title="Salin kode" style="line-height:1;border:none;background:none;color:#6c757d"><i class="fa fa-fw fa-copy"></i></button></td>
+                                    <td style="padding-left:4.4em;"><span class="text-muted" style="margin-right:.35em;">└─</span><?php echo $u['nama'] ?></td>
+                                    <td class="text-right">Rp. <?php echo nominal($u['pagu']) ?></td>
+                                    <td class="text-right">Rp. <?php echo nominal($u['realisasi']) ?></td>
+                                    <td class="text-right">Rp. <?php echo nominal($u['pagu'] - $u['realisasi']) ?></td>
+                                    <td class="text-right"><?php echo number_format($capaianU, 2) ?>%</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="3" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($grandPagu) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($grandReal) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($grandPagu - $grandReal) ?></td>
+                        <td class="text-right font-weight-bold"><?php echo $grandPagu > 0 ? number_format(($grandReal / $grandPagu) * 100, 2) : 0 ?>%</td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td class="text-center" colspan="7">Data tidak tersedia</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div></div>
 
 <div class="tab-pane" id="tab-kelompok">
 <div class="x_panel">

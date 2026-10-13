@@ -148,12 +148,13 @@ class ModelDatatables extends CI_Model
 
 		$this->db->select("p.nip, p.nama_lengkap, p.jabatan, p.pangkat, p.jenis,
 			r.nama AS bidang_nama, r.singkatan AS bidang_singkatan,
-			SUM(CASE WHEN v.periode='TW1' THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw1_count,
-			SUM(CASE WHEN v.periode='TW2' THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw2_count,
-			SUM(CASE WHEN v.periode='TW3' THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw3_count,
-			SUM(CASE WHEN v.periode='TW4' THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw4_count,
+			(SELECT COUNT(*) FROM pegawai_indikators pi WHERE pi.nip = p.nip) AS jml_indikator,
+			SUM(CASE WHEN v.periode IN ('01','02','03') THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw1_count,
+			SUM(CASE WHEN v.periode IN ('04','05','06') THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw2_count,
+			SUM(CASE WHEN v.periode IN ('07','08','09') THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw3_count,
+			SUM(CASE WHEN v.periode IN ('10','11','12') THEN (v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y') ELSE 0 END) AS tw4_count,
 			COALESCE(SUM((v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y')), 0) AS total_count,
-			IF(COALESCE(SUM((v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y')), 0) >= 24, 'Lengkap', 'Belum Lengkap') AS status_label,
+			IF((SELECT COUNT(*) FROM pegawai_indikators pi WHERE pi.nip = p.nip) > 0 AND COALESCE(SUM((v.unggah_kinerja_harian='Y')+(v.target_realisasi='Y')+(v.masalah_tindak_lanjut='Y')+(v.diskusi_kinerja='Y')+(v.data_dukung='Y')+(v.simpulan_capaian='Y')), 0) >= 72 * (SELECT COUNT(*) FROM pegawai_indikators pi WHERE pi.nip = p.nip), 'Lengkap', 'Belum Lengkap') AS status_label,
 			MAX(v.created_at) AS created_at, MAX(v.updated_at) AS updated_at");
 		$this->db->from('pegawai AS p');
 		$this->db->join('ref_parts AS r', 'p.fid_part = r.id', 'left');

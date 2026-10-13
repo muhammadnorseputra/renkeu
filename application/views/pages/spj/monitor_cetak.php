@@ -173,6 +173,7 @@
                 <tr>
                     <th rowspan="3">No</th>
                     <th rowspan="3">Bidang/Bagian</th>
+                    <th rowspan="3">Pagu</th>
                     <th colspan="10">SPJ Berdasarkan Status</th>
                     <th rowspan="3">Capaian</th>
                 </tr>
@@ -207,14 +208,7 @@
                     $totalPending          = 0;
                     $totalCair             = 0;
                     $totalTolakBendahara   = 0;
-
-                    if (in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN'])) {
-                        $alokasiPagu            = $this->spj->getTotalPaguMurniByPart(null, $tahun_anggaran);
-                        $alokasiPaguPerubahan   = $this->spj->getTotalPaguPerubahanByPart(null, $tahun_anggaran);
-                    } else {
-                        $alokasiPagu            = $this->spj->getTotalPaguMurniByPart($part, $tahun_anggaran);
-                        $alokasiPaguPerubahan   = $this->spj->getTotalPaguPerubahanByPart($part, $tahun_anggaran);
-                    }
+                    $totalPagu             = 0;
 
                     foreach ($listpart as $row_part):
                         // Pagu Murni atau Perubahan
@@ -245,13 +239,15 @@
                         $totalCair             += $cair;
                         $totalTolakBendahara   += $tolakBendahara;
 
-                        // Capaian
-                        $paguCapaian = $is_perubahan ? $totalPaguPerubahan : $totalPaguMurni;
-                        $capaian     = $paguCapaian > 0 ? ($persetujuan / $paguCapaian) * 100 : 0;
+                        // Pagu (col 3) & Capaian = Approval / Pagu * 100
+                        $paguPart   = $is_perubahan ? $totalPaguPerubahan : $totalPaguMurni;
+                        $totalPagu += $paguPart;
+                        $capaian    = $paguPart > 0 ? ($persetujuan / $paguPart) * 100 : 0;
                     ?>
                         <tr>
                             <td class="text-center"><?= $no++ ?></td>
                             <td><?= $row_part->nama ?></td>
+                            <td class="text-right">Rp. <?= nominal($paguPart) ?></td>
                             <td class="text-right">Rp. <?= nominal($usulanBaru) ?></td>
                             <td class="text-right">Rp. <?= nominal($usulanVerifikasi) ?></td>
                             <td class="text-right">Rp. <?= nominal($persetujuan) ?></td>
@@ -266,6 +262,7 @@
                     <?php endforeach; ?>
                     <tr>
                         <td colspan="2" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?= nominal($totalPagu) ?></td>
                         <td class="text-right font-weight-bold">Rp. <?= nominal($totalUsulanBaru) ?></td>
                         <td class="text-right font-weight-bold">Rp. <?= nominal($totalUsulanVerifikasi) ?></td>
                         <td class="text-right font-weight-bold">Rp. <?= nominal($totalPersetujuan) ?></td>
@@ -275,15 +272,12 @@
                         <td class="text-right font-weight-bold">Rp. <?= nominal($totalPending) ?></td>
                         <td class="text-right font-weight-bold">Rp. <?= nominal($totalCair) ?></td>
                         <td class="text-right font-weight-bold">Rp. <?= nominal($totalTolakBendahara) ?></td>
-                        <?php
-                        $paguTotal = $is_perubahan ? $alokasiPaguPerubahan : $alokasiPagu;
-                        $totalCapaian = $paguTotal > 0 ? ($totalPersetujuan / $paguTotal) * 100 : 0;
-                        ?>
+                        <?php $totalCapaian = $totalPagu > 0 ? ($totalPersetujuan / $totalPagu) * 100 : 0; ?>
                         <td class="text-right font-weight-bold"><?= number_format($totalCapaian, 2) ?>%</td>
                     </tr>
                 <?php else: ?>
                     <tr>
-                        <td class="text-center" colspan="12">Data tidak tersedia</td>
+                        <td class="text-center" colspan="13">Data tidak tersedia</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -502,6 +496,80 @@
                 <?php else: ?>
                     <tr>
                         <td class="text-center" colspan="6">Data tidak tersedia</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    <?php elseif ($cetak == 'bidang-uraian'): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th class="align-middle text-center">No</th>
+                    <th class="align-middle text-center">Kode</th>
+                    <th class="align-middle text-center">Bidang / Kegiatan / Uraian</th>
+                    <th class="align-middle text-center">Total Pagu</th>
+                    <th class="align-middle text-center">Total Realisasi</th>
+                    <th class="align-middle text-center">Sisa Anggaran</th>
+                    <th class="align-middle text-center">Capaian</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($uraianPerBidang)): ?>
+                    <?php
+                        $no = 1;
+                        $grandPagu = 0;
+                        $grandReal = 0;
+                        foreach ($uraianPerBidang as $g):
+                            $capaianG = $g['pagu'] > 0 ? ($g['real'] / $g['pagu']) * 100 : 0;
+                            $grandPagu += $g['pagu'];
+                            $grandReal += $g['real'];
+                    ?>
+                        <tr style="background:#f7f7f7;font-weight:600;">
+                            <td class="text-center"><?php echo $no++ ?></td>
+                            <td><small class="text-muted">Bidang/Bagian</small></td>
+                            <td><?php echo $g['nama'] ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($g['pagu']) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($g['real']) ?></td>
+                            <td class="text-right">Rp. <?php echo nominal($g['pagu'] - $g['real']) ?></td>
+                            <td class="text-right"><?php echo number_format($capaianG, 2) ?>%</td>
+                        </tr>
+                        <?php foreach ($g['rows'] as $k):
+                            $capaianK = $k['pagu'] > 0 ? ($k['real'] / $k['pagu']) * 100 : 0;
+                        ?>
+                            <tr>
+                                <td></td>
+                                <td><small class="text-muted"><?php echo $k['kode'] ?></small></td>
+                                <td style="padding-left:2.2em;"><span class="text-muted" style="margin-right:.35em;">└─</span><?php echo $k['nama'] ?></td>
+                                <td class="text-right">Rp. <?php echo nominal($k['pagu']) ?></td>
+                                <td class="text-right">Rp. <?php echo nominal($k['real']) ?></td>
+                                <td class="text-right">Rp. <?php echo nominal($k['pagu'] - $k['real']) ?></td>
+                                <td class="text-right"><?php echo number_format($capaianK, 2) ?>%</td>
+                            </tr>
+                            <?php foreach ($k['rows'] as $u):
+                                $capaianU = $u['pagu'] > 0 ? ($u['realisasi'] / $u['pagu']) * 100 : 0;
+                            ?>
+                                <tr>
+                                    <td></td>
+                                    <td><small class="text-muted"><?php echo $u['kode'] ?></small></td>
+                                    <td style="padding-left:4.4em;"><span class="text-muted" style="margin-right:.35em;">└─</span><?php echo $u['nama'] ?></td>
+                                    <td class="text-right">Rp. <?php echo nominal($u['pagu']) ?></td>
+                                    <td class="text-right">Rp. <?php echo nominal($u['realisasi']) ?></td>
+                                    <td class="text-right">Rp. <?php echo nominal($u['pagu'] - $u['realisasi']) ?></td>
+                                    <td class="text-right"><?php echo number_format($capaianU, 2) ?>%</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                    <tr>
+                        <td colspan="3" class="text-center font-weight-bold">Total</td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($grandPagu) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($grandReal) ?></td>
+                        <td class="text-right font-weight-bold">Rp. <?php echo nominal($grandPagu - $grandReal) ?></td>
+                        <td class="text-right font-weight-bold"><?php echo $grandPagu > 0 ? number_format(($grandReal / $grandPagu) * 100, 2) : 0 ?>%</td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td class="text-center" colspan="7">Data tidak tersedia</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

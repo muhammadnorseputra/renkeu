@@ -1,12 +1,40 @@
 /* Sticky header + dark header untuk tabel monitor */
 .x_panel .table thead th {
     position: sticky;
+    top: 0;
     z-index: 5;
 }
 
 .x_panel .table thead th:not([class*="bg-"]) {
     background: #34495E;
     color: #ECF0F1;
+}
+
+/* Sticky khusus kolom Nama Part (kolom ke-3) di tabel Bidang/Uraian */
+.tbl-bidang-uraian-wrap {
+    overflow-x: auto;
+}
+.tbl-bidang-uraian {
+    min-width: 900px;
+}
+.tbl-bidang-uraian thead th:nth-child(3),
+.tbl-bidang-uraian tbody td:nth-child(3) {
+    position: sticky;
+    left: 0;
+    z-index: 6;
+    border-right: 2px solid #dee2e6;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.08);
+}
+.tbl-bidang-uraian thead th:nth-child(3) {
+    z-index: 9;
+    background: #34495E !important;
+    color: #ECF0F1;
+}
+.tbl-bidang-uraian tbody td:nth-child(3) {
+    background: #fff;
+}
+.tbl-bidang-uraian tbody tr[style*="background:#f7f7f7"] td:nth-child(3) {
+    background: #f7f7f7 !important;
 }
 
 /* Tab monitor: scroll horizontal, tidak wrap */

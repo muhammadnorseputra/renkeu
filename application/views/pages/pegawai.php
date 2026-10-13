@@ -210,6 +210,19 @@
                         </div>
                     </div>
 
+                    <!-- List Indikator berdasarkan Bidang -->
+                    <div class="mapping-indikator-panel" id="mappingIndikatorPanel">
+                        <div class="mapping-indikator-head">
+                            <i class="fa fa-bullseye"></i> Indikator Bidang
+                            <span class="mapping-indikator-count" id="mappingIndikatorCount">0</span>
+                        </div>
+                        <div class="mapping-indikator-body" id="mappingIndikatorBody">
+                            <div class="mapping-indikator-empty">
+                                <i class="fa fa-info-circle"></i> Pilih bidang untuk melihat indikator.
+                            </div>
+                        </div>
+                    </div>
+
                     <input type="hidden" id="map_jenis">
                     <input type="hidden" id="map_nama_value">
                     <input type="hidden" id="map_jabatan_value">

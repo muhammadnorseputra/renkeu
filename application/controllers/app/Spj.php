@@ -1169,7 +1169,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
 
     public function monitor_pdf($tabel = 'bidang')
     {
-        $tabel = in_array($tabel, ['bidang', 'uraian', 'program', 'kegiatan', 'sub_kegiatan'], true) ? $tabel : 'bidang';
+        $tabel = in_array($tabel, ['bidang', 'bidang-uraian', 'uraian', 'program', 'kegiatan', 'sub_kegiatan'], true) ? $tabel : 'bidang';
 
         $data                   = $this->monitor_data();
         $data['cetak']          = $tabel;
@@ -1188,7 +1188,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
      */
     public function monitor_excel($tabel = 'bidang')
     {
-        $tabel = in_array($tabel, ['bidang', 'uraian', 'program', 'kegiatan', 'sub_kegiatan'], true) ? $tabel : 'bidang';
+        $tabel = in_array($tabel, ['bidang', 'bidang-uraian', 'uraian', 'program', 'kegiatan', 'sub_kegiatan'], true) ? $tabel : 'bidang';
 
         $data = $this->monitor_data();
         $t    = $this->_monitor_tabel($tabel, $data);
@@ -1267,6 +1267,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
     {
         return [
             'bidang'       => 'Belanja Bidang',
+            'bidang-uraian'=> 'Belanja Bidang / Uraian',
             'uraian'       => 'Belanja Uraian',
             'program'      => 'Belanja Program',
             'kegiatan'     => 'Belanja Kegiatan',
@@ -1321,11 +1322,12 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
         ];
 
         if ($tabel == 'bidang') {
-            $out['headers'] = ['No', 'Bidang/Bagian', 'Usulan Baru', 'Usulan Verifikasi', 'Persetujuan', 'Tolak', 'Perbaikan', 'Pending (Perbaikan)', 'Pending', 'Cair', 'Gagal Cair', 'Capaian'];
-            $out['types']   = ['center', 'text', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'pct'];
+            $out['headers'] = ['No', 'Bidang/Bagian', 'Pagu', 'Usulan Baru', 'Usulan Verifikasi', 'Persetujuan', 'Tolak', 'Perbaikan', 'Pending (Perbaikan)', 'Pending', 'Cair', 'Gagal Cair', 'Capaian'];
+            $out['types']   = ['center', 'text', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'money', 'pct'];
 
-            $tot = array_fill(0, 10, 0);
-            $no  = 1;
+            $tot      = array_fill(0, 10, 0);
+            $tot_pagu = 0;
+            $no       = 1;
             foreach ($data['listpart'] as $row_part) {
                 $pagu_part = $is_perubahan
                     ? $this->spj->getTotalPaguPerubahanByPart($row_part->id, $tahun_anggaran)
@@ -1345,11 +1347,12 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
                 foreach ($vals as $i => $v) {
                     $tot[$i] += (float) $v;
                 }
-                $capaian = $pagu_part > 0 ? ($vals[2] / $pagu_part) * 100 : 0;
+                $tot_pagu += (float) $pagu_part;
+                $capaian   = $pagu_part > 0 ? ($vals[2] / $pagu_part) * 100 : 0;
 
-                $out['rows'][] = array_merge([$no++, $row_part->nama], $vals, [$capaian]);
+                $out['rows'][] = array_merge([$no++, $row_part->nama, $pagu_part], $vals, [$capaian]);
             }
-            $out['total'] = array_merge(['', 'Total'], $tot, [$pagu_aktif > 0 ? ($tot[2] / $pagu_aktif) * 100 : 0]);
+            $out['total'] = array_merge(['', 'Total', $tot_pagu], $tot, [$tot_pagu > 0 ? ($tot[2] / $tot_pagu) * 100 : 0]);
 
             return $out;
         }
@@ -1360,7 +1363,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
             'program'      => 'Program',
             'kegiatan'     => 'Kegiatan',
             'sub_kegiatan' => 'Sub Kegiatan',
-        ][$tabel];
+        ][$tabel] ?? 'Nama';
         $out['headers'] = ['No', $label, 'Total Pagu', 'Total Realisasi', 'Sisa Anggaran', 'Capaian'];
         $out['types']   = ['center', 'text', 'money', 'money', 'money', 'pct'];
 
@@ -1380,6 +1383,34 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
             foreach ($data['uraians'] as $u) {
                 $push($u->kode . ' - ' . $u->nama, $u->pagu, $u->realisasi);
             }
+        } elseif ($tabel == 'bidang-uraian') {
+            $out['headers'] = ['No', 'Kode', 'Bidang / Kegiatan / Uraian', 'Total Pagu', 'Total Realisasi', 'Sisa Anggaran', 'Capaian'];
+            $out['types']   = ['center', 'center', 'text', 'money', 'money', 'money', 'pct'];
+
+            $tot_pagu = 0;
+            $tot_real = 0;
+            $no       = 1;
+            foreach ($data['uraianPerBidang'] as $g) {
+                $pg = (float) $g['pagu'];
+                $rl = (float) $g['real'];
+                // total hanya dari level Bidang (kegiatan & uraian sudah agregat)
+                $tot_pagu += $pg;
+                $tot_real += $rl;
+                $out['rows'][] = [$no++, 'Bidang/Bagian', $g['nama'], $pg, $rl, $pg - $rl, $pg > 0 ? ($rl / $pg) * 100 : 0];
+                foreach ($g['rows'] as $k) {
+                    $pg = (float) $k['pagu'];
+                    $rl = (float) $k['real'];
+                    $out['rows'][] = ['', $k['kode'], '└─ ' . $k['nama'], $pg, $rl, $pg - $rl, $pg > 0 ? ($rl / $pg) * 100 : 0];
+                    foreach ($k['rows'] as $u) {
+                        $pg = (float) $u['pagu'];
+                        $rl = (float) $u['realisasi'];
+                        $out['rows'][] = ['', $u['kode'], '  └─ ' . $u['nama'], $pg, $rl, $pg - $rl, $pg > 0 ? ($rl / $pg) * 100 : 0];
+                    }
+                }
+            }
+            $out['total'] = ['', '', 'Total', $tot_pagu, $tot_real, $tot_pagu - $tot_real, $tot_pagu > 0 ? ($tot_real / $tot_pagu) * 100 : 0];
+
+            return $out;
         } else {
             $items = ['program' => $data['programs'], 'kegiatan' => $data['kegiatans'], 'sub_kegiatan' => $data['sub_kegiatans']][$tabel];
             foreach ($items->result() as $row) {
@@ -1545,6 +1576,9 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
             $realJenis[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_realisasi' => (float) ($row->total ?? 0)];
         endforeach;
 
+        // Bidang / Uraian (tiered: grouped by kode uraian, sub-rows per bidang)
+        $uraianPerBidang = $this->spj->getUraianPerBidang($uraianPart, $filter_tanggal, $is_perubahan, $tahun_anggaran);
+
         $data = [
             'title'          => 'Monitor SPJ (Surat Pertanggung Jawaban)',
             'content'        => 'pages/spj/monitor',
@@ -1561,6 +1595,7 @@ Realisasi SPJ : ' . (isset($input['is_realisasi']) && ! empty($input['is_realisa
             'realKelompok'   => $realKelompok,
             'paguJenis'      => $paguJenis,
             'realJenis'      => $realJenis,
+            'uraianPerBidang'=> $uraianPerBidang,
             'chartData'      => $chartData,
             'autoload_js'    => [
                 'template/backend/vendors/moment/min/moment.min.js',
