@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css"/>
     <!-- uiConfirm / uiAlert modal -->
     <link href="<?php echo asset_url('template/custom-css/ui-confirm.css') ?>" rel="stylesheet">
+    <link href="<?php echo asset_url('template/custom-css/app-update.css') ?>" rel="stylesheet">
 
     <!-- Splash screen loading style -->
     <style>

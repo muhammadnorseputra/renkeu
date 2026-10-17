@@ -1,38 +1,34 @@
 <div class="container body">
 
   <div class="header sticky-top">
-    <div id="app-update-banner" class="alert alert-info border-0 mb-0 rounded-0" role="alert" style="display:none;">
-      <i class="fa fa-refresh"></i> Terdapat pembaruan baru tersedia. Silahkan update aplikasi <span id="app-update-sha" class="badge badge-dark"></span>
-      <button id="btn-app-update" type="button" class="btn btn-sm btn-primary ml-2">Update Sekarang</button>
-    </div>
-    <script>
-    (function () {
-      var REPO = 'muhammadnorseputra/renkeu', BRANCH = 'middle-dev', KEY = 'emonev_deploy_sha_' + BRANCH, latest = null;
-      var banner = document.getElementById('app-update-banner'), btn = document.getElementById('btn-app-update'), shaEl = document.getElementById('app-update-sha');
-      function check() {
-        fetch('https://api.github.com/repos/' + REPO + '/commits/' + BRANCH + '?per_page=1', { headers: { 'Accept': 'application/vnd.github.v3+json' } })
-          .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-          .then(function (d) {
-            latest = d.sha || d.commit && d.commit.sha;
-            if (!latest) return;
-            var saved = localStorage.getItem(KEY);
-            if (!saved) { localStorage.setItem(KEY, latest); return; }
-            if (saved !== latest) { shaEl.textContent = latest.slice(0, 7); banner.style.display = 'block'; }
-          })
-          .catch(function () {});
-      }
-      btn.addEventListener('click', function () {
-        btn.disabled = true; btn.textContent = 'Memperbarui...';
-        var done = function () { try { localStorage.setItem(KEY, latest || ''); } catch (e) {} location.reload(); };
-        if ('caches' in window) { caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); }).then(done, done); }
-        else { done(); }
-      });
-      check();
-      setInterval(check, 5 * 60 * 1000);
-      document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); });
-    })();
-    </script>
     <?php $this->load->view('notify/notif_global'); ?>
+  </div>
+
+  <div id="app-update-modal" class="modal fade app-update-modal" tabindex="-1" role="dialog" aria-labelledby="app-update-title" aria-describedby="app-update-description" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="app-update-modal__accent"></div>
+        <div class="modal-body text-center p-4 p-md-5">
+          <div class="app-update-modal__icon" aria-hidden="true">
+            <i class="fa fa-refresh"></i>
+          </div>
+          <h4 id="app-update-title" class="app-update-modal__title">Pembaruan aplikasi tersedia</h4>
+          <p id="app-update-description" class="app-update-modal__description">
+            Terdapat pembaruan baru tersedia. Silahkan update aplikasi untuk melanjutkan.
+          </p>
+          <div class="app-update-modal__commit">
+            <div class="app-update-modal__commit-label">Commit terbaru</div>
+            <div id="app-update-message" class="app-update-modal__commit-message"></div>
+            <span id="app-update-sha" class="badge badge-dark app-update-modal__sha"></span>
+          </div>
+          <div id="app-update-error" class="app-update-modal__error" role="alert" aria-live="polite"></div>
+          <button id="btn-app-update" type="button" class="btn btn-primary btn-lg btn-block app-update-modal__button">
+            <i class="fa fa-refresh mr-2" aria-hidden="true"></i>Update Sekarang
+          </button>
+          <p class="app-update-modal__note mb-0">Modal ini akan tetap terbuka sampai aplikasi diperbarui.</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="main_container">

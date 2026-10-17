@@ -20,6 +20,7 @@
     <script src="<?php echo asset_url('template/custom-js/ui-confirm.js') ?>"></script>
     <script src="<?php echo asset_url('template/custom-js/chart-export.js') ?>"></script>
     <script src="<?php echo asset_url('template/custom-js/admin.js') ?>"></script>
+    <script src="<?php echo asset_url('template/custom-js/app-update.js') ?>"></script>
 
     <?php
         if (isset($autoload_js)) {

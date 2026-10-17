@@ -1,0 +1,128 @@
+.app-update-modal {
+    z-index: 100001;
+}
+
+.modal-backdrop.app-update-modal-backdrop {
+    z-index: 100000;
+    background-color: #101828;
+}
+
+.modal-backdrop.app-update-modal-backdrop.show {
+    opacity: 0.72;
+}
+
+.app-update-modal .modal-dialog {
+    max-width: 480px;
+    padding: 0 12px;
+}
+
+.app-update-modal .modal-content {
+    overflow: hidden;
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 24px 70px rgba(16, 24, 40, 0.3);
+}
+
+.app-update-modal__accent {
+    height: 6px;
+    background: linear-gradient(90deg, #1b6ec2, #49a3ff);
+}
+
+.app-update-modal__icon {
+    display: flex;
+    width: 64px;
+    height: 64px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #eaf4ff;
+    color: #1b6ec2;
+    font-size: 26px;
+}
+
+.app-update-modal__title {
+    margin: 0 0 10px;
+    color: #172b4d;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.app-update-modal__description {
+    margin: 0 auto 22px;
+    color: #667085;
+    line-height: 1.6;
+}
+
+.app-update-modal__commit {
+    margin-bottom: 22px;
+    padding: 14px 16px;
+    border: 1px solid #e4eaf2;
+    border-radius: 10px;
+    background: #f8fafc;
+    text-align: left;
+}
+
+.app-update-modal__commit-label {
+    margin-bottom: 5px;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.app-update-modal__commit-message {
+    color: #344054;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.app-update-modal__sha {
+    margin-top: 8px;
+    font-family: monospace;
+    font-size: 11px;
+}
+
+.app-update-modal__button {
+    border: 0;
+    border-radius: 8px;
+    background: #1b6ec2;
+    font-weight: 600;
+}
+
+.app-update-modal__button:hover,
+.app-update-modal__button:focus {
+    background: #15599e;
+}
+
+.app-update-modal__button:disabled {
+    cursor: wait;
+}
+
+.app-update-modal__error {
+    display: none;
+    margin: -8px 0 14px;
+    color: #b42318;
+    font-size: 13px;
+}
+
+.app-update-modal__error.is-visible {
+    display: block;
+}
+
+.app-update-modal__note {
+    margin-top: 14px;
+    color: #98a2b3;
+    font-size: 12px;
+}
+
+@media (max-width: 575.98px) {
+    .app-update-modal .modal-dialog {
+        margin: 12px auto;
+    }
+
+    .app-update-modal__title {
+        font-size: 20px;
+    }
+}
