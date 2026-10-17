@@ -348,6 +348,78 @@ function rupiah(num) {
 	return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
+function terbilangKurangSeribu(number) {
+	const words = [
+		"",
+		"satu",
+		"dua",
+		"tiga",
+		"empat",
+		"lima",
+		"enam",
+		"tujuh",
+		"delapan",
+		"sembilan",
+		"sepuluh",
+		"sebelas",
+	];
+
+	if (number < 12) return words[number];
+	if (number < 20) return `${words[number - 10]} belas`;
+	if (number < 100) {
+		const puluh = Math.floor(number / 10);
+		const sisa = number % 10;
+		return `${words[puluh]} puluh${sisa ? ` ${words[sisa]}` : ""}`;
+	}
+	if (number < 200) {
+		const sisa = number - 100;
+		return `seratus${sisa ? ` ${terbilangKurangSeribu(sisa)}` : ""}`;
+	}
+
+	const ratus = Math.floor(number / 100);
+	const sisa = number % 100;
+	return `${words[ratus]} ratus${sisa ? ` ${terbilangKurangSeribu(sisa)}` : ""}`;
+}
+
+function terbilangJumlah(value) {
+	const digits = value.replace(/\D/g, "");
+	if (!digits) return "-";
+
+	let number = Number(digits);
+	if (!Number.isFinite(number)) return "-";
+	if (number === 0) return ucwords("nol rupiah");
+
+	const scales = [
+		[1000000000000, "triliun"],
+		[1000000000, "milyar"],
+		[1000000, "juta"],
+		[1000, "ribu"],
+		[1, ""],
+	];
+	let result = "";
+
+	for (const [scale, label] of scales) {
+		if (number < scale) continue;
+
+		const count = Math.floor(number / scale);
+		number %= scale;
+		if (scale === 1000 && count === 1) {
+			result += " seribu";
+		} else {
+			result += ` ${terbilangKurangSeribu(count)}${label ? ` ${label}` : ""}`;
+		}
+	}
+
+	result = result.replace(" satu ribu", " seribu").trim();
+	return ucwords(`${result} rupiah`);
+}
+
+function ucwords(value) {
+	return value.toLowerCase().replace(/(^|\s)(\S)/g, (match, separator, character) => {
+		return `${separator}${character.toUpperCase()}`;
+	});
+}
+
 function newRealisasi(start, end) {
 	var jml = start - end;
 	var convert = rupiah(jml);
@@ -363,13 +435,20 @@ function newLimit(start, end) {
 		.html(`Rp. ${convert} <i class="text-danger fa fa-level-down"></i>`);
 }
 
-$("input[name='jumlah']").on("keyup", async function (e) {
+$("input[name='jumlah']").on("input", async function () {
 	let start = $(this).attr("data-start");
 	let start_limit = $(this).attr("data-start-limit");
 	let jml = $(this).val();
-	await newRealisasi(start, jml.split(".").join(""));
-	await newLimit(start_limit, jml.split(".").join(""));
+	const jumlah = jml.replace(/\D/g, "");
+	await newRealisasi(start, jumlah);
+	await newLimit(start_limit, jumlah);
+	$("#jumlah-terbilang").text(terbilangJumlah(jml));
 });
+
+$("textarea[name='uraian']").on("input", function () {
+	$("#uraian-char-count").text(Array.from($(this).val()).length);
+});
+
 // pilih kode langsung dari step-1 (tanpa modal): pilih uraian → ambil hierarki + pagu
 let uslReqSeq = 0; // guard: request lama jangan timpa request baru
 $("select#uraian_kegiatan").on("change", async function (e) {
@@ -381,7 +460,7 @@ $("select#uraian_kegiatan").on("change", async function (e) {
 	const $hier = $formStep.find("#loadKegiatan");
 	const $stat = $formStep.find("#jumlah_max, #sisa_max");
 
-	$("input[name='jumlah']").val("");
+	$("input[name='jumlah']").val("").trigger("input");
 	$formStep
 		.find('select[name="periode"],select[name="tahun"]')
 		.prop("disabled", true);

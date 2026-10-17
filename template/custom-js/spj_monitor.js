@@ -170,9 +170,11 @@ $("#btn_reset_filter").on("click", function () {
 		if (sumWrap) sumWrap.style.display = total > 0 ? "" : "none";
 	}
 
-	// Datalabels plugin: draw value above each point
+	// Label nilai di setiap point.
+	// Chart.js 2.1.4 hanya memanggil plugin yang didaftarkan global via
+	// pluginService.register; key `plugins` di dalam options diabaikan.
 	var totalPlugin = {
-		afterDatasetsDraw: function (chart) {
+		afterDraw: function (chart) {
 			var ctx2 = chart.chart.ctx;
 			ctx2.save();
 			ctx2.font = "10px Arial";
@@ -182,7 +184,9 @@ $("#btn_reset_filter").on("click", function () {
 				var meta2 = chart.getDatasetMeta(i);
 				meta2.data.forEach(function (pt, index) {
 					var val = ds.data[index];
-					if (val > 0 && !manyDays) {
+					// Tiap titik berlabel, termasuk nilai 0; pada rentang padat
+					// (>60 hari) label disembunyikan agar tidak bertumpuk.
+					if (!manyDays) {
 						ctx2.fillStyle = ds.borderColor;
 						ctx2.fillText(formatRp(val), pt.x, pt.y - 8);
 					}
@@ -191,6 +195,8 @@ $("#btn_reset_filter").on("click", function () {
 			ctx2.restore();
 		},
 	};
+
+	Chart.pluginService.register(totalPlugin);
 
 	// Smooth tooltip element (append to body, like Chart.js sample)
 	var tooltipEl = document.getElementById("chartTooltip");
@@ -297,7 +303,6 @@ $("#btn_reset_filter").on("click", function () {
 						"translate(-50%," + (tooltip.yAlign === "top" ? "0" : "-100%") + ")";
 				},
 			},
-			plugins: [totalPlugin],
 		},
 	});
 

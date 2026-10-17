@@ -187,10 +187,15 @@
                                 <?php echo $disabled_status; ?>>
                         </div>
                         <div id="help-block-jumlah" class="row col-md-12"></div>
+                        <div class="usl-terbilang">
+                            <span class="usl-terbilang-label"><i class="fa fa-usd" aria-hidden="true"></i> Terbilang</span>
+                            <em id="jumlah-terbilang" class="usl-terbilang-value" aria-live="polite"><?php echo empty($detail->jumlah) ? '-' : ucwords(terbilang($detail->jumlah)) ?></em>
+                        </div>
                     </div>
                     <div class="usl-f mt-3">
                         <label class="usl-lbl" for="uraian">Uraian / Untuk Pembayaran / Keterangan Kwitansi <span class="text-danger">*</span></label>
                         <textarea name="uraian" id="uraian" cols="30" rows="4" class="form-control usl-ta" required="required" placeholder="Tuliskan uraian pembayaran / keterangan kwitansi ..." <?php echo $disabled_status; ?>><?php echo @$detail->uraian ?></textarea>
+                        <div class="usl-char-count" aria-live="polite"><span id="uraian-char-count"><?php echo function_exists('mb_strlen') ? mb_strlen((string) @$detail->uraian, 'UTF-8') : strlen((string) @$detail->uraian) ?></span> karakter</div>
                     </div>
                 </div>
             </div>

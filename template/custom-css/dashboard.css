@@ -1,0 +1,363 @@
+.dashboard-transaction-row > [class*="col-"] {
+    display: flex;
+}
+
+.dashboard-transaction-panel {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+}
+
+.dashboard-transaction-panel > .x_content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.dashboard-transaction-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.dashboard-transaction-header .dashboard-title-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.dashboard-transaction-header h2 {
+    float: none !important;
+    margin: 0 !important;
+    white-space: nowrap;
+}
+
+.dashboard-transaction-header .panel_toolbox.chart-export {
+    float: none !important;
+    margin-left: auto;
+}
+
+.dashboard-transaction-chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    min-height: 260px;
+}
+
+.dashboard-transaction-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Flot tooltip — override plugin defaultTheme inline styles */
+.flotTip {
+    padding: 10px 12px !important;
+    background: rgba(38, 55, 70, 0.94) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    opacity: 1 !important;
+    z-index: 10 !important;
+}
+
+/* Flot legend — tidy, no overlap */
+.dashboard-transaction-panel .legend table {
+    border-collapse: separate;
+    border-spacing: 0 4px;
+}
+
+.dashboard-transaction-panel .legend td {
+    padding: 0 4px;
+    font-size: 11px;
+    color: #455c73;
+}
+
+.dashboard-transaction-panel .legend .legendColorBox > div {
+    border-radius: 2px;
+}
+
+.dashboard-top-profiles {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-bottom: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: 4px;
+}
+
+.quarter-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.quarter-summary-card {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #e4e8ec;
+    border-left: 3px solid #455c73;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.quarter-summary-card.is-revision {
+    border-left-color: #26a985;
+}
+
+.quarter-summary-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 9px;
+}
+
+.quarter-summary-name {
+    color: #34495e;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.quarter-summary-type {
+    flex-shrink: 0;
+    padding: 3px 4px;
+    background: #edf1f4;
+    color: #455c73;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .06em;
+}
+
+.quarter-summary-card.is-revision .quarter-summary-type {
+    background: #e7f5f0;
+    color: #18866a;
+}
+
+.quarter-summary-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #7b8792;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.quarter-summary-pagu {
+    margin: 0 0 9px;
+    color: #263746;
+    font-size: clamp(14px, 1.25vw, 19px);
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.quarter-summary-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 6px;
+    color: #687581;
+    font-size: 10px;
+}
+
+.quarter-summary-realization,
+.quarter-summary-achievement {
+    min-width: 0;
+}
+
+.quarter-summary-realization strong {
+    display: block;
+    color: #34495e;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.quarter-summary-achievement {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.quarter-summary-achievement strong {
+    display: block;
+    color: #34495e;
+    font-size: 12px;
+}
+
+.quarter-summary-progress {
+    height: 4px;
+    margin: 7px 0 0;
+    background: #edf0f2;
+}
+
+.quarter-summary-progress .progress-bar {
+    background: #26a985;
+}
+
+@media (max-width: 991px) {
+    .dashboard-transaction-header {
+        align-items: flex-start;
+    }
+
+    .dashboard-transaction-chart-container {
+        height: 280px;
+    }
+
+    .quarter-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575px) {
+    .dashboard-transaction-header .dashboard-title-left {
+        width: 100%;
+    }
+
+    .dashboard-transaction-header .panel_toolbox.chart-export {
+        margin-left: 0;
+    }
+
+    .dashboard-transaction-chart-container {
+        height: 240px;
+    }
+
+    .quarter-summary-card {
+        padding: 11px;
+    }
+
+    .quarter-summary-pagu {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 380px) {
+    .quarter-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard-progress-full {
+    width: 100%;
+}
+
+.dashboard-top-profile-status {
+    float: right;
+}
+
+.dashboard-legend-pagu {
+    color: #455C73;
+}
+
+.dashboard-legend-realisasi {
+    color: #26B99A;
+}
+
+canvas.dashboard-parts-chart {
+    margin: 0;
+}
+
+.dashboard-chart-tooltip-title {
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.dashboard-chart-tooltip-period {
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.dashboard-chart-tooltip-value {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.dashboard-top-transaksi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dashboard-top-transaksi-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #e4e8ec;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.dashboard-top-transaksi-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.dashboard-top-transaksi-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.dashboard-top-transaksi-ident {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.dashboard-top-transaksi-nama {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #34495e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dashboard-top-transaksi-ident small {
+    display: block;
+    color: #7b8792;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dashboard-top-transaksi-status {
+    flex-shrink: 0;
+    font-size: 10px;
+}
+
+.dashboard-top-transaksi-jumlah {
+    font-size: 14px;
+    font-weight: 700;
+    color: #263746;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 991px) {
+    .dashboard-top-transaksi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575px) {
+    .dashboard-top-transaksi-grid {
+        grid-template-columns: 1fr;
+    }
+}

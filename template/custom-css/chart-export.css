@@ -1,65 +1,84 @@
-/* chart-export dropdown — polished, minimal */
 .x_title .panel_toolbox.chart-export {
 	display: flex;
 	align-items: center;
-	gap: 6px;
+	gap: 8px;
 }
-.panel_toolbox.chart-export > li.dropdown > a.dropdown-toggle {
+.panel_toolbox.chart-export > li.dropdown > a.chart-export-toggle {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 32px;
-	height: 32px;
-	background: #f8fafc;
-	border: 1px solid #e2e8f0;
-	border-radius: 999px;
-	padding: 0;
-	font-size: 14px;
-	color: #475569;
+	gap: 7px;
+	min-height: 32px;
+	padding: 0 11px;
+	border: 1px solid #d7e0e8;
+	border-radius: 6px;
+	background: #fff;
+	color: #455c73;
+	font-size: 12px;
+	font-weight: 600;
 	line-height: 1;
-	transition: all 0.15s;
-}
-.panel_toolbox.chart-export > li.dropdown > a.dropdown-toggle:hover,
-.panel_toolbox.chart-export > li.dropdown.open > a.dropdown-toggle {
-	background: #eef2ff;
-	border-color: #c7d2fe;
-	color: #1d3a6e;
 	text-decoration: none;
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.panel_toolbox.chart-export > li.dropdown > a.chart-export-toggle:hover,
+.panel_toolbox.chart-export > li.dropdown > a.chart-export-toggle:focus,
+.panel_toolbox.chart-export > li.dropdown.open > a.chart-export-toggle {
+	background: #f2f7fb;
+	border-color: #9db2c5;
+	color: #263f56;
+	text-decoration: none;
+	box-shadow: 0 2px 6px rgba(38, 63, 86, 0.1);
+	outline: none;
+}
+.panel_toolbox.chart-export > li.dropdown > a.chart-export-toggle:focus-visible {
+	box-shadow: 0 0 0 3px rgba(69, 92, 115, 0.2);
 }
 .panel_toolbox.chart-export .dropdown-menu {
-	border-radius: 10px;
-	border: 1px solid #e5e7eb;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-	padding: 6px;
-	min-width: 160px;
-	margin-top: 8px;
+	min-width: 184px;
+	margin-top: 7px;
+	padding: 7px;
+	border: 1px solid #e1e7ed;
+	border-radius: 8px;
+	box-shadow: 0 10px 28px rgba(31, 48, 64, 0.14);
 }
 .panel_toolbox.chart-export .dropdown-menu > li.dropdown-header {
-	padding: 6px 12px;
-	font-size: 11px;
+	padding: 7px 10px 8px;
+	color: #7b8792;
+	font-size: 10px;
 	font-weight: 700;
 	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	color: #6b7280;
+	letter-spacing: 0.06em;
 }
 .panel_toolbox.chart-export .dropdown-menu > li > a.export-chart {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding: 8px 12px;
-	border-radius: 7px;
+	gap: 9px;
+	padding: 9px 10px;
+	border-radius: 5px;
+	color: #34495e;
 	font-size: 13px;
 	font-weight: 500;
-	color: #374151;
-	transition: all 0.12s;
+	text-decoration: none;
+	transition: background-color 0.12s ease, color 0.12s ease;
 }
 .panel_toolbox.chart-export .dropdown-menu > li > a.export-chart:hover {
-	background: #f3f4f6;
-	color: #1d3a6e;
+	background: #f1f5f8;
+	color: #1b6ec2;
 }
 .panel_toolbox.chart-export .dropdown-menu > li > a.export-chart i {
-	width: 18px;
+	width: 17px;
 	text-align: center;
-	font-size: 14px;
-	opacity: 0.85;
+	font-size: 15px;
+	color: #6d8295;
+}
+
+@media (max-width: 575px) {
+	.panel_toolbox.chart-export > li.dropdown > a.chart-export-toggle {
+		width: 34px;
+		padding: 0;
+	}
+
+	.panel_toolbox.chart-export > li.dropdown > a.chart-export-toggle span {
+		display: none;
+	}
 }

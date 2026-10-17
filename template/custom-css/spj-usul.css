@@ -245,7 +245,13 @@
 .usl-amount { display: flex; align-items: stretch; max-width: 420px; }
 .usl-amount-pre { display: flex; align-items: center; padding: 0 14px; font-size: 14px; font-weight: 700; color: #1d3a6e; background: #eef3fb; border: 1px solid #e4e7ec; border-right: 0; border-radius: 8px 0 0 8px; }
 .usl-amount-inp { border-radius: 0 8px 8px 0 !important; font-weight: 600; letter-spacing: .3px; }
+.usl-terbilang { display: flex; align-items: flex-start; gap: 10px; max-width: 620px; margin-top: 10px; padding: 10px 12px; border: 1px solid #e4eaf3; border-radius: 8px; background: #f8fafc; color: #475467; font-size: 12px; line-height: 1.5; }
+.usl-terbilang-label { flex: 0 0 auto; color: #1d3a6e; font-weight: 700; }
+.usl-terbilang-label .fa { margin-right: 4px; }
+.usl-terbilang-value { overflow-wrap: anywhere; }
+@media (max-width: 575px) { .usl-terbilang { flex-direction: column; gap: 3px; } }
 .usl-ta { border-radius: 8px !important; resize: vertical; }
+.usl-char-count { margin-top: 5px; color: #98a2b3; font-size: 11px; text-align: right; }
 
 /* action bar */
 .usl-actions { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px dashed #e4e7ec; }
@@ -341,5 +347,3 @@
 .usl-chip--info { background: #eef3fb; border-color: #d6e0f0; color: #1d3a6e; }
 .usl-note--big { padding: 13px 16px; font-size: 13.5px; }
 .usl-reason { padding: 14px 16px; border-radius: 10px; background: #fff7ed; border: 1px solid #fedf89; color: #b54708; font-size: 13.5px; white-space: pre-wrap; }
-
-

@@ -52,7 +52,7 @@ class Dashboard extends CI_Controller
         $persentase_capaian  = @($ProgramTotalRealisasi / $ProgramTotalPaguAwal) * 100;
 
         // Chart
-        $db_transaksi = $this->spj->TopTransaksiSPJ(10);
+        $db_transaksi = $this->spj->TopTransaksiSPJ(4);
         $spj_ms       = [];
         $spj_tms      = [];
         $spj_baru     = [];
@@ -220,6 +220,7 @@ class Dashboard extends CI_Controller
             'autoload_css' => [
                 'template/backend/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css',
                 'template/custom-css/chart-export.css',
+                'template/custom-css/dashboard.css',
             ],
             'autoload_js'  => [
                 'template/backend/vendors/Chart.js/dist/Chart.bundle.min.js',
@@ -235,6 +236,7 @@ class Dashboard extends CI_Controller
                 'template/backend/vendors/DateJS/build/date.js',
                 'template/backend/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js',
                 'template/custom-js/dashboard.js',
+                'template/custom-js/dashboard-charts.js',
             ],
         ];
         $this->load->view('layout/app', $data);
