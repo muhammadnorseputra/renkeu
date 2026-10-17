@@ -52,7 +52,7 @@ class Dashboard extends CI_Controller
         $persentase_capaian  = @($ProgramTotalRealisasi / $ProgramTotalPaguAwal) * 100;
 
         // Chart
-        $db_transaksi = $this->spj->TopTransaksiSPJ(5);
+        $db_transaksi = $this->spj->TopTransaksiSPJ(10);
         $spj_ms       = [];
         $spj_tms      = [];
         $spj_baru     = [];
@@ -86,46 +86,58 @@ class Dashboard extends CI_Controller
         endforeach;
 
         // --- Agregat Kelompok & Jenis Belanja ---
-        $is_perubahan = $this->session->userdata('is_perubahan');
         $ta           = $this->ta;
+        $part         = $this->session->userdata('part');
+        $isAdminSpj   = in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN']);
+        $is_perubahan = $this->session->userdata('is_perubahan');
 
-        // PAGU per Kelompok (murni / perubahan mengikuti sesi login)
+        // Match monitor page scope: selected fiscal year/revision and current part for non-admins.
         $pagu_kelompok = [];
         $db_pagu_kel   = $this->db->select('k.id, k.kode, k.nama, SUM(p.total_pagu_awal) as total')
             ->from('ref_kelompok_belanja k')
             ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
             ->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($ta) . ' AND p.is_perubahan = ' . $this->db->escape($is_perubahan), 'left')
-            ->where('k.tahun', $ta)
-            ->group_by('k.id')
-            ->get();
+            ->where('k.tahun', $ta);
+        if (!$isAdminSpj) {
+            $db_pagu_kel->where('p.fid_part', $part);
+        }
+        $db_pagu_kel->group_by('k.id');
+        $db_pagu_kel = $db_pagu_kel->get();
         foreach ($db_pagu_kel->result() as $row):
             $pagu_kelompok[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_pagu' => (int) $row->total];
         endforeach;
 
-        // PAGU per Jenis (murni / perubahan mengikuti sesi login)
+        // PAGU per Jenis
         $pagu_jenis = [];
         $db_pagu_j  = $this->db->select('j.id, j.kode, j.nama, SUM(p.total_pagu_awal) as total')
             ->from('ref_jenis_belanja j')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
             ->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($ta) . ' AND p.is_perubahan = ' . $this->db->escape($is_perubahan), 'left')
-            ->where('j.tahun', $ta)
-            ->group_by('j.id')
-            ->get();
+            ->where('j.tahun', $ta);
+        if (!$isAdminSpj) {
+            $db_pagu_j->where('p.fid_part', $part);
+        }
+        $db_pagu_j->group_by('j.id');
+        $db_pagu_j = $db_pagu_j->get();
         foreach ($db_pagu_j->result() as $row):
             $pagu_jenis[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_pagu' => (int) $row->total];
         endforeach;
 
-        // REALISASI per Kelompok (via spj_riwayat.kode_uraian -> ref_uraians.kode -> jenis -> kelompok)
+        // REALISASI per Kelompok, using the same status and part scope as the monitor page.
         $real_kelompok = [];
         $db_rk         = $this->db->select('k.id, k.nama, SUM(s.jumlah) as total')
             ->from('ref_kelompok_belanja k')
             ->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
-            ->join('spj_riwayat s', "s.kode_uraian = u.kode AND s.is_status = 'APPROVE' AND s.tahun = " . $this->db->escape($ta))
+            ->join('spj s', 's.fid_uraian = u.id')
             ->where('k.tahun', $ta)
-            ->group_by('k.id')
-            ->get();
+            ->where('s.tahun', $ta)
+            ->where('s.is_status', 'SELESAI');
+        if (!$isAdminSpj) {
+            $db_rk->where('s.fid_part', $part);
+        }
+        $db_rk = $db_rk->group_by('k.id')->get();
         foreach ($db_rk->result() as $row):
             $real_kelompok[$row->id] = ['nama' => $row->nama, 'total_realisasi' => $row->total ?? 0];
         endforeach;
@@ -135,10 +147,14 @@ class Dashboard extends CI_Controller
         $db_rj      = $this->db->select('j.id, j.nama, SUM(s.jumlah) as total')
             ->from('ref_jenis_belanja j')
             ->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
-            ->join('spj_riwayat s', "s.kode_uraian = u.kode AND s.is_status = 'APPROVE' AND s.tahun = " . $this->db->escape($ta))
+            ->join('spj s', 's.fid_uraian = u.id')
             ->where('j.tahun', $ta)
-            ->group_by('j.id')
-            ->get();
+            ->where('s.tahun', $ta)
+            ->where('s.is_status', 'SELESAI');
+        if (!$isAdminSpj) {
+            $db_rj->where('s.fid_part', $part);
+        }
+        $db_rj = $db_rj->group_by('j.id')->get();
         foreach ($db_rj->result() as $row):
             $real_jenis[$row->id] = ['nama' => $row->nama, 'total_realisasi' => $row->total ?? 0];
         endforeach;
@@ -162,7 +178,12 @@ class Dashboard extends CI_Controller
             $jenis_chart['realisasi'][] = (int) ($real_jenis[$id]['total_realisasi'] ?? 0);
         endforeach;
 
-        $limit_anggaran = $this->spj->LimitTransaksiTriwulan($this->ta);
+        $isAdminDashboard = in_array($this->session->userdata('role'), ['ADMIN', 'SUPER_ADMIN']);
+        $limit_anggaran = $this->spj->LimitTransaksiTriwulan(
+            $this->ta,
+            $isAdminDashboard ? null : $this->session->userdata('part')
+        );
+        $quarterPart = $isAdminDashboard ? null : $this->session->userdata('part');
 
         $data = [
             'title'        => 'Dashboard',
@@ -179,10 +200,10 @@ class Dashboard extends CI_Controller
                 'spj_tms'          => json_encode($spj_tms),
                 'spj_baru'         => json_encode($spj_baru),
                 'spj_cair'         => json_encode($spj_cair),
-                'triwulan_1'       => $this->spj->TransaksiTriwulan(["01", "02", "03"], $this->ta),
-                'triwulan_2'       => $this->spj->TransaksiTriwulan(["04", "05", "06"], $this->ta),
-                'triwulan_3'       => $this->spj->TransaksiTriwulan(["07", "08", "09"], $this->ta),
-                'triwulan_4'       => $this->spj->TransaksiTriwulan(["10", "11", "12"], $this->ta),
+                'triwulan_1'       => $this->spj->TransaksiTriwulan(["01", "02", "03"], $this->ta, $quarterPart),
+                'triwulan_2'       => $this->spj->TransaksiTriwulan(["04", "05", "06"], $this->ta, $quarterPart),
+                'triwulan_3'       => $this->spj->TransaksiTriwulan(["07", "08", "09"], $this->ta, $quarterPart),
+                'triwulan_4'       => $this->spj->TransaksiTriwulan(["10", "11", "12"], $this->ta, $quarterPart),
                 'limit_triwulan_1' => $limit_anggaran->triwulan_1,
                 'limit_triwulan_2' => $limit_anggaran->triwulan_2,
                 'limit_triwulan_3' => $limit_anggaran->triwulan_3,

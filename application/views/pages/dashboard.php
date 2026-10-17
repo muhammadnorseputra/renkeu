@@ -63,9 +63,9 @@
 </div>
 <div class="clearfix"></div>
 <!-- Transaction Chart -->
-<div class="row" id="tour_chart_transaksi">
+<div class="row dashboard-transaction-row" id="tour_chart_transaksi">
     <div class="col-md-9">
-        <div class="x_panel ui-ribbon-container">
+        <div class="x_panel ui-ribbon-container dashboard-transaction-panel">
             <div class="ui-ribbon-wrapper">
                 <div class="ui-ribbon">
                     <?php echo $this->session->userdata('tahun_anggaran'); ?>
@@ -106,87 +106,159 @@
                     <div class="demo-container" style="height:280px">
                         <div id="chart_transaksi" class="demo-placeholder"></div>
                     </div>
-                    <div class="tiles">
-                        <div class="col-3 col-sm-3 col-md-3 tile">
-                            <?php
-                                $limit     = (float) $chart['limit_triwulan_1'];
-                                $tw_jumlah = (float) $chart['triwulan_1'];
-                                if ($limit <= 0) {
-                                    $pct = 0;
-                                } else {
-                                    $pct = ($tw_jumlah / $limit) * 100;
-                                }
-                            ?>
-                            <span>TOTAL TRIWULAN I</span>
-                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
-                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
+                    <style>
+                    .dashboard-transaction-row > [class*="col-"] {
+                        display: flex;
+                    }
+
+                    .dashboard-transaction-panel {
+                        display: flex;
+                        flex: 1 1 auto;
+                        flex-direction: column;
+                        width: 100%;
+                    }
+
+                    .dashboard-transaction-panel > .x_content {
+                        display: flex;
+                        flex: 1 1 auto;
+                        flex-direction: column;
+                        min-height: 0;
+                    }
+
+                    .dashboard-top-profiles {
+                        flex: 1 1 auto;
+                        min-height: 0;
+                        margin-bottom: 0;
+                        overflow-y: auto;
+                        overscroll-behavior: contain;
+                        padding-bottom: 4px;
+                    }
+
+                    .quarter-summary-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                        gap: 12px;
+                        margin-top: 18px;
+                    }
+
+                    .quarter-summary-card {
+                        min-width: 0;
+                        padding: 15px 17px;
+                        border: 1px solid #e4e8ec;
+                        border-left: 3px solid #455c73;
+                        background: #fff;
+                    }
+
+                    .quarter-summary-card.is-revision {
+                        border-left-color: #26a985;
+                    }
+
+                    .quarter-summary-heading {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 8px;
+                        margin-bottom: 10px;
+                    }
+
+                    .quarter-summary-name {
+                        color: #34495e;
+                        font-size: 13px;
+                        font-weight: 700;
+                        letter-spacing: .04em;
+                        text-transform: uppercase;
+                    }
+
+                    .quarter-summary-type {
+                        padding: 3px 7px;
+                        background: #edf1f4;
+                        color: #455c73;
+                        font-size: 10px;
+                        font-weight: 700;
+                        letter-spacing: .06em;
+                    }
+
+                    .quarter-summary-card.is-revision .quarter-summary-type {
+                        background: #e7f5f0;
+                        color: #18866a;
+                    }
+
+                    .quarter-summary-label {
+                        display: block;
+                        margin-bottom: 2px;
+                        color: #7b8792;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                    }
+
+                    .quarter-summary-pagu {
+                        margin: 0 0 12px;
+                        color: #263746;
+                        font-size: 22px;
+                        font-weight: 700;
+                        line-height: 1.25;
+                        overflow-wrap: anywhere;
+                    }
+
+                    .quarter-summary-details {
+                        display: flex;
+                        justify-content: space-between;
+                        gap: 8px;
+                        color: #687581;
+                        font-size: 12px;
+                    }
+
+                    .quarter-summary-details strong {
+                        color: #34495e;
+                    }
+
+                    .quarter-summary-progress {
+                        height: 5px;
+                        margin-top: 8px;
+                        background: #edf0f2;
+                    }
+
+                    .quarter-summary-progress .progress-bar {
+                        background: #26a985;
+                    }
+
+                    @media (max-width: 575px) {
+                        .quarter-summary-grid {
+                            grid-template-columns: 1fr;
+                        }
+
+                        .quarter-summary-card {
+                            padding: 13px 15px;
+                        }
+                    }
+                    </style>
+                    <div class="quarter-summary-grid">
+                        <?php foreach ([1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV'] as $quarter => $roman):
+                            $limit = (float) $chart['limit_triwulan_' . $quarter];
+                            $tw_jumlah = (float) $chart['triwulan_' . $quarter];
+                            $pct = $limit > 0 ? ($tw_jumlah / $limit) * 100 : 0;
+                            $budgetType = $quarter === 4 ? 'PERUBAHAN' : 'MURNI';
+                            $progressPct = min(100, max(0, $pct));
+                        ?>
+                            <div class="quarter-summary-card<?php echo $quarter === 4 ? ' is-revision' : ''; ?>">
+                                <div class="quarter-summary-heading">
+                                    <span class="quarter-summary-name">Triwulan <?php echo $roman; ?></span>
+                                    <span class="quarter-summary-type"><?php echo $budgetType; ?></span>
+                                </div>
+                                <span class="quarter-summary-label">Pagu</span>
+                                <h3 class="quarter-summary-pagu">Rp. <span class="countup"
+                                        data-value="<?php echo $limit; ?>">0</span></h3>
+                                <div class="quarter-summary-details">
+                                    <span>Realisasi <strong>Rp. <span class="countup"
+                                                data-value="<?php echo $tw_jumlah; ?>">0</span></strong></span>
+                                    <strong><?php echo @round($pct, 2); ?>%</strong>
+                                </div>
+                                <div class="progress quarter-summary-progress">
+                                    <div class="progress-bar" role="progressbar"
+                                        data-transitiongoal="<?php echo $progressPct; ?>"></div>
+                                </div>
                             </div>
-                            <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
-                            </div>
-                        </div>
-                        <div class="col-3 col-sm-3 col-md-3 tile">
-                            <?php
-                                $limit     = (float) $chart['limit_triwulan_2'];
-                                $tw_jumlah = (float) $chart['triwulan_2'];
-                                if ($limit <= 0) {
-                                    $pct = 0;
-                                } else {
-                                    $pct = ($tw_jumlah / $limit) * 100;
-                                }
-                            ?>
-                            <span>TOTAL TRIWULAN II</span>
-                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
-                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
-                            </div>
-                            <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
-                            </div>
-                        </div>
-                        <div class="col-3 col-sm-3 col-md-3 tile">
-                            <?php
-                                $limit     = (float) $chart['limit_triwulan_3'];
-                                $tw_jumlah = (float) $chart['triwulan_3'];
-                                if ($limit <= 0) {
-                                    $pct = 0;
-                                } else {
-                                    $pct = ($tw_jumlah / $limit) * 100;
-                                }
-                            ?>
-                            <span>TOTAL TRIWULAN III</span>
-                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
-                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
-                            </div>
-                            <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
-                            </div>
-                        </div>
-                        <div class="col-3 col-sm-3 col-md-3 tile">
-                            <?php
-                                $limit     = (float) $chart['limit_triwulan_4'];
-                                $tw_jumlah = (float) $chart['triwulan_4'];
-                                if ($limit <= 0) {
-                                    $pct = 0;
-                                } else {
-                                    $pct = ($tw_jumlah / $limit) * 100;
-                                }
-                            ?>
-                            <span>TOTAL TRIWULAN IV</span>
-                            <h2>Rp. <span class="countup" data-value="<?php echo (float) $tw_jumlah ?>">0</span></h2>
-                            <div class="text-muted small mb-1 mt-0" style="display:block; line-height:1.2;">
-                                <strong><?php echo @round($pct, 2) ?>%</strong> capaian
-                            </div>
-                            <div class="progress progress_sm m-0" style="width: 100%;">
-                                <div class="progress-bar" role="progressbar"
-                                    data-transitiongoal="<?php echo @round($pct, 2) ?>"></div>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
 
                 </div>
@@ -194,7 +266,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="x_panel ui-ribbon-container">
+        <div class="x_panel ui-ribbon-container dashboard-transaction-panel">
             <div class="ui-ribbon-wrapper">
                 <div class="ui-ribbon">
                     <?php echo $this->session->userdata('tahun_anggaran'); ?>
@@ -208,7 +280,7 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                <ul class="list-unstyled top_profiles scroll-view">
+                <ul class="list-unstyled top_profiles scroll-view dashboard-top-profiles">
                     <?php
                         foreach ($chart['top_transaksi'] as $top):
                             $profile = $this->user->profile_username($top->entri_by)->row();
@@ -270,11 +342,17 @@
             <div class="x_content">
                 <div class="row">
                     <div class="col-md-6">
-                        <h5 class="text-center">Jenis Belanja (Pagu vs Realisasi)</h5>
+                        <h5 class="text-center">Jenis Belanja (Pagu vs Realisasi) <small>(TA
+                                <?php echo html_escape($this->session->userdata('tahun_anggaran')); ?>)</small></h5>
                         <canvas id="chartJenisBelanja" height="250"></canvas>
                     </div>
                     <div class="col-md-6">
-                        <h5 class="text-center">Kelompok Belanja (Pagu vs Realisasi)</h5>
+                        <h5 class="text-center">Kelompok Belanja (Pagu vs Realisasi) <small>(TA
+                                <?php echo html_escape($this->session->userdata('tahun_anggaran')); ?>)</small></h5>
+                        <p class="text-center text-muted small mb-1">
+                            <span class="mr-2"><i class="fa fa-square" style="color:#455C73"></i> Pagu</span>
+                            <span><i class="fa fa-square" style="color:#26B99A"></i> Realisasi</span>
+                        </p>
                         <canvas id="chartKelompokBelanja" height="250"></canvas>
                     </div>
                 </div>
@@ -762,39 +840,22 @@ $(function() {
         }
     });
 
-    // Warna per kelompok: hue dari hash nama (stabil tiap reload, otomatis beda untuk kelompok baru)
-    const hashHue = s => {
-        let h = 0;
-        for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-        return h % 360;
-    };
-    const pieColors = {
-        pagu: [],
-        real: []
-    };
-    for (let i = 0; i < kelompok.labels.length; i++) {
-        const h = hashHue((kelompok.labels[i] || "").trim() + i);
-        pieColors.pagu.push(`hsl(${h}, 55%, 42%)`);
-        pieColors.real.push(`hsl(${h}, 55%, 66%)`);
-    }
-
-    // Pie chart untuk pagu vs realisasi per kelompok belanja
-    const pieKelompok = new Chart(document.getElementById("chartKelompokBelanja"), {
-        type: "pie",
+    new Chart(document.getElementById("chartKelompokBelanja"), {
+        type: "horizontalBar",
         data: {
             labels: kelompok.labels,
             datasets: [{
                     label: "Pagu",
                     data: kelompok.pagu,
-                    backgroundColor: pieColors.pagu,
-                    borderColor: "#fff",
+                    backgroundColor: "rgba(69, 92, 115, 0.8)",
+                    borderColor: "#455C73",
                     borderWidth: 1
                 },
                 {
                     label: "Realisasi",
                     data: kelompok.realisasi,
-                    backgroundColor: pieColors.real,
-                    borderColor: "#fff",
+                    backgroundColor: "rgba(38, 185, 154, 0.8)",
+                    borderColor: "#26B99A",
                     borderWidth: 1
                 }
             ]
@@ -802,6 +863,19 @@ $(function() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        callback: value => rp(value)
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        autoSkip: false
+                    }
+                }]
+            },
             tooltips: tooltip(kelompok.labels, kelompok.pagu, kelompok.realisasi),
             legend: {
                 display: true,

@@ -177,36 +177,63 @@ class ModelSpj extends CI_Model
         return $q->row()->jumlah;
     }
 
-    public function LimitTransaksiTriwulan($tahun)
+    public function LimitTransaksiTriwulan($tahun, $part = null)
     {
-        $query = $this->db->query("
-				SELECT
-					SUM(CASE
-						WHEN FIND_IN_SET('1', periode)
-						OR FIND_IN_SET('2', periode)
-						OR FIND_IN_SET('3', periode)
-						THEN total ELSE 0 END) AS triwulan_1,
-					SUM(CASE
-						WHEN FIND_IN_SET('4', periode)
-						OR FIND_IN_SET('5', periode)
-						OR FIND_IN_SET('6', periode)
-						THEN total ELSE 0 END) AS triwulan_2,
-					SUM(CASE
-						WHEN FIND_IN_SET('7', periode)
-						OR FIND_IN_SET('8', periode)
-						OR FIND_IN_SET('9', periode)
-						THEN total ELSE 0 END) AS triwulan_3,
-					SUM(CASE
-						WHEN FIND_IN_SET('10', periode)
-						OR FIND_IN_SET('11', periode)
-						OR FIND_IN_SET('12', periode)
-						THEN total ELSE 0 END) AS triwulan_4
-				FROM t_pagu_limit WHERE tahun = '" . $tahun . "'
-			");
-        return $query->row();
+        $this->db->select('id, total, periode, is_perubahan')
+            ->from('t_pagu_limit')
+            ->where('tahun', $tahun);
+        if ($part !== null) {
+            $this->db->where('fid_part', $part);
+        }
+
+        $limits = $this->db->get()->result();
+        $totals = [
+            'triwulan_1' => 0,
+            'triwulan_2' => 0,
+            'triwulan_3' => 0,
+            'triwulan_4' => 0,
+        ];
+
+        foreach ($limits as $limit) {
+            $months = array_values(array_unique(array_filter(
+                array_map('intval', explode(',', (string) $limit->periode)),
+                function ($month) {
+                    return $month >= 1 && $month <= 12;
+                }
+            )));
+            sort($months, SORT_NUMERIC);
+
+            if (empty($months)) {
+                log_message('error', 'Ignoring t_pagu_limit row with invalid periods. ID: ' . $limit->id);
+                continue;
+            }
+
+            $amount = (int) $limit->total;
+            $share  = (int) floor($amount / count($months));
+            $extra  = $amount % count($months);
+            foreach ($months as $index => $month) {
+                $month_amount = $share + ($index < $extra ? 1 : 0);
+                if ($month <= 3) {
+                    $quarter = 'triwulan_1';
+                } elseif ($month <= 6) {
+                    $quarter = 'triwulan_2';
+                } elseif ($month <= 9) {
+                    $quarter = 'triwulan_3';
+                } else {
+                    $quarter = 'triwulan_4';
+                }
+
+                $expected_revision = $month <= 9 ? 0 : 1;
+                if ((int) $limit->is_perubahan === $expected_revision) {
+                    $totals[$quarter] += $month_amount;
+                }
+            }
+        }
+
+        return (object) $totals;
     }
 
-    public function TransaksiTriwulan($triwulan, $ta)
+    public function TransaksiTriwulan($triwulan, $ta, $part = null)
     {
         $this->db->select_sum('r.jumlah');
         $this->db->from('spj_riwayat as r');
@@ -214,6 +241,9 @@ class ModelSpj extends CI_Model
         $this->db->where_in('p.id', $triwulan);
         $this->db->where('r.is_status', 'APPROVE');
         $this->db->where('r.tahun', $ta);
+        if ($part !== null) {
+            $this->db->where('r.entri_by_part', $part);
+        }
         $q = $this->db->get();
         return $q->row()->jumlah;
     }
