@@ -5,18 +5,17 @@
 }
 
 .anggaran-summary {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
   margin-bottom: 2.5rem;
 }
 
 .anggaran-stat {
   background: #fff;
   border-radius: 16px;
-  padding: 1.5rem 2.25rem;
-  min-width: 220px;
+  padding: 1.25rem 1.5rem;
+  min-width: 0;
   text-align: center;
   box-shadow: 0 2px 14px rgba(38, 55, 70, 0.08);
   border: 1px solid #eef2f7;
@@ -83,6 +82,33 @@
   height: 260px;
 }
 
+.anggaran-tabs {
+  margin-bottom: 0;
+  border-bottom: none;
+  gap: 0.5rem;
+}
+
+.anggaran-tabs .nav-link {
+  border: 1px solid #eef2f7;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  color: #7f8c9b;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.6rem 1.4rem;
+  background: #fff;
+}
+
+.anggaran-tabs .nav-link.active {
+  color: #16a085;
+  background: #fff;
+  border-color: #16a085;
+}
+
+.anggaran-tab-content {
+  border-radius: 0 16px 16px 16px;
+}
+
 .anggaran-table-wrap {
   background: #fff;
   border-radius: 16px;
@@ -116,6 +142,9 @@
 }
 
 @media (max-width: 991px) {
+  .anggaran-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .anggaran-chart-wrap {
     height: 260px;
   }

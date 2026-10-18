@@ -150,8 +150,12 @@
 
       <div class="anggaran-summary">
         <div class="anggaran-stat">
-          <span class="anggaran-stat-label"><i class="bi bi-wallet2"></i> Total Pagu</span>
-          <strong class="anggaran-stat-value">Rp. <?= nominal($total_pagu) ?></strong>
+          <span class="anggaran-stat-label"><i class="bi bi-wallet2"></i> Pagu Murni</span>
+          <strong class="anggaran-stat-value">Rp. <?= nominal($total_pagu_murni) ?></strong>
+        </div>
+        <div class="anggaran-stat">
+          <span class="anggaran-stat-label"><i class="bi bi-arrow-repeat"></i> Pagu Perubahan</span>
+          <strong class="anggaran-stat-value">Rp. <?= nominal($total_pagu_perubahan) ?></strong>
         </div>
         <div class="anggaran-stat">
           <span class="anggaran-stat-label"><i class="bi bi-graph-up-arrow"></i> Total Realisasi</span>
@@ -163,22 +167,44 @@
         </div>
       </div>
 
-      <div class="row g-4 anggaran-grid">
-        <div class="col-lg-7">
+      <!-- Tabs info pagu / realisasi / capaian -->
+      <ul class="nav nav-tabs anggaran-tabs" role="tablist">
+        <li class="nav-item" role="presentation"><button class="nav-link active" id="tab-pagu-btn" data-bs-toggle="tab" data-bs-target="#tab-pagu" type="button" role="tab"><i class="bi bi-wallet2 me-1"></i>Pagu</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="tab-realisasi-btn" data-bs-toggle="tab" data-bs-target="#tab-realisasi" type="button" role="tab"><i class="bi bi-graph-up-arrow me-1"></i>Realisasi</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" id="tab-capaian-btn" data-bs-toggle="tab" data-bs-target="#tab-capaian" type="button" role="tab"><i class="bi bi-percent me-1"></i>Capaian</button></li>
+      </ul>
+      <div class="tab-content anggaran-tab-content">
+        <div class="tab-pane fade show active" id="tab-pagu" role="tabpanel">
           <div class="anggaran-card">
-            <h4 class="anggaran-card-title">Pagu vs Realisasi per Kelompok Belanja</h4>
+            <h4 class="anggaran-card-title">Pagu Murni &amp; Perubahan per Kelompok Belanja</h4>
             <div class="anggaran-chart-wrap">
               <canvas id="chartPaguKelompok"></canvas>
             </div>
           </div>
         </div>
-        <div class="col-lg-5">
+        <div class="tab-pane fade" id="tab-realisasi" role="tabpanel">
           <div class="anggaran-card">
-            <h4 class="anggaran-card-title">Serapan Anggaran</h4>
-            <div class="anggaran-chart-wrap anggaran-chart-wrap-doughnut">
-              <canvas id="chartSerapanAnggaran"></canvas>
+            <h4 class="anggaran-card-title">Realisasi Belanja per Kelompok Belanja</h4>
+            <div class="anggaran-chart-wrap">
+              <canvas id="chartRealisasiKelompok"></canvas>
             </div>
           </div>
+        </div>
+        <div class="tab-pane fade" id="tab-capaian" role="tabpanel">
+          <div class="anggaran-card">
+            <h4 class="anggaran-card-title">Capaian Anggaran per Kelompok Belanja</h4>
+            <div class="anggaran-chart-wrap">
+              <canvas id="chartCapaianKelompok"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart Belanja Harian -->
+      <div class="anggaran-card mt-4">
+        <h4 class="anggaran-card-title">Belanja Harian <?= $tahun_anggaran ?></h4>
+        <div class="anggaran-chart-wrap">
+          <canvas id="chartBelanjaHarian" height="130" data-chart='<?= $chart_harian ?>'></canvas>
         </div>
       </div>
 
@@ -188,20 +214,26 @@
           <thead>
             <tr>
               <th>Kelompok Belanja</th>
-              <th class="text-end">Pagu</th>
+              <th class="text-end">Pagu Murni</th>
+              <th class="text-end">Pagu Perubahan</th>
+              <th class="text-end">Total Pagu</th>
               <th class="text-end">Realisasi</th>
               <th class="text-end">%</th>
             </tr>
           </thead>
           <tbody>
             <?php foreach ($pagu_chart_data['labels'] as $i => $label):
-              $pagu = $pagu_chart_data['pagu'][$i];
+              $pagu_murni = $pagu_chart_data['pagu_murni'][$i];
+              $pagu_perubahan = $pagu_chart_data['pagu_perubahan'][$i];
               $real = $pagu_chart_data['realisasi'][$i];
-              $pct = $pagu > 0 ? round(($real / $pagu) * 100, 1) : 0;
+              $pagu_aktif = $pagu_perubahan > 0 ? $pagu_perubahan : $pagu_murni;
+              $pct = $pagu_aktif > 0 ? round(($real / $pagu_aktif) * 100, 1) : 0;
             ?>
               <tr>
                 <td><?= $label ?></td>
-                <td class="text-end">Rp. <?= nominal($pagu) ?></td>
+                <td class="text-end">Rp. <?= nominal($pagu_murni) ?></td>
+                <td class="text-end">Rp. <?= nominal($pagu_perubahan) ?></td>
+                <td class="text-end fw-semibold">Rp. <?= nominal($pagu_murni + $pagu_perubahan) ?></td>
                 <td class="text-end">Rp. <?= nominal($real) ?></td>
                 <td class="text-end"><span class="anggaran-badge <?= $pct >= 80 ? 'badge-success' : ($pct >= 50 ? 'badge-warning' : 'badge-danger') ?>"><?= $pct ?>%</span></td>
               </tr>
