@@ -32,63 +32,88 @@ class Welcome extends CI_Controller {
 		
 		$team = $this->db->query("SELECT u.nama, u.role, u.pic, r.nama AS bidang, r.singkatan FROM t_users u LEFT JOIN ref_parts r ON u.fid_part = r.id WHERE u.is_valid='1' AND u.is_block='N' ORDER BY FIELD(u.role,'SUPER_ADMIN','ADMIN','SUPER_USER','VERIFICATOR','USER','ARSIP_USER','BENDAHARA'), u.nama")->result();
 
-		// Pagu & Realisasi publik (agregat semua bidang, murni + perubahan)
-		$ta = $tahun;
-		$kelompok_chart = ['labels' => [], 'pagu_murni' => [], 'pagu_perubahan' => [], 'realisasi' => []];
-		$total_pagu_murni = 0;
-		$total_pagu_perubahan = 0;
-		$total_realisasi = 0;
+		// Pagu & Realisasi publik per level hierarki (tab level di halaman depan)
+		$ta = (int) $tahun;
 
-		$db_pagu_murni = $this->db->select('k.id, k.kode, k.nama, SUM(p.total_pagu_awal) as total')
-			->from('ref_kelompok_belanja k')
-			->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
-			->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
-			->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($ta) . ' AND p.is_perubahan = \'0\'', 'left')
-			->where('k.tahun', $ta)
-			->group_by('k.id')
-			->get();
-		$pagu_murni = [];
-		foreach ($db_pagu_murni->result() as $row) {
-			$pagu_murni[$row->id] = ['kode' => $row->kode, 'nama' => $row->nama, 'total_pagu' => (int) $row->total];
-		}
+		// Total keseluruhan (tanpa join)
+		$total_pagu_murni     = (int) $this->db->select('COALESCE(SUM(total_pagu_awal),0) as t')->where('tahun', $ta)->where('is_perubahan', '0')->get('t_pagu')->row()->t;
+		$total_pagu_perubahan = (int) $this->db->select('COALESCE(SUM(total_pagu_awal),0) as t')->where('tahun', $ta)->where('is_perubahan', '1')->get('t_pagu')->row()->t;
+		$total_realisasi      = (int) $this->db->select('COALESCE(SUM(jumlah),0) as t')->where('tahun', $ta)->where('is_status', 'SELESAI')->get('spj')->row()->t;
 
-		$db_pagu_perubahan = $this->db->select('k.id, SUM(p.total_pagu_awal) as total')
-			->from('ref_kelompok_belanja k')
-			->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
-			->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
-			->join('t_pagu p', 'p.fid_uraian = u.id AND p.tahun = ' . $this->db->escape($ta) . ' AND p.is_perubahan = \'1\'', 'left')
-			->where('k.tahun', $ta)
-			->group_by('k.id')
-			->get();
-		$pagu_perubahan = [];
-		foreach ($db_pagu_perubahan->result() as $row) {
-			$pagu_perubahan[$row->id] = ['total_pagu' => (int) $row->total];
-		}
+		// Level -> [tabel ref, join chain untuk pagu/realisasi (l = alias tabel level), filter list]
+		$levels = [
+			'bidang'       => ['label' => 'Bidang',       'table' => 'ref_parts',   'cols' => 'id, singkatan AS kode, nama', 'where' => "singkatan != 'KABAN'", 'order' => 'id'],
+			'kelompok'     => ['label' => 'Kelompok',     'table' => 'ref_kelompok_belanja', 'where' => 'tahun = ' . $ta, 'order' => 'kode'],
+			'jenis'        => ['label' => 'Jenis',        'table' => 'ref_jenis_belanja',    'where' => 'tahun = ' . $ta, 'order' => 'kode'],
+			'uraian'       => ['label' => 'Uraian',       'table' => 'ref_uraians',          'where' => "tahun = $ta AND is_aktif = 'Y'", 'order' => 'kode'],
+			'program'      => ['label' => 'Program',      'table' => 'ref_programs',         'where' => 'tahun = ' . $ta, 'order' => 'kode'],
+			'kegiatan'     => ['label' => 'Kegiatan',     'table' => 'ref_kegiatans',        'where' => 'tahun = ' . $ta, 'order' => 'kode'],
+			'sub_kegiatan' => ['label' => 'Sub Kegiatan', 'table' => 'ref_sub_kegiatans',    'where' => 'tahun = ' . $ta, 'order' => 'kode'],
+		];
 
-		$db_rk = $this->db->select('k.id, k.nama, SUM(s.jumlah) as total')
-			->from('ref_kelompok_belanja k')
-			->join('ref_jenis_belanja j', 'j.fid_kelompok_belanja = k.id', 'left')
-			->join('ref_uraians u', 'u.fid_jenis_belanja = j.id', 'left')
-			->join('spj s', 's.fid_uraian = u.id')
-			->where('k.tahun', $ta)
-			->where('s.tahun', $ta)
-			->where('s.is_status', 'SELESAI')
-			->group_by('k.id')
-			->get();
-		$real_kelompok = [];
-		foreach ($db_rk->result() as $row) {
-			$real_kelompok[$row->id] = ['nama' => $row->nama, 'total_realisasi' => (int) $row->total];
-		}
+		// Rantai join dari t_pagu/spj ke tabel level (l = alias tabel level pada tiap query).
+		$joins = [
+			'bidang'       => ["ref_parts l ON l.id = %s.fid_part"],
+			'kelompok'     => ["ref_uraians u ON u.id = %s.fid_uraian AND u.tahun = $ta", "ref_jenis_belanja j ON j.id = u.fid_jenis_belanja AND j.tahun = $ta", "ref_kelompok_belanja l ON l.id = j.fid_kelompok_belanja AND l.tahun = $ta"],
+			'jenis'        => ["ref_uraians u ON u.id = %s.fid_uraian AND u.tahun = $ta", "ref_jenis_belanja l ON l.id = u.fid_jenis_belanja AND l.tahun = $ta"],
+			'uraian'       => ["ref_uraians l ON l.id = %s.fid_uraian AND l.tahun = $ta AND l.is_aktif = 'Y'"],
+			'program'      => ["ref_uraians u ON u.id = %s.fid_uraian AND u.tahun = $ta", "ref_kegiatans kg ON kg.id = u.fid_kegiatan AND kg.tahun = $ta", "ref_programs l ON l.id = kg.fid_program AND l.tahun = $ta"],
+			'kegiatan'     => ["ref_uraians u ON u.id = %s.fid_uraian AND u.tahun = $ta", "ref_kegiatans l ON l.id = u.fid_kegiatan AND l.tahun = $ta"],
+			'sub_kegiatan' => ["ref_uraians u ON u.id = %s.fid_uraian AND u.tahun = $ta", "ref_sub_kegiatans l ON l.id = u.fid_sub_kegiatan AND l.tahun = $ta"],
+		];
 
-		$kelompok_ids = array_unique(array_merge(array_keys($pagu_murni), array_merge(array_keys($pagu_perubahan), array_keys($real_kelompok))));
-		foreach ($kelompok_ids as $id) {
-			$kelompok_chart['labels'][] = $pagu_murni[$id]['nama'] ?? ($real_kelompok[$id]['nama'] ?? '-');
-			$kelompok_chart['pagu_murni'][] = (int) ($pagu_murni[$id]['total_pagu'] ?? 0);
-			$kelompok_chart['pagu_perubahan'][] = (int) ($pagu_perubahan[$id]['total_pagu'] ?? 0);
-			$kelompok_chart['realisasi'][] = (int) ($real_kelompok[$id]['total_realisasi'] ?? 0);
-			$total_pagu_murni += (int) ($pagu_murni[$id]['total_pagu'] ?? 0);
-			$total_pagu_perubahan += (int) ($pagu_perubahan[$id]['total_pagu'] ?? 0);
-			$total_realisasi += (int) ($real_kelompok[$id]['total_realisasi'] ?? 0);
+		$level_data = [];
+		foreach ($levels as $key => $cfg) {
+			$pm_map = $pp_map = $rl_map = [];
+			$pagu_chain = implode(' JOIN ', array_map(function ($j) { return sprintf($j, 'p'); }, $joins[$key]));
+			$real_chain = implode(' JOIN ', array_map(function ($j) { return sprintf($j, 's'); }, $joins[$key]));
+
+			// Pagu murni
+			foreach ($this->db->query("SELECT l.id AS id, COALESCE(SUM(p.total_pagu_awal),0) AS total FROM t_pagu p JOIN $pagu_chain WHERE p.tahun = $ta AND p.is_perubahan = '0' GROUP BY l.id")->result() as $r) {
+				$pm_map[$r->id] = (int) $r->total;
+			}
+			// Pagu perubahan
+			foreach ($this->db->query("SELECT l.id AS id, COALESCE(SUM(p.total_pagu_awal),0) AS total FROM t_pagu p JOIN $pagu_chain WHERE p.tahun = $ta AND p.is_perubahan = '1' GROUP BY l.id")->result() as $r) {
+				$pp_map[$r->id] = (int) $r->total;
+			}
+			// Realisasi (spj SELESAI, tanpa filter is_perubahan)
+			foreach ($this->db->query("SELECT l.id AS id, COALESCE(SUM(s.jumlah),0) AS total FROM spj s JOIN $real_chain WHERE s.tahun = $ta AND s.is_status = 'SELESAI' GROUP BY l.id")->result() as $r) {
+				$rl_map[$r->id] = (int) $r->total;
+			}
+
+			$db_list = $this->db->select($cfg['cols'] ?? 'id, kode, nama')->from($cfg['table']);
+			if ($cfg['where'] !== '') {
+				$db_list->where($cfg['where'], null, false);
+			}
+			$db_list = $db_list->order_by($cfg['order'], 'ASC')->get();
+
+			$rows = [];
+			foreach ($db_list->result() as $r) {
+				$pm = $pm_map[$r->id] ?? 0;
+				$pp = $pp_map[$r->id] ?? 0;
+				$rl = $rl_map[$r->id] ?? 0;
+				$aktif = $pp > 0 ? $pp : $pm;
+				$rows[] = [
+					'kode' => $r->kode,
+					'nama' => $r->nama,
+					'pagu_murni' => $pm,
+					'pagu_perubahan' => $pp,
+					'realisasi' => $rl,
+					'capaian' => $aktif > 0 ? round($rl / $aktif * 100, 1) : 0,
+				];
+			}
+
+			$level_data[$key] = [
+				'label' => $cfg['label'],
+				'rows' => $rows,
+				'chart' => [
+					'labels' => array_column($rows, 'nama'),
+					'pagu_murni' => array_column($rows, 'pagu_murni'),
+					'pagu_perubahan' => array_column($rows, 'pagu_perubahan'),
+					'realisasi' => array_column($rows, 'realisasi'),
+					'capaian' => array_column($rows, 'capaian'),
+				],
+			];
 		}
 
 		$chart_harian = ['range' => null, 'tanggal' => [], 'usulan' => [], 'cair' => []];
@@ -158,7 +183,7 @@ class Welcome extends CI_Controller {
 			'jml_bidang' => $jml_bidang,
 			'tahun_anggaran' => $tahun,
 			'team' => $team,
-			'pagu_chart' => json_encode($kelompok_chart),
+			'level_data' => $level_data,
 			'chart_harian' => json_encode($chart_harian),
 			'chart_gbulan' => json_encode(@array_values($chart_gbulan)),
 			'total_pagu_murni' => $total_pagu_murni,

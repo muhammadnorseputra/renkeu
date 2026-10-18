@@ -145,7 +145,7 @@
     <div class="container" data-aos="fade-up">
       <div class="section-title text-center">
         <h2>Transparansi Anggaran <?= $tahun_anggaran ?></h2>
-        <p class="separator">Pagu dan realisasi belanja per kelompok, diperbarui otomatis dari data SPJ</p>
+          <p class="separator">Pagu dan realisasi belanja per level, diperbarui otomatis dari data SPJ</p>
       </div>
 
       <div class="anggaran-summary">
@@ -169,35 +169,44 @@
 
       <!-- Tabs info pagu / realisasi / capaian -->
       <ul class="nav nav-tabs anggaran-tabs" role="tablist">
-        <li class="nav-item" role="presentation"><button class="nav-link active" id="tab-pagu-btn" data-bs-toggle="tab" data-bs-target="#tab-pagu" type="button" role="tab"><i class="bi bi-wallet2 me-1"></i>Pagu</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="tab-realisasi-btn" data-bs-toggle="tab" data-bs-target="#tab-realisasi" type="button" role="tab"><i class="bi bi-graph-up-arrow me-1"></i>Realisasi</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" id="tab-capaian-btn" data-bs-toggle="tab" data-bs-target="#tab-capaian" type="button" role="tab"><i class="bi bi-percent me-1"></i>Capaian</button></li>
+        <?php foreach ($level_data as $key => $lv): ?>
+          <li class="nav-item" role="presentation"><button class="nav-link <?= $key === 'bidang' ? 'active' : '' ?>" data-bs-toggle="tab" data-bs-target="#tab-<?= $key ?>" type="button" role="tab"><i class="bi bi-list-ul me-1"></i><?= $lv['label'] ?></button></li>
+        <?php endforeach; ?>
       </ul>
       <div class="tab-content anggaran-tab-content">
-        <div class="tab-pane fade show active" id="tab-pagu" role="tabpanel">
-          <div class="anggaran-card">
-            <h4 class="anggaran-card-title">Pagu Murni &amp; Perubahan per Kelompok Belanja</h4>
-            <div class="anggaran-chart-wrap">
-              <canvas id="chartPaguKelompok"></canvas>
+        <?php foreach ($level_data as $key => $lv): ?>
+          <div class="tab-pane fade <?= $key === 'bidang' ? 'show active' : '' ?>" id="tab-<?= $key ?>" role="tabpanel">
+            <div class="anggaran-card">
+              <h4 class="anggaran-card-title">Pagu, Realisasi &amp; Capaian <?= $lv['label'] ?></h4>
+              <div class="table-responsive">
+                <table class="table anggaran-table">
+                  <thead>
+                    <tr>
+                      <th>Kode</th>
+                      <th><?= $lv['label'] ?></th>
+                      <th class="text-end">Pagu Murni</th>
+                      <th class="text-end">Pagu Perubahan</th>
+                      <th class="text-end">Realisasi</th>
+                      <th class="text-end">%</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($lv['rows'] as $row): ?>
+                      <tr>
+                        <td class="text-muted"><?= htmlspecialchars($row['kode']) ?></td>
+                        <td><?= htmlspecialchars($row['nama']) ?></td>
+                        <td class="text-end">Rp. <?= nominal($row['pagu_murni']) ?></td>
+                        <td class="text-end">Rp. <?= nominal($row['pagu_perubahan']) ?></td>
+                        <td class="text-end">Rp. <?= nominal($row['realisasi']) ?></td>
+                        <td class="text-end"><span class="anggaran-badge <?= $row['capaian'] >= 80 ? 'badge-success' : ($row['capaian'] >= 50 ? 'badge-warning' : 'badge-danger') ?>"><?= $row['capaian'] ?>%</span></td>
+                      </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="tab-pane fade" id="tab-realisasi" role="tabpanel">
-          <div class="anggaran-card">
-            <h4 class="anggaran-card-title">Realisasi Belanja per Kelompok Belanja</h4>
-            <div class="anggaran-chart-wrap">
-              <canvas id="chartRealisasiKelompok"></canvas>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="tab-capaian" role="tabpanel">
-          <div class="anggaran-card">
-            <h4 class="anggaran-card-title">Capaian Anggaran per Kelompok Belanja</h4>
-            <div class="anggaran-chart-wrap">
-              <canvas id="chartCapaianKelompok"></canvas>
-            </div>
-          </div>
-        </div>
+        <?php endforeach; ?>
       </div>
 
       <!-- Chart Belanja Harian -->
@@ -208,43 +217,8 @@
         </div>
       </div>
 
-      <?php $pagu_chart_data = json_decode($pagu_chart, true); ?>
-      <div class="anggaran-table-wrap">
-        <table class="table anggaran-table">
-          <thead>
-            <tr>
-              <th>Kelompok Belanja</th>
-              <th class="text-end">Pagu Murni</th>
-              <th class="text-end">Pagu Perubahan</th>
-              <th class="text-end">Total Pagu</th>
-              <th class="text-end">Realisasi</th>
-              <th class="text-end">%</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($pagu_chart_data['labels'] as $i => $label):
-              $pagu_murni = $pagu_chart_data['pagu_murni'][$i];
-              $pagu_perubahan = $pagu_chart_data['pagu_perubahan'][$i];
-              $real = $pagu_chart_data['realisasi'][$i];
-              $pagu_aktif = $pagu_perubahan > 0 ? $pagu_perubahan : $pagu_murni;
-              $pct = $pagu_aktif > 0 ? round(($real / $pagu_aktif) * 100, 1) : 0;
-            ?>
-              <tr>
-                <td><?= $label ?></td>
-                <td class="text-end">Rp. <?= nominal($pagu_murni) ?></td>
-                <td class="text-end">Rp. <?= nominal($pagu_perubahan) ?></td>
-                <td class="text-end fw-semibold">Rp. <?= nominal($pagu_murni + $pagu_perubahan) ?></td>
-                <td class="text-end">Rp. <?= nominal($real) ?></td>
-                <td class="text-end"><span class="anggaran-badge <?= $pct >= 80 ? 'badge-success' : ($pct >= 50 ? 'badge-warning' : 'badge-danger') ?>"><?= $pct ?>%</span></td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
       </div>
-    </div>
   </section><!-- End Transparansi Anggaran Section -->
-
-  <script id="pagu-chart-data" type="application/json"><?= $pagu_chart ?></script>
 
   <!-- ======= FAQ Section ======= -->
   <section id="faq" class="padd-section">

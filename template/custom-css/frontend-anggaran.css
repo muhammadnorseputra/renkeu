@@ -86,6 +86,14 @@
   margin-bottom: 0;
   border-bottom: none;
   gap: 0.5rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+}
+
+.anggaran-tabs .nav-item {
+  flex: 0 0 auto;
 }
 
 .anggaran-tabs .nav-link {
