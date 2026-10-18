@@ -99,7 +99,7 @@ class Welcome extends CI_Controller {
 					'pagu_murni' => $pm,
 					'pagu_perubahan' => $pp,
 					'realisasi' => $rl,
-					'capaian' => $aktif > 0 ? round($rl / $aktif * 100, 1) : 0,
+					'capaian' => $aktif > 0 ? round($rl / $aktif * 100, 2) : 0,
 				];
 			}
 
@@ -190,7 +190,7 @@ class Welcome extends CI_Controller {
 			'total_pagu_perubahan' => $total_pagu_perubahan,
 			'total_realisasi' => $total_realisasi,
 			'pagu_aktif' => ($total_pagu_perubahan > 0 ? $total_pagu_perubahan : $total_pagu_murni),
-			'persentase_capaian' => ($total_pagu_perubahan > 0 ? $total_pagu_perubahan : $total_pagu_murni) > 0 ? round($total_realisasi / ($total_pagu_perubahan > 0 ? $total_pagu_perubahan : $total_pagu_murni) * 100, 1) : 0,
+			'persentase_capaian' => ($total_pagu_perubahan > 0 ? $total_pagu_perubahan : $total_pagu_murni) > 0 ? round($total_realisasi / ($total_pagu_perubahan > 0 ? $total_pagu_perubahan : $total_pagu_murni) * 100, 2) : 0,
 		];
 		$this->load->view('landingpage', $data);
 	}

@@ -163,7 +163,7 @@
         </div>
         <div class="anggaran-stat anggaran-stat-accent">
           <span class="anggaran-stat-label"><i class="bi bi-percent"></i> Capaian</span>
-          <strong class="anggaran-stat-value"><?= $persentase_capaian ?>%</strong>
+          <strong class="anggaran-stat-value"><?= number_format($persentase_capaian, 2) ?>%</strong>
         </div>
       </div>
 
@@ -198,7 +198,7 @@
                         <td class="text-end">Rp. <?= nominal($row['pagu_murni']) ?></td>
                         <td class="text-end">Rp. <?= nominal($row['pagu_perubahan']) ?></td>
                         <td class="text-end">Rp. <?= nominal($row['realisasi']) ?></td>
-                        <td class="text-end"><span class="anggaran-badge <?= $row['capaian'] >= 80 ? 'badge-success' : ($row['capaian'] >= 50 ? 'badge-warning' : 'badge-danger') ?>"><?= $row['capaian'] ?>%</span></td>
+                        <td class="text-end"><span class="anggaran-badge <?= $row['capaian'] >= 80 ? 'badge-success' : ($row['capaian'] >= 50 ? 'badge-warning' : 'badge-danger') ?>"><?= number_format($row['capaian'], 2) ?>%</span></td>
                       </tr>
                     <?php endforeach; ?>
                   </tbody>
