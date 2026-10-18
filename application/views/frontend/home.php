@@ -140,6 +140,80 @@
     </div>
   </section><!-- End Features Section -->
 
+  <!-- ======= Transparansi Anggaran Section ======= -->
+  <section id="anggaran" class="padd-section anggaran-section">
+    <div class="container" data-aos="fade-up">
+      <div class="section-title text-center">
+        <h2>Transparansi Anggaran <?= $tahun_anggaran ?></h2>
+        <p class="separator">Pagu dan realisasi belanja per kelompok, diperbarui otomatis dari data SPJ</p>
+      </div>
+
+      <div class="anggaran-summary">
+        <div class="anggaran-stat">
+          <span class="anggaran-stat-label"><i class="bi bi-wallet2"></i> Total Pagu</span>
+          <strong class="anggaran-stat-value">Rp. <?= nominal($total_pagu) ?></strong>
+        </div>
+        <div class="anggaran-stat">
+          <span class="anggaran-stat-label"><i class="bi bi-graph-up-arrow"></i> Total Realisasi</span>
+          <strong class="anggaran-stat-value">Rp. <?= nominal($total_realisasi) ?></strong>
+        </div>
+        <div class="anggaran-stat anggaran-stat-accent">
+          <span class="anggaran-stat-label"><i class="bi bi-percent"></i> Capaian</span>
+          <strong class="anggaran-stat-value"><?= $persentase_capaian ?>%</strong>
+        </div>
+      </div>
+
+      <div class="row g-4 anggaran-grid">
+        <div class="col-lg-7">
+          <div class="anggaran-card">
+            <h4 class="anggaran-card-title">Pagu vs Realisasi per Kelompok Belanja</h4>
+            <div class="anggaran-chart-wrap">
+              <canvas id="chartPaguKelompok"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="anggaran-card">
+            <h4 class="anggaran-card-title">Serapan Anggaran</h4>
+            <div class="anggaran-chart-wrap anggaran-chart-wrap-doughnut">
+              <canvas id="chartSerapanAnggaran"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <?php $pagu_chart_data = json_decode($pagu_chart, true); ?>
+      <div class="anggaran-table-wrap">
+        <table class="table anggaran-table">
+          <thead>
+            <tr>
+              <th>Kelompok Belanja</th>
+              <th class="text-end">Pagu</th>
+              <th class="text-end">Realisasi</th>
+              <th class="text-end">%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($pagu_chart_data['labels'] as $i => $label):
+              $pagu = $pagu_chart_data['pagu'][$i];
+              $real = $pagu_chart_data['realisasi'][$i];
+              $pct = $pagu > 0 ? round(($real / $pagu) * 100, 1) : 0;
+            ?>
+              <tr>
+                <td><?= $label ?></td>
+                <td class="text-end">Rp. <?= nominal($pagu) ?></td>
+                <td class="text-end">Rp. <?= nominal($real) ?></td>
+                <td class="text-end"><span class="anggaran-badge <?= $pct >= 80 ? 'badge-success' : ($pct >= 50 ? 'badge-warning' : 'badge-danger') ?>"><?= $pct ?>%</span></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section><!-- End Transparansi Anggaran Section -->
+
+  <script id="pagu-chart-data" type="application/json"><?= $pagu_chart ?></script>
+
   <!-- ======= FAQ Section ======= -->
   <section id="faq" class="padd-section">
     <div class="container" data-aos="fade-up">

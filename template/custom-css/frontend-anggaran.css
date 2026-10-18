@@ -1,0 +1,122 @@
+/* Transparansi Anggaran — public landing page */
+
+.anggaran-section {
+  background: #f8fafd;
+}
+
+.anggaran-summary {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.anggaran-stat {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem 2.25rem;
+  min-width: 220px;
+  text-align: center;
+  box-shadow: 0 2px 14px rgba(38, 55, 70, 0.08);
+  border: 1px solid #eef2f7;
+}
+
+.anggaran-stat-accent {
+  background: linear-gradient(135deg, #263746 0%, #16a085 100%);
+  border: none;
+}
+
+.anggaran-stat-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #7f8c9b;
+  margin-bottom: 0.4rem;
+}
+
+.anggaran-stat-accent .anggaran-stat-label {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.anggaran-stat-label i {
+  margin-right: 0.35rem;
+}
+
+.anggaran-stat-value {
+  display: block;
+  font-size: 1.45rem;
+  color: #263746;
+}
+
+.anggaran-stat-accent .anggaran-stat-value {
+  color: #fff;
+}
+
+.anggaran-grid {
+  margin-bottom: 2.5rem;
+}
+
+.anggaran-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 14px rgba(38, 55, 70, 0.08);
+  border: 1px solid #eef2f7;
+  height: 100%;
+}
+
+.anggaran-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #263746;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #eef2f7;
+}
+
+.anggaran-chart-wrap {
+  position: relative;
+  height: 320px;
+}
+
+.anggaran-chart-wrap-doughnut {
+  height: 260px;
+}
+
+.anggaran-table-wrap {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 14px rgba(38, 55, 70, 0.08);
+  border: 1px solid #eef2f7;
+  overflow-x: auto;
+}
+
+.anggaran-table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7f8c9b;
+  border-bottom: 2px solid #eef2f7;
+}
+
+.anggaran-table td {
+  font-size: 0.95rem;
+  color: #263746;
+  padding: 0.85rem 0.6rem;
+}
+
+.anggan-badge,
+.anggaran-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 991px) {
+  .anggaran-chart-wrap {
+    height: 260px;
+  }
+}

@@ -25,6 +25,7 @@
 
   <!-- Template Main CSS File -->
   <link href="<?= base_url('template/landingpage/assets/css/style.css') ?>" rel="stylesheet">
+  <link href="<?= base_url('template/custom-css/frontend-anggaran.css') ?>" rel="stylesheet">
 
   <!-- =======================================================
   * Template Name: eStartup
@@ -74,6 +75,10 @@
   <script src="<?= base_url('template/landingpage/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
   <script src="<?= base_url('template/landingpage/assets/vendor/swiper/swiper-bundle.min.js') ?>"></script>
   <script src="<?= base_url('template/landingpage/assets/vendor/glightbox/js/glightbox.min.js') ?>"></script>
+  <script src="<?= base_url('template/backend/vendors/Chart.js/dist/Chart.bundle.min.js') ?>"></script>
+
+  <!-- Transparansi Anggaran: Pagu vs Realisasi -->
+  <script src="<?= base_url('template/custom-js/frontend-anggaran.js') ?>"></script>
 
   <!-- Template Main JS File -->
   <script src="<?= base_url('template/landingpage/assets/js/main.js') ?>"></script>
