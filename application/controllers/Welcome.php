@@ -118,19 +118,7 @@ class Welcome extends CI_Controller {
 					];
 				}
 
-				$total_pm = array_sum(array_column($rows, 'pagu_murni'));
-				$total_pp = array_sum(array_column($rows, 'pagu_perubahan'));
-				$total_rl = array_sum(array_column($rows, 'realisasi'));
-				$total_aktif = $total_pp > 0 ? $total_pp : $total_pm;
-				$rows[] = [
-					'kode' => '',
-					'nama' => 'TOTAL',
-					'pagu_murni' => $total_pm,
-					'pagu_perubahan' => $total_pp,
-					'realisasi' => $total_rl,
-					'capaian' => $total_aktif > 0 ? round($total_rl / $total_aktif * 100, 2) : 0,
-					'is_total' => true,
-				];
+				$rows[] = $this->total_row($rows);
 
 				$level_data[$key] = [
 					'label' => $cfg['label'],
@@ -183,6 +171,8 @@ class Welcome extends CI_Controller {
 					'is_total' => false,
 				];
 			}
+
+			$rows[] = $this->total_row($rows);
 
 			$level_data[$key] = [
 				'label' => $cfg['label'],
@@ -274,6 +264,23 @@ class Welcome extends CI_Controller {
 			'persentase_capaian' => ($total_pagu_perubahan > 0 ? $total_pagu_perubahan : $total_pagu_murni) > 0 ? round($total_realisasi / ($total_pagu_perubahan > 0 ? $total_pagu_perubahan : $total_pagu_murni) * 100, 2) : 0,
 		];
 		$this->load->view('landingpage', $data);
+	}
+
+	private function total_row(array $rows): array
+	{
+		$pm = array_sum(array_column($rows, 'pagu_murni'));
+		$pp = array_sum(array_column($rows, 'pagu_perubahan'));
+		$rl = array_sum(array_column($rows, 'realisasi'));
+		$aktif = $pp > 0 ? $pp : $pm;
+		return [
+			'kode' => '',
+			'nama' => 'TOTAL',
+			'pagu_murni' => $pm,
+			'pagu_perubahan' => $pp,
+			'realisasi' => $rl,
+			'capaian' => $aktif > 0 ? round($rl / $aktif * 100, 2) : 0,
+			'is_total' => true,
+		];
 	}
 
 	public function page($path)
