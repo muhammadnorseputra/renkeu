@@ -14,10 +14,12 @@
 	var NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
 	// Inline plugin: gambar nilai titik Usulan/Cair langsung di chart
+	// Chart.js 2.13 custom bundle: supported hooks are beforeDraw/afterDraw (not afterDatasetsDraw).
+	// notifyPlugins passes the Controller facade; real 2d ctx lives on chart.chart.ctx.
 	var dataLabelsPlugin = {
 		id: "pointValueLabels",
-		afterDatasetsDraw: function (chart) {
-			var ctx = chart.ctx;
+		afterDraw: function (chart) {
+			var ctx = chart.chart.ctx;
 			var colors = ["#8d6e00", "#0e7a5f"];
 			ctx.save();
 			ctx.font = 'bold 8px "Open Sans", sans-serif';
@@ -44,6 +46,8 @@
 		}
 	};
 
+	Chart.pluginService.register(dataLabelsPlugin);
+
 	var harianEl = document.getElementById("chartBelanjaHarian");
 	if (!harianEl) return;
 
@@ -66,7 +70,6 @@
 
 	var chart = new Chart(harianEl, {
 		type: "line",
-		plugins: [dataLabelsPlugin],
 		data: {
 			labels: [],
 			datasets: [
@@ -78,7 +81,7 @@
 			responsive: true, maintainAspectRatio: false,
 			legend: { position: "top", labels: { fontSize: 11 } },
 			tooltips: {
-				mode: "index",
+				mode: "label",
 				intersect: false,
 				callbacks: {
 					title: function (items, chartData) {
