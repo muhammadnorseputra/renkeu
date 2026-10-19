@@ -87,6 +87,21 @@
         </div>
       </div>
 
+      <!-- Chart Belanja Harian -->
+      <div class="anggaran-card mb-4">
+        <div class="anggaran-card-head">
+          <h4 class="anggaran-card-title">Belanja Harian <?= $tahun_anggaran ?></h4>
+          <select id="filterBulanHarian" class="anggaran-month-select" aria-label="Filter bulan belanja harian">
+            <?php for ($m = 1; $m <= 12; $m++): ?>
+              <option value="<?= $m ?>" <?= $m === (int) date('n') ? 'selected' : '' ?>><?= bulan($m) ?></option>
+            <?php endfor; ?>
+          </select>
+        </div>
+        <div class="anggaran-chart-wrap">
+          <canvas id="chartBelanjaHarian" height="130" data-chart='<?= $chart_harian ?>' data-tahun="<?= $tahun_anggaran ?>"></canvas>
+        </div>
+      </div>
+
       <!-- Tabs info pagu / realisasi / capaian -->
       <ul class="nav nav-tabs anggaran-tabs" role="tablist">
         <?php foreach ($level_data as $key => $lv): ?>
@@ -133,21 +148,6 @@
             </div>
           </div>
         <?php endforeach; ?>
-      </div>
-
-      <!-- Chart Belanja Harian -->
-      <div class="anggaran-card mt-4">
-        <div class="anggaran-card-head">
-          <h4 class="anggaran-card-title">Belanja Harian <?= $tahun_anggaran ?></h4>
-          <select id="filterBulanHarian" class="anggaran-month-select" aria-label="Filter bulan belanja harian">
-            <?php for ($m = 1; $m <= 12; $m++): ?>
-              <option value="<?= $m ?>" <?= $m === (int) date('n') ? 'selected' : '' ?>><?= bulan($m) ?></option>
-            <?php endfor; ?>
-          </select>
-        </div>
-        <div class="anggaran-chart-wrap">
-          <canvas id="chartBelanjaHarian" height="130" data-chart='<?= $chart_harian ?>' data-tahun="<?= $tahun_anggaran ?>"></canvas>
-        </div>
       </div>
 
       </div>
