@@ -192,15 +192,16 @@ class Welcome extends CI_Controller {
 		$end_date = new DateTime('last day of this year');
 		$map_harian = ['usulan' => [], 'cair' => []];
 
-		$db_harian = $this->db->select('sr.approve_at, sp.status, SUM(sr.jumlah) as total')
-			->from('spj_riwayat sr')
-			->join('spj_payment sp', 'sr.token = sp.token', 'left')
-			->where('sr.tahun', $ta)
-			->where('sr.is_status', 'APPROVE')
-			->group_by('DATE(sr.approve_at), sp.status')
+		$db_harian = $this->db->select('sp.cair_at, SUM(s.jumlah) as total')
+			->from('spj_payment sp')
+			->join('spj s', 's.token = sp.token', 'left')
+			->where('sp.status', 'CAIR')
+			->where('sp.cair_at IS NOT NULL', null, false)
+			->where('s.tahun', $ta)
+			->group_by('DATE(sp.cair_at)')
 			->get();
 		foreach ($db_harian->result() as $row) {
-			$dt = substr($row->approve_at, 0, 10);
+			$dt = substr($row->cair_at, 0, 10);
 			if (empty($map_harian['usulan'][$dt])) {
 				$chart_harian['tanggal'][] = $dt;
 				$map_harian['usulan'][$dt] = 0;
