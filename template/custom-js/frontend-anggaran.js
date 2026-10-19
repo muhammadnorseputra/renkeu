@@ -11,6 +11,8 @@
 	}
 	function pad(n) { return n < 10 ? "0" + n : "" + n; }
 
+	var NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
 	// Inline plugin: gambar nilai titik Usulan/Cair langsung di chart
 	var dataLabelsPlugin = {
 		id: "pointValueLabels",
@@ -32,7 +34,6 @@
 					var stagger = (i % 2 === 0) ? 0 : -4;
 					var ly = d === 0 ? y - 10 + stagger : y + 18 - stagger;
 					var label = shortRp(v);
-					var w = ctx.measureText(label).width;
 					ctx.strokeStyle = "rgba(255,255,255,0.8)";
 					ctx.strokeText(label, x, ly);
 					ctx.fillStyle = colors[d];
@@ -49,6 +50,7 @@
 	var harian = JSON.parse(harianEl.getAttribute("data-chart") || "{}");
 	var tahun = parseInt(harianEl.getAttribute("data-tahun") || String(new Date().getFullYear()), 10);
 	var bulanAktif = new Date().getMonth() + 1;
+	var bulanTampil = bulanAktif;
 
 	var perHari = {};
 	(harian.tanggal || []).forEach(function (dt, i) {
@@ -59,6 +61,8 @@
 	});
 
 	function hariDalamBulan(bln) { return new Date(tahun, bln, 0).getDate(); }
+
+	function tglIndo(d, bln) { return d + " " + NAMA_BULAN[bln - 1] + " " + tahun; }
 
 	var chart = new Chart(harianEl, {
 		type: "line",
@@ -73,7 +77,18 @@
 		options: {
 			responsive: true, maintainAspectRatio: false,
 			legend: { position: "top", labels: { fontSize: 11 } },
-			tooltips: { mode: "index", intersect: false, callbacks: { label: function (item, chartData) { return chartData.datasets[item.datasetIndex].label + ": " + fmtRp(item.yLabel); } } },
+			tooltips: {
+				mode: "index",
+				intersect: false,
+				callbacks: {
+					title: function (items, chartData) {
+						return tglIndo(parseInt(chartData.labels[items[0].index].replace(/\D/g, ""), 10), bulanTampil);
+					},
+					label: function (item, chartData) {
+						return chartData.datasets[item.datasetIndex].label + ": " + fmtRp(item.yLabel);
+					}
+				}
+			},
 			scales: {
 				xAxes: [{ ticks: { fontSize: 9, maxRotation: 45, minRotation: 45 }, gridLines: { display: false } }],
 				yAxes: [{ ticks: { beginAtZero: true, fontSize: 10, callback: shortRp }, gridLines: { color: "#f1f5f9" } }],
@@ -82,6 +97,7 @@
 	});
 
 	function renderBulan(bln) {
+		bulanTampil = bln;
 		var akhir = hariDalamBulan(bln);
 		var labels = [], usulan = [], cair = [];
 
