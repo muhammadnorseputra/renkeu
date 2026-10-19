@@ -124,6 +124,33 @@
       .row-2{grid-template-columns:1fr}
       .brand-float,.orb{display:none}
     }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --navy:#3b82f6;
+        --navy2:#2563eb;
+        --amber:#fbbf24;
+        --amber2:#d97706;
+        --muted:#94a3b8;
+        --line:#334155;
+        --bg:#0f172a;
+      }
+      body{color:#f8fafc}
+      .login-card{background:#1e293b;border-color:var(--line);color:#f8fafc}
+      .login-card-head h2{color:#f8fafc}
+      .login-card-head p{color:#cbd5e1}
+      .form-group label{color:#cbd5e1}
+      .form-control{background:#0f172a;border-color:var(--line);color:#f8fafc}
+      .form-control:focus{border-color:var(--navy);box-shadow:0 0 0 4px rgba(59,130,246,.15)}
+      .pwd-toggle{background:#0f172a;border-color:var(--line);color:#cbd5e1}
+      .pwd-toggle:hover{border-color:var(--navy);color:var(--navy)}
+      .check{color:#cbd5e1}
+      .forgot{color:#93c5fd}
+      .divider{background:var(--line)}
+      .help{color:#94a3b8}
+      .help a{color:#93c5fd}
+      .brand-foot{color:#cbd5e1}
+      .brand-foot a{color:#f8fafc}
+    }
   </style>
 </head>
 <body>
@@ -159,7 +186,7 @@
       <div class="login-card">
         <div class="login-card-head">
           <?php if (getSetting('APPLogo') != '') : ?>
-            <img src="<?= base_url('template/assets/Logo DSP Warna/Logo5.png') ?>" alt="Logo">
+            <img src="<?= base_url('template/assets/Logo DSP Warna/Logo3.png') ?>" alt="Logo">
           <?php endif; ?>
           <h2>Masuk ke Akun</h2>
           <p>Pilih tahun & status anggaran, lalu masuk dengan kredensial Anda</p>
@@ -225,8 +252,6 @@
 
         <button type="submit" class="btn-login">Masuk <i class="bi bi-arrow-right ms-1"></i></button>
         <?= form_close(); ?>
-        <div class="divider"></div>
-        <div class="help">Belum punya akses? Hubungi <a href="https://wa.me/6282151815132" target="_blank">Administrator</a></div>
       </div>
     </div>
   </div>
