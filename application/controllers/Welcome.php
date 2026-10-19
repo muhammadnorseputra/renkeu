@@ -195,7 +195,6 @@ class Welcome extends CI_Controller {
 		$db_harian = $this->db->select('sp.cair_at, SUM(s.jumlah) as total')
 			->from('spj_payment sp')
 			->join('spj s', 's.token = sp.token', 'left')
-			->where('sp.status', 'CAIR')
 			->where('sp.cair_at IS NOT NULL', null, false)
 			->where('s.tahun', $ta)
 			->group_by('DATE(sp.cair_at)')
