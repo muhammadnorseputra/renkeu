@@ -11,6 +11,38 @@
 	}
 	function pad(n) { return n < 10 ? "0" + n : "" + n; }
 
+	// Inline plugin: gambar nilai titik Usulan/Cair langsung di chart
+	var dataLabelsPlugin = {
+		id: "pointValueLabels",
+		afterDatasetsDraw: function (chart) {
+			var ctx = chart.ctx;
+			var colors = ["#8d6e00", "#0e7a5f"];
+			ctx.save();
+			ctx.font = 'bold 8px "Open Sans", sans-serif';
+			ctx.textAlign = "center";
+			ctx.lineWidth = 2;
+			for (var d = 0; d < chart.data.datasets.length; d++) {
+				var meta = chart.getDatasetMeta(d);
+				for (var i = 0; i < meta.data.length; i++) {
+					var v = chart.data.datasets[d].data[i];
+					if (!v) continue;
+					var el = meta.data[i];
+					var x = el._view.x;
+					var y = el._view.y;
+					var stagger = (i % 2 === 0) ? 0 : -4;
+					var ly = d === 0 ? y - 10 + stagger : y + 18 - stagger;
+					var label = shortRp(v);
+					var w = ctx.measureText(label).width;
+					ctx.strokeStyle = "rgba(255,255,255,0.8)";
+					ctx.strokeText(label, x, ly);
+					ctx.fillStyle = colors[d];
+					ctx.fillText(label, x, ly);
+				}
+			}
+			ctx.restore();
+		}
+	};
+
 	var harianEl = document.getElementById("chartBelanjaHarian");
 	if (!harianEl) return;
 
@@ -30,6 +62,7 @@
 
 	var chart = new Chart(harianEl, {
 		type: "line",
+		plugins: [dataLabelsPlugin],
 		data: {
 			labels: [],
 			datasets: [

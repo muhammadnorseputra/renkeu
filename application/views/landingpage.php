@@ -86,7 +86,7 @@
   <script src="<?= base_url('template/backend/vendors/Chart.js/dist/Chart.bundle.min.js') ?>"></script>
 
   <!-- Transparansi Anggaran: Pagu vs Realisasi -->
-  <script src="<?= base_url('template/custom-js/frontend-anggaran.js?v=2') ?>"></script>
+  <script src="<?= base_url('template/custom-js/frontend-anggaran.js?v=3') ?>"></script>
 
   <!-- Template Main JS File -->
   <script src="<?= base_url('template/landingpage/assets/js/main.js') ?>"></script>
