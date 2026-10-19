@@ -46,13 +46,218 @@
         visibility: hidden;
         pointer-events: none;
       }
+      @media (prefers-color-scheme: dark) {
+        #splash-screen {
+          background: rgba(0, 0, 0, 0.6);
+        }
+        .splash-spinner {
+          border-color: rgba(255, 255, 255, 0.15);
+          border-top-color: #1a73e8;
+        }
+        /* Logo abu-abu muda → brighten agar terlihat di atas backdrop gelap */
+        .splash-logo,
+        .left_col .site_title img {
+          filter: brightness(1.6) contrast(0.95);
+        }
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          /* Palette */
+          --sb-bg: #F7F7F7;
+          --sb-border: #E2E8F0;
+          --sb-text: #1A2B3C;
+          --sb-text-muted: #6B7B8C;
+          --sb-text-sub: #4A5568;
+          --sb-accent: #1A73E8;
+          --sb-hover: #EFF4FA;
+          --sb-active: #E1EAF7;
+        }
+
+        .left_col,
+        .nav_title {
+          background: var(--sb-bg) !important;
+        }
+        /* Body & area konten memakai warna sama dengan content */
+        body,
+        .container.body,
+        .right_col {
+          background: #F7F7F7 !important;
+          color: #1A2B3C;
+        }
+        /* Footer mengikuti warna konten */
+        .right_col footer,
+        .container.body footer {
+          background: #F7F7F7 !important;
+          color: #6B7B8C;
+          border-top: 1px solid var(--sb-border);
+        }
+        .right_col footer .pull-right {
+          color: #6B7B8C;
+        }
+        .left_col .site_title img {
+          filter: brightness(0.35) saturate(0) contrast(1.8);
+        }
+        .nav-md .container.body .col-md-3.left_col,
+        .nav-sm .container.body .col-md-3.left_col {
+          border-right: 1px solid var(--sb-border);
+        }
+        .left_col a,
+        .left_col h3,
+        .left_col .profile_info h2,
+        .left_col .profile_info p,
+        .left_col .profile_info span {
+          color: var(--sb-text) !important;
+        }
+
+        /* Menu utama: hover lembut, active tegas dengan aksen kiri */
+        .left_col .side-menu > li > a,
+        .nav-sm .left_col .side-menu > li > a {
+          border-left: 3px solid transparent;
+          border-radius: 0 3px 3px 0;
+          transition: background-color .15s ease, color .15s ease;
+        }
+        .left_col .side-menu > li > a:hover,
+        .nav-sm .left_col .side-menu > li > a:hover {
+          background: var(--sb-hover) !important;
+          color: var(--sb-accent) !important;
+        }
+        .left_col .side-menu > li.active > a,
+        .left_col .side-menu > li.current-page > a,
+        .nav-sm .left_col .side-menu > li.active-sm > a {
+          background: var(--sb-active) !important;
+          border-left-color: var(--sb-accent) !important;
+          color: var(--sb-accent) !important;
+          font-weight: 600;
+          box-shadow: none !important;
+          text-shadow: none !important;
+        }
+        .left_col .side-menu > li > a i,
+        .nav-sm .left_col .side-menu > li > a i {
+          color: var(--sb-text-muted) !important;
+        }
+        .left_col .side-menu > li > a:hover i,
+        .left_col .side-menu > li.active > a i,
+        .nav-sm .left_col .side-menu > li > a:hover i,
+        .nav-sm .left_col .side-menu > li.active-sm > a i {
+          color: var(--sb-accent) !important;
+        }
+        .left_col .side-menu > li.active,
+        .left_col .side-menu > li.current-page,
+        .nav-sm .left_col .side-menu > li.active-sm {
+          border-right-color: transparent !important;
+        }
+
+        /* Submenu */
+        .left_col .child_menu li:hover,
+        .nav-sm .left_col ul.nav.child_menu li:hover,
+        .left_col .child_menu li.active,
+        .nav-sm .left_col ul.nav.child_menu li.active {
+          background-color: rgba(26, 115, 232, 0.07) !important;
+        }
+        .left_col .child_menu li a,
+        .nav-sm .left_col ul.nav.child_menu li a {
+          color: var(--sb-text-sub) !important;
+        }
+        .left_col .child_menu li a:hover,
+        .left_col .child_menu li.active a,
+        .left_col .child_menu li.current-page a,
+        .nav-sm .left_col ul.nav.child_menu li a:hover,
+        .nav-sm .left_col ul.nav.child_menu li.active a {
+          background: transparent !important;
+          color: var(--sb-accent) !important;
+          font-weight: 600;
+        }
+        .nav-sm .left_col ul.nav.child_menu {
+          background: var(--sb-bg) !important;
+          border-right: 1px solid var(--sb-border);
+          box-shadow: 2px 0 8px rgba(26, 43, 60, .08);
+        }
+        .nav-md ul.child_menu li:before {
+          background: var(--sb-text-muted) !important;
+        }
+        .nav-md ul.child_menu li:after {
+          border-left-color: var(--sb-border) !important;
+        }
+
+        /* Profile & section label */
+        .left_col .profile_img {
+          border-color: var(--sb-border) !important;
+        }
+        .left_col .navbar.nav_title {
+          border-bottom-color: var(--sb-border) !important;
+        }
+        .left_col .menu_section h3 {
+          color: var(--sb-text-muted) !important;
+          text-shadow: none !important;
+          letter-spacing: .8px;
+        }
+
+        /* Footer */
+        .left_col .sidebar-footer {
+          background: var(--sb-bg) !important;
+          border-top: none !important;
+          border-right: 1px solid var(--sb-border) !important;
+        }
+        .left_col .sidebar-footer a {
+          color: var(--sb-text-muted) !important;
+          background: transparent !important;
+          transition: color .15s ease, background-color .15s ease;
+        }
+        .left_col .sidebar-footer a:hover {
+          color: var(--sb-accent) !important;
+          background: var(--sb-hover) !important;
+        }
+
+        /* Scrollbar */
+        .left_col .mCSB_dragger .mCSB_dragger_bar {
+          background: #A0AEC0 !important;
+          border-radius: 16px !important;
+        }
+        .left_col .mCSB_draggerRail {
+          background: var(--sb-border) !important;
+          border-radius: 16px !important;
+        }
+      }
+      /* Top bar light mode — bersih dan profesional */
+      @media (prefers-color-scheme: light) {
+        .top_nav,
+        .nav_menu {
+          background: #F7F7F7 !important;
+          border-bottom-color: var(--sb-border) !important;
+        }
+        .top_nav .navbar-right li a,
+        .top_nav .navbar-nav > li > a {
+          color: var(--sb-text) !important;
+        }
+        .top_nav .dropdown-menu {
+          background: #FFFFFF !important;
+          border-color: var(--sb-border) !important;
+        }
+        .top_nav .dropdown-menu li a {
+          color: var(--sb-text) !important;
+        }
+        .top_nav .dropdown-menu li a:hover {
+          background: var(--sb-hover) !important;
+          color: var(--sb-accent) !important;
+        }
+      }
+      .splash-logo {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
       .splash-spinner {
-        width: 56px;
-        height: 56px;
-        border: 5px solid rgba(0, 0, 0, 0.12);
+        width: 180px;
+        height: 180px;
+        border: 8px solid rgba(0, 0, 0, 0.12);
         border-top-color: #1a73e8;
         border-radius: 50%;
         animation: splash-rotate 0.8s linear infinite;
+        position: relative;
       }
       @keyframes splash-rotate {
         to { transform: rotate(360deg); }
@@ -122,5 +327,6 @@
     </script>
     <!-- Splash screen: tampil sebelum konten dimuat -->
     <div id="splash-screen">
+      <img class="splash-logo" src="<?php echo base_url('template/assets/Logo DSP Monokrom/Logo4.png') ?>" alt="Logo">
       <div class="splash-spinner"></div>
     </div>

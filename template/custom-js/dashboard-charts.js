@@ -49,34 +49,6 @@ if (window.Chart && Chart.defaults && Chart.defaults.global && Chart.defaults.gl
     Chart.defaults.global.legend.labels.generateLabels = generateDatasetLabels;
 }
 
-// Label nilai rupiah di setiap slice doughnut (Realisasi of parts)
-Chart.pluginService.register({
-    afterDraw: function(chart) {
-        if (chart.config.type !== 'doughnut') return;
-        var ctx = chart.chart.ctx;
-        ctx.save();
-        chart.data.datasets.forEach(function(dataset, i) {
-            var meta = chart.getDatasetMeta(i);
-            if (!meta.hidden) {
-                meta.data.forEach(function(element, index) {
-                    var value = dataset.data[index];
-                    var pos = element.tooltipPosition();
-                    ctx.fillStyle = "#263746";
-                    ctx.font = "bold 10px 'Open Sans', sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText(
-                        "Rp. " + Number(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."),
-                        pos.x,
-                        pos.y
-                    );
-                });
-            }
-        });
-        ctx.restore();
-    }
-});
-
 $(function() {
     // CountUp animation for numeric values (rupiah, pegawai, %)
     document.querySelectorAll('.countup').forEach(function(el) {
