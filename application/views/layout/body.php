@@ -1,3 +1,88 @@
+<?php
+$menuSearchCatalog = [];
+$menuSearchConfigPath = APPPATH . 'config/menu_search.json';
+
+if (is_readable($menuSearchConfigPath)) {
+  $menuSearchJson = file_get_contents($menuSearchConfigPath);
+  $menuSearchConfig = $menuSearchJson !== false ? json_decode($menuSearchJson, true) : null;
+
+  if (is_array($menuSearchConfig)) {
+    $menuSearchPrivilegeCache = [];
+    $menuSearchRole = $this->session->userdata('role');
+    $menuSearchProfileValid = $this->session->userdata('is_valid_profile') === '1';
+
+    foreach ($menuSearchConfig as $menuSearchItem) {
+      if (
+        !is_array($menuSearchItem) ||
+        !isset($menuSearchItem['label']) || !is_string($menuSearchItem['label']) || $menuSearchItem['label'] === '' ||
+        !isset($menuSearchItem['url']) || !is_string($menuSearchItem['url']) || $menuSearchItem['url'] === '' ||
+        !isset($menuSearchItem['iconClass']) || !is_string($menuSearchItem['iconClass']) || $menuSearchItem['iconClass'] === '' ||
+        !isset($menuSearchItem['anyPrivileges']) || !is_array($menuSearchItem['anyPrivileges']) ||
+        !isset($menuSearchItem['roles']) || !is_array($menuSearchItem['roles']) ||
+        !isset($menuSearchItem['requiresValidProfile']) || !is_bool($menuSearchItem['requiresValidProfile']) ||
+        (isset($menuSearchItem['parentLabel']) && !is_string($menuSearchItem['parentLabel']))
+      ) {
+        log_message('error', 'Invalid menu search item in ' . $menuSearchConfigPath);
+        continue;
+      }
+
+      $requiredPrivileges = $menuSearchItem['anyPrivileges'];
+      $validRequirements = true;
+      foreach (array_merge($requiredPrivileges, $menuSearchItem['roles']) as $requirement) {
+        if (!is_string($requirement) || $requirement === '') {
+          $validRequirements = false;
+          break;
+        }
+      }
+      if (!$validRequirements) {
+        log_message('error', 'Invalid privilege or role requirement in ' . $menuSearchConfigPath);
+        continue;
+      }
+
+      $hasPrivilege = empty($requiredPrivileges);
+
+      foreach ($requiredPrivileges as $privilege) {
+        if (!array_key_exists($privilege, $menuSearchPrivilegeCache)) {
+          $menuSearchPrivilegeCache[$privilege] = privilages($privilege);
+        }
+
+        if ($menuSearchPrivilegeCache[$privilege]) {
+          $hasPrivilege = true;
+          break;
+        }
+      }
+
+      $allowedRoles = $menuSearchItem['roles'];
+      $hasRole = empty($allowedRoles) || in_array($menuSearchRole, $allowedRoles, true);
+      $requiresValidProfile = !empty($menuSearchItem['requiresValidProfile']);
+
+      if (!$hasPrivilege || !$hasRole || ($requiresValidProfile && !$menuSearchProfileValid)) {
+        continue;
+      }
+
+      $menuSearchCatalog[] = [
+        'label' => $menuSearchItem['label'],
+        'parentLabel' => isset($menuSearchItem['parentLabel']) ? $menuSearchItem['parentLabel'] : '',
+        'url' => base_url($menuSearchItem['url']),
+        'iconClass' => $menuSearchItem['iconClass']
+      ];
+    }
+  } else {
+    log_message('error', 'Unable to decode menu search catalog: ' . $menuSearchConfigPath);
+  }
+} else {
+  log_message('error', 'Menu search catalog is missing or unreadable: ' . $menuSearchConfigPath);
+}
+
+$menuSearchCatalogJson = json_encode(
+  $menuSearchCatalog,
+  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+);
+if ($menuSearchCatalogJson === false) {
+  log_message('error', 'Unable to encode authorized menu search catalog.');
+  $menuSearchCatalogJson = '[]';
+}
+?>
 <div class="container body">
 
   <div class="header sticky-top">
@@ -47,9 +132,18 @@
       ?>
       <div class="nav_menu">
         <div class="nav toggle">
-          <div style="display: flex; flex-direction: row; justify-items: center; align-items: center;">
-            <a id="menu_toggle"><i class="fa fa-bars"></i> </a>
+          <a id="menu_toggle" class="hamburger-icon" aria-label="Toggle sidebar"><i class="fa fa-bars" aria-hidden="true"></i></a>
+        </div>
+
+        <div class="menu-quick-search">
+          <script>window.menuSearchCatalog = <?= $menuSearchCatalogJson ?>;</script>
+          <label class="sr-only" for="menu-quick-search-input">Cari menu</label>
+          <div class="menu-quick-search__field">
+            <i class="fa fa-search" aria-hidden="true"></i>
+            <input id="menu-quick-search-input" type="search" placeholder="Cari menu..." autocomplete="off"
+              aria-autocomplete="list" aria-controls="menu-quick-search-results" aria-expanded="false">
           </div>
+          <div id="menu-quick-search-results" class="menu-quick-search__results" role="listbox" hidden></div>
         </div>
 
         <nav class="nav navbar-nav">

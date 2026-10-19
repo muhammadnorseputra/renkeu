@@ -1,0 +1,137 @@
+[
+  {
+    "label": "Dashboard",
+    "parentLabel": "",
+    "url": "app/dashboard",
+    "iconClass": "fa fa-home",
+    "anyPrivileges": [],
+    "roles": [],
+    "requiresValidProfile": false
+  },
+  {
+    "label": "Rincian Anggaran",
+    "parentLabel": "",
+    "url": "app/programs",
+    "iconClass": "fa fa-database",
+    "anyPrivileges": ["priv_programs"],
+    "roles": [],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Inbox",
+    "parentLabel": "SPJ",
+    "url": "app/spj",
+    "iconClass": "fa fa-dollar",
+    "anyPrivileges": ["priv_spj"],
+    "roles": [],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Rekapitulasi Perjadin",
+    "parentLabel": "SPJ",
+    "url": "app/spj/rekap_perjadin",
+    "iconClass": "fa fa-dollar",
+    "anyPrivileges": ["priv_spj"],
+    "roles": [],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Rekapitulasi Pajak",
+    "parentLabel": "SPJ",
+    "url": "app/spj/rekap_pajak",
+    "iconClass": "fa fa-dollar",
+    "anyPrivileges": ["priv_spj"],
+    "roles": [],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Monitoring Belanja",
+    "parentLabel": "",
+    "url": "app/spj/monitor",
+    "iconClass": "fa fa-line-chart",
+    "anyPrivileges": ["priv_spj"],
+    "roles": [],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Belanja Kegiatan",
+    "parentLabel": "Buku Jaga",
+    "url": "app/bukujaga",
+    "iconClass": "fa fa-archive",
+    "anyPrivileges": ["priv_bukujaga"],
+    "roles": [],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Rincian Belanja",
+    "parentLabel": "Buku Jaga",
+    "url": "app/bukujaga/rincian",
+    "iconClass": "fa fa-archive",
+    "anyPrivileges": ["priv_bukujaga"],
+    "roles": [],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Verifikasi Hasil Kinerja",
+    "parentLabel": "Kinerja",
+    "url": "app/verifikator-kinerja",
+    "iconClass": "fa fa-dashboard",
+    "anyPrivileges": ["priv_anggarankinerja", "priv_verify_kinerja"],
+    "roles": ["ADMIN", "SUPER_ADMIN", "USER", "SUPER_USER"],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Mapping Pegawai",
+    "parentLabel": "Kinerja",
+    "url": "app/pegawai",
+    "iconClass": "fa fa-dashboard",
+    "anyPrivileges": ["priv_anggarankinerja", "priv_verify_kinerja"],
+    "roles": ["ADMIN", "SUPER_ADMIN", "USER", "SUPER_USER"],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Dokumen Pengelolaan Resiko",
+    "parentLabel": "Kinerja",
+    "url": "app/dokuments/pengelolaan_resiko",
+    "iconClass": "fa fa-dashboard",
+    "anyPrivileges": ["priv_anggarankinerja", "priv_verify_kinerja"],
+    "roles": ["ADMIN", "SUPER_ADMIN", "USER", "SUPER_USER"],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Indikator",
+    "parentLabel": "Kinerja",
+    "url": "app/indikator",
+    "iconClass": "fa fa-dashboard",
+    "anyPrivileges": ["priv_anggarankinerja", "priv_verify_kinerja"],
+    "roles": ["ADMIN", "SUPER_ADMIN", "USER", "SUPER_USER"],
+    "requiresValidProfile": true
+  },
+  {
+    "label": "Users",
+    "parentLabel": "",
+    "url": "app/users",
+    "iconClass": "fa fa-users",
+    "anyPrivileges": ["priv_users"],
+    "roles": [],
+    "requiresValidProfile": false
+  },
+  {
+    "label": "Web Notify",
+    "parentLabel": "",
+    "url": "app/messages",
+    "iconClass": "fa fa-envelope",
+    "anyPrivileges": ["priv_notify"],
+    "roles": [],
+    "requiresValidProfile": false
+  },
+  {
+    "label": "Settings",
+    "parentLabel": "",
+    "url": "app/settings",
+    "iconClass": "fa fa-cogs",
+    "anyPrivileges": ["priv_notify"],
+    "roles": [],
+    "requiresValidProfile": false
+  }
+]

@@ -16,9 +16,6 @@
     <link href="<?php echo asset_url('template/backend/vendors/font-awesome/css/font-awesome.min.css') ?>" rel="stylesheet">
     <!-- NProgress -->
     <link href="<?php echo asset_url('template/backend/vendors/nprogress/nprogress.css') ?>" rel="stylesheet">
-    <!-- jQuery custom content scroller -->
-    <link href="<?php echo asset_url('template/backend/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css') ?>" rel="stylesheet"/>
-
     <!-- Custom Theme Style -->
     <link href="<?php echo asset_url('template/backend/build/css/admin.css') ?>" rel="stylesheet">
     <link href="<?php echo asset_url('template/backend/build/css/custom.min.css') ?>" rel="stylesheet">
@@ -208,15 +205,6 @@
           background: var(--sb-hover) !important;
         }
 
-        /* Scrollbar */
-        .left_col .mCSB_dragger .mCSB_dragger_bar {
-          background: #A0AEC0 !important;
-          border-radius: 16px !important;
-        }
-        .left_col .mCSB_draggerRail {
-          background: var(--sb-border) !important;
-          border-radius: 16px !important;
-        }
       }
       /* Top bar light mode — bersih dan profesional */
       @media (prefers-color-scheme: light) {

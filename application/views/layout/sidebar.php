@@ -1,8 +1,8 @@
-<div class="left_col scroll-view" id="tour_navbar">
-    <div class="navbar nav_title" style="padding-left: 13px;">
+<div class="left_col" id="tour_navbar">
+    <div class="navbar nav_title" style="padding-left: 8px">
         <a href="<?php echo base_url('/') ?>" class="site_title">
             <?php if (getSetting('APPLogo') != ''): ?>
-            <img src="<?php echo base_url('template/assets/Logo DSP Monokrom/Logo4.png') ?>" width="180"
+            <img src="<?php echo base_url('template/assets/Logo DSP Monokrom/Logo4.png') ?>" width="170"
                 alt="Logo Application">
             <?php endif; ?>
         </a>

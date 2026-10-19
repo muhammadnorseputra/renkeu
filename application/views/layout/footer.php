@@ -6,10 +6,6 @@
     <script src="<?php echo asset_url('template/backend/vendors/fastclick/lib/fastclick.js') ?>"></script>
     <!-- NProgress -->
     <script src="<?php echo asset_url('template/backend/vendors/nprogress/nprogress.js') ?>"></script>
-    <!-- jQuery custom content scroller -->
-    <script
-        src="<?php echo asset_url('template/backend/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js') ?>">
-    </script>
     <!-- Js Notify -->
     <script src="<?php echo asset_url('template/custom-js/bootstrap-notify/bootstrap-notify.min.js') ?>"></script>
     <!-- Bootstrap Progressbar -->
