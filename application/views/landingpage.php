@@ -23,6 +23,9 @@
   <link href="<?= base_url('template/landingpage/assets/vendor/swiper/swiper-bundle.min.css') ?>" rel="stylesheet">
   <link href="<?= base_url('template/landingpage/assets/vendor/glightbox/css/glightbox.min.css') ?>" rel="stylesheet">
 
+  <!-- Select2 (jQuery plugin) -->
+  <link href="<?= base_url('template/backend/vendors/select2/dist/css/select2.min.css') ?>" rel="stylesheet">
+
   <!-- Template Main CSS File -->
   <link href="<?= base_url('template/landingpage/assets/css/style.css') ?>" rel="stylesheet">
   <link href="<?= base_url('template/custom-css/frontend-anggaran.css') ?>" rel="stylesheet">
@@ -75,6 +78,11 @@
   <script src="<?= base_url('template/landingpage/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
   <script src="<?= base_url('template/landingpage/assets/vendor/swiper/swiper-bundle.min.js') ?>"></script>
   <script src="<?= base_url('template/landingpage/assets/vendor/glightbox/js/glightbox.min.js') ?>"></script>
+
+  <!-- jQuery + Select2 (filter bulan chart belanja harian) -->
+  <script src="<?= base_url('template/backend/vendors/jquery/dist/jquery.min.js') ?>"></script>
+  <script src="<?= base_url('template/backend/vendors/select2/dist/js/select2.min.js') ?>"></script>
+
   <script src="<?= base_url('template/backend/vendors/Chart.js/dist/Chart.bundle.min.js') ?>"></script>
 
   <!-- Transparansi Anggaran: Pagu vs Realisasi -->
