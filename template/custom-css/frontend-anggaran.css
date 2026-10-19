@@ -140,6 +140,24 @@
   padding: 0.85rem 0.6rem;
 }
 
+.anggaran-table td .rp {
+  color: #7f8c9b;
+  font-size: 0.8rem;
+  margin-right: 0.25rem;
+}
+
+.anggaran-table td .rp-num {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.anggaran-table td .nominal {
+  font-variant-numeric: tabular-nums;
+}
+
+.anggaran-table td.selisih-plus .nominal { color: #1f7a5c; font-weight: 700; }
+.anggaran-table td.selisih-minus .nominal { color: #c0392b; font-weight: 700; }
+
 .anggan-badge,
 .anggaran-badge {
   display: inline-block;
