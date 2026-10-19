@@ -213,7 +213,7 @@ class Welcome extends CI_Controller {
 		$db_usulan = $this->db->select('DATE(entri_at) as tanggal, SUM(jumlah) as total')
 			->from('spj')
 			->where('tahun', $ta)
-			->where_in('is_status', ['ENTRI', 'VERIFIKASI'])
+			->where('entri_at IS NOT NULL', null, false)
 			->group_by('DATE(entri_at)')
 			->get();
 		foreach ($db_usulan->result() as $row) {
