@@ -147,8 +147,17 @@
 }
 
 .anggaran-table td .rp-num {
-  display: inline-flex;
+  display: flex;
+  justify-content: space-between;
   align-items: baseline;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.anggaran-table td .rp-num .nominal {
+  flex: 1 1 auto;
+  text-align: right;
+  display: block;
 }
 
 .anggaran-table td .nominal {
