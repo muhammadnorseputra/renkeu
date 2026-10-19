@@ -186,17 +186,27 @@
                       <th><?= $lv['label'] ?></th>
                       <th class="text-end">Pagu Murni</th>
                       <th class="text-end">Pagu Perubahan</th>
+                      <th class="text-end">Selisih</th>
+                      <th class="text-end">Arah</th>
                       <th class="text-end">Realisasi</th>
                       <th class="text-end">%</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php foreach ($lv['rows'] as $row): ?>
+                      <?php
+                        $selisih = $row['pagu_perubahan'] - $row['pagu_murni'];
+                        $arah = $selisih > 0 ? 'Bertambah' : ($selisih < 0 ? 'Berkurang' : 'Tetap');
+                        $arah_class = $selisih > 0 ? 'badge-success' : ($selisih < 0 ? 'badge-danger' : 'badge-secondary');
+                        $selisih_tampil = ($selisih < 0 ? '-' : ($selisih > 0 ? '+' : '')) . nominal(abs($selisih));
+                      ?>
                       <tr class="<?= !empty($row['is_total']) ? 'anggaran-row-total' : '' ?>">
                         <td class="text-muted"><?= htmlspecialchars($row['kode']) ?></td>
                         <td><?= htmlspecialchars($row['nama']) ?></td>
                         <td class="text-end">Rp. <?= nominal($row['pagu_murni']) ?></td>
                         <td class="text-end">Rp. <?= nominal($row['pagu_perubahan']) ?></td>
+                        <td class="text-end">Rp. <?= $selisih_tampil ?></td>
+                        <td class="text-end"><span class="anggaran-badge <?= $arah_class ?>"><?= $arah ?></span></td>
                         <td class="text-end">Rp. <?= nominal($row['realisasi']) ?></td>
                         <td class="text-end"><span class="anggaran-badge <?= $row['capaian'] >= 80 ? 'badge-success' : ($row['capaian'] >= 50 ? 'badge-warning' : 'badge-danger') ?>"><?= number_format($row['capaian'], 2) ?>%</span></td>
                       </tr>
