@@ -24,6 +24,7 @@
 			ctx.save();
 			ctx.font = 'bold 8px "Open Sans", sans-serif';
 			ctx.textAlign = "center";
+			ctx.textBaseline = "bottom";
 			ctx.lineWidth = 2;
 			for (var d = 0; d < chart.data.datasets.length; d++) {
 				var meta = chart.getDatasetMeta(d);
@@ -33,8 +34,9 @@
 					var el = meta.data[i];
 					var x = el._view.x;
 					var y = el._view.y;
-					var stagger = (i % 2 === 0) ? 0 : -4;
-					var ly = d === 0 ? y - 10 + stagger : y + 18 - stagger;
+					// Posisi label di atas titik agar tidak menutupi garis.
+					// Usulan (d=0) lebih dekat titik, Cair (d=1) di atasnya agar tidak tumpang tindih.
+					var ly = d === 0 ? y - 10 : y - 26;
 					var label = shortRp(v);
 					ctx.strokeStyle = "rgba(255,255,255,0.8)";
 					ctx.strokeText(label, x, ly);
