@@ -59,86 +59,6 @@
       </div>
     </div>
   </section><!-- End Hero Section -->
-  <!-- ======= About Us Section ======= -->
-  <section id="about-us" class="about-us padd-section">
-    <div class="container" data-aos="fade-up">
-      <div class="row justify-content-center">
-
-        <div class="col-md-5 col-lg-3">
-          <img src="https://images.unsplash.com/photo-1763550662603-78aa2f2033bf?q=80&w=1014&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="About" data-aos="zoom-in" data-aos-delay="100">
-        </div>
-
-        <div class="col-md-7 col-lg-5">
-          <div class="about-content" data-aos="fade-left" data-aos-delay="100">
-
-            <h2><span>Digta<sup>+</sup></span>Team</h2>
-            <p><?= getSetting('APPDescription') ?></p>
-
-            <ul class="list-unstyled">
-              <li><i class="vi bi-chevron-right"></i>Dashboard Real-time</li>
-              <li><i class="vi bi-chevron-right"></i>Verifikasi Kinerja SAKIPRA</li>
-              <li><i class="vi bi-chevron-right"></i>Realisasi Keuangan & Target</li>
-              <li><i class="vi bi-chevron-right"></i>Export Laporan Otomatis</li>
-            </ul>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section><!-- End About Us Section -->
-
-  <!-- ======= Features Section ======= -->
-  <section id="features" class="padd-section">
-    <div class="container" data-aos="fade-up">
-      <div class="section-title text-center">
-        <h2>Fitur Unggulan</h2>
-        <p class="separator">Modul utama untuk mendukung pengelolaan kinerja & keuangan</p>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-          <div class="feature-block">
-            <div class="feature-icon">
-              <i class="bi bi-speedometer2"></i>
-            </div>
-            <h4>Dashboard Real-time</h4>
-            <p>Monitoring capaian kinerja & realisasi keuangan dalam satu tampilan</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-          <div class="feature-block">
-            <div class="feature-icon">
-              <i class="bi bi-check2-circle"></i>
-            </div>
-            <h4>Verifikasi Kinerja SAKIPRA</h4>
-            <p>Validasi triwulan otomatis dengan checklist 6 indikator per periode</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-          <div class="feature-block">
-            <div class="feature-icon">
-              <i class="bi bi-file-earmark-text"></i>
-            </div>
-            <h4>Rekap SPJ & Pajak</h4>
-            <p>Upload & kelola dokumen perjadin, pajak pusat & daerah terpusat</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
-          <div class="feature-block">
-            <div class="feature-icon">
-              <i class="bi bi-shield-check"></i>
-            </div>
-            <h4>Pengelolaan Resiko</h4>
-            <p>Dokumentasi rencana & hasil mitigasi resiko terstruktur</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section><!-- End Features Section -->
 
   <!-- ======= Transparansi Anggaran Section ======= -->
   <section id="anggaran" class="padd-section anggaran-section">
@@ -232,6 +152,88 @@
 
       </div>
   </section><!-- End Transparansi Anggaran Section -->
+
+  <!-- ======= About Us Section ======= -->
+  <section id="about-us" class="about-us padd-section">
+    <div class="container" data-aos="fade-up">
+      <div class="row justify-content-center">
+
+        <div class="col-md-5 col-lg-3">
+          <img src="https://images.unsplash.com/photo-1763550662603-78aa2f2033bf?q=80&w=1014&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="About" data-aos="zoom-in" data-aos-delay="100">
+        </div>
+
+        <div class="col-md-7 col-lg-5">
+          <div class="about-content" data-aos="fade-left" data-aos-delay="100">
+
+            <h2><span>Digta<sup>+</sup></span>Team</h2>
+            <p><?= getSetting('APPDescription') ?></p>
+
+            <ul class="list-unstyled">
+              <li><i class="vi bi-chevron-right"></i>Dashboard Real-time</li>
+              <li><i class="vi bi-chevron-right"></i>Verifikasi Kinerja SAKIPRA</li>
+              <li><i class="vi bi-chevron-right"></i>Realisasi Keuangan & Target</li>
+              <li><i class="vi bi-chevron-right"></i>Export Laporan Otomatis</li>
+            </ul>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section><!-- End About Us Section -->
+
+  <!-- ======= Features Section ======= -->
+  <section id="features" class="padd-section">
+    <div class="container" data-aos="fade-up">
+      <div class="section-title text-center">
+        <h2>Fitur Unggulan</h2>
+        <p class="separator">Modul utama untuk mendukung pengelolaan kinerja & keuangan</p>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-block">
+            <div class="feature-icon">
+              <i class="bi bi-speedometer2"></i>
+            </div>
+            <h4>Dashboard Real-time</h4>
+            <p>Monitoring capaian kinerja & realisasi keuangan dalam satu tampilan</p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-block">
+            <div class="feature-icon">
+              <i class="bi bi-check2-circle"></i>
+            </div>
+            <h4>Verifikasi Kinerja SAKIPRA</h4>
+            <p>Validasi triwulan otomatis dengan checklist 6 indikator per periode</p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-block">
+            <div class="feature-icon">
+              <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <h4>Rekap SPJ & Pajak</h4>
+            <p>Upload & kelola dokumen perjadin, pajak pusat & daerah terpusat</p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+          <div class="feature-block">
+            <div class="feature-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <h4>Pengelolaan Resiko</h4>
+            <p>Dokumentasi rencana & hasil mitigasi resiko terstruktur</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- End Features Section -->
+
 
   <!-- ======= FAQ Section ======= -->
   <section id="faq" class="padd-section">
