@@ -53,6 +53,7 @@
       <nav id="navbar" class="navbar">
         <ul>
           <li><a class="nav-link scrollto <?= isActive('/') ?>" href="<?= base_url('/') ?>">Beranda</a></li>
+          <li><a class="nav-link scrollto" href="#anggaran">Transparansi Anggaran</a></li>
           <li><a class="nav-link scrollto" href="#about-us">Tentang Kami</a></li>
           <li><a class="nav-link scrollto" href="#features">Fitur</a></li>
           <li><a class="nav-link scrollto" href="#faq">FAQ</a></li>
