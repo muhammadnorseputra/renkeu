@@ -157,3 +157,9 @@
     height: 260px;
   }
 }
+
+.anggaran-table tr.anggaran-row-total > td {
+  font-weight: 700;
+  background: #f4f8f7;
+  border-top: 2px solid #1f7a5c;
+}

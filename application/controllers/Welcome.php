@@ -45,7 +45,7 @@ class Welcome extends CI_Controller {
 			'bidang'       => ['label' => 'Bidang',       'table' => 'ref_parts',   'cols' => 'id, singkatan AS kode, nama', 'where' => "singkatan != 'KABAN'", 'order' => 'id'],
 			'kelompok'     => ['label' => 'Kelompok',     'table' => 'ref_kelompok_belanja', 'where' => 'tahun = ' . $ta, 'order' => 'kode'],
 			'jenis'        => ['label' => 'Jenis',        'table' => 'ref_jenis_belanja',    'where' => 'tahun = ' . $ta, 'order' => 'kode'],
-			'uraian'       => ['label' => 'Uraian',       'table' => 'ref_uraians',          'where' => "tahun = $ta AND is_aktif = 'Y'", 'order' => 'kode'],
+			'uraian'       => ['label' => 'Uraian',       'table' => 'ref_uraians',          'where' => "tahun = $ta AND is_aktif = 'Y'", 'order' => 'kode', 'group_by' => 'kode', 'multi_bidang' => true],
 			'program'      => ['label' => 'Program',      'table' => 'ref_programs',         'where' => 'tahun = ' . $ta, 'order' => 'kode'],
 			'kegiatan'     => ['label' => 'Kegiatan',     'table' => 'ref_kegiatans',        'where' => 'tahun = ' . $ta, 'order' => 'kode'],
 			'sub_kegiatan' => ['label' => 'Sub Kegiatan', 'table' => 'ref_sub_kegiatans',    'where' => 'tahun = ' . $ta, 'order' => 'kode'],
@@ -65,6 +65,86 @@ class Welcome extends CI_Controller {
 		$level_data = [];
 		foreach ($levels as $key => $cfg) {
 			$pm_map = $pp_map = $rl_map = [];
+
+			// --- uraian khusus: group by kode, hanya kode yang muncul di >1 bidang, tambah TOTAL ---
+			if ($key === 'uraian') {
+				$uraian_join = "ref_uraians l ON l.id = %s.fid_uraian AND l.tahun = $ta AND l.is_aktif = 'Y'
+					JOIN ref_kegiatans kg ON kg.id = l.fid_kegiatan AND kg.tahun = $ta
+					JOIN ref_parts pt ON pt.id = kg.fid_part";
+				$pagu_chain = sprintf($uraian_join, 'p');
+				$real_chain = sprintf($uraian_join, 's');
+
+				// Semua kode (tanpa HAVING) untuk map nilai
+				foreach ($this->db->query("SELECT l.kode AS kode, COALESCE(SUM(p.total_pagu_awal),0) AS total FROM t_pagu p JOIN $pagu_chain WHERE p.tahun = $ta AND p.is_perubahan = '0' GROUP BY l.kode")->result() as $r) {
+					$pm_map[$r->kode] = (int) $r->total;
+				}
+				foreach ($this->db->query("SELECT l.kode AS kode, COALESCE(SUM(p.total_pagu_awal),0) AS total FROM t_pagu p JOIN $pagu_chain WHERE p.tahun = $ta AND p.is_perubahan = '1' GROUP BY l.kode")->result() as $r) {
+					$pp_map[$r->kode] = (int) $r->total;
+				}
+				foreach ($this->db->query("SELECT l.kode AS kode, COALESCE(SUM(s.jumlah),0) AS total FROM spj s JOIN $real_chain WHERE s.tahun = $ta AND s.is_status = 'SELESAI' GROUP BY l.kode")->result() as $r) {
+					$rl_map[$r->kode] = (int) $r->total;
+				}
+
+				// Nama per kode
+				foreach ($this->db->query("SELECT DISTINCT l.kode AS kode, l.nama AS nama FROM ref_uraians l WHERE l.tahun = $ta AND l.is_aktif = 'Y'")->result() as $r) {
+					$nama_map[$r->kode] = $r->nama;
+				}
+
+				// Kode yang muncul di >1 bidang (union dari 3 sumber)
+				$multi_sql = "SELECT l.kode FROM t_pagu p JOIN $pagu_chain WHERE p.tahun = $ta AND p.is_perubahan = '0' GROUP BY l.kode HAVING COUNT(DISTINCT pt.id) > 1
+					UNION
+					SELECT l.kode FROM t_pagu p JOIN $pagu_chain WHERE p.tahun = $ta AND p.is_perubahan = '1' GROUP BY l.kode HAVING COUNT(DISTINCT pt.id) > 1
+					UNION
+					SELECT l.kode FROM spj s JOIN $real_chain WHERE s.tahun = $ta AND s.is_status = 'SELESAI' GROUP BY l.kode HAVING COUNT(DISTINCT pt.id) > 1";
+				$multi_kode = [];
+				foreach ($this->db->query($multi_sql)->result() as $r) {
+					$multi_kode[] = $r->kode;
+				}
+
+				$rows = [];
+				foreach ($multi_kode as $kode) {
+					$pm = $pm_map[$kode] ?? 0;
+					$pp = $pp_map[$kode] ?? 0;
+					$rl = $rl_map[$kode] ?? 0;
+					$aktif = $pp > 0 ? $pp : $pm;
+					$rows[] = [
+						'kode' => $kode,
+						'nama' => $nama_map[$kode] ?? '',
+						'pagu_murni' => $pm,
+						'pagu_perubahan' => $pp,
+						'realisasi' => $rl,
+						'capaian' => $aktif > 0 ? round($rl / $aktif * 100, 2) : 0,
+						'is_total' => false,
+					];
+				}
+
+				$total_pm = array_sum(array_column($rows, 'pagu_murni'));
+				$total_pp = array_sum(array_column($rows, 'pagu_perubahan'));
+				$total_rl = array_sum(array_column($rows, 'realisasi'));
+				$total_aktif = $total_pp > 0 ? $total_pp : $total_pm;
+				$rows[] = [
+					'kode' => '',
+					'nama' => 'TOTAL',
+					'pagu_murni' => $total_pm,
+					'pagu_perubahan' => $total_pp,
+					'realisasi' => $total_rl,
+					'capaian' => $total_aktif > 0 ? round($total_rl / $total_aktif * 100, 2) : 0,
+					'is_total' => true,
+				];
+
+				$level_data[$key] = [
+					'label' => $cfg['label'],
+					'rows' => $rows,
+					'chart' => [
+						'labels' => array_column($rows, 'nama'),
+						'pagu_murni' => array_column($rows, 'pagu_murni'),
+						'pagu_perubahan' => array_column($rows, 'pagu_perubahan'),
+						'realisasi' => array_column($rows, 'realisasi'),
+						'capaian' => array_column($rows, 'capaian'),
+					],
+				];
+				continue;
+			}
 			$pagu_chain = implode(' JOIN ', array_map(function ($j) { return sprintf($j, 'p'); }, $joins[$key]));
 			$real_chain = implode(' JOIN ', array_map(function ($j) { return sprintf($j, 's'); }, $joins[$key]));
 
@@ -100,6 +180,7 @@ class Welcome extends CI_Controller {
 					'pagu_perubahan' => $pp,
 					'realisasi' => $rl,
 					'capaian' => $aktif > 0 ? round($rl / $aktif * 100, 2) : 0,
+					'is_total' => false,
 				];
 			}
 

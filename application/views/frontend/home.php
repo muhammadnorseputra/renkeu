@@ -192,7 +192,7 @@
                   </thead>
                   <tbody>
                     <?php foreach ($lv['rows'] as $row): ?>
-                      <tr>
+                      <tr class="<?= !empty($row['is_total']) ? 'anggaran-row-total' : '' ?>">
                         <td class="text-muted"><?= htmlspecialchars($row['kode']) ?></td>
                         <td><?= htmlspecialchars($row['nama']) ?></td>
                         <td class="text-end">Rp. <?= nominal($row['pagu_murni']) ?></td>
