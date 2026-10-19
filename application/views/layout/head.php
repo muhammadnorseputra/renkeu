@@ -327,6 +327,6 @@
     </script>
     <!-- Splash screen: tampil sebelum konten dimuat -->
     <div id="splash-screen">
-      <img class="splash-logo" src="<?php echo base_url('template/assets/Logo DSP Monokrom/Logo4.png') ?>" alt="Logo">
+      <img class="splash-logo" src="<?php echo base_url('template/assets/Logo DSP Monokrom/Logo3.png') ?>" alt="Logo">
       <div class="splash-spinner"></div>
     </div>
