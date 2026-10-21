@@ -34,6 +34,8 @@
             <ul class="nav side-menu">
                 <li><a href="<?php echo base_url('app/dashboard') ?>" title="Dashboard"><i class="fa fa-home"></i>
                         Dashboard</a></li>
+                <li><a href="<?php echo base_url('app/changelog') ?>" title="Changelog"><i class="fa fa-history"></i>
+                        Changelog</a></li>
                 <?php if (privilages('priv_programs')): ?>
                 <li><a href="<?php echo $this->session->userdata('is_valid_profile') ? base_url('app/programs') : '#' ?>"
                         title="Program & Kegiatan"
@@ -44,7 +46,7 @@
                 <li
                     style="cursor: <?php echo $this->session->userdata('is_valid_profile') === "0" ? 'not-allowed' : 'allowed' ?>">
                     <a>
-                        <i class="fa fa-dollar"></i> SPJ <span class="fa fa-chevron-down"></span>
+                        <i class="fa fa-newspaper-o"></i> SPJ <span class="fa fa-chevron-down"></span>
                     </a>
                     <ul class="nav child_menu">
                         <li><a href="<?php echo $this->session->userdata('is_valid_profile') ? base_url('app/spj') : '#' ?>"

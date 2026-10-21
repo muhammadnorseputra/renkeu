@@ -140,8 +140,12 @@ if ($menuSearchCatalogJson === false) {
           <label class="sr-only" for="menu-quick-search-input">Cari menu</label>
           <div class="menu-quick-search__field">
             <i class="fa fa-search" aria-hidden="true"></i>
-            <input id="menu-quick-search-input" type="search" placeholder="Cari menu..." autocomplete="off"
+            <input id="menu-quick-search-input" type="search" placeholder="Cari menu / submenu..." autocomplete="off"
               aria-autocomplete="list" aria-controls="menu-quick-search-results" aria-expanded="false">
+            <span class="menu-quick-search__shortcut" aria-hidden="true">
+              <i class="fa fa-keyboard-o"></i>
+              <kbd>Ctrl</kbd><kbd>K</kbd>
+            </span>
           </div>
           <div id="menu-quick-search-results" class="menu-quick-search__results" role="listbox" hidden></div>
         </div>
@@ -162,7 +166,7 @@ if ($menuSearchCatalogJson === false) {
                     <span>Settings</span>
                   </a>
                 <?php endif; ?>
-                <a class="dropdown-item" href="javascript:;"><i class="fa fa-help pull-right"></i> Help</a>
+                <a class="dropdown-item" href="<?= base_url("/app/changelog") ?>"><i class="fa fa-help pull-right"></i> Changelog</a>
                 <a class="dropdown-item" href="<?= base_url("/login/lockScreenAction?continue=" . urlencode(curPageURL())) ?>"><i class="fa fa-lock pull-right"></i> Lockscreen</a>
                 <a class="dropdown-item" href="<?= base_url("/login/removeSession") ?>"><i class="fa fa-sign-out pull-right"></i> Logout</a>
               </div>

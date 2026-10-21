@@ -1,0 +1,117 @@
+#menu-quick-search-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  background: var(--menu-search-backdrop-color);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  animation: menuSearchBackdropIn 0.18s ease;
+}
+
+:root {
+  --menu-search-backdrop-color: rgba(255, 255, 255, 0.62);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --menu-search-backdrop-color: rgba(255, 255, 255, 0.62);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --menu-search-backdrop-color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.menu-quick-search__shortcut {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border: 1px solid #D9DEE4;
+  border-radius: 4px;
+  color: #6B7B8C;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.menu-quick-search__shortcut i {
+  margin-right: 2px;
+  font-size: 11px;
+}
+
+.menu-quick-search__shortcut kbd {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  box-shadow: none;
+}
+
+.menu-quick-search__hint {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 58px;
+  padding: 10px 12px;
+  color: #6B7B8C;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.menu-quick-search__hint-icon {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid rgba(26, 115, 232, .14);
+  border-radius: 9px;
+  background: #EFF4FA;
+  color: #1A73E8;
+  font-size: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .menu-quick-search__shortcut {
+    border-color: #586574;
+    color: #D0D7E0;
+  }
+
+  .menu-quick-search__hint {
+    color: #A4AFBD;
+  }
+
+  .menu-quick-search__hint-icon {
+    border-color: rgba(119, 173, 255, .22);
+    background: #293748;
+    color: #77ADFF;
+  }
+}
+
+.top_nav.menu-quick-search-open {
+  position: sticky;
+  top: 0;
+  z-index: 1041;
+}
+
+.nav-sm .main_container .top_nav.menu-quick-search-open {
+  z-index: 1041;
+}
+
+@keyframes menuSearchBackdropIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #menu-quick-search-backdrop {
+    animation: none;
+  }
+}

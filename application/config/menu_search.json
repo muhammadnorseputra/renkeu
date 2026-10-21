@@ -9,6 +9,15 @@
     "requiresValidProfile": false
   },
   {
+    "label": "Changelog",
+    "parentLabel": "",
+    "url": "app/changelog",
+    "iconClass": "fa fa-history",
+    "anyPrivileges": [],
+    "roles": [],
+    "requiresValidProfile": false
+  },
+  {
     "label": "Rincian Anggaran",
     "parentLabel": "",
     "url": "app/programs",

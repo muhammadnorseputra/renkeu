@@ -17,6 +17,8 @@
     <script src="<?php echo asset_url('template/custom-js/chart-export.js') ?>"></script>
     <script src="<?php echo asset_url('template/custom-js/admin.js') ?>"></script>
     <script src="<?php echo asset_url('template/custom-js/app-update.js') ?>"></script>
+    <!-- Search menu backdrop CSS -->
+    <link href="<?php echo asset_url('template/custom-css/search-menu.css') ?>" rel="stylesheet">
 
     <?php
         if (isset($autoload_js)) {

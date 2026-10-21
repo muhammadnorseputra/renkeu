@@ -37,6 +37,157 @@ function init_sidebar() {
         $SIDEBAR_MENU.find('li ul').slideUp();
     }
 
+    var $menuSearch = $('#menu-quick-search-input');
+    var $menuSearchResults = $('#menu-quick-search-results');
+    var $menuSearchContainer = $menuSearch.closest('.menu-quick-search');
+    var menuSearchTimer;
+
+    var openMenuSearch = function () {
+        if (!$('#menu-quick-search-backdrop').length) {
+            $('<div>', {
+                id: 'menu-quick-search-backdrop',
+                'aria-hidden': 'true'
+            }).appendTo('body');
+        }
+
+        $menuSearchContainer.addClass('is-active').closest('.top_nav').addClass('menu-quick-search-open');
+    };
+
+    var closeMenuSearch = function () {
+        clearTimeout(menuSearchTimer);
+        $('#menu-quick-search-backdrop').remove();
+        $menuSearchContainer.removeClass('is-active');
+        $menuSearchContainer.closest('.top_nav').removeClass('menu-quick-search-open');
+        $menuSearch.removeClass('is-focused');
+        $menuSearchResults.prop('hidden', true).removeClass('is-loading').removeAttr('aria-busy');
+        $menuSearch.attr('aria-expanded', 'false');
+    };
+
+    var getMenuSearchEntries = function () {
+        return Array.isArray(window.menuSearchCatalog) ? window.menuSearchCatalog : [];
+    };
+
+    var showMenuSearchHint = function () {
+        $menuSearchResults
+            .empty()
+            .append(
+                '<div class="menu-quick-search__hint" role="note">' +
+                    '<span class="menu-quick-search__hint-icon"><i class="fa fa-compass" aria-hidden="true"></i></span>' +
+                    '<span>Silakan ketik nama menu atau submenu</span>' +
+                '</div>'
+            )
+            .removeClass('is-loading')
+            .removeAttr('aria-busy')
+            .prop('hidden', false);
+        $menuSearch.attr('aria-expanded', 'true');
+    };
+
+    var renderMenuSearchResults = function (query) {
+        query = (query || '').toLowerCase().trim();
+        $menuSearchResults.empty();
+
+        if (!query) {
+            showMenuSearchHint();
+            return;
+        }
+
+        var matches = getMenuSearchEntries().filter(function (entry) {
+            return (entry.label + ' ' + entry.parentLabel).toLowerCase().indexOf(query) !== -1;
+        }).slice(0, 8);
+
+        if (!matches.length) {
+            $('<div class="menu-quick-search__empty">Menu tidak ditemukan</div>').appendTo($menuSearchResults);
+        } else {
+            matches.forEach(function (entry) {
+                var $icon = $('<i aria-hidden="true"></i>').addClass(entry.iconClass);
+                var $label = $('<span></span>').text(entry.parentLabel ? entry.parentLabel + ' — ' + entry.label : entry.label);
+                var $result = $('<a class="menu-quick-search__result" role="option"></a>')
+                    .attr('href', entry.url)
+                    .append($icon, $label);
+                $menuSearchResults.append($result);
+            });
+        }
+
+        $menuSearchResults.removeClass('is-loading').removeAttr('aria-busy');
+        $menuSearch.attr('aria-expanded', 'true');
+    };
+
+    var showMenuSearchLoading = function () {
+        var query = $menuSearch.val().toLowerCase().trim();
+        clearTimeout(menuSearchTimer);
+
+        if (!query) {
+            showMenuSearchHint();
+            return;
+        }
+
+        $menuSearchResults
+            .empty()
+            .append('<div class="menu-quick-search__skeleton"></div><div class="menu-quick-search__skeleton"></div><div class="menu-quick-search__skeleton"></div>')
+            .addClass('is-loading')
+            .attr('aria-busy', 'true')
+            .prop('hidden', false);
+        $menuSearch.attr('aria-expanded', 'true');
+
+        menuSearchTimer = setTimeout(function () {
+            renderMenuSearchResults(query);
+        }, 140);
+    };
+
+    $menuSearch.on('focus', function () {
+        openMenuSearch();
+        showMenuSearchLoading();
+    });
+    $menuSearch.on('click', openMenuSearch);
+    $menuSearch.on('input', function () {
+        openMenuSearch();
+        $(this).addClass('is-focused');
+        showMenuSearchLoading();
+    });
+    $menuSearchContainer.on('focusout', function () {
+        var searchContainer = this;
+        setTimeout(function () {
+            if (!searchContainer.contains(document.activeElement)) {
+                closeMenuSearch();
+            }
+        }, 0);
+    });
+    $menuSearch.on('blur', function () {
+        $(this).removeClass('is-focused');
+    });
+    $menuSearch.on('keydown', function (ev) {
+        if (ev.key === 'Escape') {
+            $(this).val('');
+            closeMenuSearch();
+        } else if (ev.key === 'Enter') {
+            var $firstResult = $menuSearchResults.find('a').first();
+            if ($firstResult.length) {
+                window.location.href = $firstResult.attr('href');
+            }
+        }
+    });
+
+    $(document).on('keydown', function (ev) {
+        if (!(ev.ctrlKey || ev.metaKey) || ev.altKey || ev.key.toLowerCase() !== 'k') {
+            return;
+        }
+
+        var target = ev.target;
+        var isEditing = target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName);
+        if (isEditing && target !== $menuSearch[0]) {
+            return;
+        }
+
+        ev.preventDefault();
+        $menuSearch.trigger('focus').trigger('select');
+    });
+
+    $(document).on('click', function (ev) {
+        if (!$(ev.target).closest('.menu-quick-search').length) {
+            closeMenuSearch();
+        }
+    });
+
     $SIDEBAR_MENU.find('a').on('click', function (ev) {
         var $li = $(this).parent();
 
@@ -113,23 +264,61 @@ function init_sidebar() {
 
 // Panel toolbox
 $(document).ready(function () {
+    var PANEL_STATE_KEY = 'x_panel_states';
+    var panelStates = JSON.parse(localStorage.getItem(PANEL_STATE_KEY) || '{}');
+    var pageKey = window.location.pathname;
+    var $panels = $('.x_panel');
+
+    // Key stabil per halaman: id panel bila ada, selain itu index panel.
+    function panelKey($panel) {
+        var id = $panel.attr('id');
+        return pageKey + '|' + (id || ('idx' + $panels.index($panel)));
+    }
+
+    // Terapkan state tersimpan saat load
+    $panels.each(function () {
+        var $panel = $(this);
+        if (panelStates[panelKey($panel)] === 'collapsed') {
+            $panel.find('.x_content').hide();
+            $panel.find('.collapse-link i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+        }
+    });
+
     $('.collapse-link').on('click', function () {
         var $BOX_PANEL = $(this).closest('.x_panel'),
             $ICON = $(this).find('i'),
             $BOX_CONTENT = $BOX_PANEL.find('.x_content');
 
+        // Simpan state SESUDAH toggle: sekarang visible = akan jadi collapsed.
+        var willCollapse = !$BOX_CONTENT.is(':hidden');
+        panelStates[panelKey($BOX_PANEL)] = willCollapse ? 'collapsed' : 'expanded';
+        localStorage.setItem(PANEL_STATE_KEY, JSON.stringify(panelStates));
+
         // fix for some div with hardcoded fix class
         if ($BOX_PANEL.attr('style')) {
             $BOX_CONTENT.slideToggle(200, function () {
                 $BOX_PANEL.removeAttr('style');
+                refreshCharts($BOX_PANEL);
             });
         } else {
-            $BOX_CONTENT.slideToggle(200);
+            $BOX_CONTENT.slideToggle(200, function () {
+                refreshCharts($BOX_PANEL);
+            });
             $BOX_PANEL.css('height', 'auto');
         }
 
         $ICON.toggleClass('fa-chevron-up fa-chevron-down');
     });
+
+    // Chart.js 2.x & Flot butuh di-resize setelah panel dibuka (canvas 0px saat hidden)
+    function refreshCharts($panel) {
+        $panel.find('canvas').each(function () {
+            if (this.chart) {
+                try { this.chart.resize(); } catch (e) { /* noop */ }
+            }
+        });
+        $(window).trigger('resize');
+    }
 
     $('.close-link').click(function () {
         var $BOX_PANEL = $(this).closest('.x_panel');
