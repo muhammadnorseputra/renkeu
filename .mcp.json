@@ -14,5 +14,18 @@
         "MYSQL_DATABASE": "emonev"
       }
     }
+  },
+  "codegraph": {
+    "type": "local",
+    "command": "codegraph",
+    "args": [
+      "serve",
+      "--mcp",
+      "--path",
+      "C:\\laragon\\www\\emonev"
+    ],
+    "tools": [
+      "*"
+    ]
   }
 }

@@ -98,15 +98,5 @@
 		}
 	],
 	"servers": {
-		"codegraph": {
-			"type": "stdio",
-			"command": "codegraph",
-			"args": [
-				"serve",
-				"--mcp",
-				"--path",
-				"C:\\laragon\\www\\emonev"
-			]
-		}
 	}
 }
