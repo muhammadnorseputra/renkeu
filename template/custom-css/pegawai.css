@@ -632,4 +632,157 @@
     cursor: pointer;
     padding: 2px 4px;
 }
+
+@media (prefers-color-scheme: dark) {
+    .pegawai-page-shell .pegawai-summary {
+        background: linear-gradient(135deg, #1D2A37, #1B302E);
+        border-color: #2D4A4A;
+        color: #E5EDF5;
+    }
+    .pegawai-page-shell .pegawai-tabs {
+        background: #131E29;
+        border-color: #2D3B4B;
+    }
+    .pegawai-page-shell .pegawai-tabs .nav-link {
+        color: #A6B4C3;
+    }
+    .pegawai-page-shell .pegawai-tabs .nav-link:hover,
+    .pegawai-page-shell .pegawai-tabs .nav-link:focus-visible {
+        background: #202E3C;
+        color: #E5EDF5;
+    }
+    .pegawai-page-shell .tab-card {
+        background: #18232F;
+        border-color: #2D3B4B;
+    }
+    .pegawai-page-shell .tab-card .table thead th {
+        background: #23364B;
+        border-color: #2D3B4B;
+        color: #E5EDF5;
+    }
+    .pegawai-page-shell .tab-card .table tbody td {
+        border-color: #2D3B4B;
+        color: #D3DDE7;
+    }
+    .pegawai-page-shell .tab-card .table-striped tbody tr:nth-of-type(odd) {
+        background: #1D2A37 !important;
+    }
+    .pegawai-page-shell .tab-card .table tbody tr:hover {
+        background: #202E3C !important;
+    }
+    .pegawai-page-shell .tab-card .table tbody tr:hover td {
+        background: #202E3C !important;
+        color: #F2F6FA !important;
+    }
+    .mapping-modal .modal-content {
+        background: #18232F;
+        border: 1px solid #2D3B4B;
+        color: #E5EDF5;
+        box-shadow: 0 24px 70px rgba(0,0,0,.42);
+    }
+    .mapping-modal .modal-header {
+        background: linear-gradient(135deg, #17273B 0%, #23364B 100%);
+        border-bottom: 1px solid #2D3B4B;
+    }
+    .mapping-modal .modal-body,
+    .mapping-modal .modal-footer {
+        background: #18232F;
+        border-color: #2D3B4B;
+    }
+    .mapping-modal .mapping-hero {
+        background: linear-gradient(135deg, rgba(35,54,75,.78), rgba(25,58,48,.36));
+        border-color: #344B63;
+    }
+    .mapping-modal .mapping-kicker,
+    .mapping-modal .mapping-sub,
+    .mapping-modal .mapping-field label,
+    .mapping-modal .mapping-audit-head,
+    .mapping-modal .mapping-meta .meta-title {
+        color: #A6B4C3;
+    }
+    .mapping-modal .mapping-name,
+    .mapping-modal .mapping-meta .meta-value {
+        color: #E5EDF5;
+    }
+    .mapping-modal .mapping-chip {
+        background: #193A30;
+        border-color: #2C614E;
+        color: #C0E9D6;
+    }
+    .mapping-modal .mapping-field .form-control,
+    .mapping-modal .mapping-field select {
+        background: #131E29;
+        border-color: #2D3B4B;
+        color: #E5EDF5;
+    }
+    .mapping-modal .mapping-field input[readonly],
+    .mapping-modal .mapping-field .form-control:disabled,
+    .mapping-modal .mapping-field select:disabled {
+        background: #1D2A37;
+        border-color: #2D3B4B;
+        color: #A6B4C3;
+    }
+    .mapping-modal .mapping-audit,
+    .mapping-modal .mapping-indikator-panel {
+        background: #1D2A37;
+        border-color: #2D3B4B;
+    }
+    .mapping-modal .mapping-audit-head,
+    .mapping-modal .mapping-indikator-head {
+        background: #202E3C;
+        border-color: #2D3B4B;
+        color: #D3DDE7;
+    }
+    .mapping-modal .mapping-meta,
+    .mapping-modal .mapping-indikator-item {
+        background: #18232F;
+        border-color: #2D3B4B;
+        color: #E5EDF5;
+    }
+    .mapping-modal .mapping-indikator-count,
+    .mapping-modal .mapping-indikator-item .indikator-no {
+        background: #23364B;
+        color: #B6D6FF;
+    }
+    .mapping-modal .mapping-indikator-empty,
+    .mapping-modal .mapping-indikator-loading {
+        color: #A6B4C3;
+    }
+    .mapping-modal .btn-indikator-aksi {
+        background: #1D2A37;
+        border-color: #3A4D61;
+        color: #9AD7B7;
+    }
+    .mapping-modal .btn-indikator-aksi:hover {
+        background: #193A30;
+        border-color: #328365;
+    }
+    .mapping-modal .btn-indikator-aksi.is-picked,
+    .mapping-modal .btn-indikator-aksi:disabled {
+        background: #202E3C;
+        border-color: #3A4D61;
+        color: #A6B4C3;
+    }
+    .mapping-modal .btn-indikator-aksi.is-picked {
+        background: #3D2429;
+        border-color: #6D343B;
+        color: #F4C2C5;
+    }
+    .pegawai-page-shell .pg-toast {
+        background: #1D2A37;
+        border-color: #3A4D61;
+        color: #E5EDF5;
+    }
+    .pegawai-page-shell .pg-toast-x {
+        color: #A6B4C3;
+    }
+}
+
+@media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) {
+    .pegawai-page-shell .pegawai-tabs .nav-link,
+    .mapping-modal .btn,
+    .mapping-modal .btn-indikator-aksi,
+    .pegawai-page-shell .pg-toast {
+        transition: none;
+    }
 }

@@ -1,0 +1,476 @@
+@media (prefers-color-scheme: dark) {
+  #myTab.budget-pills {
+    background: #18232F !important;
+    border: 1px solid #2D3B4B;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+  }
+
+  #myTab.budget-pills .nav-link {
+    background: #1D2A37;
+    border: 1px solid transparent !important;
+    color: #A6B4C3 !important;
+    box-shadow: none;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+  }
+
+  #myTab.budget-pills .nav-link i,
+  #myTab.budget-pills .nav-link span.fa {
+    color: #85BAFF !important;
+  }
+
+  #myTab.budget-pills .nav-link:hover,
+  #myTab.budget-pills .nav-link:focus {
+    background: #202E3C;
+    border-color: #3A4D61 !important;
+    color: #E5EDF5 !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .16);
+    transform: none;
+  }
+
+  #myTab.budget-pills .nav-link.active,
+  #myTab.budget-pills .nav-link.active:hover,
+  #myTab.budget-pills .nav-link.active:focus {
+    background: #23364B !important;
+    border-color: #3C5C7E !important;
+    color: #B6D6FF !important;
+    box-shadow: inset 0 -2px 0 #85BAFF;
+  }
+
+  #myTab.budget-pills .nav-link.active i,
+  #myTab.budget-pills .nav-link.active span.fa {
+    color: #B6D6FF !important;
+  }
+
+  .budget-panel.x_panel {
+    background: #18232F !important;
+    border-color: #2D3B4B !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+  }
+
+  .budget-panel > .x_content,
+  .budget-panel .tab-pane {
+    color: #E5EDF5;
+  }
+
+  .budget-panel .row > [class*="col-"] {
+    color: #C8D5E3;
+  }
+
+  .budget-panel .table-responsive {
+    border-color: #2D3B4B;
+  }
+
+  .budget-panel table.table,
+  .budget-panel table.table > thead > tr > th,
+  .budget-panel table.table > tbody > tr > th,
+  .budget-panel table.table > tfoot > tr > th,
+  .budget-panel table.table > thead > tr > td,
+  .budget-panel table.table > tbody > tr > td,
+  .budget-panel table.table > tfoot > tr > td {
+    background-color: #18232F;
+    border-color: #2D3B4B !important;
+    color: #E5EDF5;
+  }
+
+  .budget-panel table.jambo_table thead,
+  .budget-panel table.table thead > tr > th {
+    background: #23364B !important;
+    color: #E5EDF5 !important;
+  }
+
+  .budget-panel table.table-striped > tbody > tr:nth-of-type(odd),
+  .budget-panel table.jambo_table tbody tr:nth-of-type(odd) {
+    background-color: #1D2A37 !important;
+  }
+
+  .budget-panel table.table-hover > tbody > tr:hover,
+  .budget-panel table.jambo_table tbody tr:hover td {
+    background-color: #202E3C !important;
+  }
+
+  .budget-panel table.jambo_table tbody tr.selected,
+  .budget-panel table.jambo_table tbody tr.selected td {
+    background-color: #23364B !important;
+  }
+
+  .budget-panel table.table .text-muted,
+  .budget-panel .help-block {
+    color: #A6B4C3 !important;
+  }
+
+  .budget-panel .form-control,
+  .budget-panel input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="file"]),
+  .budget-panel select,
+  .budget-panel textarea {
+    background-color: #131E29 !important;
+    border-color: #38495B !important;
+    color: #E5EDF5 !important;
+  }
+
+  .budget-panel .form-control::placeholder,
+  .budget-panel input::placeholder,
+  .budget-panel textarea::placeholder {
+    color: #A6B4C3 !important;
+    opacity: .8;
+  }
+
+  .budget-panel .form-control:focus,
+  .budget-panel input:focus,
+  .budget-panel select:focus,
+  .budget-panel textarea:focus {
+    border-color: #85BAFF !important;
+    box-shadow: 0 0 0 2px rgba(133, 186, 255, .18) !important;
+  }
+
+  .budget-panel .form-control:disabled,
+  .budget-panel .form-control[readonly],
+  .budget-panel select:disabled {
+    background-color: #1D2A37 !important;
+    color: #A6B4C3 !important;
+  }
+
+  .budget-panel .input-group-append .btn,
+  .budget-panel .btn-secondary,
+  .budget-panel .btn-light {
+    background-color: #1D2A37 !important;
+    border-color: #38495B !important;
+    color: #E5EDF5 !important;
+  }
+
+  .budget-panel .input-group-append .btn:hover,
+  .budget-panel .btn-secondary:hover,
+  .budget-panel .btn-light:hover {
+    background-color: #202E3C !important;
+    border-color: #85BAFF !important;
+    color: #B6D6FF !important;
+  }
+
+  .budget-panel .btn-primary {
+    background-color: #2766A8 !important;
+    border-color: #397BBE !important;
+    color: #FFFFFF !important;
+  }
+
+  .budget-panel .btn-info {
+    background-color: #245F75 !important;
+    border-color: #317B93 !important;
+    color: #FFFFFF !important;
+  }
+
+  .budget-panel .btn-success {
+    background-color: #246B50 !important;
+    border-color: #328365 !important;
+    color: #FFFFFF !important;
+  }
+
+  .budget-panel .btn-danger {
+    background-color: #873C42 !important;
+    border-color: #A44D54 !important;
+    color: #FFFFFF !important;
+  }
+
+  .budget-panel .pagination > li > a,
+  .budget-panel .pagination > li > span {
+    background: #1D2A37 !important;
+    border-color: #38495B !important;
+    color: #C8D5E3 !important;
+  }
+
+  .budget-panel .pagination > li > a:hover,
+  .budget-panel .pagination > li > span:hover,
+  .budget-panel .pagination > .active > a,
+  .budget-panel .pagination > .active > span {
+    background: #23364B !important;
+    border-color: #85BAFF !important;
+    color: #B6D6FF !important;
+  }
+
+  .budget-panel .select2-container--default .select2-selection--single,
+  .budget-panel .select2-container--default .select2-selection--multiple,
+  .budget-panel .select2-dropdown,
+  .budget-panel .select2-container--default .select2-search--dropdown .select2-search__field {
+    background: #18232F !important;
+    border-color: #38495B !important;
+    color: #E5EDF5 !important;
+  }
+
+  .budget-panel .select2-container--default .select2-selection__rendered,
+  .budget-panel .select2-container--default .select2-selection__placeholder,
+  .budget-panel .select2-results__option {
+    color: #E5EDF5 !important;
+  }
+
+  .budget-panel .select2-container--default .select2-results__option--highlighted[aria-selected],
+  .budget-panel .select2-container--default .select2-results__option[aria-selected="true"] {
+    background: #23364B !important;
+    color: #B6D6FF !important;
+  }
+
+  .budget-panel .select2-container--default.select2-container--focus .select2-selection--single,
+  .budget-panel .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #85BAFF !important;
+    box-shadow: 0 0 0 2px rgba(133, 186, 255, .18);
+  }
+
+  .budget-panel tr .tt-details-control .expander::after {
+    border-top-color: #A6B4C3;
+  }
+
+  .budget-panel tr:not(.has-child) .tt-details-control .expander::after {
+    color: #A6B4C3;
+  }
+
+  .budget-panel .switch-toggle .slider {
+    background-color: #526273;
+  }
+
+  .budget-panel .switch-toggle input:checked + .slider {
+    background-color: #328365;
+  }
+
+  .budget-panel .file-upload-wrapper {
+    background: #1D2A37 !important;
+    border-color: #38495B !important;
+    color: #C8D5E3;
+  }
+
+  .budget-panel .file-upload-wrapper:hover,
+  .budget-panel .file-upload-wrapper.dragover {
+    background: #202E3C !important;
+    border-color: #85BAFF !important;
+  }
+
+  .modal-unor-edit .modal-content,
+  .modal-part-edit .modal-content,
+  .modal-tujuan-edit .modal-content,
+  .modal-sasaran-edit .modal-content,
+  .modal-unor .modal-content,
+  .modal-part .modal-content,
+  .modal-tujuan .modal-content,
+  .modal-sasaran .modal-content,
+  .modal-kelompok .modal-content,
+  .modal-kelompok-edit .modal-content,
+  .modal-jenis .modal-content,
+  .modal-jenis-edit .modal-content,
+  .modal-program .modal-content,
+  .modal-kegiatan .modal-content,
+  .modal-subkegiatan .modal-content,
+  .modal-uraian .modal-content,
+  .modal-limit .modal-content,
+  .modal-rekon .modal-content,
+  .modal-uraian-jenis .modal-content {
+    background: #18232F !important;
+    border-color: #2D3B4B !important;
+    color: #E5EDF5;
+  }
+
+  .modal-unor-edit .modal-body,
+  .modal-part-edit .modal-body,
+  .modal-tujuan-edit .modal-body,
+  .modal-sasaran-edit .modal-body,
+  .modal-unor .modal-body,
+  .modal-part .modal-body,
+  .modal-tujuan .modal-body,
+  .modal-sasaran .modal-body,
+  .modal-kelompok .modal-body,
+  .modal-kelompok-edit .modal-body,
+  .modal-jenis .modal-body,
+  .modal-jenis-edit .modal-body,
+  .modal-program .modal-body,
+  .modal-kegiatan .modal-body,
+  .modal-subkegiatan .modal-body,
+  .modal-uraian .modal-body,
+  .modal-limit .modal-body,
+  .modal-rekon .modal-body,
+  .modal-uraian-jenis .modal-body {
+    color: #E5EDF5;
+  }
+
+  .modal-unor-edit .modal-header,
+  .modal-part-edit .modal-header,
+  .modal-tujuan-edit .modal-header,
+  .modal-sasaran-edit .modal-header,
+  .modal-unor .modal-header,
+  .modal-part .modal-header,
+  .modal-tujuan .modal-header,
+  .modal-sasaran .modal-header,
+  .modal-kelompok .modal-header,
+  .modal-kelompok-edit .modal-header,
+  .modal-jenis .modal-header,
+  .modal-jenis-edit .modal-header,
+  .modal-program .modal-header,
+  .modal-kegiatan .modal-header,
+  .modal-subkegiatan .modal-header,
+  .modal-uraian .modal-header,
+  .modal-limit .modal-header,
+  .modal-rekon .modal-header,
+  .modal-uraian-jenis .modal-header {
+    border-bottom-color: #2D3B4B !important;
+  }
+
+  .modal-unor-edit .modal-footer,
+  .modal-part-edit .modal-footer,
+  .modal-tujuan-edit .modal-footer,
+  .modal-sasaran-edit .modal-footer,
+  .modal-unor .modal-footer,
+  .modal-part .modal-footer,
+  .modal-tujuan .modal-footer,
+  .modal-sasaran .modal-footer,
+  .modal-kelompok .modal-footer,
+  .modal-kelompok-edit .modal-footer,
+  .modal-jenis .modal-footer,
+  .modal-jenis-edit .modal-footer,
+  .modal-program .modal-footer,
+  .modal-kegiatan .modal-footer,
+  .modal-subkegiatan .modal-footer,
+  .modal-uraian .modal-footer,
+  .modal-limit .modal-footer,
+  .modal-rekon .modal-footer,
+  .modal-uraian-jenis .modal-footer {
+    border-top-color: #2D3B4B !important;
+  }
+
+  .modal-unor-edit .modal-body label,
+  .modal-part-edit .modal-body label,
+  .modal-tujuan-edit .modal-body label,
+  .modal-sasaran-edit .modal-body label,
+  .modal-unor .modal-body label,
+  .modal-part .modal-body label,
+  .modal-tujuan .modal-body label,
+  .modal-sasaran .modal-body label,
+  .modal-kelompok .modal-body label,
+  .modal-kelompok-edit .modal-body label,
+  .modal-jenis .modal-body label,
+  .modal-jenis-edit .modal-body label,
+  .modal-program .modal-body label,
+  .modal-kegiatan .modal-body label,
+  .modal-subkegiatan .modal-body label,
+  .modal-uraian .modal-body label,
+  .modal-limit .modal-body label,
+  .modal-rekon .modal-body label,
+  .modal-uraian-jenis .modal-body label {
+    color: #C8D5E3;
+  }
+
+  .modal-unor-edit .form-control,
+  .modal-part-edit .form-control,
+  .modal-tujuan-edit .form-control,
+  .modal-sasaran-edit .form-control,
+  .modal-unor .form-control,
+  .modal-part .form-control,
+  .modal-tujuan .form-control,
+  .modal-sasaran .form-control,
+  .modal-kelompok .form-control,
+  .modal-kelompok-edit .form-control,
+  .modal-jenis .form-control,
+  .modal-jenis-edit .form-control,
+  .modal-program .form-control,
+  .modal-kegiatan .form-control,
+  .modal-subkegiatan .form-control,
+  .modal-uraian .form-control,
+  .modal-limit .form-control,
+  .modal-rekon .form-control,
+  .modal-rekon .custom-select,
+  .modal-uraian-jenis .form-control {
+    background-color: #131E29 !important;
+    border-color: #38495B !important;
+    color: #E5EDF5 !important;
+  }
+
+  .modal-unor-edit .form-control:focus,
+  .modal-part-edit .form-control:focus,
+  .modal-tujuan-edit .form-control:focus,
+  .modal-sasaran-edit .form-control:focus,
+  .modal-unor .form-control:focus,
+  .modal-part .form-control:focus,
+  .modal-tujuan .form-control:focus,
+  .modal-sasaran .form-control:focus,
+  .modal-kelompok .form-control:focus,
+  .modal-kelompok-edit .form-control:focus,
+  .modal-jenis .form-control:focus,
+  .modal-jenis-edit .form-control:focus,
+  .modal-program .form-control:focus,
+  .modal-kegiatan .form-control:focus,
+  .modal-subkegiatan .form-control:focus,
+  .modal-uraian .form-control:focus,
+  .modal-limit .form-control:focus,
+  .modal-rekon .form-control:focus,
+  .modal-rekon .custom-select:focus,
+  .modal-uraian-jenis .form-control:focus {
+    border-color: #85BAFF !important;
+    box-shadow: 0 0 0 2px rgba(133, 186, 255, .18) !important;
+  }
+
+  .modal-unor-edit .close,
+  .modal-part-edit .close,
+  .modal-tujuan-edit .close,
+  .modal-sasaran-edit .close,
+  .modal-unor .close,
+  .modal-part .close,
+  .modal-tujuan .close,
+  .modal-sasaran .close,
+  .modal-kelompok .close,
+  .modal-kelompok-edit .close,
+  .modal-jenis .close,
+  .modal-jenis-edit .close,
+  .modal-program .close,
+  .modal-kegiatan .close,
+  .modal-subkegiatan .close,
+  .modal-uraian .close,
+  .modal-limit .close,
+  .modal-rekon .close,
+  .modal-uraian-jenis .close {
+    color: #E5EDF5 !important;
+    text-shadow: none;
+    opacity: .8;
+  }
+
+  .modal-unor-edit .close:hover,
+  .modal-part-edit .close:hover,
+  .modal-tujuan-edit .close:hover,
+  .modal-sasaran-edit .close:hover,
+  .modal-unor .close:hover,
+  .modal-part .close:hover,
+  .modal-tujuan .close:hover,
+  .modal-sasaran .close:hover,
+  .modal-kelompok .close:hover,
+  .modal-kelompok-edit .close:hover,
+  .modal-jenis .close:hover,
+  .modal-jenis-edit .close:hover,
+  .modal-program .close:hover,
+  .modal-kegiatan .close:hover,
+  .modal-subkegiatan .close:hover,
+  .modal-uraian .close:hover,
+  .modal-limit .close:hover,
+  .modal-rekon .close:hover,
+  .modal-uraian-jenis .close:hover {
+    opacity: 1;
+  }
+
+  .file-upload-wrapper {
+    background: #1D2A37 !important;
+    border-color: #38495B !important;
+    color: #C8D5E3;
+  }
+
+  .modal-rekon .file-upload-wrapper {
+    background: #1D2A37 !important;
+    border-color: #38495B !important;
+    color: #C8D5E3;
+  }
+
+  .file-upload-wrapper:hover,
+  .file-upload-wrapper.dragover {
+    background: #202E3C;
+    border-color: #85BAFF !important;
+    color: #E5EDF5;
+  }
+}
+
+@media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) {
+  #myTab.budget-pills .nav-link,
+  .budget-panel .tile-stats,
+  .file-upload-wrapper {
+    transition: none !important;
+  }
+}

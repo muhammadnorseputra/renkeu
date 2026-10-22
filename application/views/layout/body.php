@@ -140,11 +140,11 @@ if ($menuSearchCatalogJson === false) {
           <label class="sr-only" for="menu-quick-search-input">Cari menu</label>
           <div class="menu-quick-search__field">
             <i class="fa fa-search" aria-hidden="true"></i>
-            <input id="menu-quick-search-input" type="search" placeholder="Cari menu / submenu..." autocomplete="off"
+            <input id="menu-quick-search-input" type="search" placeholder="quick search menu or submenu ..." autocomplete="off"
               aria-autocomplete="list" aria-controls="menu-quick-search-results" aria-expanded="false">
             <span class="menu-quick-search__shortcut" aria-hidden="true">
               <i class="fa fa-keyboard-o"></i>
-              <kbd>Ctrl</kbd><kbd>K</kbd>
+              <kbd>Ctrl</kbd>+<kbd>K</kbd>
             </span>
           </div>
           <div id="menu-quick-search-results" class="menu-quick-search__results" role="listbox" hidden></div>

@@ -112,3 +112,61 @@
     font-size: .8rem;
     color: #e74c3c;
 }
+
+@media (prefers-color-scheme: dark) {
+    .upload-dropzone {
+        border-color: #3A4D61;
+        background: #18232F;
+        color: #E5EDF5;
+    }
+    .upload-dropzone:hover,
+    .upload-dropzone.drag-over {
+        border-color: #85BAFF;
+        background: #202E3C;
+    }
+    .upload-dropzone.drag-over {
+        box-shadow: 0 0 0 3px rgba(133, 186, 255, .16);
+    }
+    .upload-dropzone .fa-cloud-upload {
+        color: #A6B4C3;
+    }
+    .upload-preview {
+        background: #1D2A37;
+        border-color: #2D3B4B;
+        color: #E5EDF5;
+    }
+    .upload-preview-icon {
+        background: #18232F;
+        border-color: #2D3B4B;
+        color: #72C9A0;
+    }
+    .upload-preview-name,
+    .radio-card-title {
+        color: #E5EDF5;
+    }
+    .upload-preview-meta,
+    .radio-card-desc {
+        color: #A6B4C3;
+    }
+    .radio-card {
+        border-color: #2D3B4B;
+        background: #18232F;
+        color: #E5EDF5;
+    }
+    .radio-card:hover {
+        border-color: #85BAFF;
+        background: #202E3C;
+    }
+    .jenis-dokumen-radio input[type="radio"]:checked + .radio-card {
+        border-color: #85BAFF;
+        background: #23364B;
+        box-shadow: 0 0 0 3px rgba(133, 186, 255, .16);
+    }
+    .jenis-dokumen-radio input[type="radio"]:checked + .radio-card .radio-card-title {
+        color: #B6D6FF;
+    }
+    .jenis-dokumen-radio input[type="radio"]:focus-visible + .radio-card {
+        outline: 2px solid #85BAFF;
+        outline-offset: 3px;
+    }
+}

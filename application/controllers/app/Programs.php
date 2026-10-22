@@ -55,6 +55,7 @@ class Programs extends CI_Controller
                 'template/backend/vendors/select2/dist/css/select2.min.css',
                 'template/backend/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css',
                 'template/backend/vendors/TreeTables-master/tree-table.css',
+                'template/custom-css/programs-dark.css',
             ],
         ];
         $this->load->view('layout/app', $data);

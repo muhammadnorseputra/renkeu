@@ -204,6 +204,171 @@
     background: #26a985;
 }
 
+@media (prefers-color-scheme: dark) {
+    .right_col .dashboard-transaction-panel,
+    .right_col > .row > [class*="col-"] > .x_panel {
+        background: #18232F;
+        border-color: #2D3B4B;
+        color: #E5EDF5;
+    }
+
+    .right_col .dashboard-transaction-panel .x_title,
+    .right_col > .row > [class*="col-"] > .x_panel > .x_title {
+        border-bottom-color: #2D3B4B;
+    }
+
+    .right_col .tile-stats hr {
+        border-color: #2D3B4B;
+    }
+
+    .right_col .dashboard-transaction-panel .x_title h2,
+    .right_col > .row > [class*="col-"] > .x_panel > .x_title h2,
+    .right_col .dashboard-transaction-panel .x_content,
+    .right_col > .row > [class*="col-"] > .x_panel > .x_content {
+        color: #E5EDF5;
+    }
+
+    .right_col .dashboard-transaction-panel hr,
+    .right_col .dashboard-transaction-panel .x_content hr,
+    .right_col > .row > [class*="col-"] > .x_panel hr,
+    .right_col > .row > [class*="col-"] > .x_panel .x_content hr {
+        border-top-color: #2D3B4B;
+    }
+
+    .right_col .dashboard-transaction-panel .panel_toolbox:not(.chart-export) > li > a,
+    .right_col > .row > [class*="col-"] > .x_panel .panel_toolbox:not(.chart-export) > li > a {
+        color: #A6B4C3;
+    }
+
+    .right_col .dashboard-transaction-panel .panel_toolbox:not(.chart-export) > li > a:hover,
+    .right_col .dashboard-transaction-panel .panel_toolbox:not(.chart-export) > li > a:focus-visible,
+    .right_col .dashboard-transaction-panel .panel_toolbox:not(.chart-export) > li > a:active,
+    .right_col > .row > [class*="col-"] > .x_panel .panel_toolbox:not(.chart-export) > li > a:hover,
+    .right_col > .row > [class*="col-"] > .x_panel .panel_toolbox:not(.chart-export) > li > a:focus-visible,
+    .right_col > .row > [class*="col-"] > .x_panel .panel_toolbox:not(.chart-export) > li > a:active {
+        background: #202E3C;
+        color: #B6D6FF;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-warning {
+        background: transparent;
+        border-color: #E7BF68;
+        color: #E7BF68;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-primary {
+        background: transparent;
+        border-color: #85BAFF;
+        color: #85BAFF;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-danger {
+        background: transparent;
+        border-color: #EE9298;
+        color: #EE9298;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-success {
+        background: transparent;
+        border-color: #72C9A0;
+        color: #72C9A0;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-warning.active,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-warning:hover,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-warning:active {
+        background: #79551D;
+        color: #FFF0C9;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-primary.active,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-primary:hover,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-primary:active {
+        background: #2766A8;
+        color: #FFFFFF;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-danger.active,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-danger:hover,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-danger:active {
+        background: #873C42;
+        color: #FFE2E3;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-success.active,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-success:hover,
+    .dashboard-transaction-panel .dashboard-title-left .btn-outline-success:active {
+        background: #246B50;
+        color: #FFFFFF;
+    }
+
+    .dashboard-transaction-panel .dashboard-title-left .btn:focus-visible {
+        outline: 2px solid #85BAFF;
+        outline-offset: 2px;
+    }
+
+    .dashboard-transaction-panel .legend td {
+        color: #C8D5E3;
+    }
+
+    .dashboard-transaction-panel .legend table,
+    .dashboard-transaction-panel table,
+    .dashboard-transaction-panel th,
+    .dashboard-transaction-panel td {
+        border-color: #2D3B4B;
+    }
+
+    .quarter-summary-card {
+        background: #1D2A37;
+        border-color: #2D3B4B;
+        border-left-color: #85BAFF;
+    }
+
+    .quarter-summary-card.is-revision {
+        border-left-color: #72C9A0;
+    }
+
+    .quarter-summary-name,
+    .quarter-summary-realization strong,
+    .quarter-summary-achievement strong {
+        color: #E5EDF5;
+    }
+
+    .quarter-summary-type {
+        background: #23364B;
+        color: #B6D6FF;
+    }
+
+    .quarter-summary-card.is-revision .quarter-summary-type {
+        background: #193A30;
+        color: #C0E9D6;
+    }
+
+    .quarter-summary-label,
+    .quarter-summary-details {
+        color: #A6B4C3;
+    }
+
+    .quarter-summary-pagu {
+        color: #E5EDF5;
+    }
+
+    .quarter-summary-progress {
+        background: #111923;
+    }
+
+    .quarter-summary-progress .progress-bar {
+        background: #72C9A0;
+    }
+}
+
+@media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) {
+    .dashboard-transaction-panel .dashboard-title-left .btn,
+    .dashboard-transaction-panel .panel_toolbox a {
+        transition: none;
+    }
+}
+
 @media (max-width: 991px) {
     .dashboard-transaction-header {
         align-items: flex-start;
@@ -348,6 +513,47 @@ canvas.dashboard-parts-chart {
     font-weight: 700;
     color: #263746;
     overflow-wrap: anywhere;
+}
+
+@media (prefers-color-scheme: dark) {
+    .dashboard-top-transaksi-card {
+        background: #1D2A37;
+        border-color: #2D3B4B;
+        transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .dashboard-top-transaksi-card:hover,
+    .dashboard-top-transaksi-card:focus-within {
+        background: #202E3C;
+        border-color: #3A526B;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .18);
+    }
+
+    .dashboard-top-transaksi-card:active,
+    .dashboard-top-transaksi-card.active {
+        background: #23364B;
+        border-color: #4A6E91;
+    }
+
+    .dashboard-top-transaksi-jumlah,
+    .dashboard-top-transaksi-nama {
+        color: #E5EDF5;
+    }
+
+    .dashboard-top-transaksi-card:hover .dashboard-top-transaksi-jumlah,
+    .dashboard-top-transaksi-card.active .dashboard-top-transaksi-jumlah {
+        color: #B6D6FF;
+    }
+
+    .dashboard-top-transaksi-ident small {
+        color: #A6B4C3;
+    }
+}
+
+@media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) {
+    .dashboard-top-transaksi-card {
+        transition: none;
+    }
 }
 
 @media (max-width: 991px) {

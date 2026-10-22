@@ -277,3 +277,53 @@
     .vk-progress.done .progress-bar {
         background: linear-gradient(90deg, #28a745, #52d681);
     }
+
+@media (prefers-color-scheme: dark) {
+    .accordion-card {
+        background: #18232F;
+        border: 1px solid #2D3B4B;
+    }
+    .accordion-card .card-header {
+        background: linear-gradient(135deg, #1D2A37 0%, #202E3C 100%);
+        color: #E5EDF5;
+    }
+    .accordion-card .card-header:hover {
+        background: linear-gradient(135deg, #202E3C 0%, #26384A 100%);
+    }
+    .accordion-card .card-header[aria-expanded="true"] {
+        background: linear-gradient(135deg, #23364B 0%, #263C55 100%);
+        color: #B6D6FF;
+    }
+    .accordion-card .card-header .text-muted,
+    .accordion-card .accordion-chevron {
+        color: #A6B4C3 !important;
+    }
+    .accordion-card .card-body {
+        background: #18232F;
+        color: #E5EDF5;
+    }
+    .vk-dropzone {
+        border-color: #3A4D61;
+        background: linear-gradient(135deg, #18232F 0%, #1D2A37 100%);
+        color: #E5EDF5;
+    }
+    .vk-dropzone:hover,
+    .vk-dropzone.dragover {
+        border-color: #85BAFF;
+        background: linear-gradient(135deg, #202E3C 0%, #23364B 100%);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, .2);
+    }
+    .vk-dropzone-icon {
+        background: linear-gradient(135deg, #23364B, #263C55);
+        color: #85BAFF;
+    }
+    .vk-dropzone-file {
+        background: #1D2A37;
+        border-color: #2D3B4B;
+        color: #E5EDF5;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .18);
+    }
+    .vk-progress .progress {
+        background: #263544;
+    }
+}
