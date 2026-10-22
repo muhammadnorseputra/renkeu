@@ -89,6 +89,7 @@
     .input-wrap{position:relative}
     .input-wrap > i.bi{position:absolute;left:14px;top:24px;transform:translateY(-50%);color:#9ca3af;font-size:18px;line-height:1;pointer-events:none;z-index:2}
     .form-control{height:48px;border-radius:12px;border:1px solid var(--line);background:#fff;padding-left:48px;font-size:14px;transition:.2s;box-shadow:none}
+    .form-control:disabled{background:#f3f4f6;color:#6b7280;cursor:wait;opacity:1}
     .form-control:focus{border-color:var(--navy);box-shadow:0 0 0 4px rgba(10,42,94,.08)}
     select.form-control{padding-left:14px;padding-right:34px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#6b7280 50%),linear-gradient(135deg,#6b7280 50%,transparent 50%);background-position:calc(100% - 18px) calc(50% - 2px),calc(100% - 12px) calc(50% - 2px);background-size:6px 6px,6px 6px;background-repeat:no-repeat}
     .pwd-wrap .form-control{padding-right:52px}
@@ -140,11 +141,20 @@
       .login-card-head p{color:#cbd5e1}
       .form-group label{color:#cbd5e1}
       .form-control{background:#0f172a;border-color:var(--line);color:#f8fafc}
-      .form-control:focus{border-color:var(--navy);box-shadow:0 0 0 4px rgba(59,130,246,.15)}
+      .form-control:disabled{background:#172033;border-color:var(--line);color:#94a3b8}
+      .form-control:hover:not(:focus){border-color:#475569}
+      .form-control:focus,.form-control:focus-visible,.form-control:active{background-color:#0f172a;color:#f8fafc;border-color:#60a5fa;caret-color:#93c5fd;box-shadow:0 0 0 4px rgba(59,130,246,.2)}
+      .form-control:-webkit-autofill,.form-control:-webkit-autofill:hover,.form-control:-webkit-autofill:focus,.form-control:-webkit-autofill:active{-webkit-text-fill-color:#f8fafc;-webkit-box-shadow:0 0 0 1000px #0f172a inset;caret-color:#93c5fd}
+      select.form-control option{background:#0f172a;color:#f8fafc}
       .pwd-toggle{background:#0f172a;border-color:var(--line);color:#cbd5e1}
       .pwd-toggle:hover{border-color:var(--navy);color:var(--navy)}
+      .pwd-toggle:active,.pwd-toggle:focus-visible{background:#1e3a5f;border-color:#60a5fa;color:#bfdbfe}
       .check{color:#cbd5e1}
       .forgot{color:#93c5fd}
+      .forgot:hover,.forgot:focus-visible{color:#fbbf24}
+      .forgot:focus-visible,.btn-login:focus-visible{outline:2px solid #60a5fa;outline-offset:3px}
+      .btn-login:hover,.btn-login:focus-visible{color:#fff;filter:brightness(1.12)}
+      .btn-login:active{transform:translateY(0);box-shadow:0 3px 10px rgba(10,42,94,.3);filter:brightness(.9)}
       .divider{background:var(--line)}
       .help{color:#94a3b8}
       .help a{color:#93c5fd}
